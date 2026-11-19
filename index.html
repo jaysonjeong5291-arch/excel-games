@@ -337,7 +337,7 @@
  </div>
 </div>
 <div id="chat" class="chat" hidden><button type="button" id="chat-title-button" class="chat-title" aria-expanded="true" aria-controls="chat-body" title="메모 접기/펼치기"><span>메모 <span id="chat-count"></span></span><span class="chat-toggle" id="chat-toggle-glyph">−</span></button><div class="chat-body" id="chat-body"><div id="chat-messages" class="chat-messages"><div class="chat-empty">내용 없음</div></div><div id="admin-chat-feedback" class="admin-chat-feedback" role="status" hidden></div><form class="chat-form" id="chat-form"><input id="chat-input" class="chat-input" placeholder="메시지 입력" maxlength="280" autocomplete="off" aria-label="채팅 메시지"><button type="submit" class="chat-send">보내기</button></form></div></div>
-<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="Sheet1 채팅 수정 버전">100% · v1.7</span></footer>
+<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="Sheet1 채팅 수정 버전">100% · v1.8</span></footer>
 <script>
 'use strict';
 const SIZE = 15;
@@ -1208,14 +1208,23 @@ setTimeout(()=>syncSheet1Chat(true),450);
 async function handleChatSubmit(e){
  e.preventDefault();const form=e.currentTarget,input=form.querySelector('input'),text=input.value.trim();
  if(!text||chatPending)return;
- if(/^\/(강퇴|공지|포인트)(?:\s|$)/.test(text)){
+ if(/^\/(강퇴|공지|포인트)(?:\s|$)/.test(text) || /^\/clean(?:\s|$)/i.test(text)){
   if(myNickname!=='운영자'||!adminToken||!hasSavedNickname()||!memberProfile){
    showOperatorMessage('회원 로그인으로 인증된 운영자만 명령을 사용할 수 있습니다.',true);return;
   }
   let operation=null,params={},notice=false;
   const pointMatch=text.match(/^\/포인트\s+(.+?)\s+(\d+)\s*$/);
   const commandMatch=text.match(/^\/(강퇴|공지)\s+([\s\S]+)$/);
-  if(text.startsWith('/포인트')){
+  if(/^\/clean(?:\s|$)/i.test(text)){
+   if(text.toLowerCase()!=='/clean'){
+    showOperatorMessage('사용법: /clean',true);return;
+   }
+   if(activeRoom!==null){
+    showOperatorMessage('/clean은 Sheet1 공용 채팅에서만 실행할 수 있습니다.',true);return;
+   }
+   if(!window.confirm('Sheet1 채팅 전체와 사용자가 없는 과거 게임방을 삭제하고 시트 번호를 초기화할까요?\n\n현재 참여자가 있는 게임방이 있으면 아무것도 삭제하지 않습니다.'))return;
+   operation='renju_admin_clean';params={p_client:CLIENT_ID,p_token:adminToken};
+  }else if(text.startsWith('/포인트')){
    if(!pointMatch){showOperatorMessage('사용법: /포인트 닉네임 숫자',true);return;}
    const target=pointMatch[1].trim(),amount=Number(pointMatch[2]);
    if(!target||target.length>16||!Number.isSafeInteger(amount)||amount<1||amount>100000){
@@ -1234,13 +1243,21 @@ async function handleChatSubmit(e){
      p_action:cmd==='강퇴'?'kick':'notice',p_room:activeRoom,
      p_target_nickname:cmd==='강퇴'?value:null,p_message:notice?value:null};
    }
-  }else{showOperatorMessage('사용법: /포인트 닉네임 숫자, /공지 내용, /강퇴 닉네임',true);return;}
+  }else{showOperatorMessage('사용법: /포인트 닉네임 숫자, /공지 내용, /강퇴 닉네임, /clean',true);return;}
   chatPending=true;form.querySelector('button').disabled=true;
   try{
    const result=await callRpc(operation,params);
    showOperatorMessage(result.message||'명령 처리 완료');input.value='';input.focus();
    if(notice)await pollAnnouncement();
    if(operation==='renju_admin_points')await refreshMemberStats();
+   if(operation==='renju_admin_clean'){
+    sheet1Messages=[];sheet1LastPaint='';sheet1LastSync=0;
+    paintSheet1Chat();
+    // The lobby room identifiers remain separate from the displayed Sheet numbers.
+    // Fetch fresh server state immediately instead of waiting for the regular poll.
+    try{applyLobby(await lobbyRpc());}catch(err){lobbyNotify(err.message,true);}
+    await syncSheet1Chat(true);
+   }
   }catch(err){showOperatorMessage(err.message,true);}
   finally{chatPending=false;form.querySelector('button').disabled=false;}
   return;
