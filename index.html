@@ -367,38 +367,41 @@
 @media(max-width:440px){.holdem-hole-row{gap:6px}.holdem-own-area{flex-basis:100px}.holdem-hand-readout{padding:7px}.holdem-hand-readout strong{font-size:13px}.holdem-hand-readout small{font-size:9px}.holdem-best-five .holdem-best-chip{font-size:10px;min-width:22px;padding:2px 4px}}.holdem-footnote{padding:10px 13px;color:#829386;font-size:10px;line-height:1.6;border-top:1px solid #e3ebe4}
 @media(max-width:650px){#holdem-view{width:calc(100% - 10px);margin:5px auto 50px}.holdem-header{gap:5px;font-size:10px}.holdem-stats>div{padding:8px 6px}.holdem-stats strong{font-size:12px}.holdem-card{min-width:38px;width:43px;height:62px;font-size:16px}.holdem-card em{font-size:14px}.holdem-cards{min-height:63px;gap:4px}.holdem-bet-controls{gap:5px}.holdem-bet-controls button{padding:8px 9px;font-size:11px}.holdem-bet-controls label{width:100%;justify-content:flex-end}}
 
-/* v2.3 Texas Hold'em — clear turn callouts, 1s board flips, ordered showdown. */
-.holdem-turn-banner{margin:12px 13px 0;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:11px 13px;background:#eff4f0;border:1px solid #cdded0;border-left:4px solid #5c9371;color:#315f40}
-.holdem-turn-banner strong{font-size:14px;line-height:1.4;white-space:nowrap}.holdem-turn-banner span{font-size:11px;line-height:1.55;color:#577360}
-.holdem-turn-banner.is-mine{background:#e2f8e9;border-color:#8cc6a0;border-left-color:#168042;box-shadow:0 0 0 2px #dff3e544}
-.holdem-turn-banner.is-mine strong{color:#11683a}.holdem-turn-banner.is-flipping{background:#f0f6fa;border-color:#bbd0d8;border-left-color:#51809b}
-.holdem-bet-feedback{margin:7px 13px 0;padding:8px 10px;border:1px solid #b5d5bc;background:#f4fbf4;color:#276140;font-size:12px;font-weight:650}
-.holdem-bet-feedback[hidden],.holdem-flip-status[hidden],.holdem-showdown[hidden]{display:none!important}
-.holdem-flip-status{font-size:10px;letter-spacing:0;color:#3579a5;display:inline-block;margin-left:9px;font-weight:700}
-.holdem-table{perspective:1000px}.holdem-flip-slot{position:relative;display:inline-block;flex:none;width:55px;height:75px;perspective:700px}
-.holdem-flip-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;animation:holdem-card-flip 1s cubic-bezier(.23,.7,.22,1) both}
-.holdem-flip-side{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
-.holdem-flip-side .holdem-card{width:100%;height:100%;min-width:0}.holdem-flip-front{transform:rotateY(180deg)}
-@keyframes holdem-card-flip{0%{transform:rotateY(0deg) scale(.95)}35%{transform:rotateY(76deg) scale(1.08)}65%{transform:rotateY(115deg) scale(1.08)}100%{transform:rotateY(180deg) scale(1)}}
-.holdem-board-revealed{animation:holdem-card-land .3s ease-out}
-@keyframes holdem-card-land{0%{filter:brightness(1.2)}100%{filter:brightness(1)}}
-.holdem-bet-controls{outline:2px solid #bdddc5;outline-offset:-2px}.holdem-bet-controls button[data-h-action=call],.holdem-bet-controls button[data-h-action=check]{background:#187c43;color:#fff;border-color:#126d39}
-.holdem-showdown{margin-top:10px;border-top:1px solid #c5dac8;background:#f9fcf9;padding:0 12px 14px}
-.holdem-showdown-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #d6e4d9;color:#27593b;font-size:12px}
-.holdem-showdown-head span{color:#6b8673;font-size:11px;font-weight:600}.holdem-reveal-list{display:flex;flex-direction:column;gap:8px;padding-top:10px}
-.holdem-reveal-entry{border:1px solid #cbdccc;background:#fff;padding:10px 12px;display:grid;grid-template-columns:110px minmax(0,1fr);gap:8px 12px;align-items:center;animation:holdem-reveal-appear .5s ease-out both}
-@keyframes holdem-reveal-appear{from{opacity:0;transform:translateY(11px)}to{opacity:1;transform:translateY(0)}}
-.holdem-reveal-entry.winner{border:2px solid #3c9a60;background:#ebf8ed;box-shadow:0 4px 13px #38664516}
-.holdem-reveal-player{display:flex;flex-direction:column;gap:3px}.holdem-reveal-player strong{font-size:13px;color:#2d5440;word-break:break-all}.holdem-reveal-player small{font-size:10px;color:#7b8d7d}
-.holdem-reveal-detail{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.holdem-reveal-cards{display:flex;gap:5px}
-.holdem-reveal-cards span{padding:7px 8px;background:#fff;border:1px solid #c9d9cd;color:#293d30;font-size:15px;font-weight:800;min-width:37px;text-align:center;border-radius:3px}
-.holdem-reveal-cards span.red{color:#af4547}.holdem-reveal-rank{font-size:13px;font-weight:800;color:#2c6748}.holdem-reveal-sub{font-size:11px;color:#778b7e}
-.holdem-reveal-prize{margin-left:auto;font-weight:850;font-size:14px;color:#126c3c}.holdem-reveal-entry.winner .holdem-reveal-prize{font-size:16px}
-.holdem-players-table td:last-child{min-width:95px}.holdem-players-table .showdown-win{color:#087842;font-weight:800}
-.holdem-result{border-left:4px solid #3f9560;margin:8px 12px 13px;white-space:pre-line;font-weight:700;font-size:13px;background:#e5f5e8;padding:14px}
-.rank-guide-row .rank-guide-range{white-space:normal;text-align:right}
-@media(max-width:650px){.holdem-flip-slot{width:43px;height:62px}.holdem-turn-banner{flex-direction:column;gap:3px;padding:8px;margin:7px 6px 0}.holdem-turn-banner strong{font-size:13px}.holdem-turn-banner span{font-size:10px}.holdem-showdown{padding:0 7px 10px}.holdem-reveal-entry{grid-template-columns:1fr;gap:6px;padding:9px}.holdem-reveal-player{flex-direction:row;align-items:baseline;gap:8px}.holdem-reveal-prize{margin-left:0}}
-@media(prefers-reduced-motion:reduce){.holdem-flip-inner,.holdem-reveal-entry,.holdem-board-revealed{animation-duration:.01ms!important}}
+/* v2.4: sequential reveal, clear betting guidance and in-room conversation. */
+.holdem-flip-status{min-height:18px;margin:-8px 0 8px;font-size:11px;color:#417b56;font-weight:700}
+.holdem-card.flipping{animation:holdem-deal-flip .95s cubic-bezier(.2,.65,.2,1) both;transform-style:preserve-3d;backface-visibility:hidden;border-color:#219453;box-shadow:0 0 0 2px #7bc9a0a0,0 4px 14px #174c2c40}
+@keyframes holdem-deal-flip{0%{transform:perspective(500px) rotateY(90deg) scale(.83);opacity:.1}42%{transform:perspective(500px) rotateY(13deg) scale(1.08);opacity:1}72%{transform:perspective(500px) rotateY(-7deg) scale(1.03)}100%{transform:perspective(500px) rotateY(0) scale(1);opacity:1}}
+.holdem-action-banner{padding:10px 13px;border-top:1px solid #dbe6dd;background:#f2f5f2;color:#6a786c;font-size:12px;font-weight:700;line-height:1.5}
+.holdem-action-banner.my-turn{background:#e1f7e9;color:#075c30;border:2px solid #3eaf70;animation:holdem-pulse 1.35s ease-in-out infinite}
+.holdem-action-banner.dealing{background:#eaf4fd;color:#2b648e}
+.holdem-action-banner.done{background:#f1f7f2;color:#246d40}
+@keyframes holdem-pulse{50%{box-shadow:inset 0 0 0 2px #5dbf8844}}
+.holdem-bet-controls:not([hidden]){background:#e8f8ee;border-left:3px solid #2a9c60;border-right:3px solid #2a9c60;display:flex}
+.holdem-result{background:#f5f9f6;white-space:normal;padding:12px}
+.holdem-showdown-header{font-weight:800;color:#225b3b;font-size:13px;margin-bottom:8px}
+.holdem-showdown-progress{color:#688170;font-size:11px;margin:0 0 11px}
+.holdem-showdown-row{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #d6e6d9;padding:10px 12px;margin:7px 0;border-radius:3px;animation:holdem-reveal .55s ease-out both;flex-wrap:wrap}
+@keyframes holdem-reveal{from{opacity:0;transform:translateY(15px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.holdem-showdown-row.winner{border:2px solid #d9ae46;background:#fff9e7;box-shadow:0 2px 12px #9b7c2933;animation:holdem-win-reveal .85s ease-out both}
+@keyframes holdem-win-reveal{0%{opacity:0;transform:scale(.89)}65%{opacity:1;transform:scale(1.045)}100%{opacity:1;transform:scale(1)}}
+.holdem-showdown-number{font-size:11px;font-weight:700;color:#829389;min-width:24px}
+.holdem-showdown-player{min-width:95px;flex:1 1 95px}.holdem-showdown-player strong{display:block;color:#294532;font-size:12px}.holdem-showdown-player small{font-size:10px;color:#788a7c}
+.holdem-showdown-cards{display:flex;gap:5px;flex:none}.holdem-showdown-cards .holdem-card{width:39px;min-width:39px;height:51px;font-size:16px}.holdem-showdown-cards .holdem-card em{font-size:12px}
+.holdem-showdown-rank{flex:2 1 140px;color:#2c5c3c;font-size:11px}.holdem-showdown-rank strong{display:block;font-size:12px}.holdem-showdown-award{font-weight:800;color:#a57a20;white-space:nowrap;font-size:13px}
+.holdem-chat{border-top:1px solid #cbd9ce}.holdem-chat-title{display:flex;align-items:center;justify-content:space-between}.holdem-chat-title span:last-child{font-size:10px;font-weight:400;color:#69826f}
+.holdem-chat-messages{height:184px;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:7px;background:#fff}
+.holdem-chat-empty{margin:auto;color:#8da397;font-size:11px;text-align:center}
+.holdem-chat-message{display:flex;gap:8px;align-items:baseline;font-size:11px;line-height:1.5}
+.holdem-chat-message .nick{white-space:nowrap;font-weight:800;color:#29804b;max-width:95px;overflow:hidden;text-overflow:ellipsis;flex:none}
+.holdem-chat-message.me .nick{color:#276ca1}
+.holdem-chat-message .text{color:#304638;white-space:pre-wrap;word-break:break-word;min-width:0;flex:1}
+.holdem-chat-message .clock{font-size:10px;color:#a4b3a6;flex:none}
+.holdem-chat-form{display:flex;gap:7px;padding:9px 12px;border-top:1px solid #e2eae3;background:#f8fbf9}
+.holdem-chat-form input{min-width:0;flex:1;padding:9px 10px;font-size:12px;background:#fff;border:1px solid #c5d8ca;color:#294a35}
+.holdem-chat-form button{background:#167b44;color:white;border:0;padding:8px 15px;font-weight:700;cursor:pointer}
+.holdem-chat-form button:disabled{opacity:.45;cursor:default}
+.holdem-chat-feedback{font-size:11px;color:#a43c3c;padding:3px 12px 9px}
+@media(max-width:650px){.holdem-showdown-row{gap:7px;padding:8px}.holdem-showdown-cards .holdem-card{width:36px;min-width:36px;height:47px}.holdem-chat-messages{height:160px}.holdem-chat-message .nick{max-width:66px}.holdem-chat-message .clock{font-size:9px}}
 </style></head>
 <body>
 <div class="titlebar"><span class="app-icon" aria-hidden="true">▦</span><span class="doc-name">업무현황_2026.xlsx</span><span class="title-space"></span><span id="member-top-level" class="member-level-tag" hidden>Lv.1</span><span id="connection-label" class="connection">연결 중</span><button id="copy-link-btn" type="button" class="share-btn">주소 복사</button></div>
@@ -485,9 +488,7 @@
  <div class="holdem-panel">
   <div class="holdem-header"><strong>POKER / TEXAS HOLD'EM</strong><span id="holdem-hand">HAND 0</span><span id="holdem-street">참가자 대기</span></div>
   <div class="holdem-stats"><div><small>팟 / POT</small><strong id="holdem-pot">0 P</strong></div><div><small>현재 베팅</small><strong id="holdem-bet">0 P</strong></div><div><small>내 포인트</small><strong id="holdem-wallet">0 P</strong></div><div><small>남은 시간</small><strong id="holdem-time">--</strong></div></div>
-  <div id="holdem-turn-banner" class="holdem-turn-banner" role="status" aria-live="polite"><strong id="holdem-turn-title">차례 확인 중…</strong><span id="holdem-turn-help">참가자 준비를 기다립니다.</span></div>
-  <div id="holdem-bet-feedback" class="holdem-bet-feedback" hidden aria-live="polite"></div>
-  <div class="holdem-table"><div class="holdem-board-label">COMMUNITY CARDS · 공용 카드 <span id="holdem-flip-status" class="holdem-flip-status" hidden>카드 공개 중…</span></div><div id="holdem-board" class="holdem-cards"></div><div class="holdem-hole-row">
+  <div class="holdem-table"><div class="holdem-board-label">COMMUNITY CARDS · 공용 카드</div><div id="holdem-board" class="holdem-cards"></div><div id="holdem-flip-status" class="holdem-flip-status" role="status" aria-live="polite"></div><div class="holdem-hole-row">
     <div class="holdem-own-area"><div class="holdem-board-label">MY HAND · 내 카드</div><div id="holdem-hole" class="holdem-cards"></div></div>
     <div id="holdem-hand-readout" class="holdem-hand-readout" aria-live="polite">
       <small>CURRENT HAND / 현재 족보</small>
@@ -496,23 +497,29 @@
       <div id="holdem-best-five" class="holdem-best-five"></div>
     </div>
    </div></div>
-  <div class="holdem-section-head">참가자 / 좌석별 진행 현황</div><div class="holdem-players-scroll"><table class="holdem-players-table"><thead><tr><th>좌석</th><th>닉네임</th><th>상태</th><th>베팅</th><th>잔액</th><th>카드</th><th>족보 / 결과</th></tr></thead><tbody id="holdem-players"></tbody></table></div>
+  <div class="holdem-section-head">참가자 / 좌석별 진행 현황</div><div class="holdem-players-scroll"><table class="holdem-players-table"><thead><tr><th>좌석</th><th>닉네임</th><th>상태</th><th>베팅</th><th>잔액</th><th>카드</th></tr></thead><tbody id="holdem-players"></tbody></table></div>
   <div class="holdem-gate"><div id="holdem-notice" role="status">최소 2명부터 시작할 수 있습니다.</div><div class="holdem-action-buttons"><button type="button" id="holdem-ready" hidden>준비</button><button type="button" id="holdem-start" hidden>시작</button></div></div>
-  <div id="holdem-bet-controls" class="holdem-bet-controls" hidden>
+  <div id="holdem-action-banner" class="holdem-action-banner" role="status" aria-live="polite"></div>
+   <div id="holdem-bet-controls" class="holdem-bet-controls" hidden>
    <button type="button" data-h-action="fold">폴드</button><button type="button" data-h-action="check">체크</button><button type="button" data-h-action="call">콜</button>
    <label>레이즈 총액 <input id="holdem-raise" type="number" inputmode="numeric" min="10" step="1" value="20" aria-label="현재 거리 베팅 총액"></label>
    <button type="button" data-h-action="raise">레이즈</button><button type="button" data-h-action="allin">올인</button>
   </div>
-  <div id="holdem-showdown" class="holdem-showdown" hidden aria-live="polite">
-    <div class="holdem-showdown-head"><strong>SHOWDOWN · 최종 카드 공개</strong><span id="holdem-reveal-progress">순서대로 공개합니다</span></div>
-    <div id="holdem-reveal-list" class="holdem-reveal-list"></div>
-  </div>
   <div id="holdem-result" class="holdem-result" hidden></div>
-  <div class="holdem-footnote">잔액 0P로 패배하면 정산 후 자동 퇴장 · 회원 계정 전용 · 블라인드 5P/10P · 한 차례 45초 · 현금 충전/환전 없는 게임 포인트 · 레벨 50은 10,000P부터 (기존 게임 보상 유지)</div>
+   <section class="holdem-chat" aria-label="홀덤방 채팅">
+    <div class="holdem-section-head holdem-chat-title"><span>채팅 / ROOM CHAT</span><span id="holdem-chat-count">0개 메시지</span></div>
+    <div id="holdem-chat-messages" class="holdem-chat-messages" role="log" aria-live="polite" aria-relevant="additions"><div class="holdem-chat-empty">이 홀덤방에서 대화를 시작해 보세요.</div></div>
+    <form id="holdem-chat-form" class="holdem-chat-form" autocomplete="off">
+     <input id="holdem-chat-input" type="text" maxlength="280" placeholder="같은 홀덤방 참가자와 관전자가 볼 수 있는 메시지" aria-label="홀덤방 메시지">
+     <button id="holdem-chat-send" type="submit">보내기</button>
+    </form>
+    <div id="holdem-chat-feedback" class="holdem-chat-feedback" role="status" hidden></div>
+   </section>
+  <div class="holdem-footnote">잔액 0P로 패배하면 정산 후 자동 퇴장 · 회원 계정 전용 · 블라인드 5P/10P · 한 차례 45초 · 현금 충전/환전 없는 게임 포인트 · 게임 포인트·랭킹 표시 · 10,000P = Lv.50</div>
  </div>
 </section>
 <div id="chat" class="chat" hidden><button type="button" id="chat-title-button" class="chat-title" aria-expanded="true" aria-controls="chat-body" title="메모 접기/펼치기"><span>메모 <span id="chat-count"></span></span><span class="chat-toggle" id="chat-toggle-glyph">−</span></button><div class="chat-body" id="chat-body"><div id="chat-messages" class="chat-messages"><div class="chat-empty">내용 없음</div></div><div id="admin-chat-feedback" class="admin-chat-feedback" role="status" hidden></div><form class="chat-form" id="chat-form"><input id="chat-input" class="chat-input" placeholder="메시지 입력" maxlength="280" autocomplete="off" aria-label="채팅 메시지"><button type="submit" class="chat-send">보내기</button></form></div></div>
-<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="상위 레벨 및 운영자 등급 v2.0">100% · v2.3 홀덤</span></footer>
+<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="상위 레벨 및 운영자 등급 v2.0">100% · v2.4 홀덤</span></footer>
 <script>
 'use strict';
 const SIZE = 15;
@@ -721,7 +728,11 @@ let memberProfile=null,memberLevelsByNumber=new Map(),memberPanelMode='login';
 let memberAuthPending=false,memberRefreshBusy=false;
 function memberRpc(action,rest={}){return callRpc('renju_member_auth',{p_client:CLIENT_ID,p_action:action,...rest});}
 function saveMemberToken(token){memberToken=token||'';try{if(memberToken)localStorage.setItem(MEMBER_TOKEN_KEY,memberToken);else localStorage.removeItem(MEMBER_TOKEN_KEY);}catch(_){}}
-// Purely visual progression. Points/levels continue to be calculated by Supabase.
+// Rank progression is a display calculation; account points and game rewards are untouched.
+// Lv.1 at 0P, Lv.50 exactly at 10,000P. Higher levels continue at the same slope.
+function pointsForLevel(lvl){return Math.ceil(Math.max(0,Number(lvl)-1)*10000/49);}
+function levelFromPoints(points){return 1+Math.floor(Math.max(0,Number(points)||0)*49/10000);}
+function normalizedMemberProfile(profile){return profile?{...profile,level:levelFromPoints(profile.points)}:null;}
 const RANK_TIERS=[
  {min:1,max:9,name:'루키',mark:'•'},
  {min:10,max:19,name:'브론즈',mark:'◆'},
@@ -747,9 +758,6 @@ const RANK_TIERS=[
  {min:3000,max:4999,name:'창세신',mark:'✹'},
  {min:5000,max:Infinity,name:'무한',mark:'✵'}
 ];
-const POINTS_AT_LEVEL_50=10000;
-const LEVEL_STEPS_TO_50=49;
-function pointsForLevel(level){return Math.ceil(Math.max(0,Math.floor(Number(level)||1)-1)*POINTS_AT_LEVEL_50/LEVEL_STEPS_TO_50);}
 const OPERATOR_RANK={name:'운영자',mark:'★',index:RANK_TIERS.length,isOperator:true,css:'rank-tier-admin',min:null,max:null,level:null};
 function rankInfo(level,nickname=''){
  if(nickname==='운영자')return {...OPERATOR_RANK};
@@ -797,7 +805,7 @@ function nameWithRankByServer(el,raw){const text=String(raw||'');const id=/^Play
 }
 function openRankGuide(){
  const node=$('rank-guide-list');node.replaceChildren();
- const level=Number(memberProfile?.level)||0;
+ const level=memberProfile?levelFromPoints(memberProfile.points):0;
  const current=level?rankInfo(level,memberProfile?.nickname||''):null;
  for(let i=0;i<RANK_TIERS.length;i++){
   const tier=RANK_TIERS[i];
@@ -806,7 +814,7 @@ function openRankGuide(){
   const badge=rankBadge(tier.min);badge.title=tier.name;
   badge.lastChild.textContent=tier.name;
   const range=document.createElement('span');range.className='rank-guide-range';
-  range.textContent='Lv.'+tier.min+'~'+(Number.isFinite(tier.max)?tier.max:'∞')+' · '+pointsForLevel(tier.min).toLocaleString('ko-KR')+'P~';
+  range.textContent='Lv.'+tier.min+'~'+(Number.isFinite(tier.max)?tier.max:'∞');
   line.append(badge,range);node.append(line);
  }
  // Operator is a separate, non-levelled role above every earned rank.
@@ -817,7 +825,7 @@ function openRankGuide(){
  operatorRange.textContent='운영자 전용';
  operatorLine.append(operatorBadge,operatorRange);node.append(operatorLine);
  const summary=$('rank-guide-summary');
- summary.textContent=current?.isOperator?'현재 운영자 · 레벨과 무관한 전용 최상위 등급':current?`현재 ${current.name} · Lv.${level} · ${Number(memberProfile.points||0).toLocaleString('ko-KR')}P · 10,000P = Lv.50`:'10,000P에서 Lv.50 달성 · 승리/무승부/패배 포인트 보상은 기존과 동일합니다.';
+ summary.textContent=current?.isOperator?'현재 운영자 · 레벨과 무관한 전용 최상위 등급':current?`현재 ${current.name} · Lv.${level} · ${Number(memberProfile.points||0).toLocaleString('ko-KR')}P / 10,000P에 Lv.50 달성`:'10,000P 도달 시 Lv.50 · Lv.100부터 불멸 등급';
  $('rank-guide-overlay').hidden=false;
 }
 $('rank-guide-open').addEventListener('click',openRankGuide);
@@ -860,7 +868,7 @@ function paintMemberPanel(){
  if(save){save.disabled=signed;save.title=signed?'회원 닉네임은 로그아웃 후 변경할 수 있습니다.':'';}
 }
 function useMemberProfile(profile){
- memberProfile=profile||null;
+ memberProfile=normalizedMemberProfile(profile);
  if(profile){myNickname=profile.nickname;nicknameLocalPublished=true;nicknameSyncFailed=false;
   try{localStorage.setItem(NICKNAME_STORAGE,myNickname);}catch(_){}
  }
@@ -878,11 +886,11 @@ async function refreshMemberStats(){
  try{
   if(memberToken){const data=await memberRpc('session',{p_token:memberToken});
     if(adminToken!==(data.admin_token||''))persistAdminToken(data.admin_token||'');
-    if(!memberProfile||JSON.stringify(data.profile)!==JSON.stringify(memberProfile))useMemberProfile(data.profile);
+    if(!memberProfile||JSON.stringify(normalizedMemberProfile(data.profile))!==JSON.stringify(memberProfile))useMemberProfile(data.profile);
   }
   const data=await callRpc('renju_member_public_levels',{});
   if(Array.isArray(data.profiles)){
-   const next=new Map(data.profiles.map(p=>[Number(p.number),Number(p.level)]));
+   const next=new Map(data.profiles.map(p=>[Number(p.number),levelFromPoints(p.points)]));
    if(JSON.stringify([...next])!==JSON.stringify([...memberLevelsByNumber])){
     memberLevelsByNumber=next;nicknameRevision++;chatLastSeen='';sheet1LastPaint='';
     renderLobby();if(activeRoom){if(isTetrisRoom())tDisplayStatus();else if(isMineRoom())renderMineRoom();else if(state)paintState();}
@@ -1315,7 +1323,7 @@ function switchView(id){if(id && !requireNickname())return;activeRoom=id;const p
  $('chat-title-button').firstElementChild.firstChild.textContent='메모 ';
  showOperatorMessage('');if(!id){sheet1LastPaint='';paintSheet1Chat();setTimeout(()=>syncSheet1Chat(true),0);}
  if(id&&!poker){const item=roomList.find(r=>r.id===id);$('room-name').textContent=(item?.sheet||'Sheet')+'  '+(item?.game==='mine_battle'?'지뢰탐색게임':(item?.title||''));$('room-info').textContent='  '+id;activateCache();setTimeout(resizeCanvas,30);}else{$('cell-address').textContent='A1';$('formula-value').textContent='=COUNTIF(방현황,"접속중")';}
- updateSheetTabs();changeUrl(id);if(poker){renderHoldem();}else{renderTetrisRoom();renderMineRoom();renderMatchGate();}}
+ updateSheetTabs();changeUrl(id);if(poker){renderHoldem();holdemChatState(id).signature=null;holdemChatFeedback('');holdemChatRender(id);holdemChatSync(id,true);}else{renderTetrisRoom();renderMineRoom();renderMatchGate();}}
 function isKickedError(error){return /강퇴되었습니다/.test(String(error?.message||error||''));}
 const kickedRooms=new Set();
 function returnKickedToLobby(id){
@@ -1350,7 +1358,7 @@ async function closeRoom(id){
  if(!openRooms.includes(id))return;
  openRooms=openRooms.filter(x=>x!==id);roomCache.delete(id);tetrisDataByRoom.delete(id);tetrisLocalByRoom.delete(id);mineDataByRoom.delete(id);matchGateByRoom.delete(id);matchGateRestarting.delete(id);
  if(activeRoom===id)switchView(null);else updateSheetTabs();
- if(id.startsWith('h-')){holdemCancelVisual(id);holdemDataByRoom.delete(id);holdemAutoExitQueued.delete(id);holdemRpc('leave',id).catch(()=>{});return;}
+ if(id.startsWith('h-')){const v=holdemVisualByRoom.get(id);if(v){clearTimeout(v.flipTimer);clearTimeout(v.showTimer);}holdemVisualByRoom.delete(id);holdemChatByRoom.delete(id);holdemDataByRoom.delete(id);holdemRpc('leave',id).catch(()=>{});return;}
  try{
    await roomRpc(id,'leave');
    const reply=await cleanupRpc(id);
@@ -2189,6 +2197,58 @@ $('mine-note-mode').addEventListener('click',()=>{hunterMode=hunterMode==='note'
 const holdemDataByRoom=new Map();
 let holdemActionPending=false,holdemClockOffset=0,holdemInfoText='';
 const holdemAutoExitQueued=new Set();
+const holdemVisualByRoom=new Map(), holdemChatByRoom=new Map();
+function holdemVisual(id,d,old){
+ let v=holdemVisualByRoom.get(id);
+ if(!v||v.hand!==d.hand){
+  if(v?.flipTimer)clearTimeout(v.flipTimer);
+  if(v?.showTimer)clearTimeout(v.showTimer);
+  v={hand:d.hand,visible:old?0:(d.board||[]).length,flipping:-1,flipTimer:null,revealing:false,showing:0,showTimer:null,showStarted:false};
+  holdemVisualByRoom.set(id,v);
+ }
+ const cards=d.board||[];
+ if(v.visible>cards.length)v.visible=cards.length;
+ if(v.visible<cards.length&&!v.revealing){v.revealing=true;holdemFlipNext(id);}
+ if(d.phase==='finished'&&!v.showStarted){v.showStarted=true;holdemShowNext(id);}
+ return v;
+}
+function holdemFlipNext(id){
+ const v=holdemVisualByRoom.get(id),d=holdemDataByRoom.get(id);
+ if(!v||!d)return;
+ const count=(d.board||[]).length;
+ if(v.visible>=count){v.revealing=false;v.flipping=-1;if(activeRoom===id)renderHoldem();return;}
+ v.flipping=v.visible;v.visible++;
+ if(activeRoom===id)renderHoldem();
+ v.flipTimer=setTimeout(()=>{
+  v.flipping=-1;if(activeRoom===id)renderHoldem();
+  v.flipTimer=setTimeout(()=>holdemFlipNext(id),95);
+ },950);
+}
+function holdemShowSequence(d){
+ const win=new Map();for(const award of (d.summary?.awards||[])){
+  const seat=Number(award.seat);win.set(seat,(win.get(seat)||0)+Number(award.won||0));
+ }
+ const all=(d.players||[]).filter(p=>p.in_hand);
+ // Folded and losing hands first, payout recipients last.
+ return all.sort((a,b)=>{
+  const aw=win.get(a.seat)||0,bw=win.get(b.seat)||0;
+  return Number(aw>0)-Number(bw>0)||((a.folded?0:1)-(b.folded?0:1))||a.seat-b.seat;
+ }).map(p=>({...p,payout:win.get(p.seat)||0}));
+}
+function holdemShowNext(id){
+ const v=holdemVisualByRoom.get(id),d=holdemDataByRoom.get(id);
+ if(!v||!d||d.phase!=='finished')return;
+ if(v.revealing){v.showTimer=setTimeout(()=>holdemShowNext(id),250);return;}
+ const participants=holdemShowSequence(d);
+ if(v.showing>=participants.length)return;
+ v.showTimer=setTimeout(()=>{
+  const latest=holdemDataByRoom.get(id);
+  if(!latest||latest.hand!==v.hand||latest.phase!=='finished')return;
+  v.showing++;if(activeRoom===id)renderHoldem();holdemShowNext(id);
+ },v.showing===0?400:1250);
+}
+function formatHoldemCardRank(card){return ('23456789TJQKA'[Math.floor(card/4)]||'?').replace('T','10');}
+
 // Cards are encoded by the existing server: 0..51, rank = floor(card/4)+2.
 // This evaluator only displays the player's current best hand; authoritative payouts stay server-side.
 function holdemFiveRank(cards){
@@ -2225,7 +2285,7 @@ function holdemBestRank(hole,board){
 }
 function holdemCardText(c){
  if(!Number.isInteger(c)||c<0||c>51)return '·';
- return ('23456789TJQKA'[Math.floor(c/4)]||'?')+(['♠','♥','♦','♣'][c%4]);
+ return ('23456789TJQKA'[Math.floor(c/4)]||'?').replace('T','10')+(['♠','♥','♦','♣'][c%4]);
 }
 function renderHoldemReadout(own,board,isPlayer){
  const title=document.getElementById('holdem-current-hand');
@@ -2248,113 +2308,26 @@ function renderHoldemReadout(own,board,isPlayer){
 function holdemRpc(action='list',room=null,amount=null){
  return callRpc('renju_holdem_rpc',{p_action:action,p_client:CLIENT_ID,p_token:memberToken||null,p_room:room,p_amount:amount});
 }
-/* v2.3 — Client presentation state only. The server still owns bets, hands and payouts. */
-const holdemVisualByRoom=new Map();
-let holdemActionFeedback=null;
-function holdemCancelVisual(id){
- const v=holdemVisualByRoom.get(id);if(!v)return;
- if(v.flipTimer)clearTimeout(v.flipTimer);
- if(v.revealTimer)clearTimeout(v.revealTimer);
- if(v.exitTimer)clearTimeout(v.exitTimer);
- holdemVisualByRoom.delete(id);
-}
-function holdemActiveBoard(d){return (Array.isArray(d.board)?d.board:[]).filter(c=>Number.isInteger(c)&&c>=0&&c<=51);}
-function holdemMakeVisual(id,d){
- const all=holdemActiveBoard(d);
- const firstShowdown=d.phase==='finished';
- const v={id,hand:Number(d.hand)||0,visible:firstShowdown?[]:all.slice(),queue:firstShowdown?all.slice():[],flipping:null,
-  flipTimer:null,revealTimer:null,exitTimer:null,showdown:null};
- holdemVisualByRoom.set(id,v);return v;
-}
-function holdemGetVisual(id,d){
- let v=holdemVisualByRoom.get(id);
- if(!v||v.hand!==(Number(d.hand)||0)){holdemCancelVisual(id);v=holdemMakeVisual(id,d);}
- const target=holdemActiveBoard(d);
- const queued=[...v.visible,...(v.flipping?[v.flipping.card]:[]),...v.queue];
- const diverged=queued.some((card,i)=>target[i]!==card)||target.length<queued.length;
- if(diverged){holdemCancelVisual(id);v=holdemMakeVisual(id,d);}
- const previous=v.visible.length+(v.flipping?1:0)+v.queue.length;
- if(target.length>previous)v.queue.push(...target.slice(previous));
- if(!v.flipping&&v.queue.length)holdemStartFlip(id,v);
- else if(d.phase==='finished'&&!v.flipping&&!v.queue.length&&!v.showdown)holdemBeginShowdown(id,v,d);
- return v;
-}
-function holdemStartFlip(id,v){
- if(v.flipping||!v.queue.length||holdemVisualByRoom.get(id)!==v)return;
- v.flipping={index:v.visible.length,card:v.queue.shift()};
- v.flipTimer=setTimeout(()=>{
-  if(holdemVisualByRoom.get(id)!==v)return;
-  v.visible.push(v.flipping.card);v.flipping=null;v.flipTimer=null;
-  const d=holdemDataByRoom.get(id);
-  if(v.queue.length)holdemStartFlip(id,v);
-  else if(d?.phase==='finished'&&!v.showdown)holdemBeginShowdown(id,v,d);
-  if(activeRoom===id)renderHoldem();
- },1000);
-}
-function holdemPayouts(d){
- const result=new Map();
- for(const award of (d.summary?.awards||[])){
-  const seat=Number(award.seat);if(!Number.isInteger(seat))continue;
-  const item=result.get(seat)||{name:award.nickname||'참가자',points:0};
-  item.points+=Math.max(0,Number(award.won)||0);result.set(seat,item);
- }
- return result;
-}
-function holdemRevealOrder(d){
- const payouts=holdemPayouts(d),board=holdemActiveBoard(d);
- const players=(d.players||[]).filter(p=>p.in_hand);
- const strength=p=>{
-  const cards=Array.isArray(p.cards)?p.cards:[];
-  return !p.folded&&cards.length===2?(holdemBestRank(cards,board)?.score||0):0;
- };
- // Folded hands have no publicly revealed hole cards; paid winners always go last.
- return players.sort((a,b)=>{
-  const group=p=>p.folded?0:(payouts.get(p.seat)?.points>0?2:1);
-  const ga=group(a),gb=group(b);if(ga!==gb)return ga-gb;
-  if(ga===2){const diff=(payouts.get(a.seat)?.points||0)-(payouts.get(b.seat)?.points||0);if(diff)return diff;}
-  if(ga===1||ga===2){const diff=strength(a)-strength(b);if(diff)return diff;}
-  return a.seat-b.seat;
- });
-}
-function holdemBeginShowdown(id,v,d){
- if(v.showdown||holdemVisualByRoom.get(id)!==v)return;
- v.showdown={order:holdemRevealOrder(d),shown:new Set(),index:0,complete:false};
- v.revealTimer=setTimeout(()=>holdemRevealNext(id,v),600);
-}
-function holdemRevealNext(id,v){
- if(holdemVisualByRoom.get(id)!==v||!v.showdown)return;
- const sh=v.showdown;v.revealTimer=null;
- if(sh.index<sh.order.length){
-  sh.shown.add(sh.order[sh.index].seat);sh.index++;
-  if(activeRoom===id)renderHoldem();
-  v.revealTimer=setTimeout(()=>holdemRevealNext(id,v),1250);
- }else{
-  sh.complete=true;
-  if(activeRoom===id)renderHoldem();
-  holdemMaybeExitBusted(id,v);
- }
-}
-function holdemMaybeExitBusted(id,v){
- if(!holdemAutoExitQueued.has(id)||!v?.showdown?.complete||v.exitTimer)return;
- v.exitTimer=setTimeout(()=>{
-  if(holdemVisualByRoom.get(id)!==v)return;
-  if(activeRoom===id){closeRoom(id);lobbyNotify('홀덤 잔액 0P · 쇼다운 확인 후 자동 퇴장했습니다.',true);}
-  holdemAutoExitQueued.delete(id);
- },1450);
-}
 function applyHoldemData(id,data){
  if(!data||data.ok!==true)return;
  const old=holdemDataByRoom.get(id);
  if(old&&Number(old.revision)>Number(data.revision))return;
  holdemDataByRoom.set(id,data);
+ const visual=holdemVisual(id,data,old);
  if(id!==activeRoom)return;
  const ms=Date.parse(data.server_now);
  if(Number.isFinite(ms))holdemClockOffset=ms-Date.now();
- if(old&&old.hand!==data.hand&&data.hand>0){holdemInfoText='새 라운드가 시작됐습니다.';holdemActionFeedback=null;}
+ if(old&&old.hand!==data.hand&&data.hand>0)holdemInfoText='새 라운드가 시작됐습니다.';
  if(old&&(old.phase!==data.phase||old.pot!==data.pot))refreshMemberStats();
- if(data.phase==='finished'&&data.busted===true){
+ if(data.phase==='finished'&&data.busted===true&&!holdemAutoExitQueued.has(id)){
   holdemAutoExitQueued.add(id);
-  holdemInfoText='잔액 0P · 결과 공개가 끝나면 자동으로 Sheet1로 이동합니다.';
+  holdemInfoText='보유 포인트 0P · 정산 완료 후 자동으로 Sheet1로 이동합니다.';
+  renderHoldem();
+  setTimeout(()=>{
+   if(activeRoom===id){closeRoom(id);lobbyNotify('홀덤 잔액이 0P가 되어 자동 퇴장했습니다.',true);}
+   holdemAutoExitQueued.delete(id);
+  },Math.max(5800,Math.max(0,(data.board||[]).length-visual.visible)*1150+holdemShowSequence(data).length*1400+3000));
+  return;
  }
  renderHoldem();
 }
@@ -2363,188 +2336,191 @@ function holdemCardNode(card,small=false){
  if(card===null||card===undefined||card<0){node.className=small?'':'holdem-card empty';node.textContent=small?'-':'·';return node;}
  if(card==='back'){node.className=small?'':'holdem-card back';node.textContent=small?'▧':'▤';return node;}
  const ranks='23456789TJQKA',suits=['♠','♥','♦','♣'];
- const r=ranks[Math.floor(Number(card)/4)],s=suits[Number(card)%4];
+ const r=ranks[Math.floor(Number(card)/4)].replace('T','10'),s=suits[Number(card)%4];
  node.className=(small?'':'holdem-card ')+((s==='♥'||s==='♦')?'red':'');
  if(small)node.textContent=r+s;
  else{node.append(document.createTextNode(r));const sym=document.createElement('em');sym.textContent=s;node.append(sym);}
  return node;
 }
-function holdemFlipCardNode(card){
- const slot=document.createElement('div');slot.className='holdem-flip-slot';
- const inner=document.createElement('div');inner.className='holdem-flip-inner';
- const back=document.createElement('div');back.className='holdem-flip-side holdem-flip-back';back.append(holdemCardNode('back'));
- const front=document.createElement('div');front.className='holdem-flip-side holdem-flip-front';front.append(holdemCardNode(card));
- inner.append(back,front);slot.append(inner);return slot;
-}
 function formatHoldemScore(v){return Number(v||0).toLocaleString('ko-KR')+'P';}
-function holdemOutcomeLabel(p,d,payouts){
- if(!p||!p.in_hand)return '-';
- if(p.folded)return '폴드 · 카드 비공개';
- const won=payouts.get(p.seat)?.points||0;
- const best=holdemBestRank(Array.isArray(p.cards)?p.cards:[],holdemActiveBoard(d));
- return (best?.name||'폴드 승리')+(won>0?' · 승리':'');
-}
-function holdemResultRow(p,d,payouts){
- const won=payouts.get(p.seat)?.points||0;
- const best=!p.folded?holdemBestRank(Array.isArray(p.cards)?p.cards:[],holdemActiveBoard(d)):null;
- const entry=document.createElement('div');entry.className='holdem-reveal-entry'+(won>0?' winner':'');
- const left=document.createElement('div');left.className='holdem-reveal-player';
- const name=document.createElement('strong');name.textContent=(p.nickname||'참가자')+(p.seat===d.my_seat?' (나)':'');
- const seat=document.createElement('small');seat.textContent=(p.seat+1)+'번 좌석'+(won>0?' · WINNER':'');left.append(name,seat);
- const detail=document.createElement('div');detail.className='holdem-reveal-detail';
- if(!p.folded&&Array.isArray(p.cards)&&p.cards.length===2){
-  const cards=document.createElement('div');cards.className='holdem-reveal-cards';
-  for(const c of p.cards){const span=holdemCardNode(c,true);if(c%4===1||c%4===2)span.classList.add('red');cards.append(span);}
-  detail.append(cards);
- }
- const rank=document.createElement('span');rank.className='holdem-reveal-rank';
- rank.textContent=p.folded?'폴드':(best?.name||'폴드 승리');detail.append(rank);
- const sub=document.createElement('span');sub.className='holdem-reveal-sub';
- sub.textContent=p.folded?'카드 비공개':(best?.detail||(won>0?'다른 참가자 전원 폴드':'족보 대기'));detail.append(sub);
- if(won>0){const prize=document.createElement('span');prize.className='holdem-reveal-prize';prize.textContent='승리 +'+formatHoldemScore(won);detail.append(prize);}
- entry.append(left,detail);return entry;
-}
 function renderHoldem(){
  if(!isHoldemRoom())return;
- const d=holdemDataByRoom.get(activeRoom);
- const $h=id=>document.getElementById(id);
+ const d=holdemDataByRoom.get(activeRoom),$h=id=>document.getElementById(id);
  $h('holdem-sheet').textContent=d?.sheet||'홀덤';
  if(!d){$h('holdem-notice').textContent='홀덤방 서버 연결 중…';return;}
- const visual=holdemGetVisual(activeRoom,d);
- const players=d.players||[],mine=players.find(p=>p.seat===d.my_seat);
+ const v=holdemVisualByRoom.get(activeRoom),players=d.players||[],mine=players.find(p=>p.seat===d.my_seat);
  const playing=d.phase==='playing',finished=d.phase==='finished';
- const flipping=Boolean(visual.flipping||visual.queue.length);
- const showdown=visual.showdown;
- const waitingForResults=finished&&(!showdown||!showdown.complete);
- const myTurn=playing&&mine&&d.acting===mine.seat&&!flipping&&!holdemActionPending;
+ const dealing=Boolean(v?.revealing),myTurn=Boolean(playing&&mine&&d.acting===mine.seat&&!dealing);
  const labels={preflop:'프리플롭',flop:'플롭 (3장)',turn:'턴 (4장)',river:'리버 (5장)',showdown:'쇼다운'};
  $h('holdem-hand').textContent='HAND '+d.hand;
- $h('holdem-street').textContent=playing?(labels[d.street]||d.street):finished?'결과 공개':'참가자 준비';
+ $h('holdem-street').textContent=playing?(labels[d.street]||d.street):finished?'결과 확인':'참가자 준비';
  $h('holdem-pot').textContent=formatHoldemScore(d.pot);
  $h('holdem-bet').textContent=formatHoldemScore(d.current_bet);
  $h('holdem-wallet').textContent=formatHoldemScore(d.my_points);
+ const visibleCards=(d.board||[]).slice(0,v?v.visible:(d.board||[]).length);
  const own=(mine?.cards||[]).filter(c=>Number.isInteger(c));
- const boardValues=visual.visible;
- const bestCards=renderHoldemReadout(own,boardValues,Boolean(mine?.in_hand));
+ const bestCards=renderHoldemReadout(own,visibleCards,Boolean(mine?.in_hand));
+ const flipStatus=$h('holdem-flip-status');
+ flipStatus.textContent=dealing?`공용 카드 오픈 중 · ${visibleCards.length}/${(d.board||[]).length}장 · 카드당 약 1초`:(finished&&v&&v.showing<holdemShowSequence(d).length?'쇼다운 중 · 순서대로 결과 공개':'');
  const board=$h('holdem-board');
- for(let i=0;i<5;i++){
-  const key=d.hand+'-'+i+'-'+(i<visual.visible.length?'face-'+visual.visible[i]:visual.flipping?.index===i?'flip-'+visual.flipping.card:(d.board||[])[i]!==undefined?'back':'empty');
-  let el=board.children[i];
-  if(!el||el.dataset.visualKey!==key){
-   if(i<visual.visible.length){el=holdemCardNode(visual.visible[i]);el.classList.add('holdem-board-revealed');}
-   else if(visual.flipping?.index===i){el=holdemFlipCardNode(visual.flipping.card);}
-   else if((d.board||[])[i]!==undefined){el=holdemCardNode('back');}
-   else{el=holdemCardNode(null);}
-   el.dataset.visualKey=key;
-   if(board.children[i])board.children[i].replaceWith(el);else board.append(el);
+ const boardKey=JSON.stringify([d.hand,visibleCards,v?.flipping,Array.from(bestCards||[])]);
+ if(board.dataset.signature!==boardKey){
+  board.dataset.signature=boardKey;board.replaceChildren();
+  for(let i=0;i<5;i++){
+   const card=i<visibleCards.length?visibleCards[i]:i<(d.board||[]).length?'back':null;
+   const el=holdemCardNode(card);
+   if(bestCards?.has(card))el.classList.add('holdem-card-best');
+   if(i===v?.flipping)el.classList.add('flipping');
+   board.append(el);
   }
-  el.classList.toggle('holdem-card-best',Boolean(bestCards?.has(visual.visible[i])));
  }
- $h('holdem-flip-status').hidden=!flipping;
- const hole=$h('holdem-hole');hole.replaceChildren();
- for(let i=0;i<2;i++){
-  const card=(mine?.cards||[])[i]??(mine?.in_hand?'back':null);const el=holdemCardNode(card);
-  if(bestCards?.has(card))el.classList.add('holdem-card-best');hole.append(el);
+ const hole=$h('holdem-hole'),holeKey=JSON.stringify([d.hand,mine?.cards,Array.from(bestCards||[])]);
+ if(hole.dataset.signature!==holeKey){
+  hole.dataset.signature=holeKey;hole.replaceChildren();
+  for(let i=0;i<2;i++){
+   const card=(mine?.cards||[])[i]??(mine?.in_hand?'back':null),el=holdemCardNode(card);
+   if(bestCards?.has(card))el.classList.add('holdem-card-best');hole.append(el);
+  }
  }
- const payouts=holdemPayouts(d);
  const t=$h('holdem-players');t.replaceChildren();
+ const showProgress=finished?Math.max(0,v?.showing||0):0;
+ const revealed=finished?new Set(holdemShowSequence(d).slice(0,showProgress).map(x=>x.seat)):null;
  for(let seat=0;seat<6;seat++){
   const p=players.find(x=>x.seat===seat);
   const tr=document.createElement('tr');tr.className=(p?.seat===d.acting&&playing?'active ':'')+(p?.seat===d.my_seat?'me':'');
-  const status=!p?'빈 좌석':!p.present&&!finished?'오프라인':finished?'정산 완료':playing?(p.folded?'폴드':p.allin?'올인':p.seat===d.acting?'▶ 베팅 차례':p.acted?'행동 완료':'베팅 대기'):(p.ready?'준비 완료':'대기');
+  const status=!p?'빈 좌석':finished?(revealed.has(p.seat)?'결과 공개':'공개 대기'):!p.present?'오프라인':playing?(p.folded?'폴드':p.allin?'올인':p.seat===d.acting?'행동 중':'참가 중'):(p.ready?'준비 완료':'대기');
   const fields=[seat+1,p?.nickname||'-',status,p?.in_hand?formatHoldemScore(p.total_bet):'-',p?formatHoldemScore(p.points):'-'];
-  for(const x of fields){const td=document.createElement('td');td.textContent=x;tr.append(td);}
+  for(const value of fields){const td=document.createElement('td');td.textContent=value;tr.append(td);}
   const cd=document.createElement('td');cd.className='holdem-tiny-cards';
   if(p?.in_hand){
-   const canReveal=finished&&!flipping&&showdown?.shown?.has(p.seat)&&!p.folded;
-   const shown=canReveal||p.seat===d.my_seat?p.cards||[]:[];
+   const shown=finished&&!revealed.has(p.seat)?[]:p.cards||[];
    for(let i=0;i<2;i++)cd.append(holdemCardNode(shown[i]??'back',true));
   }
-  tr.append(cd);
-  const resultCell=document.createElement('td');
-  if(finished&&showdown?.shown?.has(p?.seat)){
-   resultCell.textContent=holdemOutcomeLabel(p,d,payouts);
-   if((payouts.get(p.seat)?.points||0)>0)resultCell.className='showdown-win';
-  }else if(playing&&p?.seat===d.acting)resultCell.textContent='▶ 선택 필요';
-  else if(finished&&p?.in_hand)resultCell.textContent='공개 대기';
-  else resultCell.textContent='-';
-  tr.append(resultCell);t.append(tr);
+  tr.append(cd);t.append(tr);
  }
- const need=mine?Math.max(0,Number(d.current_bet)-Number(mine.bet||0)):0;
- const actor=players.find(p=>p.seat===d.acting)?.nickname||'상대';
- const banner=$h('holdem-turn-banner'),title=$h('holdem-turn-title'),help=$h('holdem-turn-help');
- banner.className='holdem-turn-banner'+(myTurn?' is-mine':flipping?' is-flipping':'');
- if(flipping){title.textContent='공용 카드 공개 중';help.textContent='한 장씩 약 1초에 걸쳐 공개합니다. 카드를 확인한 뒤 베팅하세요.';}
- else if(holdemActionPending){title.textContent='베팅 처리 중…';help.textContent='서버가 베팅을 확인하고 다음 차례를 계산하고 있습니다.';}
- else if(playing&&myTurn){
-  title.textContent='▶ 내 베팅 차례입니다';
-  help.textContent=need>0?`상대 베팅에 맞추려면 ${formatHoldemScore(Math.min(need,d.my_points))} 콜 · 더 올리려면 레이즈 · 포기하려면 폴드`: '콜할 금액 0P · 체크로 넘기거나 레이즈할 수 있습니다.';
- }else if(playing){title.textContent=actor+'님의 차례';help.textContent='상대의 베팅을 기다리고 있습니다. 내 차례가 되면 아래에 버튼이 나타납니다.';}
- else if(finished){title.textContent=waitingForResults?'쇼다운 · 카드 순차 공개 중':'라운드 결과 확정';help.textContent=waitingForResults?'참가자의 패를 하나씩 공개합니다. 승리자는 마지막에 등장합니다.':'정산이 완료되었습니다. 다음 라운드를 준비하세요.';}
- else{title.textContent='참가자 준비 중';help.textContent='최소 2명, 최대 6명이 참가합니다. 준비를 누르면 방장이 시작할 수 있습니다.';}
- const feedback=$h('holdem-bet-feedback');
- const showFeedback=holdemActionFeedback?.room===activeRoom&&holdemActionFeedback.hand===d.hand&&Date.now()-holdemActionFeedback.at<6000;
- feedback.hidden=!showFeedback;if(showFeedback)feedback.textContent=holdemActionFeedback.text;
  const ready=$h('holdem-ready'),start=$h('holdem-start');
  ready.hidden=playing||!mine||d.is_host||!mine.present||d.busted===true;
- ready.disabled=holdemActionPending||waitingForResults;
- ready.textContent=mine?.ready?'준비 취소':'준비';
+ ready.disabled=holdemActionPending;ready.textContent=mine?.ready?'준비 취소':'준비';
  start.hidden=playing||!d.is_host||d.busted===true;
- start.disabled=holdemActionPending||waitingForResults||players.filter(p=>p.present).length<2||players.some(p=>p.present&&!p.ready&&!((p.seat===d.my_seat)&&d.is_host));
+ start.disabled=holdemActionPending||(finished&&v&&v.showing<holdemShowSequence(d).length)||players.filter(p=>p.present).length<2||players.some(p=>p.present&&!p.ready&&!((p.seat===d.my_seat)&&d.is_host));
  start.textContent=finished?'다음 판 시작':'시작';
+ const need=mine?Math.max(0,d.current_bet-mine.bet):0;
+ const banner=$h('holdem-action-banner');banner.className='holdem-action-banner';
+ const actor=players.find(p=>p.seat===d.acting)?.nickname||'상대';
+ if(dealing){banner.classList.add('dealing');banner.textContent='🂠 공용 카드가 공개되는 중입니다. 공개 후 베팅 차례가 표시됩니다.';}
+ else if(myTurn){banner.classList.add('my-turn');banner.textContent=need>0?`● 지금 내 베팅 차례 · 콜 ${formatHoldemScore(Math.min(need,d.my_points))} / 레이즈 / 폴드 중 선택  · 턴 제한 45초`:'● 지금 내 베팅 차례 · 체크(무료) / 베팅(레이즈) / 폴드 중 선택';}
+ else if(playing){banner.textContent=mine?.acted?'✓ 내 행동 완료 · '+actor+'님의 차례':actor+'님의 베팅을 기다리는 중…';}
+ else if(finished){banner.classList.add('done');banner.textContent='쇼다운: 패배·폴드 순서부터 공개하고 포인트를 받은 승자는 마지막에 등장합니다.';}
+ else {banner.textContent='게임을 시작하려면 준비해 주세요. 게임 중에는 내 차례에만 베팅 버튼이 열립니다.';}
  $h('holdem-bet-controls').hidden=!myTurn;
  for(const button of $h('holdem-bet-controls').querySelectorAll('[data-h-action]')){
   const a=button.dataset.hAction;button.disabled=!myTurn||holdemActionPending;
   if(a==='check')button.disabled=button.disabled||need>0;
   if(a==='raise')button.disabled=button.disabled||(d.my_points<=need);
-  if(a==='call'){button.disabled=button.disabled||need===0;button.textContent='콜 '+formatHoldemScore(Math.min(need,d.my_points));}
+  if(a==='call')button.textContent=need===0?'콜 (0P)':'콜 '+formatHoldemScore(Math.min(need,d.my_points));
  }
- const raiseInput=$h('holdem-raise'),min=Math.max(Number(d.current_bet)+Number(d.min_raise||10),10);
- raiseInput.min=String(min);
- if(document.activeElement!==raiseInput)raiseInput.value=String(min);
- const status=finished?(waitingForResults?'쇼다운 진행 중 · 카드와 승리자를 순서대로 공개하고 있습니다.':'라운드 종료 · 참가자가 준비한 뒤 방장이 다음 판을 시작하세요.'):
-   playing?(flipping?'공용 카드 공개 중…':myTurn?'내 차례입니다. 선택할 행동을 눌러 베팅을 확정하세요.':actor+'님의 베팅 차례입니다.'):
-   (mine?(d.is_host?'참가자 준비 후 시작할 수 있습니다.':'준비 버튼을 눌러 주세요.'):'관전 중: 현재 판 종료 후 빈 좌석이 있으면 참가할 수 있습니다.');
+ const raiseInput=$h('holdem-raise'),min=Math.max(d.current_bet+d.min_raise,10);
+ raiseInput.min=String(min);if(document.activeElement!==raiseInput)raiseInput.value=String(min);
+ const status=finished?'라운드 종료 · 쇼다운 결과를 순서대로 확인하세요.':playing?(myTurn?'내 베팅 차례입니다. 베팅 버튼을 선택하세요.':actor+' 차례입니다.'):(mine?(d.is_host?'참가자 준비 후 시작할 수 있습니다.':'준비 버튼을 눌러 주세요.'):'관전 중: 경기가 끝난 후 빈 좌석이 있으면 참가할 수 있습니다.');
  $h('holdem-notice').textContent=holdemInfoText||status;
- const showBox=$h('holdem-showdown'),reveal=$h('holdem-reveal-list'),step=$h('holdem-reveal-progress');
- showBox.hidden=!finished;
+ const result=$h('holdem-result');result.hidden=!finished;
  if(finished){
-  const identity=activeRoom+'/'+d.hand;
-  if(reveal.dataset.hand!==identity){reveal.replaceChildren();reveal.dataset.hand=identity;}
-  for(const p of (showdown?.order||[]))if(showdown.shown.has(p.seat)&&!reveal.querySelector('[data-reveal-seat="'+p.seat+'"]')){
-   const row=holdemResultRow(p,d,payouts);row.dataset.revealSeat=String(p.seat);reveal.append(row);
+  const sequence=holdemShowSequence(d),showing=Math.min(v?.showing??sequence.length,sequence.length);
+  const resultKey=JSON.stringify([d.hand,showing,d.summary?.pot,sequence.map(p=>[p.seat,p.payout,p.folded,p.cards])]);
+  if(result.dataset.signature!==resultKey){
+   result.dataset.signature=resultKey;result.replaceChildren();
+   const header=document.createElement('div');header.className='holdem-showdown-header';header.textContent='SHOWDOWN · 전체 팟 '+formatHoldemScore(d.summary?.pot);result.append(header);
+   const count=document.createElement('div');count.className='holdem-showdown-progress';count.textContent=`${showing} / ${sequence.length}명 공개 · 승자는 마지막에 등장합니다.`;result.append(count);
+   for(let i=0;i<showing;i++){
+    const p=sequence[i],rank=(p.cards||[]).length===2&&!p.folded?holdemBestRank(p.cards,(d.board||[]).filter(Number.isInteger)):null;
+    const row=document.createElement('div');row.className='holdem-showdown-row'+(p.payout>0?' winner':'');
+    const index=document.createElement('span');index.className='holdem-showdown-number';index.textContent=(i+1)+'.';
+    const identity=document.createElement('div');identity.className='holdem-showdown-player';
+    const title=document.createElement('strong');title.textContent=p.nickname||'참가자';
+    const sub=document.createElement('small');sub.textContent=p.payout>0?'🏆 '+(i===sequence.length-1?'최종 승자':'사이드팟 획득'):(p.folded?'폴드':'쇼다운 참가');
+    identity.append(title,sub);
+    const cards=document.createElement('div');cards.className='holdem-showdown-cards';
+    for(let n=0;n<2;n++)cards.append(holdemCardNode((p.cards||[])[n]??'back'));
+    const hand=document.createElement('div');hand.className='holdem-showdown-rank';
+    const handTitle=document.createElement('strong');handTitle.textContent=rank?rank.name:(p.folded?'폴드 · 카드 비공개':p.payout>0?'상대 전원 폴드 · 승리':'카드 비공개');
+    const detail=document.createElement('span');detail.textContent=rank?(rank.detail+' · '+rank.cards.map(holdemCardText).join(' ')):(p.folded?'폴드한 패는 공개되지 않습니다.':'');hand.append(handTitle,detail);
+    const award=document.createElement('div');award.className='holdem-showdown-award';award.textContent=p.payout>0?'+'+formatHoldemScore(p.payout):'—';
+    row.append(index,identity,cards,hand,award);result.append(row);
+   }
   }
-  step.textContent=showdown?`${showdown.index}/${showdown.order.length}명 공개${showdown.complete?' · 완료':''}`:'공용 카드 공개 후 쇼다운';
- }
- const result=$h('holdem-result');result.hidden=!finished||waitingForResults;
- if(finished&&!waitingForResults){
-  const total=[...payouts.values()].reduce((n,p)=>n+p.points,0);
-  const winners=[...payouts.values()].filter(p=>p.points>0);
-  const lines=['🏆 '+(winners.length?`${winners.map(p=>p.name).join(' · ')} 승리!`:'라운드 종료')];
-  if(winners.length)lines.push(winners.map(p=>p.name+' +'+formatHoldemScore(p.points)).join(' / '));
-  lines.push('최종 팟 '+formatHoldemScore(d.summary?.pot??total));result.textContent=lines.join('\n');
-  holdemMaybeExitBusted(activeRoom,visual);
  }
 }
+
 async function holdemAct(action,amount=null){
  if(!isHoldemRoom()||holdemActionPending)return;
- const room=activeRoom,old=holdemDataByRoom.get(room),mine=(old?.players||[]).find(p=>p.seat===old.my_seat);
- const need=Math.max(0,(Number(old?.current_bet)||0)-(Number(mine?.bet)||0));
- const spent=action==='call'?Math.min(need,Number(old?.my_points)||0):action==='raise'?Math.max(0,Number(amount)-(Number(mine?.bet)||0)):action==='allin'?Number(old?.my_points)||0:0;
- const actionNames={fold:'폴드',check:'체크',call:'콜',raise:'레이즈',allin:'올인'};
- holdemActionPending=true;holdemInfoText='베팅 요청을 서버에 전송 중…';renderHoldem();
+ const room=activeRoom;holdemActionPending=true;holdemInfoText='요청 처리 중…';renderHoldem();
  try{
   const response=await holdemRpc(action,room,amount);
-  holdemInfoText='';
-  if(actionNames[action]&&response?.ok){
-   holdemActionFeedback={room,hand:Number(old?.hand)||0,at:Date.now(),text:'✓ '+actionNames[action]+' 완료'+(spent>0?' · '+formatHoldemScore(spent)+' 베팅':'')+' · 다음 차례를 기다리는 중'};
-   setTimeout(()=>{if(holdemActionFeedback?.room===room&&Date.now()-holdemActionFeedback.at>=5900){holdemActionFeedback=null;if(activeRoom===room)renderHoldem();}},6200);
-  }
-  applyHoldemData(room,response);
-  if(actionNames[action]&&response.phase==='finished')refreshMemberStats();
+   const descriptions={fold:'폴드 완료',check:'체크 완료',call:'콜 완료',raise:'레이즈 완료',allin:'올인 완료'};
+   holdemInfoText=descriptions[action]?'✓ '+descriptions[action]+' · 상대 행동을 기다리는 중':'';
+   applyHoldemData(room,response);
+   if(descriptions[action])setTimeout(()=>{if(activeRoom===room&&holdemInfoText?.includes(descriptions[action])){holdemInfoText='';renderHoldem();}},2500);
+  if(['fold','call','raise','check','allin'].includes(action)&&response.phase==='finished')refreshMemberStats();
  }catch(e){holdemInfoText='처리 실패: '+e.message;renderHoldem();}
  finally{holdemActionPending=false;if(activeRoom===room)renderHoldem();}
 }
+
+// Per-table chat: membership token and room code are validated by the server.
+function holdemChatState(id){
+ if(!holdemChatByRoom.has(id))holdemChatByRoom.set(id,{messages:[],last:0,busy:false,sending:false,signature:''});
+ return holdemChatByRoom.get(id);
+}
+async function holdemChatSync(id,force=false){
+ if(!id?.startsWith('h-')||document.hidden||!memberToken)return;
+ const state=holdemChatState(id);
+ if(state.busy||state.sending||(!force&&Date.now()-state.last<1750))return;
+ state.busy=true;
+ try{
+  const data=await callRpc('renju_holdem_chat',{p_client:CLIENT_ID,p_token:memberToken,p_room:id,p_action:'list',p_text:null});
+  state.messages=Array.isArray(data.messages)?data.messages:[];state.last=Date.now();
+  if(activeRoom===id)holdemChatRender(id);
+ }catch(err){if(activeRoom===id&&state.last===0)holdemChatFeedback('채팅 SQL 적용 여부 확인: '+err.message);}
+ finally{state.busy=false;}
+}
+function holdemChatFeedback(msg=''){
+ const feedback=$('holdem-chat-feedback');feedback.textContent=msg;feedback.hidden=!msg;
+}
+function holdemChatRender(id){
+ if(activeRoom!==id)return;
+ const state=holdemChatState(id),root=$('holdem-chat-messages');
+ const signature=state.messages.map(m=>m.id+'|'+m.text+'|'+m.nickname).join('~');
+ $('holdem-chat-count').textContent=state.messages.length+'개 메시지';
+ if(state.signature===signature)return;
+ const atBottom=root.scrollHeight-root.scrollTop-root.clientHeight<50;
+ state.signature=signature;root.replaceChildren();
+ if(!state.messages.length){const empty=document.createElement('div');empty.className='holdem-chat-empty';empty.textContent='이 홀덤방에서 대화를 시작해 보세요.';root.append(empty);return;}
+ for(const m of state.messages){
+  const msg=document.createElement('div');msg.className='holdem-chat-message'+(m.nickname===memberProfile?.nickname?' me':'');
+  const name=document.createElement('span');name.className='nick';name.textContent=m.nickname||'참가자';
+  const body=document.createElement('span');body.className='text';body.textContent=m.text||'';
+  const date=document.createElement('span');date.className='clock';
+  const time=new Date(m.created_at);date.textContent=Number.isNaN(time.getTime())?'':time.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',hour12:false});
+  msg.append(name,body,date);root.append(msg);
+ }
+ if(atBottom||state.messages.length<=3)root.scrollTop=root.scrollHeight;
+}
+$('holdem-chat-form').addEventListener('submit',async e=>{
+ e.preventDefault();const id=activeRoom;
+ if(!id?.startsWith('h-'))return;
+ const state=holdemChatState(id),input=$('holdem-chat-input'),msg=input.value.trim();
+ if(!msg||state.sending)return;
+ if(!memberToken){holdemChatFeedback('회원 로그인 후 채팅할 수 있습니다.');return;}
+ if([...msg].length>280){holdemChatFeedback('메시지는 280자 이내로 작성해 주세요.');return;}
+ const send=$('holdem-chat-send');state.sending=true;send.disabled=true;holdemChatFeedback('');
+ try{
+  const res=await callRpc('renju_holdem_chat',{p_client:CLIENT_ID,p_token:memberToken,p_room:id,p_action:'send',p_text:msg});
+  state.messages=Array.isArray(res.messages)?res.messages:[];state.last=Date.now();
+  if(activeRoom===id){input.value='';input.focus();holdemChatRender(id);}
+ }catch(err){if(activeRoom===id)holdemChatFeedback('전송 실패: '+err.message);}
+ finally{state.sending=false;send.disabled=false;}
+});
+setInterval(()=>{if(isHoldemRoom())holdemChatSync(activeRoom);},1700);
+
 $('holdem-ready').addEventListener('click',()=>holdemAct('ready'));
 $('holdem-start').addEventListener('click',()=>holdemAct('start'));
 $('holdem-link').addEventListener('click',copyShare);
