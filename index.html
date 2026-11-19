@@ -1375,7 +1375,7 @@ function applyLobby(data){
 // appear offline while both browsers were still open.
 let lobbyPollInFlight=false,cleanupPollInFlight=false;
 const roomPollInFlight=new Set();
-// v3.4.7: do not gate online-room discovery on the legacy lobby RPC.
+// v3.4.8: read the authoritative odd/even room table independently of the legacy lobby RPC.
 // Show Odd/Even rooms first so they are never cut off by older worksheets.
 let lastLegacyLobbyPayload=null;
 function mergedRoomList(){
@@ -1390,6 +1390,32 @@ function refreshCombinedLobby(){
  const base=lastLegacyLobbyPayload||{player_no:myLobbyNumber||null,waiting:waitingList};
  applyLobby({...base,rooms:mergedRoomList()});
  if(!lastLegacyLobbyPayload)setNetwork('온라인 게임방 연결',true);
+}
+
+// A room can be created successfully even while one of the lobby RPCs is stale.
+// The v3.4.8 endpoint reads the actual room table, separately from the game RPC.
+// It is read-only and deliberately does not require a member token.
+async function fetchOddEvenLobby(){
+ // Start the old read in parallel, but never wait for it when the DB read succeeds.
+ const gamePromise=oddEvenRpc('list').then(data=>Array.isArray(data.rooms)?data.rooms:null).catch(()=>null);
+ let dbError='';
+ try{
+  const data=await callRpc('renju_oddeven_lobby_v348',{});
+  if(!Array.isArray(data.rooms))throw new Error('전용 목록 응답 형식이 올바르지 않습니다.');
+  return {rooms:data.rooms,source:'DB',gameCount:null,dbCount:data.rooms.length,note:''};
+ }catch(error){dbError=String(error?.message||error);}
+ const gameRooms=await gamePromise;
+ if(gameRooms!==null){
+  return {rooms:gameRooms,source:'기존 서버',gameCount:gameRooms.length,dbCount:null,
+    note:' · DB 전용 조회 실패 ('+dbError+')'};
+ }
+ throw new Error('DB 전용 조회: '+dbError+' / 기존 서버 목록 조회도 실패했습니다.');
+}
+function showOddEvenLobbyStatus(report){
+ const label=$('oe-online-lobby-status');
+ if(!label||activeRoom!==null)return;
+ label.textContent='온라인 홀짝방 '+report.rooms.length+'개 · '+report.source+' 확인'+report.note+
+  (report.rooms.length===0?' · 생성한 방이 있다면 서버 DB 저장 상태를 확인해야 합니다.':' · 방 목록에서 열기를 누르세요.');
 }
 function pollLobbyInBackground(){
  if(lobbyPollInFlight||stopped)return;
@@ -1418,16 +1444,14 @@ function pollLobbyInBackground(){
   const holdemTask=holdemRpc('list').then(h=>{
    if(Array.isArray(h.rooms)){holdemLobbyRooms=h.rooms;refreshCombinedLobby();}
   }).catch(()=>{});
-  const evenTask=oddEvenRpc('list').then(e=>{
-   if(!Array.isArray(e.rooms))throw new Error('서버 홀짝방 목록 형식이 올바르지 않습니다.');
-   oddEvenLobbyRooms=e.rooms;
+  const evenTask=fetchOddEvenLobby().then(report=>{
+   oddEvenLobbyRooms=report.rooms;
    refreshCombinedLobby();
-   const label=$('oe-online-lobby-status');
-   if(label&&activeRoom===null)label.textContent='온라인 홀짝방 '+e.rooms.length+'개 조회됨 · 방 코드로도 참가할 수 있습니다.';
+   showOddEvenLobbyStatus(report);
    maybeOpenInitialRoom();
   }).catch(error=>{
    const label=$('oe-online-lobby-status');
-   if(label&&activeRoom===null)label.textContent='홀짝방 목록 조회 실패: '+String(error?.message||error)+' · 초대 코드 직접 입장은 가능합니다.';
+   if(label&&activeRoom===null)label.textContent='홀짝방 조회 실패: '+String(error?.message||error)+' · 방 코드로 직접 입장할 수 있습니다.';
   });
   const gateTask=callRpc('renju_match_gate_lobby_status',{}).then(s=>{
    if(Array.isArray(s)){matchGateLobbyStatuses=new Map(s.map(z=>[z.room_id,z]));if(lastLegacyLobbyPayload)refreshCombinedLobby();}
@@ -1590,11 +1614,10 @@ $('oe-online-refresh').addEventListener('click',async()=>{
  const btn=$('oe-online-refresh'),label=$('oe-online-lobby-status');
  btn.disabled=true;label.textContent='홀짝방 목록을 새로 확인하는 중…';
  try{
-  const result=await oddEvenRpc('list');
-  if(!Array.isArray(result.rooms))throw new Error('홀짝방 목록 응답을 확인할 수 없습니다.');
-  oddEvenLobbyRooms=result.rooms;
+  const report=await fetchOddEvenLobby();
+  oddEvenLobbyRooms=report.rooms;
   refreshCombinedLobby();
-  label.textContent='온라인 홀짝방 '+result.rooms.length+'개 조회됨';
+  showOddEvenLobbyStatus(report);
  }catch(error){label.textContent='조회 실패: '+String(error?.message||error);}
  finally{btn.disabled=false;}
 });
@@ -1612,7 +1635,10 @@ async function doCreateRoom(game){if(!requireNickname())return;if(creating)retur
    const data=await oddEvenRpc('create');if(!data.created_room)throw new Error('홀짝 방 생성에 실패했습니다.');
    oddEvenLobbyRooms=[{id:data.created_room,sheet:data.sheet,title:data.stake+'P 홀짝',game:'oddeven',status:'waiting',count:1,waiting:5,moves:0},...oddEvenLobbyRooms];
    roomList=[...roomList.filter(x=>x.id!==data.created_room),oddEvenLobbyRooms[0]];
-   renderLobby();applyOddEvenData(data.created_room,data);const joined=await joinOddEvenOnline(data.created_room);if(joined){oddEvenInfo='온라인 방 생성 완료 · 친구에게 초대 링크 또는 방 코드를 보내세요.';renderOddEven();}else lobbyNotify('방은 생성됐지만 화면 연결에 실패했습니다. 온라인 홀짝방 코드로 다시 입장해 주세요.',true);
+   renderLobby();applyOddEvenData(data.created_room,data);const joined=await joinOddEvenOnline(data.created_room);if(joined){oddEvenInfo='온라인 방 생성 완료 · 친구에게 초대 링크 또는 방 코드를 보내세요.';renderOddEven();
+    // Reconcile from the database as soon as creation completes, not only on timer ticks.
+    fetchOddEvenLobby().then(report=>{oddEvenLobbyRooms=report.rooms;refreshCombinedLobby();showOddEvenLobbyStatus(report);}).catch(()=>{});
+   }else lobbyNotify('방은 생성됐지만 화면 연결에 실패했습니다. 온라인 홀짝방 코드로 다시 입장해 주세요.',true);
   }else if(game==='holdem'){
    if(!memberToken){openMemberPanel('login');throw new Error('홀덤은 회원 로그인 후 이용할 수 있습니다.');}
    const data=await holdemRpc('create');if(!data.created_room)throw new Error('홀덤 방 생성에 실패했습니다.');
@@ -1872,7 +1898,7 @@ async function handleChatSubmit(e){
       const legacy=await lobbyRpc();
       const poker=await holdemRpc('list');
       holdemLobbyRooms=Array.isArray(poker.rooms)?poker.rooms:[];
-      try{const even=await oddEvenRpc('list');oddEvenLobbyRooms=Array.isArray(even.rooms)?even.rooms:[];}catch(_){}
+      try{const even=await fetchOddEvenLobby();oddEvenLobbyRooms=even.rooms;}catch(_){}
       applyLobby({...legacy,rooms:[...(legacy.rooms||[]),...holdemLobbyRooms,...oddEvenLobbyRooms]});
      }catch(err){lobbyNotify(err.message,true);}
     }
