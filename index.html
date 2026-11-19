@@ -206,15 +206,40 @@
 .admin-auth-dialog input{width:100%;border:1px solid #b9cabe;padding:12px;font-size:15px;margin-bottom:12px}
 .admin-auth-actions{display:flex;justify-content:flex-end;gap:8px}.admin-auth-actions button{padding:8px 16px;border:1px solid #b9cabe;background:white;color:#244936}.admin-auth-actions button[type=submit]{background:#107c41;color:#fff;border-color:#107c41}
 .admin-chat-feedback{padding:8px 10px;font-size:11px;border-top:1px solid #dce7df;color:#12683a;background:#f1faf3}.admin-chat-feedback.error{color:#a72525;background:#fff4f4}
+
+/* Member identity / compact Excel-style account controls */
+.member-tools{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.member-status{border:1px solid #d2e2d6;background:#edf6ef;padding:7px 8px;border-radius:2px;color:#246343;font-size:11px;white-space:nowrap;min-width:70px;text-align:center}
+.member-tools button{background:#f9fbf9;color:#286741;border:1px solid #c4d7c9;border-radius:2px;font-size:11px;font-weight:600;padding:7px 9px;cursor:pointer}
+.member-tools button:hover{background:#e6f5e9}
+.member-tools button[hidden],.member-tools [hidden]{display:none!important}
+.member-overlay{position:fixed;inset:0;z-index:3900;background:rgba(20,36,24,.45);display:grid;place-items:center;padding:16px}
+.member-overlay[hidden]{display:none!important}
+.member-dialog{background:white;border:1px solid #8fb59a;width:min(94vw,380px);box-shadow:0 12px 40px #0003;padding:20px;border-radius:3px;color:#263c2c}
+.member-dialog h2{font-size:18px;margin:0 0 5px}.member-dialog .member-desc{font-size:12px;color:#667e6c;line-height:1.5;margin:0 0 12px}
+.member-dialog .member-switch{display:flex;border:1px solid #c8d8ce;margin-bottom:15px}
+.member-switch button{flex:1;padding:9px;border:0;background:#f5f8f6;color:#446c51;font-weight:700;cursor:pointer}
+.member-switch button.active{background:#107c41;color:white}
+.member-dialog label{display:block;font-size:12px;font-weight:650;margin:9px 0 5px}
+.member-dialog input{width:100%;padding:11px;border:1px solid #b7cabd;border-radius:2px;font-size:15px;outline-color:#107c41}
+.member-dialog .member-hint{font-size:11px;color:#738478;margin-top:6px}
+.member-dialog .member-feedback{font-size:12px;min-height:17px;margin-top:12px;color:#a42222}
+.member-dialog .member-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+.member-actions button{padding:9px 15px;border:1px solid #b7cabd;background:#fff;cursor:pointer}
+.member-actions button[type=submit]{background:#107c41;color:white;border-color:#107c41;font-weight:700}
+.member-progress{font-size:10px;color:#54745e;display:inline-flex;align-items:center;gap:5px}
+.member-level-tag{font-size:10px;font-weight:700;background:#dff1e3;border:1px solid #b9dabf;color:#216139;padding:2px 4px;border-radius:2px}
+@media(max-width:780px){.member-tools{width:100%}.member-status{flex:1}.member-tools button{padding:8px}}
 </style></head>
 <body>
-<div class="titlebar"><span class="app-icon" aria-hidden="true">▦</span><span class="doc-name">업무현황_2026.xlsx</span><span class="title-space"></span><span id="connection-label" class="connection">연결 중</span><button id="copy-link-btn" type="button" class="share-btn">주소 복사</button></div>
+<div class="titlebar"><span class="app-icon" aria-hidden="true">▦</span><span class="doc-name">업무현황_2026.xlsx</span><span class="title-space"></span><span id="member-top-level" class="member-level-tag" hidden>Lv.1</span><span id="connection-label" class="connection">연결 중</span><button id="copy-link-btn" type="button" class="share-btn">주소 복사</button></div>
 <div class="tabs"><span class="tab file-tab">파일</span><span class="tab active">홈</span><span class="tab">삽입</span><span class="tab">페이지 레이아웃</span><span class="tab">수식</span><span class="tab">데이터</span><span class="tab">검토</span><span class="tab">보기</span></div>
 <div class="ribbon" aria-hidden="true"><div class="ribbon-group"><div class="ribbon-content"><span class="tool-icon green">▤</span><div><div class="tool-small tool-strong">붙여넣기</div><div class="tool-small">복사 · 잘라내기</div></div></div><div class="ribbon-title">클립보드</div></div><div class="ribbon-group"><div class="ribbon-content"><span class="tool-mini wide">맑은 고딕&nbsp; ▾</span><span class="tool-mini">11</span><span class="tool-divider"></span><span class="tool-strong">B</span><em>I</em><u>U</u></div><div class="ribbon-title">글꼴</div></div><div class="ribbon-group"><div class="ribbon-content"><span class="tool-icon">☷</span><span class="tool-icon">☰</span><span class="tool-small">가운데 맞춤</span></div><div class="ribbon-title">맞춤</div></div><div class="ribbon-group"><div class="ribbon-content"><span class="tool-icon green">▦</span><span class="tool-small">표 서식<br>조건부 서식</span></div><div class="ribbon-title">스타일</div></div></div>
 <div class="formula-bar"><div class="name-box"><span id="cell-address">A1</span><span>⌄</span></div><span class="fx">ƒx</span><div class="formula-value" id="formula-value">=COUNTIF(방현황,"접속중")</div></div>
+<div id="member-overlay" class="member-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="member-dialog-title"><form id="member-form" class="member-dialog" autocomplete="on"><h2 id="member-dialog-title">계정 로그인</h2><p class="member-desc">처음엔 익명 Player로 접속합니다. 가입하면 승리 기록과 레벨이 저장돼요.</p><div class="member-switch"><button type="button" id="member-login-tab" class="active">로그인</button><button type="button" id="member-register-tab">회원가입</button></div><label for="member-nickname">닉네임 (로그인 아이디)</label><input id="member-nickname" name="username" type="text" maxlength="16" minlength="2" autocomplete="username" required placeholder="2~16자 닉네임"><label for="member-password">비밀번호</label><input id="member-password" name="password" type="password" minlength="8" maxlength="72" autocomplete="current-password" required placeholder="8자 이상 비밀번호"><div class="member-hint">이메일 없이 닉네임과 비밀번호로 가입합니다. 비밀번호 분실 시 자동 복구는 지원하지 않아요.</div><div id="member-feedback" class="member-feedback" role="alert"></div><div class="member-actions"><button type="button" id="member-cancel">닫기</button><button type="submit" id="member-submit">로그인</button></div></form></div>
 <div class="admin-notice" id="admin-notice" role="alert" hidden><strong class="admin-notice-label">공지</strong><span class="admin-notice-text" id="admin-notice-text"></span><button type="button" id="admin-notice-close" class="admin-notice-close" aria-label="공지 닫기">×</button></div>
 <div id="admin-auth-overlay" class="admin-auth-overlay" role="dialog" aria-modal="true" aria-labelledby="admin-auth-title" hidden><form id="admin-auth-form" class="admin-auth-dialog" autocomplete="off"><h2 id="admin-auth-title">운영자 인증</h2><p>닉네임 ‘운영자’를 사용하려면 운영자 비밀번호를 입력해야 합니다.</p><input id="admin-auth-password" type="password" name="operator_password" autocomplete="off" placeholder="운영자 비밀번호" required aria-label="운영자 비밀번호"><div class="admin-auth-actions"><button type="button" id="admin-auth-cancel">취소</button><button type="submit">확인</button></div></form></div>
-<section class="lobby-shell" id="lobby-view"><div class="lobby-toolbar"><div class="left"><span class="lobby-title">Sheet1 · 업무 진행 현황</span><span id="lobby-count" class="lobby-summary">0개 시트</span></div><div class="lobby-actions"><form id="nickname-form" class="nickname-form" autocomplete="off"><label for="nickname-input">내 닉네임</label><input id="nickname-input" name="nickname" type="text" maxlength="16" placeholder="Player" spellcheck="false" autocomplete="off" aria-label="닉네임 16자 이하"><button type="submit" id="nickname-save">저장</button></form><button id="create-room-btn" type="button" class="excel-action">＋ 새 방 만들기</button></div></div><div id="nickname-required-note" class="nickname-required-note" role="status" aria-live="polite" hidden>게임에 입장하려면 먼저 위의 <strong>내 닉네임</strong>을 입력하고 <strong>저장</strong>을 눌러 주세요. 저장이 완료되면 오목·테트리스·지뢰탐색게임의 방 생성과 입장이 가능합니다.</div><div id="lobby-notice" class="lobby-notice" aria-live="polite"></div><div class="grid-scroll"><table class="xl-grid" aria-label="방 현황과 대기자 목록"><colgroup><col class="row-col"><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"><col class="c7"><col class="c8"><col class="c9"><col class="c10"></colgroup><thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th><th>J</th></tr></thead><tbody id="lobby-cells"><tr><th class="row-no">1</th><td class="section" colspan="10">방 목록 불러오는 중...</td></tr></tbody></table></div></section>
+<section class="lobby-shell" id="lobby-view"><div class="lobby-toolbar"><div class="left"><span class="lobby-title">Sheet1 · 업무 진행 현황</span><span id="lobby-count" class="lobby-summary">0개 시트</span></div><div class="lobby-actions"><form id="nickname-form" class="nickname-form" autocomplete="off"><label for="nickname-input">내 닉네임</label><input id="nickname-input" name="nickname" type="text" maxlength="16" placeholder="Player" spellcheck="false" autocomplete="off" aria-label="닉네임 16자 이하"><button type="submit" id="nickname-save">저장</button></form><div class="member-tools"><span id="member-status" class="member-status">익명 Player</span><button id="member-open" type="button">가입 / 로그인</button><button id="member-logout" type="button" hidden>로그아웃</button></div><button id="create-room-btn" type="button" class="excel-action">＋ 새 방 만들기</button></div></div><div id="nickname-required-note" class="nickname-required-note" role="status" aria-live="polite" hidden>익명 Player로 둘러볼 수 있어요. 방에 들어가려면 닉네임을 저장하거나 <strong>가입 / 로그인</strong>해 주세요. 회원은 게임 결과에 따라 포인트와 레벨이 기록됩니다.</div><div id="lobby-notice" class="lobby-notice" aria-live="polite"></div><div class="grid-scroll"><table class="xl-grid" aria-label="방 현황과 대기자 목록"><colgroup><col class="row-col"><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"><col class="c7"><col class="c8"><col class="c9"><col class="c10"></colgroup><thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th><th>J</th></tr></thead><tbody id="lobby-cells"><tr><th class="row-no">1</th><td class="section" colspan="10">방 목록 불러오는 중...</td></tr></tbody></table></div></section>
 <section id="room-view" hidden><div class="room-bar"><div><span id="room-name" class="room-name">Sheet2</span><span id="room-info" class="room-info"></span></div><div class="room-control"><button id="room-copy" type="button">초대 링크 복사</button><button id="room-lobby" type="button">Sheet1</button></div></div>
 <div id="match-gate" class="match-gate" role="region" aria-label="게임 준비 및 시작">
  <div class="match-gate-info"><strong id="match-gate-title">대기 중</strong><span id="match-gate-desc" role="status" aria-live="polite">방 정보를 확인하고 있습니다.</span></div>
@@ -475,6 +500,72 @@ $('admin-auth-overlay').addEventListener('click',e=>{if(e.target.id==='admin-aut
 let myNickname='';
 try{myNickname=(localStorage.getItem(NICKNAME_STORAGE)||'').trim().slice(0,16);}catch(_){}
 let myLobbyNumber=0,nicknameByNumber=new Map(),nicknameLastSync=0,nicknameSyncFailed=false,nicknameLocalPublished=false,nicknameRevision=0;
+const MEMBER_TOKEN_KEY='excel-games-member-session-v1';
+let memberToken='';
+try{memberToken=localStorage.getItem(MEMBER_TOKEN_KEY)||'';}catch(_){}
+let memberProfile=null,memberLevelsByNumber=new Map(),memberPanelMode='login';
+let memberAuthPending=false,memberRefreshBusy=false;
+function memberRpc(action,rest={}){return callRpc('renju_member_auth',{p_client:CLIENT_ID,p_action:action,...rest});}
+function saveMemberToken(token){memberToken=token||'';try{if(memberToken)localStorage.setItem(MEMBER_TOKEN_KEY,memberToken);else localStorage.removeItem(MEMBER_TOKEN_KEY);}catch(_){}}
+function paintMemberPanel(){
+ const signed=Boolean(memberProfile);
+ const panel=$('member-status'),top=$('member-top-level'),open=$('member-open'),logout=$('member-logout');
+ if(panel)panel.textContent=signed?`${memberProfile.nickname} · Lv.${memberProfile.level} · ${memberProfile.points}P`:'익명 Player';
+ if(top){top.hidden=!signed;top.textContent=signed?`Lv.${memberProfile.level} · ${memberProfile.points}P`:'';}
+ if(open)open.hidden=signed;
+ if(logout)logout.hidden=!signed;
+ const nick=$('nickname-input'),save=$('nickname-save');
+ if(nick)nick.disabled=signed;
+ if(save){save.disabled=signed;save.title=signed?'회원 닉네임은 로그아웃 후 변경할 수 있습니다.':'';}
+}
+function useMemberProfile(profile){
+ memberProfile=profile||null;
+ if(profile){myNickname=profile.nickname;nicknameLocalPublished=true;nicknameSyncFailed=false;
+  try{localStorage.setItem(NICKNAME_STORAGE,myNickname);}catch(_){}
+ }
+ updateNicknameInput();paintMemberPanel();refreshNicknameAccess();
+ renderLobby();if(activeRoom){if(isTetrisRoom())tDisplayStatus();else if(isMineRoom())renderMineRoom();else if(state)paintState();}
+}
+async function loadMemberSession(){
+ if(!memberToken)return;
+ try{const result=await memberRpc('session',{p_token:memberToken});useMemberProfile(result.profile);maybeOpenInitialRoom();}
+ catch(_){saveMemberToken('');memberProfile=null;paintMemberPanel();}
+}
+async function refreshMemberStats(){
+ if(document.hidden||memberRefreshBusy)return;
+ memberRefreshBusy=true;
+ try{
+  if(memberToken){const data=await memberRpc('session',{p_token:memberToken});
+    if(!memberProfile||JSON.stringify(data.profile)!==JSON.stringify(memberProfile))useMemberProfile(data.profile);
+  }
+  const data=await callRpc('renju_member_public_levels',{});
+  if(Array.isArray(data.profiles)){
+   const next=new Map(data.profiles.map(p=>[Number(p.number),Number(p.level)]));
+   if(JSON.stringify([...next])!==JSON.stringify([...memberLevelsByNumber])){
+    memberLevelsByNumber=next;nicknameRevision++;chatLastSeen='';
+    renderLobby();if(activeRoom){if(isTetrisRoom())tDisplayStatus();else if(isMineRoom())renderMineRoom();else if(state)paintState();}
+   }
+  }
+ }catch(_){/* Account widgets do not interrupt gameplay if optional RPC is unavailable. */}
+ finally{memberRefreshBusy=false;}
+}
+function openMemberPanel(mode='login'){
+ if(memberAuthPending)return;
+ memberPanelMode=mode;$('member-overlay').hidden=false;
+ $('member-nickname').value=memberProfile?.nickname||myNickname||'';
+ $('member-password').value='';$('member-feedback').textContent='';
+ memberChooseTab(mode);$('member-nickname').focus();
+}
+function memberChooseTab(mode){
+ memberPanelMode=mode;$('member-login-tab').classList.toggle('active',mode==='login');
+ $('member-register-tab').classList.toggle('active',mode==='register');
+ $('member-dialog-title').textContent=mode==='login'?'계정 로그인':'새 계정 만들기';
+ $('member-submit').textContent=mode==='login'?'로그인':'회원가입';
+ $('member-password').autocomplete=mode==='login'?'current-password':'new-password';
+ $('member-feedback').textContent='';
+}
+function closeMemberPanel(){$('member-overlay').hidden=true;$('member-password').value='';}
+
 // Access requires an explicitly chosen nickname and a successful Supabase profile sync.
 // A generated fallback such as "Player 12" is never an admission credential.
 function hasSavedNickname(){return Boolean(myNickname.trim() && nicknameLocalPublished && (myNickname!=='운영자'||adminToken));}
@@ -503,7 +594,10 @@ function maybeOpenInitialRoom(){
 }
 
 function nicknameFor(number,fallback=''){
- const n=Number(number);return n>0?(nicknameByNumber.get(n)||(n===myLobbyNumber&&myNickname?myNickname:numbered(n))):(fallback||'대기');
+ const n=Number(number);
+ const base=n>0?(nicknameByNumber.get(n)||(n===myLobbyNumber&&myNickname?myNickname:numbered(n))):(fallback||'대기');
+ const level=n>0?memberLevelsByNumber.get(n):null;
+ return level ? base+' · Lv.'+level : base;
 }
 function nicknameFromServer(name){const m=/^Player\s+(\d+)$/.exec(String(name||''));return m?nicknameFor(Number(m[1])):(name||'대기');}
 function nicknameForPlayer(player){return player?.number?nicknameFor(player.number,player.name):nicknameFromServer(player?.name||'대기');}
@@ -903,8 +997,46 @@ $('copy-link-btn').addEventListener('click',copyShare);$('room-copy').addEventLi
 $('room-lobby').addEventListener('click',()=>switchView(null));
 $('create-room-btn').addEventListener('click',createRoom);$('add-sheet-btn').addEventListener('click',createRoom);
 updateNicknameInput();refreshNicknameAccess();
+$('member-open').addEventListener('click',()=>openMemberPanel());
+$('member-cancel').addEventListener('click',closeMemberPanel);
+$('member-login-tab').addEventListener('click',()=>memberChooseTab('login'));
+$('member-register-tab').addEventListener('click',()=>memberChooseTab('register'));
+$('member-overlay').addEventListener('click',e=>{if(e.target.id==='member-overlay')closeMemberPanel();});
+$('member-form').addEventListener('submit',async e=>{
+ e.preventDefault();if(memberAuthPending)return;
+ const nickname=$('member-nickname').value.trim().replace(/\s+/g,' ').slice(0,16);
+ const password=$('member-password').value;
+ if(nickname.length<2||password.length<8){$('member-feedback').textContent='닉네임 2자 이상, 비밀번호 8자 이상을 입력해 주세요.';return;}
+ memberAuthPending=true;$('member-submit').disabled=true;
+ try{
+  const result=await memberRpc(memberPanelMode,{p_nickname:nickname,p_password:password});
+  if(!result.token||!result.profile)throw new Error('계정 인증 결과가 올바르지 않습니다.');
+  saveMemberToken(result.token);persistAdminToken('');
+  useMemberProfile(result.profile);closeMemberPanel();
+  lobbyNotify(memberPanelMode==='register'?'회원가입 완료! 계정으로 로그인되었습니다.':'로그인 완료!');
+  await syncNicknames(true);await refreshMemberStats();maybeOpenInitialRoom();
+ }catch(error){$('member-feedback').textContent=error.message||'가입·로그인 오류입니다.';}
+ finally{memberAuthPending=false;$('member-submit').disabled=false;}
+});
+$('member-logout').addEventListener('click',async()=>{
+ if(!memberToken)return;
+ const token=memberToken;
+ for(const id of [...openRooms])await closeRoom(id);
+ try{await memberRpc('logout',{p_token:token});}
+ catch(e){lobbyNotify(e.message,true);return;}
+ saveMemberToken('');memberProfile=null;myNickname='';nicknameLocalPublished=false;
+ try{localStorage.removeItem(NICKNAME_STORAGE);}catch(_){}
+ paintMemberPanel();updateNicknameInput();refreshNicknameAccess();
+ if(activeRoom)switchView(null);
+ lobbyNotify('로그아웃했습니다. 닉네임 저장 또는 로그인 후 게임에 입장할 수 있습니다.');
+});
+paintMemberPanel();
+setTimeout(()=>{loadMemberSession().then(refreshMemberStats);},0);
+setInterval(refreshMemberStats,12000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshMemberStats();});
 $('nickname-form').addEventListener('submit',async e=>{
  e.preventDefault();const input=$('nickname-input'),button=$('nickname-save');
+ if(memberProfile){lobbyNotify('회원 닉네임은 로그아웃 후 변경할 수 있습니다.',true);return;}
  const nickname=input.value.trim().replace(/\s+/g,' ').slice(0,16);
  if(!nickname){lobbyNotify('닉네임을 1자 이상 입력한 뒤 저장해 주세요.',true);input.focus();return;}
  if(!lobbyReady){lobbyNotify('서버 연결 후 저장할 수 있습니다.',true);return;}
