@@ -1,0 +1,1856 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#107c41"><title>업무현황_2026.xlsx</title>
+<style>
+:root{color-scheme:light;--excel:#107c41;--excel-dark:#0d6335;--bg:#f4f6f5;--white:#fff;--border:#d9dddb;--muted:#64746a;--text:#263128;--panel:#fff;--ok:#107c41;--error:#b42318}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:Arial,'Malgun Gothic','Apple SD Gothic Neo',sans-serif;font-size:13px}body{overflow-x:hidden}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:2px solid #107c41;outline-offset:2px}button:disabled{opacity:.4;cursor:default}[hidden]{display:none!important}
+.titlebar{height:41px;background:var(--excel);display:flex;align-items:center;gap:13px;color:white;padding:0 16px}.app-icon{width:22px;height:25px;border-radius:3px;background:#096434;display:flex;justify-content:center;align-items:center;font-weight:bold;font-size:17px;box-shadow:inset 5px 0 0 #05562d}.doc-name{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.title-space{flex:1}.connection{font-size:11px;display:flex;align-items:center;gap:6px;color:#e2f5e9;white-space:nowrap}.connection:before{content:'';width:7px;height:7px;border-radius:50%;background:#eeb08e;display:block}.connection.online:before{background:#b2f5cb}.share-btn{background:#fff;color:#0f693a;border:1px solid #d0eadc;border-radius:3px;padding:6px 15px;font-weight:700;font-size:12px}.share-btn:hover{background:#ecfff5}
+.tabs{height:35px;background:#fff;border-bottom:1px solid #e6e9e7;display:flex;align-items:stretch;padding:0 14px;gap:0;overflow:hidden}.tab{display:flex;align-items:center;padding:0 15px;color:#4b584f;white-space:nowrap;font-size:12px}.tab.active{color:var(--excel);border-bottom:2px solid var(--excel);font-weight:700}.tab.file-tab{background:#e7f4ed;color:#096b3b}.ribbon{height:83px;background:#fbfcfb;border-bottom:1px solid #d1d9d4;display:flex;align-items:stretch;padding:9px 21px 7px;gap:21px;overflow:hidden;white-space:nowrap}.ribbon-group{min-width:0;display:flex;flex-direction:column;justify-content:space-between;gap:5px;padding-right:19px;border-right:1px solid #e1e6e2}.ribbon-group:last-child{border:0}.ribbon-content{display:flex;align-items:center;gap:8px;min-height:43px}.ribbon-title{text-align:center;font-size:10px;color:#8a948e}.tool-icon{width:35px;height:36px;border-radius:3px;background:#f1f4f1;display:flex;align-items:center;justify-content:center;color:#52675a;font-size:21px}.tool-icon.green{color:#157744}.tool-small{font-size:11px;color:#40574a;display:flex;align-items:center;gap:5px}.tool-mini{border:1px solid #d5ded8;background:white;border-radius:2px;padding:4px 8px;font-size:11px;color:#4b5d50}.tool-mini.wide{min-width:112px}.tool-strong{font-weight:800;color:#33473a}.tool-divider{height:20px;width:1px;background:#d8dfdb}.formula-bar{height:36px;background:white;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:9px;padding:4px 12px}.name-box{border:1px solid #d6ded8;height:25px;display:flex;align-items:center;justify-content:space-between;padding:0 9px;width:92px;flex:none;font-size:12px}.fx{font-size:14px;color:#87928a;font-style:italic;font-weight:700;padding:0 8px}.formula-value{height:25px;border:1px solid #e0e5e1;display:flex;align-items:center;padding:0 9px;flex:1;color:#526559;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.main-shell{max-width:1270px;margin:0 auto;padding:22px 24px 82px;display:grid;grid-template-columns:minmax(0,740px) minmax(235px,300px);gap:23px;align-items:start;justify-content:center}.sheet-col{min-width:0}.sheet-caption{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px}.caption-label{font-size:13px;font-weight:700;color:#354c3e}.status-chip{font-size:11px;color:#586b60}.turn{display:inline-flex;align-items:center;padding:5px 10px;background:#e8f4ed;color:#126a3d;border:1px solid #c7ddce;border-radius:3px;font-size:11px;white-space:nowrap}.sheet-card{background:white;border:1px solid #c7d1c9;padding:0;box-shadow:0 1px 3px #172f2114}.board-frame{position:relative;width:100%;padding:0;background:#fff}.board-frame canvas{display:block;width:100%;aspect-ratio:1;cursor:cell;touch-action:manipulation}.board-overlay{position:absolute;inset:0;background:#ffffffdc;color:#386349;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;pointer-events:none}.below-board{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:9px 2px}.move-counter,.notice{color:#66796d;font-size:11px}.notice{min-height:17px;flex:1;text-align:right}.notice.error{color:var(--error)}.notice.good{color:var(--ok)}.rematch{border:1px solid #a9c7b1;border-radius:3px;background:#fff;color:#107c41;padding:6px 12px;font-size:11px;font-weight:700}.rematch:hover{background:#eaf6ee}
+.sidebar{display:flex;flex-direction:column;gap:12px}.side-panel{background:#fff;border:1px solid #d5ddd7;box-shadow:0 1px 2px #142c1d0d}.panel-heading{display:flex;justify-content:space-between;align-items:center;gap:9px;background:#f4f6f4;border-bottom:1px solid #dce2dd;padding:9px 11px;color:#53675a;font-weight:700;font-size:12px}.small-count{color:#67786c;font-size:11px;font-weight:500}.table-heading{display:grid;grid-template-columns:60px 1fr 65px;background:#f9faf9;border-bottom:1px solid #e4e8e5;color:#748276;font-size:10px;padding:7px 10px;gap:5px}.seat{display:grid;grid-template-columns:60px 1fr 65px;gap:5px;align-items:center;padding:10px 10px;min-height:43px;border-bottom:1px solid #e8ede9;font-size:11px}.seat:last-child{border-bottom:0}.seat.active{background:#eff8f2;border-left:3px solid #19864b;padding-left:7px}.stone{width:14px;height:14px;border-radius:50%;background:#2c3731;display:block;margin-left:13px}.stone.white{background:#fff;border:1px solid #8b9990}.seat-info{min-width:0}.seat-name{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}.seat-meta{color:#6e8073;font-size:10px}.you{font-weight:700;color:#107c41;font-size:10px}.queue{max-height:205px;overflow-y:auto}.queue-row{padding:10px 13px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid #edf0ed;font-size:11px}.queue-row:before{content:'·';color:#89a596;margin-right:3px}.queue-row span:first-child{flex:1}.queue-empty{font-size:11px;color:#93a198;padding:15px 13px}.history{padding:10px;min-height:40px;max-height:165px;overflow:auto;display:flex;gap:5px;flex-wrap:wrap}.history span{font-size:10px;color:#637267;border:1px solid #e1e7e3;background:#fbfcfb;padding:5px 7px}.history .black{color:#24362a}.history .white{color:#8a7a56}
+.chat{position:fixed;z-index:30;right:20px;bottom:40px;width:318px;background:#fff;border:1px solid #c0cec4;box-shadow:0 8px 26px #1737232a;display:flex;flex-direction:column;max-height:min(398px,calc(100dvh - 110px))}.chat-title{background:#f0f6f1;border:0;border-bottom:1px solid #d0dcd2;color:#385945;padding:11px 13px;text-align:left;font-weight:700;font-size:12px;display:flex;justify-content:space-between;align-items:center}.chat-title:before{content:'▤';color:#107c41;margin-right:8px}.chat-title>span:first-child{flex:1}.chat-toggle{font-size:15px;color:#5b7566}.chat-body{display:flex;flex-direction:column;min-height:0}.chat-messages{height:216px;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:9px}.chat-item{min-width:0;overflow-wrap:anywhere;font-size:11px}.chat-item .sender{font-size:10px;font-weight:700;color:#147449;margin-bottom:4px}.chat-item.mine .sender{color:#1b485c}.chat-item .bubble{white-space:pre-wrap;padding:7px 9px;display:inline-block;max-width:100%;background:#f0f3f1;border:1px solid #e4e9e5;color:#273a2e}.chat-empty{color:#93a399;font-size:11px;text-align:center;padding:75px 0}.chat-form{display:flex;gap:7px;padding:9px;border-top:1px solid #e2e8e3}.chat-input{min-width:0;flex:1;background:#fff;border:1px solid #d2dfd5;color:#223a2b;font-size:11px;padding:9px 8px}.chat-send{background:#107c41;border:1px solid #107c41;border-radius:2px;color:#fff;padding:8px 13px;font-size:11px;font-weight:700}.chat.collapsed{width:182px}.chat.collapsed .chat-body{display:none}
+.footer{position:fixed;bottom:0;left:0;right:0;height:30px;background:#f9fbf9;border-top:1px solid #d8e1db;display:flex;align-items:center;z-index:15;font-size:11px;color:#4f6a59}.sheet-nav{height:30px;display:flex;align-items:center;padding-left:14px;gap:11px}.sheet-tab{height:30px;padding:7px 19px;border-bottom:3px solid #107c41;background:#fff;color:#12663b;font-weight:700;border-left:1px solid #e2e9e4;border-right:1px solid #e2e9e4}.footer-fill{flex:1}.footer-status{font-size:10px;padding:0 18px;color:#688273}.footer-right{background:#107c41;color:#fff;height:30px;padding:8px 20px;font-size:10px}
+@media(max-width:900px){.main-shell{grid-template-columns:minmax(0,1fr) 235px;padding:14px 16px 76px;gap:13px}.ribbon{gap:10px;padding-left:13px}.ribbon-group{padding-right:10px}.chat{right:12px;width:290px}}
+@media(max-width:700px){.titlebar{padding:0 11px;gap:9px}.doc-name{max-width:155px;font-size:11px}.connection{font-size:10px}.share-btn{font-size:10px;padding:6px 10px}.tabs{padding:0 5px}.tab{padding:0 10px;font-size:11px}.ribbon{height:61px;padding:5px 10px}.ribbon-group:nth-child(n+3){display:none}.ribbon-title{font-size:9px}.ribbon-content{min-height:30px}.tool-icon{height:26px;width:29px;font-size:16px}.tool-mini{font-size:10px}.main-shell{display:flex;flex-direction:column;padding:10px 10px 75px;gap:12px}.sheet-col,.sidebar{width:100%}.sheet-caption{margin-bottom:6px}.sidebar{display:grid;grid-template-columns:1fr 1fr;gap:8px}.side-panel:last-child{grid-column:1/-1}.chat{width:min(300px,calc(100vw - 22px));bottom:35px;right:9px;max-height:65dvh}.chat-messages{height:170px}.footer-status{display:none}}
+@media(max-width:400px){.tab:nth-child(n+6){display:none}.name-box{width:65px}.sidebar{grid-template-columns:1fr}.side-panel:last-child{grid-column:auto}}
+
+/* Multi-sheet workbook additions */
+.main-shell[hidden],.lobby-shell[hidden]{display:none!important}
+.lobby-shell{max-width:1320px;margin:0 auto;padding:17px 20px 76px}
+.lobby-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 11px}
+.lobby-toolbar .left{display:flex;gap:9px;align-items:center;min-width:0}
+.lobby-title{font-weight:700;font-size:14px;color:#355443}.lobby-summary{font-size:11px;color:#698375}
+.excel-action{border:1px solid #0d8045;background:#107c41;border-radius:2px;color:white;padding:9px 15px;font-size:12px;font-weight:700;white-space:nowrap}
+.excel-action:hover{background:#095b2c}.excel-action:disabled{opacity:.5}
+.lobby-notice{font-size:11px;color:#738479;min-height:15px;margin:0 0 8px}.lobby-notice.error{color:#b42318}
+.grid-scroll{overflow:auto;border:1px solid #cad7cd;background:#fff;box-shadow:0 1px 2px #24362610;max-height:calc(100vh - 264px);min-height:370px}
+.xl-grid{border-collapse:collapse;table-layout:fixed;min-width:975px;width:100%;background:#fff;font-size:12px;color:#263a2e}
+.xl-grid col.row-col{width:44px}.xl-grid col.c1{width:104px}.xl-grid col.c2{width:148px}.xl-grid col.c3{width:98px}.xl-grid col.c4{width:103px}.xl-grid col.c5{width:103px}.xl-grid col.c6{width:80px}.xl-grid col.c7{width:74px}.xl-grid col.c8{width:66px}.xl-grid col.c9{width:119px}.xl-grid col.c10{width:86px}
+.xl-grid th,.xl-grid td{height:32px;border:1px solid #e1e9e3;padding:5px 8px;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:400}
+.xl-grid thead th{height:27px;background:#f0f2f0;color:#65796c;border-color:#d4dfd7;text-align:center;font-size:11px;position:sticky;top:0;z-index:1}
+.xl-grid .row-no{background:#f3f5f3;color:#7b8c80;text-align:center;padding:0 4px;font-size:11px;border-right-color:#cad6cd}
+.xl-grid .section{background:#e6f1e9;font-weight:700;color:#176e3d;font-size:12px}.xl-grid .col-head{background:#f1f5f1;font-weight:700;color:#4a6653}
+.xl-grid .room-row{cursor:pointer}.xl-grid .room-row:hover td{background:#edf8f0}.xl-grid .room-row:focus-within td{background:#eef8f1}
+.xl-grid .sheet-link{color:#176d3f;font-weight:700}.xl-grid .status-pill{display:inline-block;border-radius:2px;padding:3px 7px;font-size:10px;background:#e6f5ec;color:#147443}
+.xl-grid .status-pill.waiting{background:#f1f4f1;color:#6a7b70}.xl-grid .status-pill.done{background:#eef0f6;color:#556b8d}
+.xl-grid .room-open{border:1px solid #bdcfbf;color:#137141;background:#fff;padding:4px 11px;font-size:11px;border-radius:2px}.xl-grid .room-open:hover{background:#e9f5ed}
+.xl-grid .muted{color:#95a69a}.xl-grid .blank-cell{height:30px}.xl-grid .you-row{background:#eff9f1;color:#0e693b;font-weight:700}
+.sheet-nav{gap:0;padding-left:12px;max-width:calc(100vw - 100px);overflow-x:auto;scrollbar-width:thin;align-items:end}
+.sheet-tab{border:0;border-right:1px solid #d4e1d8;border-bottom:3px solid transparent;height:30px;padding:7px 13px;display:flex;align-items:center;gap:9px;font-size:11px;white-space:nowrap;background:#f6f7f6;color:#637767;flex:none}
+.sheet-tab.active{border-bottom:3px solid #107c41;background:#fff;color:#0d713b;font-weight:700}
+.tab-close{display:inline-block;border:0;background:transparent;color:#809286;padding:0 3px;font-size:12px;line-height:1}.tab-close:hover{color:#b42318}
+.sheet-plus{height:28px;border:0;background:transparent;color:#4a805c;font-size:20px;font-weight:500;padding:0 13px;flex:none}.sheet-plus:hover{background:#e6f3e9}
+.sheet-chev{padding:0 7px;color:#95a99b;font-size:11px}
+.room-bar{max-width:1270px;margin:15px auto 0;padding:0 24px;display:flex;justify-content:space-between;align-items:center;gap:9px}
+.room-name{font-weight:700;color:#3e5b47;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.room-control{display:flex;gap:7px;align-items:center}
+.room-control button{border:1px solid #cbdcd1;background:#fff;color:#31664a;font-size:11px;border-radius:2px;padding:7px 11px;white-space:nowrap}
+.room-control button:hover{background:#ebf6ee}
+.room-info{font-size:10px;color:#7d9384}
+.room-bar + .main-shell{padding-top:11px}
+@media(max-width:700px){.lobby-shell{padding:12px 9px 70px}.grid-scroll{max-height:calc(100vh - 228px)}.lobby-title{font-size:12px}.lobby-summary{font-size:10px}.excel-action{padding:8px 10px}.room-bar{padding:0 11px;margin-top:11px}.room-info{display:none}.room-control button{font-size:10px}.room-bar + .main-shell{padding-top:8px}.xl-grid th,.xl-grid td{height:30px}}
+
+/* Sheet1 profile controls: worksheet-like muted fields. */
+.lobby-actions{display:flex;align-items:center;gap:10px;min-width:0}
+.nickname-form{display:flex;align-items:center;gap:0;min-width:0;height:32px;border:1px solid #cbd9ce;background:#fff;border-radius:2px}
+.nickname-form label{font-size:11px;font-weight:600;color:#55705e;padding:0 10px;white-space:nowrap;background:#f2f5f2;border-right:1px solid #e0e6e1;align-self:stretch;display:flex;align-items:center}
+.nickname-form input{width:128px;min-width:50px;height:30px;border:0;outline:none;padding:0 8px;color:#354d3b;background:#fff;font-size:12px}
+.nickname-form input:focus{box-shadow:inset 0 0 0 1px #19864b}
+.nickname-form button{height:30px;padding:0 11px;border:0;border-left:1px solid #d5ded7;color:#126b3b;background:#f7fbf8;font-weight:700;font-size:11px;cursor:pointer}
+.nickname-form button:disabled{opacity:.5;cursor:wait}
+.nickname-required-note{padding:9px 12px;margin:0 0 10px;background:#fff8e9;border:1px solid #ebd5a0;color:#77581c;font-size:11px;line-height:1.5}
+.nickname-form.required{border-color:#d5a13d;box-shadow:0 0 0 1px #f1e0a4}
+.xl-grid .room-open.locked{background:#f5f5f5;color:#89938b;border-color:#e0e5e1}
+@media(max-width:780px){.lobby-toolbar{align-items:stretch;flex-direction:column}.lobby-actions{width:100%;justify-content:space-between;gap:6px}.nickname-form{flex:1}.nickname-form input{width:100%;flex:1}.nickname-form label{padding:0 7px}.lobby-actions .excel-action{padding:8px 10px}.grid-scroll{max-height:calc(100vh - 295px)}}
+/* Sheet-based multi-game lobby */
+.game-chooser{position:fixed;inset:0;z-index:90;background:#14251baa;display:flex;align-items:center;justify-content:center;padding:20px}
+.game-chooser[hidden]{display:none}.chooser-panel{background:#fff;border:1px solid #a9baad;box-shadow:0 12px 38px #132b1745;width:min(440px,100%);padding:19px}
+.chooser-top{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #e1e9e3;padding-bottom:12px;margin-bottom:15px;font-weight:700;color:#245438}.chooser-close{border:0;background:#fff;color:#597064;font-size:22px;cursor:pointer}
+.chooser-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.game-choice{border:1px solid #c5d6ca;background:#f9fcfa;min-height:110px;padding:12px 6px;display:flex;gap:11px;flex-direction:column;align-items:center;justify-content:center;color:#23603c;font-weight:700;font-size:12px}.game-choice:hover{background:#e5f4ea;border-color:#209253}.choice-symbol{font-size:28px}.chooser-note{font-size:11px;color:#7c9282;margin:15px 0 0}
+.tetris-shell{max-width:1150px;margin:0 auto;padding:15px 22px 85px;display:grid;grid-template-columns:minmax(0,650px) minmax(210px,320px);gap:20px;justify-content:center}
+.tetris-sheet{background:#fff;border:1px solid #d4ded5;padding:13px;min-width:0}.tetris-header{display:flex;justify-content:space-between;gap:10px;align-items:center;padding-bottom:10px;border-bottom:1px solid #e1e7e2;font-size:12px;color:#376b48}
+.tetris-match{display:grid;grid-template-columns:minmax(0,1fr) minmax(95px,.62fr);gap:15px;align-items:start;padding-top:15px}.tetris-main-board{width:100%;max-width:320px;display:block;aspect-ratio:1/2;border:2px solid #9faea2;background:#fff;image-rendering:pixelated;margin:auto}.tetris-other-board{width:100%;max-width:200px;display:block;aspect-ratio:1/2;border:1px solid #c0cdc4;background:#fff;image-rendering:pixelated;margin:auto}.tetris-col-head{text-align:center;font-size:11px;color:#5a7260;padding-bottom:7px;font-weight:700}
+.tetris-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0;background:#fff;border:1px solid #dce6dd;margin-top:10px}.tetris-stat{padding:10px;border-right:1px solid #e0e7e0;border-bottom:1px solid #e0e7e0;font-size:11px}.tetris-stat strong{display:block;font-size:17px;color:#166d42;padding-top:4px}.tetris-sidebox{border:1px solid #d7e1d9;background:#fff;padding:12px;margin-bottom:10px;font-size:11px}.tetris-sidebox h3{font-size:12px;margin:0 0 9px;color:#356447}.tetris-details{font-size:11px;line-height:2.1;color:#5f7364}
+.tetris-controls{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:13px}.tetris-controls button{min-width:41px;height:39px;background:#f6fbf6;border:1px solid #c4d9ca;color:#176b3e;border-radius:3px;font-size:14px;font-weight:700;touch-action:manipulation}.tetris-controls button:active{background:#cdebd6}.tetris-tip{margin-top:10px;color:#6a8071;font-size:11px;min-height:17px;text-align:center}.tetris-replay{border:1px solid #14804a;color:#fff;background:#107c41;font-weight:700;font-size:12px;padding:8px 13px;margin-top:10px;cursor:pointer}
+.game-type-pill{background:#e8f5ee;color:#187247;padding:2px 5px;font-weight:700;font-size:10px}.game-type-pill.tetris{background:#e7edf8;color:#315c9e}
+@media(max-width:780px){.tetris-shell{display:block;padding:10px 10px 75px}.tetris-sidebar{margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:9px}.tetris-sidebox{margin:0}.tetris-match{gap:9px}.tetris-sheet{padding:9px}.tetris-controls button{height:43px;min-width:40px}}
+
+/* Spreadsheet Minesweeper Battle: self-built boards + a live opponent view */
+.mine-shell{max-width:1450px;margin:12px auto 100px;padding:0 17px;display:grid;grid-template-columns:minmax(0,1fr) 215px;gap:12px;align-items:start}
+.mine-workbook{min-width:0;background:#fff;border:1px solid #cedbd0;box-shadow:0 1px 3px #1833260a}
+.mine-topline{background:#edf4ee;border-bottom:1px solid #d1dcd4;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 11px;font-size:11px}
+.mine-topline strong{font-size:12px;color:#24583b}.mine-timer{font-weight:700;color:#0d6335;font-variant-numeric:tabular-nums;font-size:13px}
+.mine-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-bottom:1px solid #d7e2d9}
+.mine-metric{border-right:1px solid #dbe5de;padding:7px 9px;min-width:0;background:#fcfdfc}.mine-metric:last-child{border:0}
+.mine-metric small{display:block;color:#6b8172;font-size:10px;margin-bottom:3px;white-space:nowrap}.mine-metric strong{font-size:12px;color:#234834;font-variant-numeric:tabular-nums}
+.mine-board-pair{display:grid;grid-template-columns:minmax(385px,1.6fr) minmax(265px,1fr);gap:12px;padding:12px;align-items:start}
+.mine-board-main,.mine-board-rival{min-width:0;border:1px solid #d9e3db;background:white}
+.mine-board-heading{background:#f1f5f1;border-bottom:1px solid #d6e0d8;padding:7px 10px;font-size:11px;display:flex;justify-content:space-between;gap:10px;color:#45614b}
+.mine-board-heading span{color:#819082;font-size:10px}
+.mine-grid-wrap{padding:7px;overflow:auto}
+.mine-grid{border-collapse:collapse;table-layout:fixed;width:100%;margin:0 auto;user-select:none}
+.mine-grid th,.mine-grid td{border:1px solid #d7dfd8;padding:0;text-align:center}
+.mine-grid th{background:#edf2ee;color:#65796a;font-weight:500;font-size:10px;height:19px;min-width:15px}
+.mine-grid th:first-child{width:24px}.mine-grid td{height:32px;background:white}
+.mine-grid button{appearance:none;border:0;background:#f6f9f6;color:#274435;display:block;width:100%;height:32px;padding:0;border-radius:0;font-size:12px;font-weight:700;cursor:cell;touch-action:manipulation}
+.mine-grid button:hover{background:#e4efe6}.mine-grid button:focus-visible{outline:2px solid #16824a;outline-offset:-3px}
+.mine-grid button.forbidden{background:#f1f2f1;color:#b0bbb3;cursor:not-allowed}
+.mine-grid button.mine-set{background:#d8ecdd;color:#147849}.mine-grid button.opened{background:#fff;color:#3d5c43;cursor:default}
+.mine-grid button.exploded{background:#fbdcda;color:#a5221b}.mine-grid button.flagged{background:#fff7e3;color:#b0781d}
+.mine-grid button.num-1{color:#175fbb}.mine-grid button.num-2{color:#148143}.mine-grid button.num-3{color:#c54125}
+.mine-grid button.num-4{color:#6846a5}.mine-grid button.num-5{color:#8d5424}.mine-grid button.num-6{color:#128e9f}
+.mine-rival-grid button{height:23px;font-size:10px;cursor:default}.mine-rival-grid td{height:23px}
+.mine-rival-grid th{height:16px;font-size:9px}.mine-rival-grid button:disabled{opacity:1}.mine-board-sub{border-top:1px solid #eef2ef;text-align:center;padding:7px;color:#7a8d7f;font-size:10px}
+.mine-actions{padding:10px 12px;border-top:1px solid #d9e2dc;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.mine-hint{font-size:11px;color:#587261;flex:1;min-width:160px}.mine-action{border:1px solid #b9d4c0;background:#f6fff8;color:#12653a;padding:8px 11px;border-radius:2px;font-weight:700;font-size:11px}
+.mine-action.primary{background:#107c41;color:white}.mine-action:disabled{opacity:.4}
+.mine-side{display:flex;flex-direction:column;gap:10px}.mine-box{border:1px solid #d0dbd2;background:#fff}.mine-box h3{padding:9px 11px;margin:0;border-bottom:1px solid #dce6dd;background:#f2f6f3;color:#3f5a47;font-size:11px}
+.mine-box-row{display:flex;justify-content:space-between;padding:9px 10px;gap:8px;font-size:10px;border-bottom:1px solid #edf1ed}.mine-box-row:last-child{border:0}.mine-box-row b{font-variant-numeric:tabular-nums}
+.mine-note{padding:9px 10px;font-size:10px;color:#738577;line-height:1.6}.game-choice.mine-choice .choice-symbol{color:#197646}
+/* Memo can now be collapsed without hiding message history. */
+.chat:not([hidden]){display:flex!important}
+.chat .chat-title{width:100%;cursor:pointer}
+.chat.collapsed{width:205px;min-height:0!important;height:auto;max-height:none}
+.chat.collapsed .chat-body{display:none!important}
+.chat.collapsed .chat-title{border-bottom:0;padding:9px 11px}
+.chat.collapsed .chat-toggle{font-size:15px}
+@media(max-width:1160px){.mine-shell{grid-template-columns:1fr;max-width:1020px}.mine-side{display:grid;grid-template-columns:1fr 1fr}.mine-board-pair{grid-template-columns:minmax(360px,1.5fr) minmax(230px,1fr)}}
+@media(max-width:710px){.mine-shell{margin:7px auto 80px;padding:0 8px}.mine-board-pair{display:block;padding:6px}.mine-board-rival{margin-top:9px}.mine-grid-wrap{padding:4px}.mine-grid td,.mine-grid button{height:clamp(25px,7.1vw,34px)}.mine-rival-grid button,.mine-rival-grid td{height:22px}.mine-metrics{grid-template-columns:repeat(2,1fr)}.mine-metric:nth-child(2){border-right:0}.mine-metric:nth-child(-n+2){border-bottom:1px solid #d5e0d7}.mine-side{grid-template-columns:1fr 1fr}.chat{bottom:35px;max-height:48dvh}.chat-messages{height:125px}}
+
+/* Quiet worksheet appearance - presentation-only; no changes to networking or game rules. */
+.stone,.stone.white{width:18px;height:18px;margin-left:10px;border-radius:2px;background:#5f6d63;border:1px solid #4e5b52;display:block;box-shadow:inset 0 1px 0 rgba(255,255,255,.14)}
+.stone.white{background:#dbe2dd;border-color:#c5cec8}
+.seat.active{background:#f6faf7;border-left-color:#a1b5a7}
+.choice-symbol{font-size:20px;font-family:Consolas,monospace;letter-spacing:8px;color:#67766b}
+.game-type-pill.tetris{background:#eff2f0;color:#506358}
+.tetris-header,.tetris-col-head,.tetris-stat strong,.tetris-sidebox h3{color:#536358}
+.tetris-grid-frame{width:100%;max-width:345px;border:1px solid #d3dcd5;margin:0 auto;background:#fff}
+.tetris-grid-frame-small{max-width:230px}
+.tetris-grid-columns{display:grid;grid-template-columns:25px repeat(10,minmax(0,1fr));height:20px;color:#6a776e;background:#f3f5f3}
+.tetris-grid-columns>span{border-right:1px solid #e0e7e0;border-bottom:1px solid #d9e0da;text-align:center;font:10px/19px Consolas,monospace;min-width:0}
+.tetris-grid-columns .corner-cell{background:#e9efea}
+.tetris-grid-body{display:grid;grid-template-columns:25px minmax(0,1fr);align-items:stretch}
+.tetris-grid-rows{display:grid;grid-template-rows:repeat(20,minmax(0,1fr));color:#758179;background:#f3f5f3;min-height:0}
+.tetris-grid-rows span{font:10px Consolas,monospace;border-right:1px solid #d9e0da;border-bottom:1px solid #e0e7e0;display:flex;align-items:center;justify-content:center;min-height:0}
+.tetris-grid-body .tetris-main-board,.tetris-grid-body .tetris-other-board{border:0;width:100%;max-width:none;margin:0;aspect-ratio:1/2;display:block;background:#fff}
+.tetris-match{gap:11px}
+.tetris-sheet{border-color:#d6dfd8}
+.tetris-stats{border-color:#dfe5e0}
+.tetris-controls button{background:#f8faf8;border-color:#d6e0d8;color:#5d7163}
+.tetris-controls button:active{background:#e9efea}
+@media(max-width:700px){.tetris-grid-columns{grid-template-columns:21px repeat(10,minmax(0,1fr));height:18px}.tetris-grid-columns>span{font-size:9px;line-height:17px}.tetris-grid-body{grid-template-columns:21px minmax(0,1fr)}.tetris-grid-rows span{font-size:9px}}
+
+/* Online Mine vs Robot: uses quiet spreadsheet cells, leaving Omok & Tetris styles untouched. */
+#mine-game[hidden]{display:none!important}
+#mine-game{max-width:1120px;margin:9px auto 95px;padding:0 17px;display:grid;grid-template-columns:minmax(0,1fr) 252px;gap:13px;align-items:start}
+.hunter-panel,.hunter-asidebox{background:#fff;border:1px solid #ccd9cf;box-shadow:0 1px 2px #18352410;min-width:0}
+.hunter-top{background:#f1f5f2;border-bottom:1px solid #d6e2da;padding:10px 13px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.hunter-top strong{font-size:12px;color:#315a40}.hunter-top span{color:#748779;font-size:11px}
+.hunter-stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid #dce6de}
+.hunter-stat{padding:9px;border-right:1px solid #dce6de;background:#fbfcfb}.hunter-stat:last-child{border:0}
+.hunter-stat small{font-size:10px;color:#78877b;display:block}.hunter-stat strong{display:block;color:#31513a;margin-top:2px;font-size:13px}
+.hunter-actions{padding:10px 12px;border-bottom:1px solid #e1e8e3;display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.hunter-btn{padding:7px 11px;border:1px solid #bfcfc2;background:#f9fcf9;color:#376248;font-size:11px;border-radius:2px;font-weight:650;cursor:pointer}
+.hunter-btn:hover:not(:disabled){background:#eaf5ee}.hunter-btn.on{background:#dfeee3;border-color:#74a989;color:#166c3d}.hunter-btn.primary{background:#107c41;color:#fff;border-color:#107c41}
+.hunter-btn:disabled{opacity:.42;cursor:default}
+.hunter-info{font-size:11px;color:#6a806e;line-height:1.65;margin:0;padding:9px 12px;background:#fafcfa}
+.hunter-sheet{padding:9px 12px 15px;min-width:0}.hunter-grid-wrap{overflow:auto;display:flex;justify-content:center}
+#mine-grid{display:grid;grid-template-columns:24px repeat(12,minmax(0,1fr));width:min(100%,612px);min-width:328px;border-top:1px solid #cbd8cd;border-left:1px solid #cbd8cd;user-select:none;touch-action:manipulation}
+.hunter-cell{aspect-ratio:1;min-width:0;display:grid;place-items:center;border-right:1px solid #e0e7e1;border-bottom:1px solid #e0e7e1;font-size:11px}
+.hunter-axis{background:#f0f3f0;color:#79887b;font-size:10px;aspect-ratio:auto;min-height:21px}
+.hunter-square{padding:0;background:#fff;color:#3c5543;border-top:0;border-left:0;border-radius:0;cursor:cell;font-weight:700;position:relative}
+.hunter-square:hover:not(:disabled){background:#f3f8f3}.hunter-square:disabled{opacity:1;cursor:default}
+.hunter-square.hunter-zone{background:#f2f8f4}.hunter-square.hunter-visited{background:#f5f8f5}
+.hunter-square.hunter-legal{box-shadow:inset 0 0 0 2px #8fc09b;background:#eaf5ed}
+.hunter-square.hunter-selected{box-shadow:inset 0 0 0 2px #327c4b}
+.hunter-square.hunter-robot{background:#d9e9f1;color:#3d728e}
+.hunter-square.hunter-hunter{background:#f0dfdc;color:#955548}
+.hunter-square.hunter-mine{background:#f2e8e1;color:#8a5e4b}
+.hunter-square.hunter-disarmed{background:#edf0eb;color:#a3a9a0}
+.hunter-square.hunter-alert{outline:2px solid #cb9a59;outline-offset:-3px}
+.hunter-square.hunter-clear{background:#eaf6ee;color:#75a081}
+.hunter-square.hunter-risk{background:#fff0d9;color:#ac8139}
+.hunter-square.hunter-noted{background:#f3edf8;color:#86629d}
+.hunter-legend{display:flex;gap:11px;flex-wrap:wrap;font-size:10px;color:#75877a;margin:10px 0 0}
+.hunter-side{display:flex;flex-direction:column;gap:12px;min-width:0}
+.hunter-asidebox h3{font-size:11px;padding:9px 11px;color:#4f6754;background:#f3f7f4;border-bottom:1px solid #dfebe1;margin:0}
+.hunter-asiderow{display:flex;justify-content:space-between;padding:9px 10px;border-bottom:1px solid #eff3ef;font-size:11px;gap:7px}.hunter-asiderow:last-child{border:0}
+.hunter-sensor{padding:10px 11px;background:#f8fbf8;color:#587362;border-bottom:1px solid #e3ece5;font-size:11px;line-height:1.8}
+.hunter-log-row{padding:7px 11px;border-bottom:1px solid #eef3ef;color:#607363;font-size:10.5px}
+.hunter-muted{padding:10px 11px;line-height:1.8;color:#7c8a7e;font-size:10.5px}
+.hunter-minihead{font-weight:bold;color:#40654a;font-size:10.5px;margin:0 9px 6px}
+@media(max-width:900px){#mine-game{grid-template-columns:1fr;max-width:780px}.hunter-side{display:grid;grid-template-columns:1fr 1fr}}
+@media(max-width:620px){#mine-game{padding:0 7px;margin:7px auto 74px}.hunter-sheet{padding:8px 6px 12px}.hunter-stat{padding:7px 5px}.hunter-stat strong{font-size:11px}.hunter-side{display:flex}.hunter-cell{font-size:9px}.hunter-grid-wrap{justify-content:flex-start}.hunter-btn{padding:7px 9px;font-size:10.5px}}
+
+
+#rematch-btn,#tetris-rematch,#mine-rematch{display:none!important}
+/* Shared 1P Start / 2P Ready controls above Omok, Tetris and Mine game content. */
+.match-gate{border-bottom:1px solid #c7d9ca;background:#f7fbf8;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 17px;flex-wrap:wrap}
+.match-gate-info{display:flex;flex-direction:column;gap:3px;min-width:210px;flex:1;font-size:11px;color:#52685a}
+.match-gate-info strong{color:#185e37;font-size:12px}
+.match-gate-controls{display:flex;gap:7px}
+.match-gate-button{background:#107c41;color:#fff;border:1px solid #107c41;padding:9px 18px;border-radius:3px;font-size:12px;font-weight:700;min-width:96px}
+.match-gate-button.secondary{background:#fff;color:#107c41;border-color:#a7c8b1}
+.match-gate-button:disabled{opacity:.45}
+.gomoku-clock{font-variant-numeric:tabular-nums;min-width:53px;justify-content:center;background:#f3f7f3;border-color:#c8d8ce;font-weight:700}.gomoku-clock.warning{background:#fff0f0;color:#aa3333;border-color:#e3aaaa;box-shadow:inset 0 0 0 1px #f2cccc}
+/* Small current-player stone indicator; works on touch screens without hover. */
+.seat.urgent-stone .stone,.seat.urgent-stone .stone.white{background:#c96e73;border:1px solid #ab464d;box-shadow:0 0 0 2px #fbe7e8}.gomoku-clock.expired{background:#fce8e8;color:#a82020;border-color:#eab8b8}
+.sheet-caption{gap:8px}.sheet-caption #game-status{flex:1;min-width:0}
+.match-gate.running{background:#fbfdfb;padding:6px 17px}
+.match-gate.running .match-gate-info strong{font-size:11px}
+@media(max-width:620px){.match-gate{padding:9px 10px}.match-gate-info{min-width:170px}.match-gate-button{min-width:83px;padding:8px 12px}}
+
+/* Operator controls: subdued Excel notifications */
+.admin-notice{position:fixed;z-index:120;top:52px;left:50%;transform:translateX(-50%);width:min(620px,calc(100vw - 24px));display:flex;align-items:flex-start;gap:12px;background:#f3faf5;border:1px solid #4d9870;border-left:5px solid #107c41;box-shadow:0 8px 26px #122b1c30;padding:12px 14px;color:#204b30}
+.admin-notice-label{font-weight:800;color:#107c41;white-space:nowrap}.admin-notice-text{white-space:pre-wrap;overflow-wrap:anywhere;flex:1;line-height:1.5}.admin-notice-close{border:0;background:transparent;color:#476b53;font-size:20px;padding:0 4px;line-height:1}
+.admin-auth-overlay{position:fixed;z-index:160;inset:0;background:#07150e7a;display:flex;align-items:center;justify-content:center;padding:16px}
+.admin-auth-dialog{width:min(360px,100%);background:#fff;border:1px solid #b7d1bd;padding:20px;box-shadow:0 12px 45px #06180a4d}
+.admin-auth-dialog h2{font-size:16px;margin:0 0 9px;color:#175832}.admin-auth-dialog p{font-size:12px;color:#64776a;line-height:1.5;margin:0 0 14px}
+.admin-auth-dialog input{width:100%;border:1px solid #b9cabe;padding:12px;font-size:15px;margin-bottom:12px}
+.admin-auth-actions{display:flex;justify-content:flex-end;gap:8px}.admin-auth-actions button{padding:8px 16px;border:1px solid #b9cabe;background:white;color:#244936}.admin-auth-actions button[type=submit]{background:#107c41;color:#fff;border-color:#107c41}
+.admin-chat-feedback{padding:8px 10px;font-size:11px;border-top:1px solid #dce7df;color:#12683a;background:#f1faf3}.admin-chat-feedback.error{color:#a72525;background:#fff4f4}
+
+/* Member identity / compact Excel-style account controls */
+.member-tools{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.member-status{border:1px solid #d2e2d6;background:#edf6ef;padding:7px 8px;border-radius:2px;color:#246343;font-size:11px;white-space:nowrap;min-width:70px;text-align:center}
+.member-tools button{background:#f9fbf9;color:#286741;border:1px solid #c4d7c9;border-radius:2px;font-size:11px;font-weight:600;padding:7px 9px;cursor:pointer}
+.member-tools button:hover{background:#e6f5e9}
+.member-tools button[hidden],.member-tools [hidden]{display:none!important}
+.member-overlay{position:fixed;inset:0;z-index:3900;background:rgba(20,36,24,.45);display:grid;place-items:center;padding:16px}
+.member-overlay[hidden]{display:none!important}
+.member-dialog{background:white;border:1px solid #8fb59a;width:min(94vw,380px);box-shadow:0 12px 40px #0003;padding:20px;border-radius:3px;color:#263c2c}
+.member-dialog h2{font-size:18px;margin:0 0 5px}.member-dialog .member-desc{font-size:12px;color:#667e6c;line-height:1.5;margin:0 0 12px}
+.member-dialog .member-switch{display:flex;border:1px solid #c8d8ce;margin-bottom:15px}
+.member-switch button{flex:1;padding:9px;border:0;background:#f5f8f6;color:#446c51;font-weight:700;cursor:pointer}
+.member-switch button.active{background:#107c41;color:white}
+.member-dialog label{display:block;font-size:12px;font-weight:650;margin:9px 0 5px}
+.member-dialog input{width:100%;padding:11px;border:1px solid #b7cabd;border-radius:2px;font-size:15px;outline-color:#107c41}
+.member-dialog .member-hint{font-size:11px;color:#738478;margin-top:6px}
+.member-dialog .member-feedback{font-size:12px;min-height:17px;margin-top:12px;color:#a42222}
+.member-dialog .member-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+.member-actions button{padding:9px 15px;border:1px solid #b7cabd;background:#fff;cursor:pointer}
+.member-actions button[type=submit]{background:#107c41;color:white;border-color:#107c41;font-weight:700}
+.member-progress{font-size:10px;color:#54745e;display:inline-flex;align-items:center;gap:5px}
+.member-level-tag{font-size:10px;font-weight:700;background:#dff1e3;border:1px solid #b9dabf;color:#216139;padding:2px 4px;border-radius:2px}
+@media(max-width:780px){.member-tools{width:100%}.member-status{flex:1}.member-tools button{padding:8px}}
+
+/* Sheet1 always-open worksheet chat from row 21; room memo remains floating. */
+#lobby-view .grid-scroll{max-height:none;overflow-x:auto;overflow-y:visible}
+.sheet1-chat-area{margin-top:0;margin-bottom:22px;background:#fff}
+.sheet1-chat-grid{table-layout:fixed;border-top:0;min-width:0;width:100%}
+.sheet1-chat-grid-scroll{min-height:0!important}
+.sheet1-chat-grid col.row-col{width:43px}
+.sheet1-chat-grid col.c1{width:94px}
+.sheet1-chat-grid col.c2{width:142px}
+.sheet1-chat-grid col.c3,.sheet1-chat-grid col.c4,.sheet1-chat-grid col.c5,.sheet1-chat-grid col.c6,.sheet1-chat-grid col.c7,.sheet1-chat-grid col.c8,.sheet1-chat-grid col.c9,.sheet1-chat-grid col.c10{width:auto}
+.sheet1-chat-grid .section{background:#e7f1e9;color:#176b3d}
+.sheet1-chat-grid .col-head{text-align:left}
+.sheet1-chat-grid td.sheet1-chat-text{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;height:auto;min-height:32px;line-height:1.55;color:#374c3e}
+.sheet1-chat-grid td.sheet1-chat-name{font-weight:700;color:#157445;white-space:normal;word-break:break-all}
+.sheet1-chat-grid td.sheet1-chat-id{color:#728278;font-size:10px;font-variant-numeric:tabular-nums}
+.sheet1-chat-grid td.sheet1-chat-empty{color:#92a396;text-align:left;padding:12px 8px}
+.sheet1-chat-grid tr.sheet1-chat-own td{background:#f5faf6}
+.sheet1-chat-grid .sheet1-chat-form-cell{padding:3px 5px!important}
+.sheet1-chat-form{display:flex;align-items:center;gap:5px;min-width:0}
+.sheet1-chat-form input{flex:1;min-width:0;border:1px solid #c9d8ce;color:#304a37;background:#fff;outline-color:#107c41;border-radius:0;padding:7px 9px;font-size:11px;min-height:31px}
+.sheet1-chat-form button{flex:none;background:#f3faf5;border:1px solid #a6cbb0;color:#14693b;padding:7px 14px;font-size:11px;font-weight:700;min-height:31px;border-radius:0}
+.sheet1-chat-form button:disabled{opacity:.45}
+.sheet1-chat-grid #sheet1-chat-feedback{display:block;padding:8px 11px}
+.sheet1-chat-grid #sheet1-chat-feedback[hidden]{display:none}
+@media(max-width:700px){.sheet1-chat-area{margin-bottom:20px}.sheet1-chat-grid{min-width:0;width:100%}.sheet1-chat-grid col.row-col{width:30px}.sheet1-chat-grid col.c1{width:54px}.sheet1-chat-grid col.c2{width:80px}.sheet1-chat-grid td,.sheet1-chat-grid th{padding:4px 5px}.sheet1-chat-grid td.sheet1-chat-form-cell{padding:3px!important}.sheet1-chat-grid .sheet1-chat-form button{padding:7px 8px}.sheet1-chat-grid .sheet1-chat-form input{padding:7px 5px}}
+</style></head>
+<body>
+<div class="titlebar"><span class="app-icon" aria-hidden="true">▦</span><span class="doc-name">업무현황_2026.xlsx</span><span class="title-space"></span><span id="member-top-level" class="member-level-tag" hidden>Lv.1</span><span id="connection-label" class="connection">연결 중</span><button id="copy-link-btn" type="button" class="share-btn">주소 복사</button></div>
+<div class="tabs"><span class="tab file-tab">파일</span><span class="tab active">홈</span><span class="tab">삽입</span><span class="tab">페이지 레이아웃</span><span class="tab">수식</span><span class="tab">데이터</span><span class="tab">검토</span><span class="tab">보기</span></div>
+<div class="ribbon" aria-hidden="true"><div class="ribbon-group"><div class="ribbon-content"><span class="tool-icon green">▤</span><div><div class="tool-small tool-strong">붙여넣기</div><div class="tool-small">복사 · 잘라내기</div></div></div><div class="ribbon-title">클립보드</div></div><div class="ribbon-group"><div class="ribbon-content"><span class="tool-mini wide">맑은 고딕&nbsp; ▾</span><span class="tool-mini">11</span><span class="tool-divider"></span><span class="tool-strong">B</span><em>I</em><u>U</u></div><div class="ribbon-title">글꼴</div></div><div class="ribbon-group"><div class="ribbon-content"><span class="tool-icon">☷</span><span class="tool-icon">☰</span><span class="tool-small">가운데 맞춤</span></div><div class="ribbon-title">맞춤</div></div><div class="ribbon-group"><div class="ribbon-content"><span class="tool-icon green">▦</span><span class="tool-small">표 서식<br>조건부 서식</span></div><div class="ribbon-title">스타일</div></div></div>
+<div class="formula-bar"><div class="name-box"><span id="cell-address">A1</span><span>⌄</span></div><span class="fx">ƒx</span><div class="formula-value" id="formula-value">=COUNTIF(방현황,"접속중")</div></div>
+<div id="member-overlay" class="member-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="member-dialog-title"><form id="member-form" class="member-dialog" autocomplete="on"><h2 id="member-dialog-title">계정 로그인</h2><p class="member-desc">처음엔 익명 Player로 접속합니다. 가입하면 승리 기록과 레벨이 저장돼요.</p><div class="member-switch"><button type="button" id="member-login-tab" class="active">로그인</button><button type="button" id="member-register-tab">회원가입</button></div><label for="member-nickname">닉네임 (로그인 아이디)</label><input id="member-nickname" name="username" type="text" maxlength="16" minlength="1" autocomplete="username" required placeholder="1~16자 아이디"><label for="member-password">비밀번호</label><input id="member-password" name="password" type="password" minlength="4" maxlength="72" autocomplete="current-password" required placeholder="4자 이상 비밀번호 (형식 자유)"><div class="member-hint">이메일 없이 닉네임과 비밀번호로 가입합니다. 비밀번호 분실 시 자동 복구는 지원하지 않아요.</div><div id="member-feedback" class="member-feedback" role="alert"></div><div class="member-actions"><button type="button" id="member-cancel">닫기</button><button type="submit" id="member-submit">로그인</button></div></form></div>
+<div class="admin-notice" id="admin-notice" role="alert" hidden><strong class="admin-notice-label">공지</strong><span class="admin-notice-text" id="admin-notice-text"></span><button type="button" id="admin-notice-close" class="admin-notice-close" aria-label="공지 닫기">×</button></div>
+<div id="admin-auth-overlay" class="admin-auth-overlay" role="dialog" aria-modal="true" aria-labelledby="admin-auth-title" hidden><form id="admin-auth-form" class="admin-auth-dialog" autocomplete="off"><h2 id="admin-auth-title">운영자 인증</h2><p>닉네임 ‘운영자’를 사용하려면 운영자 비밀번호를 입력해야 합니다.</p><input id="admin-auth-password" type="password" name="operator_password" autocomplete="off" placeholder="운영자 비밀번호" required aria-label="운영자 비밀번호"><div class="admin-auth-actions"><button type="button" id="admin-auth-cancel">취소</button><button type="submit">확인</button></div></form></div>
+<section class="lobby-shell" id="lobby-view"><div class="lobby-toolbar"><div class="left"><span class="lobby-title">Sheet1 · 업무 진행 현황</span><span id="lobby-count" class="lobby-summary">0개 시트</span></div><div class="lobby-actions"><form id="nickname-form" class="nickname-form" autocomplete="off"><label for="nickname-input">내 닉네임</label><input id="nickname-input" name="nickname" type="text" maxlength="16" placeholder="Player" spellcheck="false" autocomplete="off" aria-label="닉네임 16자 이하"><button type="submit" id="nickname-save">저장</button></form><div class="member-tools"><span id="member-status" class="member-status">익명 Player</span><button id="member-open" type="button">가입 / 로그인</button><button id="member-logout" type="button" hidden>로그아웃</button></div><button id="create-room-btn" type="button" class="excel-action">＋ 새 방 만들기</button></div></div><div id="nickname-required-note" class="nickname-required-note" role="status" aria-live="polite" hidden>익명 Player로 둘러볼 수 있어요. 방에 들어가려면 닉네임을 저장하거나 <strong>가입 / 로그인</strong>해 주세요. 회원은 게임 결과에 따라 포인트와 레벨이 기록됩니다.</div><div id="lobby-notice" class="lobby-notice" aria-live="polite"></div><div class="grid-scroll"><table class="xl-grid" aria-label="방 현황과 대기자 목록"><colgroup><col class="row-col"><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"><col class="c7"><col class="c8"><col class="c9"><col class="c10"></colgroup><thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th><th>J</th></tr></thead><tbody id="lobby-cells"><tr><th class="row-no">1</th><td class="section" colspan="10">방 목록 불러오는 중...</td></tr></tbody></table></div>
+<div id="sheet1-chat-area" class="sheet1-chat-area" aria-label="Sheet1 공용 채팅">
+ <div class="grid-scroll sheet1-chat-grid-scroll"><table class="xl-grid sheet1-chat-grid" aria-label="공용 채팅 기록과 메시지 입력">
+  <colgroup><col class="row-col"><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"><col class="c7"><col class="c8"><col class="c9"><col class="c10"></colgroup>
+  <thead><tr><th aria-label="행 번호"></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th><th>J</th></tr></thead>
+  <tbody><tr><th data-chat-row-no class="row-no">21</th><td colspan="10" class="section">공용 채팅 / COMMUNICATION LOG</td></tr>
+  <tr><th data-chat-row-no class="row-no">22</th><td class="col-head">번호</td><td class="col-head">닉네임</td><td colspan="8" class="col-head">내용</td></tr></tbody>
+  <tbody id="sheet1-chat-rows"><tr><th data-chat-row-no class="row-no">23</th><td colspan="10" class="sheet1-chat-empty">대화를 불러오는 중...</td></tr></tbody>
+  <tbody><tr class="sheet1-chat-input-row"><th data-chat-row-no class="row-no">24</th><td class="col-head">입력</td><td colspan="9" class="sheet1-chat-form-cell"><form id="sheet1-chat-form" class="sheet1-chat-form" autocomplete="off"><input id="sheet1-chat-input" type="text" maxlength="280" placeholder="메시지 입력" aria-label="Sheet1 공용 채팅 메시지"><button type="submit">전송</button></form></td></tr>
+  <tr id="sheet1-chat-feedback-row" hidden><th data-chat-row-no class="row-no">25</th><td colspan="10"><div id="sheet1-chat-feedback" role="status" class="admin-chat-feedback" hidden></div></td></tr></tbody>
+ </table></div>
+</div>
+</section>
+<section id="room-view" hidden><div class="room-bar"><div><span id="room-name" class="room-name">Sheet2</span><span id="room-info" class="room-info"></span></div><div class="room-control"><button id="room-copy" type="button">초대 링크 복사</button><button id="room-lobby" type="button">Sheet1</button></div></div>
+<div id="match-gate" class="match-gate" role="region" aria-label="게임 준비 및 시작">
+ <div class="match-gate-info"><strong id="match-gate-title">대기 중</strong><span id="match-gate-desc" role="status" aria-live="polite">방 정보를 확인하고 있습니다.</span></div>
+ <div class="match-gate-controls"><button id="match-guest-ready" type="button" class="match-gate-button secondary" hidden>준비</button><button id="match-host-start" type="button" class="match-gate-button" hidden disabled>시작</button></div>
+</div>
+<main id="renju-game" class="main-shell"><section class="sheet-col"><div class="sheet-caption"><span id="game-status" class="caption-label">데이터 불러오는 중</span><span id="turn-label" class="turn">동기화 중</span><span id="gomoku-clock" class="turn gomoku-clock" aria-label="오목 남은 착수 시간">--:--</span></div><div class="sheet-card"><div class="board-frame"><canvas id="board" role="img" aria-label="15x15 오목 시트"></canvas><div class="board-overlay" id="board-overlay">시트 불러오는 중...</div></div></div><div class="below-board"><span id="move-count" class="move-counter">0개 셀 입력</span><div id="message" class="notice" role="status" aria-live="polite"></div><button id="rematch-btn" type="button" class="rematch" hidden>새로 시작</button></div></section><aside class="sidebar"><section class="side-panel"><div class="panel-heading"><span>작업자 현황</span><span id="my-role" class="small-count"></span></div><div class="table-heading"><span>구분</span><span>사용자</span><span>상태</span></div><div id="black-card" class="seat"><span class="stone"></span><div class="seat-info"><div id="black-name" class="seat-name">대기</div></div><div id="black-status" class="seat-meta">흑</div></div><div id="white-card" class="seat"><span class="stone white"></span><div class="seat-info"><div id="white-name" class="seat-name">대기</div></div><div id="white-status" class="seat-meta">백</div></div></section><section class="side-panel"><div class="panel-heading"><span>대기 목록</span><span id="queue-count" class="small-count">0명</span></div><div class="queue" id="queue-list"></div></section><section class="side-panel"><div class="panel-heading"><span>변경 내역</span><span id="history-total" class="small-count">0</span></div><div id="move-list" class="history"></div></section></aside></main>
+<main id="tetris-game" class="tetris-shell" hidden>
+ <div class="tetris-sheet"><div class="tetris-header"><strong id="tetris-round">ROUND 1</strong><strong id="tetris-phase">상대 대기</strong></div>
+  <div class="tetris-match"><div><div class="tetris-col-head">내 작업 영역 <span id="tetris-me"></span></div><div class="tetris-grid-frame"><div class="tetris-grid-columns"><span class="corner-cell"></span><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span></div><div class="tetris-grid-body"><div class="tetris-grid-rows"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span></div><canvas width="300" height="600" id="tetris-board" class="tetris-main-board" aria-label="내 테트리스 보드"></canvas></div></div></div>
+  <div><div class="tetris-col-head">상대 화면</div><div class="tetris-grid-frame tetris-grid-frame-small"><div class="tetris-grid-columns"><span class="corner-cell"></span><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span></div><div class="tetris-grid-body"><div class="tetris-grid-rows"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span></div><canvas width="180" height="360" id="tetris-opponent" class="tetris-other-board" aria-label="상대 테트리스 보드"></canvas></div></div>
+   <div class="tetris-stats"><div class="tetris-stat">내 점수<strong id="tetris-score">0</strong></div><div class="tetris-stat">상대 점수<strong id="tetris-opponent-score">0</strong></div><div class="tetris-stat">줄 삭제<strong id="tetris-lines">0</strong></div><div class="tetris-stat">공격<strong id="tetris-attack">0</strong></div><div class="tetris-stat">다음<strong id="tetris-next">-</strong></div><div class="tetris-stat">보관<strong id="tetris-hold">-</strong></div></div>
+  </div></div>
+  <div class="tetris-controls" id="tetris-controls"><button type="button" data-tetris="left" title="왼쪽">◀</button><button type="button" data-tetris="rotate" title="회전">↻</button><button type="button" data-tetris="right" title="오른쪽">▶</button><button type="button" data-tetris="down" title="아래">▼</button><button type="button" data-tetris="drop" title="즉시 낙하">DROP</button><button type="button" data-tetris="hold" title="보관">HOLD</button></div>
+  <div id="tetris-help" class="tetris-tip">2P 준비 후 1P가 시작</div><div style="text-align:center"><button type="button" class="tetris-replay" id="tetris-rematch" hidden>재대결</button></div>
+ </div>
+ <aside class="tetris-sidebar"><div class="tetris-sidebox"><h3>참가자</h3><div class="tetris-details">1P · <strong id="tetris-p1">대기</strong><br>2P · <strong id="tetris-p2">대기</strong></div></div><div class="tetris-sidebox"><h3>대기자</h3><div id="tetris-queue" class="tetris-details">없음</div></div></aside>
+</main>
+
+<main id="mine-game" hidden>
+ <section class="hunter-panel">
+  <div class="hunter-top"><strong id="mine-phase">시작 대기</strong><span>12×12 · 온라인 1:1 · 시간 제한 없음</span></div>
+  <div class="hunter-stats">
+   <div class="hunter-stat"><small>내 역할</small><strong id="mine-role">대기</strong></div>
+   <div class="hunter-stat"><small>생존 로봇</small><strong id="mine-robot-count">2 / 2</strong></div>
+   <div class="hunter-stat"><small>잔여 지뢰</small><strong id="mine-mine-count">3 / 3</strong></div>
+   <div class="hunter-stat"><small>로봇 행동</small><strong id="mine-turn-count">0 / 36</strong></div>
+  </div>
+  <div id="mine-setup-controls">
+   <div class="hunter-actions" id="mine-setup-buttons"></div>
+   <div class="hunter-actions"><span id="mine-setup-hint" style="font-size:11px;color:#69806f;flex:1"></span><button id="mine-setup-random" type="button" class="hunter-btn">자동 배치</button></div>
+  </div>
+  <div id="mine-play-controls" hidden>
+   <div class="hunter-actions"><button type="button" id="mine-move" class="hunter-btn on">이동</button><button type="button" id="mine-defuse" class="hunter-btn">지뢰 해체</button><button type="button" id="mine-note-mode" class="hunter-btn">? 의심 표시</button></div>
+  </div>
+  <p class="hunter-info" id="mine-note" role="status">대기 중입니다.</p>
+  <div class="hunter-sensor" id="mine-signal">로봇 주변 3×3 지뢰 신호 · 정확한 위치 비공개</div>
+  <div class="hunter-sheet">
+   <div class="hunter-minihead">상태 현황 / GAME MAP</div>
+   <div class="hunter-grid-wrap"><div id="mine-grid" role="grid" aria-label="12×12 지뢰 로봇 게임판"></div></div>
+   <div class="hunter-legend"><span>▣ R1·R2 로봇</span><span>H 설치자</span><span>◆ 숨겨진 지뢰</span><span>! 당시 위험 / · 당시 안전</span></div>
+  </div>
+  <div class="hunter-actions"><button id="mine-ready" type="button" class="hunter-btn primary" hidden>배치 완료</button><button id="mine-rematch" type="button" class="hunter-btn primary" hidden>재대결 · 역할 교대</button><button id="mine-leave" type="button" class="hunter-btn">시트 닫기</button></div>
+ </section>
+ <aside class="hunter-side">
+  <div class="hunter-asidebox"><h3>참가자</h3><div class="hunter-asiderow"><span id="mine-host-name">1P</span><b id="mine-host-progress">지뢰팀</b></div><div class="hunter-asiderow"><span id="mine-guest-name">2P</span><b id="mine-guest-progress">탐색팀</b></div></div>
+  <div class="hunter-asidebox"><h3>대국 현황</h3><div class="hunter-asiderow"><span>라운드</span><b id="mine-round">1</b></div><div class="hunter-asiderow"><span>결과</span><b id="mine-result">-</b></div><div class="hunter-asiderow"><span>내 전적 (승 / 패)</span><b id="mine-record">0 / 0</b></div><div class="hunter-muted">로봇은 십자 1칸 이동 후 해체 또는 추가 1칸 이동. 설치자는 대각선 포함 1칸. 로봇 주변 3×3에 지뢰가 있으면 경고만 표시됩니다. 36번째 로봇 행동을 끝내면 지뢰팀 승리입니다.</div></div>
+  <div class="hunter-asidebox"><h3>작업 기록</h3><div id="mine-log"></div></div>
+ </aside>
+</main>
+
+</section>
+
+<div id="create-modal" class="game-chooser" hidden role="dialog" aria-modal="true" aria-labelledby="chooser-title">
+ <div class="chooser-panel"><div class="chooser-top"><span id="chooser-title">새 시트 만들기</span><button type="button" class="chooser-close" id="chooser-close" aria-label="닫기">×</button></div>
+  <div class="chooser-grid"><button type="button" class="game-choice" data-choice="gomoku"><span class="choice-symbol">▣ ▤</span><span>오목</span></button><button type="button" class="game-choice" data-choice="tetris"><span class="choice-symbol">▦</span><span>테트리스</span></button><button type="button" class="game-choice mine-choice" data-choice="mine_battle"><span class="choice-symbol">▥</span><span>지뢰탐색게임</span></button></div><p class="chooser-note">선택하면 새 시트가 생성됩니다.</p>
+ </div>
+</div>
+<div id="chat" class="chat" hidden><button type="button" id="chat-title-button" class="chat-title" aria-expanded="true" aria-controls="chat-body" title="메모 접기/펼치기"><span>메모 <span id="chat-count"></span></span><span class="chat-toggle" id="chat-toggle-glyph">−</span></button><div class="chat-body" id="chat-body"><div id="chat-messages" class="chat-messages"><div class="chat-empty">내용 없음</div></div><div id="admin-chat-feedback" class="admin-chat-feedback" role="status" hidden></div><form class="chat-form" id="chat-form"><input id="chat-input" class="chat-input" placeholder="메시지 입력" maxlength="280" autocomplete="off" aria-label="채팅 메시지"><button type="submit" class="chat-send">보내기</button></form></div></div>
+<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right">100%</span></footer>
+<script>
+'use strict';
+const SIZE = 15;
+
+const BLACK = 1;
+const WHITE = 2;
+const DIRECTIONS = [[1, 0], [0, 1], [1, 1], [1, -1]];
+
+function emptyBoard() { return Array(SIZE * SIZE).fill(0); }
+function inside(x, y) { return x >= 0 && x < SIZE && y >= 0 && y < SIZE; }
+function index(x, y) { return y * SIZE + x; }
+function value(board, x, y) { return inside(x, y) ? board[index(x, y)] : -1; }
+
+function runLength(board, x, y, dx, dy, color) {
+  let count = 1;
+  for (const sign of [-1, 1]) {
+    let a = x + dx * sign;
+    let b = y + dy * sign;
+    while (value(board, a, b) === color) {
+      count++;
+      a += dx * sign;
+      b += dy * sign;
+    }
+  }
+  return count;
+}
+
+function hasFive(board, x, y, color) {
+  return DIRECTIONS.some(([dx, dy]) => {
+    const length = runLength(board, x, y, dx, dy, color);
+    return color === BLACK ? length === 5 : length >= 5;
+  });
+}
+function hasOverline(board, x, y) {
+  return DIRECTIONS.some(([dx, dy]) => runLength(board, x, y, dx, dy, BLACK) > 5);
+}
+
+// A four is a set of four existing stones that can become exactly five on
+// the next move. Two finishing points of a straight four count as ONE four.
+// Distinct four-stone sets on one axis can count as TWO fours.
+function countFours(board, x, y) {
+  const found = new Set();
+  for (const [dx, dy] of DIRECTIONS) {
+    for (let start = -4; start <= 0; start++) {
+      const stones = [];
+      let gap = null;
+      let valid = true;
+      for (let i = 0; i < 5; i++) {
+        const px = x + (start + i) * dx;
+        const py = y + (start + i) * dy;
+        const c = value(board, px, py);
+        if (c === BLACK) stones.push(index(px, py));
+        else if (c === 0 && gap === null) gap = [px, py];
+        else { valid = false; break; }
+      }
+      if (!valid || stones.length !== 4 || !stones.includes(index(x, y)) || !gap) continue;
+      const gi = index(gap[0], gap[1]);
+      board[gi] = BLACK;
+      const exact = runLength(board, gap[0], gap[1], dx, dy, BLACK) === 5;
+      board[gi] = 0;
+      if (exact) found.add(stones.sort((a, b) => a - b).join(','));
+    }
+  }
+  return found.size;
+}
+
+// Return sets of the original three stones that can be extended into an
+// unbroken four with TWO legal winning end points. All sets include the
+// freshly placed stone. This also handles broken threes.
+function possibleThrees(board, x, y, dx, dy) {
+  const possibilities = [];
+  for (let delta = -4; delta <= 4; delta++) {
+    if (!delta) continue;
+    const ex = x + delta * dx;
+    const ey = y + delta * dy;
+    if (value(board, ex, ey) !== 0) continue;
+    board[index(ex, ey)] = BLACK;
+    const triples = new Set();
+    // Find a run of FOUR containing both the pivot and extension.
+    for (let begin = -3; begin <= 0; begin++) {
+      const offsets = [begin, begin + 1, begin + 2, begin + 3];
+      if (!offsets.includes(0) || !offsets.includes(delta)) continue;
+      if (!offsets.every(t => value(board, x + t * dx, y + t * dy) === BLACK)) continue;
+      const left = begin - 1, right = begin + 4;
+      const lx = x + left * dx, ly = y + left * dy;
+      const rx = x + right * dx, ry = y + right * dy;
+      if (value(board, lx, ly) !== 0 || value(board, rx, ry) !== 0) continue;
+      // Both sides of a straight four must really produce exactly five,
+      // not connect into an overline beyond a one-point gap.
+      board[index(lx, ly)] = BLACK;
+      const legalLeft = runLength(board, lx, ly, dx, dy, BLACK) === 5;
+      board[index(lx, ly)] = 0;
+      board[index(rx, ry)] = BLACK;
+      const legalRight = runLength(board, rx, ry, dx, dy, BLACK) === 5;
+      board[index(rx, ry)] = 0;
+      if (!legalLeft || !legalRight) continue;
+      const threeStones = offsets
+        .filter(t => t !== delta)
+        .map(t => index(x + t * dx, y + t * dy))
+        .sort((a, b) => a - b);
+      triples.add(threeStones.join(','));
+    }
+    board[index(ex, ey)] = 0;
+    if (triples.size) possibilities.push({ x: ex, y: ey, triples: [...triples] });
+  }
+  return possibilities;
+}
+
+// When investigating a three, the extension point itself must be a legal
+// black move; an apparent 3-3 can therefore be a legal "false double-three".
+// Recursing through those exceptions is the tricky part of Renju. Limit nested
+// look-ahead to 7 for predictable response times in a casual online game.
+const MAX_NESTING = 7;
+function evaluatePlacedBlack(board, x, y, depth = 0) {
+  if (hasFive(board, x, y, BLACK)) return { result: 'win' };
+  if (hasOverline(board, x, y)) return { result: 'forbidden', reason: '장목(6목 이상)' };
+  if (countFours(board, x, y) >= 2) return { result: 'forbidden', reason: '44 금수' };
+
+  const threes = new Set();
+  for (const [dx, dy] of DIRECTIONS) {
+    for (const option of possibleThrees(board, x, y, dx, dy)) {
+      board[index(option.x, option.y)] = BLACK;
+      const makesFive = hasFive(board, option.x, option.y, BLACK);
+      const result = !makesFive && depth < MAX_NESTING
+        ? evaluatePlacedBlack(board, option.x, option.y, depth + 1)
+        : null;
+      board[index(option.x, option.y)] = 0;
+      // At the deepest limit, use the nonrecursive disqualifiers (overline,
+      // double-four). This approximation only impacts exceptionally deep nests.
+      const valid = !makesFive && (result
+        ? result.result === 'legal'
+        : !hasForbiddenNonRecursiveExtension(board, option.x, option.y));
+      if (!valid) continue;
+      for (const triple of option.triples) threes.add(triple);
+      if (threes.size >= 2) return { result: 'forbidden', reason: '33 금수' };
+    }
+  }
+  return { result: 'legal' };
+}
+
+function hasForbiddenNonRecursiveExtension(board, x, y) {
+  board[index(x, y)] = BLACK;
+  const result = hasOverline(board, x, y) || countFours(board, x, y) >= 2;
+  board[index(x, y)] = 0;
+  return result;
+}
+
+function evaluateMove(board, x, y, color) {
+  if (!Number.isInteger(x) || !Number.isInteger(y) || !inside(x, y)) {
+    return { result: 'invalid', reason: '오목판 밖입니다.' };
+  }
+  if (board[index(x, y)] !== 0) return { result: 'invalid', reason: '이미 돌이 놓인 자리입니다.' };
+  // Center-first simplified opening. Tournament swap/opening protocols omitted.
+  if (color === BLACK && board.every(c => c === 0) && (x !== 7 || y !== 7)) {
+    return { result: 'invalid', reason: '흑의 첫 수는 정중앙(H8)에 둬야 합니다.' };
+  }
+  board[index(x, y)] = color;
+  const result = color === BLACK
+    ? evaluatePlacedBlack(board, x, y)
+    : (hasFive(board, x, y, WHITE) ? { result: 'win' } : { result: 'legal' });
+  board[index(x, y)] = 0;
+  return result;
+}
+
+
+
+
+
+const $ = id => document.getElementById(id);
+const LETTERS='ABCDEFGHIJKLMNO';
+const numbered=n=>'Player '+n;
+const NICKNAME_STORAGE='excel-games-my-nickname-v1';
+const ADMIN_SESSION_KEY='excel-games-admin-token-v1';
+let adminToken='';
+try{adminToken=sessionStorage.getItem(ADMIN_SESSION_KEY)||'';}catch(_){}
+function persistAdminToken(token){
+ adminToken=token||'';
+ try{if(adminToken)sessionStorage.setItem(ADMIN_SESSION_KEY,adminToken);else sessionStorage.removeItem(ADMIN_SESSION_KEY);}catch(_){}
+}
+let adminAuthResolve=null;
+function requestAdminPassword(){
+ if(adminAuthResolve)return Promise.resolve(null);
+ const overlay=$('admin-auth-overlay'),field=$('admin-auth-password');
+ overlay.hidden=false;field.value='';
+ setTimeout(()=>field.focus(),0);
+ return new Promise(resolve=>{adminAuthResolve=resolve;});
+}
+function finishAdminPassword(value){
+ const done=adminAuthResolve;adminAuthResolve=null;
+ $('admin-auth-overlay').hidden=true;$('admin-auth-password').value='';
+ if(done)done(value);
+}
+$('admin-auth-form').addEventListener('submit',e=>{
+ e.preventDefault();finishAdminPassword($('admin-auth-password').value);
+});
+$('admin-auth-cancel').addEventListener('click',()=>finishAdminPassword(null));
+$('admin-auth-overlay').addEventListener('click',e=>{if(e.target.id==='admin-auth-overlay')finishAdminPassword(null);});
+
+let myNickname='';
+try{myNickname=(localStorage.getItem(NICKNAME_STORAGE)||'').trim().slice(0,16);}catch(_){}
+let myLobbyNumber=0,nicknameByNumber=new Map(),nicknameLastSync=0,nicknameSyncFailed=false,nicknameLocalPublished=false,nicknameRevision=0;
+const MEMBER_TOKEN_KEY='excel-games-member-session-v1';
+let memberToken='';
+try{memberToken=localStorage.getItem(MEMBER_TOKEN_KEY)||'';}catch(_){}
+let memberProfile=null,memberLevelsByNumber=new Map(),memberPanelMode='login';
+let memberAuthPending=false,memberRefreshBusy=false;
+function memberRpc(action,rest={}){return callRpc('renju_member_auth',{p_client:CLIENT_ID,p_action:action,...rest});}
+function saveMemberToken(token){memberToken=token||'';try{if(memberToken)localStorage.setItem(MEMBER_TOKEN_KEY,memberToken);else localStorage.removeItem(MEMBER_TOKEN_KEY);}catch(_){}}
+function paintMemberPanel(){
+ const signed=Boolean(memberProfile);
+ const panel=$('member-status'),top=$('member-top-level'),open=$('member-open'),logout=$('member-logout');
+ if(panel)panel.textContent=signed?`${memberProfile.nickname} · Lv.${memberProfile.level} · ${memberProfile.points}P`:'익명 Player';
+ if(top){top.hidden=!signed;top.textContent=signed?`Lv.${memberProfile.level} · ${memberProfile.points}P`:'';}
+ if(open)open.hidden=signed;
+ if(logout)logout.hidden=!signed;
+ const nick=$('nickname-input'),save=$('nickname-save');
+ if(nick)nick.disabled=signed;
+ if(save){save.disabled=signed;save.title=signed?'회원 닉네임은 로그아웃 후 변경할 수 있습니다.':'';}
+}
+function useMemberProfile(profile){
+ memberProfile=profile||null;
+ if(profile){myNickname=profile.nickname;nicknameLocalPublished=true;nicknameSyncFailed=false;
+  try{localStorage.setItem(NICKNAME_STORAGE,myNickname);}catch(_){}
+ }
+ updateNicknameInput();paintMemberPanel();refreshNicknameAccess();
+ renderLobby();if(activeRoom){if(isTetrisRoom())tDisplayStatus();else if(isMineRoom())renderMineRoom();else if(state)paintState();}
+}
+async function loadMemberSession(){
+ if(!memberToken)return;
+ try{const result=await memberRpc('session',{p_token:memberToken});persistAdminToken(result.admin_token||'');useMemberProfile(result.profile);maybeOpenInitialRoom();}
+ catch(_){saveMemberToken('');persistAdminToken('');memberProfile=null;paintMemberPanel();}
+}
+async function refreshMemberStats(){
+ if(document.hidden||memberRefreshBusy)return;
+ memberRefreshBusy=true;
+ try{
+  if(memberToken){const data=await memberRpc('session',{p_token:memberToken});
+    if(adminToken!==(data.admin_token||''))persistAdminToken(data.admin_token||'');
+    if(!memberProfile||JSON.stringify(data.profile)!==JSON.stringify(memberProfile))useMemberProfile(data.profile);
+  }
+  const data=await callRpc('renju_member_public_levels',{});
+  if(Array.isArray(data.profiles)){
+   const next=new Map(data.profiles.map(p=>[Number(p.number),Number(p.level)]));
+   if(JSON.stringify([...next])!==JSON.stringify([...memberLevelsByNumber])){
+    memberLevelsByNumber=next;nicknameRevision++;chatLastSeen='';
+    renderLobby();if(activeRoom){if(isTetrisRoom())tDisplayStatus();else if(isMineRoom())renderMineRoom();else if(state)paintState();}
+   }
+  }
+ }catch(_){/* Account widgets do not interrupt gameplay if optional RPC is unavailable. */}
+ finally{memberRefreshBusy=false;}
+}
+function openMemberPanel(mode='login'){
+ if(memberAuthPending)return;
+ memberPanelMode=mode;$('member-overlay').hidden=false;
+ $('member-nickname').value=memberProfile?.nickname||myNickname||'';
+ $('member-password').value='';$('member-feedback').textContent='';
+ memberChooseTab(mode);$('member-nickname').focus();
+}
+function memberChooseTab(mode){
+ memberPanelMode=mode;$('member-login-tab').classList.toggle('active',mode==='login');
+ $('member-register-tab').classList.toggle('active',mode==='register');
+ $('member-dialog-title').textContent=mode==='login'?'계정 로그인':'새 계정 만들기';
+ $('member-submit').textContent=mode==='login'?'로그인':'회원가입';
+ $('member-password').autocomplete=mode==='login'?'current-password':'new-password';
+ $('member-feedback').textContent='';
+}
+function closeMemberPanel(){$('member-overlay').hidden=true;$('member-password').value='';}
+
+// Access requires an explicitly chosen nickname and a successful Supabase profile sync.
+// A generated fallback such as "Player 12" is never an admission credential.
+function hasSavedNickname(){return Boolean(myNickname.trim() && nicknameLocalPublished && (myNickname!=='운영자'||adminToken));}
+function refreshNicknameAccess(){
+ const allowed=hasSavedNickname();
+ const banner=document.getElementById('nickname-required-note');if(banner)banner.hidden=allowed;
+ const form=document.getElementById('nickname-form');if(form)form.classList.toggle('required',!allowed);
+ const create=document.getElementById('create-room-btn');if(create){create.title=allowed?'게임 방 생성':'닉네임을 저장한 뒤 방을 생성할 수 있습니다.';create.setAttribute('aria-disabled',String(!allowed));}
+ const add=document.getElementById('add-sheet-btn');if(add){add.title=allowed?'게임 방 생성':'닉네임을 먼저 저장해 주세요.';add.setAttribute('aria-disabled',String(!allowed));}
+ document.querySelectorAll('.room-open').forEach(button=>{button.textContent=allowed?'열기':'닉네임 필요';button.classList.toggle('locked',!allowed);button.setAttribute('aria-disabled',String(!allowed));});
+}
+function requireNickname(){
+ if(hasSavedNickname())return true;
+ if(typeof switchView==='function' && activeRoom)switchView(null);
+ const text=myNickname.trim()?'닉네임 서버 저장을 확인하고 있습니다. 잠시 후 다시 시도해 주세요.':'닉네임을 먼저 입력하고 저장해야 게임에 입장할 수 있습니다.';
+ lobbyNotify(text,true);
+ refreshNicknameAccess();
+ const input=document.getElementById('nickname-input');if(input){input.focus();if(!myNickname)input.select();}
+ return false;
+}
+function maybeOpenInitialRoom(){
+ if(!initialDeepLink || !lobbyReady || !hasSavedNickname())return;
+ const id=initialDeepLink;initialDeepLink=null;
+ if(ROOM_REGEX.test(id)&&roomList.some(r=>r.id===id))openRoom(id);
+ else lobbyNotify('존재하지 않는 시트입니다.',true);
+}
+
+function nicknameFor(number,fallback=''){
+ const n=Number(number);
+ const base=n>0?(nicknameByNumber.get(n)||(n===myLobbyNumber&&myNickname?myNickname:numbered(n))):(fallback||'대기');
+ const level=n>0?memberLevelsByNumber.get(n):null;
+ return level ? base+' · Lv.'+level : base;
+}
+function nicknameFromServer(name){const m=/^Player\s+(\d+)$/.exec(String(name||''));return m?nicknameFor(Number(m[1])):(name||'대기');}
+function nicknameForPlayer(player){return player?.number?nicknameFor(player.number,player.name):nicknameFromServer(player?.name||'대기');}
+
+const canvas=$('board'); const ctx=canvas.getContext('2d');
+const SUPABASE_URL='https://ghijkkumzvutfzpvdekv.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_dWxi5S2-WH8Rn2sE0ADHJQ_JvbBjGBu';
+function makeUuid(){if(globalThis.crypto&&typeof crypto.randomUUID==='function')return crypto.randomUUID();const a=new Uint8Array(16);crypto.getRandomValues(a);a[6]=(a[6]&15)|64;a[8]=(a[8]&63)|128;const h=[...a].map(x=>x.toString(16).padStart(2,'0')).join('');return h.slice(0,8)+'-'+h.slice(8,12)+'-'+h.slice(12,16)+'-'+h.slice(16,20)+'-'+h.slice(20);}
+function makeClientId(){try{const value=sessionStorage.getItem('renju-multi-client-v1');if(value && /^[a-f0-9-]{36}$/.test(value))return value;const id=crypto.randomUUID();sessionStorage.setItem('renju-multi-client-v1',id);return id;}catch(_){return makeUuid();}}
+const CLIENT_ID=makeClientId();
+const ROOM_REGEX=/^r-[0-9a-f]{10}$/;
+let geometry={size:600,header:31,step:37.93},hover=null;
+let state=null,myNumber=null,mySeat='waiting',connected=false;
+let activeRoom=null,openRooms=[],roomCache=new Map(),roomList=[],waitingList=[];
+let chatLastSeen='',movePending=false,pendingMovePoint=null,chatPending=false,revision=-1;
+let tick=0,polling=false,stopped=false,pollTimer=null,initialDeepLink=new URLSearchParams(location.search).get('room');
+let lobbyHealthy=false,lobbyReady=false,creating=false,lobbySignature="";
+let hunterLobbyStatuses=new Map(),matchGateLobbyStatuses=new Map();
+let matchGateByRoom=new Map(),matchGateActionPending=false,matchGateRestarting=new Map();
+// Rematch UX: keep the small ready/start gate fresh independently of the heavier room/game poll.
+// Only poll quickly while waiting for Ready/Start or after a completed round.
+let matchGateQuickBusy=false;
+// Display-only countdown. The SQL RPC checks the authoritative server deadline.
+let gomokuClockOffsetMs=0,gomokuDeadlineRefreshBusy=false,gomokuDeadlineNextCheck=0,gomokuUrgentPreview=false,gomokuUrgentBoard=false;
+function remainingGomokuMs(){
+ if(!state?.turnDeadline)return null;
+ const expiry=Date.parse(state.turnDeadline);
+ if(!Number.isFinite(expiry))return null;
+ return expiry-(Date.now()+gomokuClockOffsetMs);
+}
+function paintGomokuClock(){
+ const el=$('gomoku-clock');if(!el)return;
+ el.hidden=!activeRoom || isMineRoom() || isTetrisRoom();
+ if(el.hidden)return;
+ const ms=hasMatchStarted() && state?.winner==null?remainingGomokuMs():null;
+ const urgent=ms!==null && ms<=10000;
+ // All already-placed black/white stones change to two distinguishable red tones
+ // for everyone watching the board. Only the active player gets a red cursor preview.
+ const myUrgent=urgent && connected && (mySeat==='host'||mySeat==='guest') && state?.turn===myColor();
+ if(gomokuUrgentBoard!==urgent || gomokuUrgentPreview!==myUrgent){
+   gomokuUrgentBoard=urgent;
+   gomokuUrgentPreview=myUrgent;
+   draw(); // redraw immediately, even if the pointer has not moved
+ }
+ const mineCard=myColor()===1?'black-card':'white-card';
+ $('black-card').classList.toggle('urgent-stone',myUrgent&&mineCard==='black-card');
+ $('white-card').classList.toggle('urgent-stone',myUrgent&&mineCard==='white-card');
+ el.classList.toggle('warning',urgent);
+ el.classList.toggle('expired',ms!==null&&ms<=0);
+ if(ms===null){el.textContent='--:--';return;}
+ const seconds=Math.max(0,Math.ceil(ms/1000));
+ el.textContent='00:'+String(seconds).padStart(2,'0');
+ el.title=seconds===0?'30초 초과 판정 중':'이번 차례 남은 시간 '+seconds+'초';
+ if(ms<=0 && !gomokuDeadlineRefreshBusy && !movePending && Date.now()>gomokuDeadlineNextCheck){
+   gomokuDeadlineNextCheck=Date.now()+1800;
+   gomokuDeadlineRefreshBusy=true;
+   const room=activeRoom;
+   roomRpc(room).then(data=>applyRoom(room,data)).catch(()=>{}).finally(()=>{gomokuDeadlineRefreshBusy=false;});
+ }
+}
+setInterval(paintGomokuClock,150);
+
+async function pollMatchGateQuick(){
+ const id=activeRoom;
+ if(!id||stopped||matchGateQuickBusy||matchGateActionPending||document.hidden)return;
+ const gate=gateState(id);
+ if(gate?.started&&!currentGameFinished())return;
+ matchGateQuickBusy=true;
+ try{const result=await gateRpc(id,'sync');if(id===activeRoom)applyGate(id,result);}
+ catch(_){/* The normal room loop reports connectivity problems. */}
+ finally{matchGateQuickBusy=false;}
+}
+// At most one lightweight status request per interval, with no extra request during active play.
+setInterval(pollMatchGateQuick,650);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollMatchGateQuick();});
+window.addEventListener('focus',pollMatchGateQuick);
+
+function notify(message,error=false,success=false){const el=$('message');el.textContent=message||'';el.className='notice'+(error?' error':success?' good':'');}
+function lobbyNotify(message,error=false){const el=$('lobby-notice');el.textContent=message||'';el.className='lobby-notice'+(error?' error':'');}
+function setNetwork(message,online){const el=$('connection-label');el.textContent=message;el.classList.toggle('online',!!online);}
+function hostIsBlack(){return state?.gameNumber%2===1;}
+function myColor(){if(mySeat==='host')return hostIsBlack()?1:2;if(mySeat==='guest')return hostIsBlack()?2:1;return 0;}
+async function callRpc(fn,params,keepalive=false){
+ const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),11000);
+ try{const response=await fetch(SUPABASE_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{'Content-Type':'application/json','Content-Profile':'public','apikey':SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify(params),cache:'no-store',signal:controller.signal,keepalive});
+ const data=await response.json().catch(()=>null);
+ if(!response.ok){
+   // Preserve Supabase/PostgREST's actual error instead of treating every 404 as a missing SQL migration.
+   const code=typeof data?.code==='string' ? data.code : '';
+   const msg=typeof data?.message==='string' ? data.message : (typeof data?.hint==='string'?data.hint:'서버 요청 실패');
+   throw new Error('서버 오류 '+response.status+(code?' ['+code+']':'')+': '+msg);
+  }
+ if(!data || data.ok===false)throw new Error(data?.error||'서버 요청 오류');
+ return data;
+ }catch(e){if(e.name==='AbortError')throw new Error('서버 응답 시간 초과');throw e;}finally{clearTimeout(timeout);}
+}
+function lobbyRpc(action='list',title='',game='gomoku'){return callRpc('renju_lobby_v2',{p_client:CLIENT_ID,p_action:action,p_title:title,p_game:game});}
+function nicknameRpc(nickname=null,token=null){return callRpc('renju_nickname_sync',{p_client:CLIENT_ID,p_nickname:nickname,p_admin_token:token});}
+function applyNicknameData(data){
+ const next=new Map();for(const p of (data.profiles||[])){const n=Number(p.number);if(n>0&&typeof p.name==='string'&&p.name.trim())next.set(n,p.name.trim());}
+ const changed=JSON.stringify([...next])!==JSON.stringify([...nicknameByNumber]);
+ nicknameByNumber=next;
+ if(data.player_no)myLobbyNumber=Number(data.player_no);
+ if(changed){nicknameRevision++;chatLastSeen='';sheet1LastPaint='';renderLobby();if(activeRoom){if(isTetrisRoom())tDisplayStatus();else if(isMineRoom())renderMineRoom();else if(state)paintState();}}
+ updateNicknameInput();refreshNicknameAccess();
+}
+function updateNicknameInput(){const input=$('nickname-input');if(document.activeElement!==input)input.value=myNickname;
+ input.placeholder=myLobbyNumber?numbered(myLobbyNumber):'Player';}
+async function syncNicknames(force=false){
+ const now=Date.now();if(!force&&now-nicknameLastSync<9000)return;
+ nicknameLastSync=now;
+ try{
+  const shouldPublish=Boolean(myNickname&&!nicknameLocalPublished);
+  const publishAllowed=!shouldPublish||myNickname!=='운영자'||Boolean(adminToken);
+  const data=await nicknameRpc(shouldPublish&&publishAllowed?myNickname:null,adminToken);
+  if(shouldPublish&&publishAllowed)nicknameLocalPublished=true;
+  nicknameSyncFailed=false;
+  applyNicknameData(data);maybeOpenInitialRoom();
+ }catch(e){nicknameSyncFailed=true;refreshNicknameAccess();/* Keep the room gate closed if profile sync fails. */}
+}
+
+function roomRpc(id,action='sync',args={},keepalive=false){return callRpc('renju_room_sync',{p_room:id,p_client:CLIENT_ID,p_action:action,...args},keepalive);}
+function cleanupRpc(id=null){return callRpc('renju_cleanup',{p_room:id});}
+function gateRpc(id,action='sync'){return callRpc('renju_match_gate_sync',{p_room:id,p_client:CLIENT_ID,p_action:action});}
+function gateState(id=activeRoom){return matchGateByRoom.get(id)||null;}
+function hasMatchStarted(id=activeRoom){return Boolean(gateState(id)?.started);}
+function currentGameFinished(){
+ if(!activeRoom)return false;
+ if(isTetrisRoom())return tetrisDataByRoom.get(activeRoom)?.phase==='finished';
+ if(isMineRoom())return mineDataByRoom.get(activeRoom)?.phase==='finished';
+ return roomCache.get(activeRoom)?.state?.winner!=null;
+}
+function applyGate(id,data){
+ if(!data||data.ok!==true)return;
+ const old=matchGateByRoom.get(id);
+ if(old&&Number(data.revision)<Number(old.revision))return;
+ if(id===activeRoom && old?.started===false && data.started===true && currentGameFinished()){
+  // A host just started the rematch, but our cached board still shows the old result.
+  matchGateRestarting.set(id,Date.now());
+ }
+ matchGateByRoom.set(id,data);
+ if(id===activeRoom){if(!currentGameFinished())matchGateRestarting.delete(id);renderMatchGate();}
+}
+function renderMatchGate(){
+ const panel=$('match-gate');if(!panel||!activeRoom)return;
+ const g=gateState(),title=$('match-gate-title'),desc=$('match-gate-desc');
+ const readyButton=$('match-guest-ready'),startButton=$('match-host-start');
+ const finished=currentGameFinished();
+ if(!finished)matchGateRestarting.delete(activeRoom);
+ const restarting=finished && g?.started && Date.now()-(matchGateRestarting.get(activeRoom)||0)<12000;
+ const running=Boolean(g?.started)&&(!finished||restarting);
+ panel.classList.toggle('running',running);
+ const isHost=Boolean(g?.seat==='host');
+ const isGuest=Boolean(g?.seat==='guest');
+ // Fail closed while identity/permissions are being refreshed. Spectators never get controls.
+ readyButton.hidden=!isGuest||running;
+ startButton.hidden=!isHost||running;
+ readyButton.disabled=!isGuest||matchGateActionPending||!g?.host_present||!g?.guest_present;
+ startButton.disabled=!isHost||matchGateActionPending||!g?.host_present||!g?.guest_present||!g?.guest_ready;
+ if(!g){title.textContent='방 연결 중';desc.textContent='준비 상태를 확인하는 중입니다.';return;}
+ if(g.seat==='spectator'){
+   title.textContent=running?'관전 중':'대기 중';desc.textContent='관전자는 준비하거나 시작할 수 없습니다.';return;
+ }
+ if(running){
+  title.textContent=restarting?'새 라운드 시작 중':'게임 진행 중';desc.textContent=restarting?'재대결을 불러오고 있습니다.':'1P 시작 완료 · 2P 준비 완료';return;
+ }
+ if(!g.guest_present){
+  title.textContent='상대 입장 대기';desc.textContent='1P가 방을 만들었습니다. 2P가 입장하면 준비할 수 있습니다.';
+ }else if(g.guest_ready){
+  title.textContent=finished?'재대결 준비 완료':'2P 준비 완료';desc.textContent=finished?'바로 1P가 재대결 시작을 누를 수 있습니다.':'이제 1P가 시작 버튼을 누르면 진행됩니다.';
+ }else{
+  title.textContent=finished?'재대결 대기':'게임 시작 대기';desc.textContent=finished?'게임 종료 · 2P는 바로 준비를 눌러 주세요.':'2P가 먼저 준비 버튼을 눌러 주세요.';
+ }
+ readyButton.disabled=!isGuest||matchGateActionPending||!g.host_present||!g.guest_present;
+ startButton.disabled=!isHost||matchGateActionPending||!g.host_present||!g.guest_present||!g.guest_ready;
+ readyButton.textContent=g.guest_ready?'준비 취소':finished?'재대결 준비':'준비';
+ startButton.textContent=finished?'재대결 시작':'시작';
+}
+async function legacyRematch(id){
+ if(isMineRoom()){applyMineData(id,await mineRpc(id,'rematch'));return;}
+ if(isTetrisRoom()){applyTetrisData(id,await tetrisRpc(id,'rematch'));return;}
+ applyRoom(id,await roomRpc(id,'rematch'));
+}
+async function clickMatchGuestReady(){
+ const id=activeRoom,g=gateState();if(!id||matchGateActionPending||g?.seat!=='guest'||!g.guest_present)return;
+ matchGateActionPending=true;renderMatchGate();
+ try{
+  // The server checks guest identity and online presence atomically: no preliminary sync wait.
+  // On a finished round, record the existing game's rematch vote right away.
+  const wasFinished=currentGameFinished();
+  const updated=await gateRpc(id,'ready');
+  applyGate(id,updated);
+  if(wasFinished)await legacyRematch(id);
+ }catch(e){notify('준비 변경 실패: '+e.message,true);alert('준비 변경에 실패했습니다. '+e.message);}
+ finally{matchGateActionPending=false;if(id===activeRoom)renderMatchGate();}
+}
+async function clickMatchHostStart(){
+ const id=activeRoom,g=gateState();if(!id||matchGateActionPending||g?.seat!=='host'||!g.guest_ready)return;
+ matchGateActionPending=true;renderMatchGate();
+ try{
+  // The server enforces 1P-only Start + 2P Ready. Avoid a redundant round-trip.
+  const wasFinished=currentGameFinished();
+  const updated=await gateRpc(id,'start');
+  applyGate(id,updated);
+  if(wasFinished)await legacyRematch(id);
+  // Fetch immediately so both old finished result and new round are reconciled sooner.
+  if(id===activeRoom){
+   if(isMineRoom()){applyMineData(id,await mineRpc(id));}
+   else if(isTetrisRoom()){applyTetrisData(id,await tetrisRpc(id));}
+   else applyRoom(id,await roomRpc(id));
+  }
+ }catch(e){notify('시작 실패: '+e.message,true);alert('게임 시작에 실패했습니다. '+e.message);}
+ finally{matchGateActionPending=false;if(id===activeRoom)renderMatchGate();}
+}
+$('match-guest-ready').addEventListener('click',clickMatchGuestReady);
+$('match-host-start').addEventListener('click',clickMatchHostStart);
+
+function roomData(id){return roomCache.get(id)||null;}
+function applyRoom(id,data){if(!data?.state||!Array.isArray(data.state.board)||data.state.board.length!==225)return;
+ const prev=roomCache.get(id);if(prev && data.revision<prev.revision)return;
+ if(id===activeRoom && data.state?.clockServerNow){
+  const serverMs=Date.parse(data.state.clockServerNow);
+  if(Number.isFinite(serverMs))gomokuClockOffsetMs=serverMs-Date.now();
+ }
+ roomCache.set(id,{state:data.state,revision:data.revision,seat:data.seat,player_no:data.player_no,connected:true});
+ if(activeRoom===id){const previousGame=state?.gameNumber;activateCache();if(previousGame && previousGame<state.gameNumber)notify('새 작업 시작',false,true);}
+}
+function activateCache(){const data=roomData(activeRoom);state=data?.state||null;mySeat=data?.seat||'waiting';myNumber=data?.player_no||null;revision=data?.revision??-1;connected=!!data?.connected;
+ if(state){$('board-overlay').hidden=true;paintState();renderMatchGate();paintGomokuClock();}else{$('board-overlay').hidden=false;draw();}
+}
+function applyLobby(data){
+ lobbyReady=true;lobbyHealthy=true;
+ if(data.player_no)myLobbyNumber=Number(data.player_no);updateNicknameInput();
+ roomList=(Array.isArray(data.rooms)?data.rooms:[]).map(r=>{
+ const status=hunterLobbyStatuses.get(r.id),gate=matchGateLobbyStatuses.get(r.id);
+ const base=r.game==='mine_battle'&&status?{...r,status:status.phase==='finished'?'done':status.phase,moves:status.moves}:r;
+ if(gate&&!gate.started&&base.status!=='done')return {...base,status:gate.guest_ready?'ready':'waiting'};
+ return base;
+});
+ waitingList=Array.isArray(data.waiting)?data.waiting:[];
+ const present=new Set(roomList.map(r=>r.id));
+ const vanished=openRooms.filter(id=>!present.has(id));
+ if(vanished.length){
+   openRooms=openRooms.filter(id=>present.has(id));
+   for(const id of vanished)roomCache.delete(id);
+   if(activeRoom&&vanished.includes(activeRoom)){
+     switchView(null);
+     lobbyNotify('빈 방이 삭제되어 Sheet1로 이동했습니다.');
+   }
+ }
+ const nextSignature=JSON.stringify(roomList)+'|'+JSON.stringify(waitingList);
+ if(nextSignature!==lobbySignature){lobbySignature=nextSignature;renderLobby();updateSheetTabs();}
+ setNetwork('온라인',true);
+ $('footer-label').textContent=(data.player_no?nicknameFor(data.player_no)+' · ':'')+roomList.length+'개 시트';
+ return vanished.length>0;
+}
+// Keep active-match heartbeats independent of slower lobby, cleanup and other-sheet requests.
+// Previously those requests were awaited before the active room, which could make players
+// appear offline while both browsers were still open.
+let lobbyPollInFlight=false,cleanupPollInFlight=false;
+const roomPollInFlight=new Set();
+function pollLobbyInBackground(){
+ if(lobbyPollInFlight||stopped)return;
+ lobbyPollInFlight=true;
+ (async()=>{
+  try{
+   const data=await lobbyRpc();
+   try{
+    const statuses=await callRpc('renju_match_gate_lobby_status',{});
+    if(Array.isArray(statuses))matchGateLobbyStatuses=new Map(statuses.map(z=>[z.room_id,z]));
+   }catch(_){/* Preserve game lobby when optional gate status is delayed. */}
+   if(Array.isArray(data.rooms)&&data.rooms.some(r=>r.game==='mine_battle')){
+    try{const h=await callRpc('renju_hunter_lobby_status',{});if(Array.isArray(h))hunterLobbyStatuses=new Map(h.map(z=>[z.room_id,z]));}catch(_){/* Optional extension. */}
+   }
+   const removed=applyLobby(data);if(!removed)lobbyNotify('');
+   await syncNicknames();
+   maybeOpenInitialRoom();
+  }catch(e){lobbyHealthy=false;setNetwork('연결 확인 중',false);lobbyNotify(e.message,true);}
+ })().finally(()=>{lobbyPollInFlight=false;});
+}
+function pollCleanupInBackground(){
+ if(cleanupPollInFlight||stopped)return;
+ cleanupPollInFlight=true;
+ cleanupRpc().catch(()=>{}).finally(()=>{cleanupPollInFlight=false;});
+}
+function pollOtherRoomsInBackground(){
+ if(stopped)return;
+ for(const id of openRooms){
+  if(id===activeRoom||roomPollInFlight.has(id))continue;
+  roomPollInFlight.add(id);
+  roomRpc(id).then(data=>applyRoom(id,data)).catch(e=>{if(isKickedError(e))returnKickedToLobby(id);}).finally(()=>roomPollInFlight.delete(id));
+ }
+}
+async function refresh(){
+ if(stopped||polling)return;
+ polling=true;
+ const id=activeRoom;
+ try{
+  // Read the active match result FIRST, so Ready appears as soon as a round finishes.
+  // Avoid making result detection wait behind the room and permission heartbeats.
+  if(id){
+   try{
+    let gamePolled=false;
+    if(id===activeRoom&&hasMatchStarted(id)&&isTetrisRoom()){
+     let action='sync',snapshot=null;
+     if(tetrisLocal?.started&&tetrisServer?.phase==='playing'&&['host','guest'].includes(tetrisServer?.seat)){
+      action='update';snapshot=tSnapshot(tetrisLocal);
+     }
+     applyTetrisData(id,await tetrisRpc(id,action,snapshot));gamePolled=true;
+    }else if(id===activeRoom&&hasMatchStarted(id)&&isMineRoom()){
+     applyMineData(id,await mineRpc(id));gamePolled=true;
+    }
+    const data=await roomRpc(id);applyRoom(id,data);
+    const gateData=await gateRpc(id);applyGate(id,gateData);
+    // First poll right after 1P clicks Start: the local gate may have been waiting.
+    if(!gamePolled&&id===activeRoom&&hasMatchStarted(id)){
+     if(isTetrisRoom())applyTetrisData(id,await tetrisRpc(id));
+     else if(isMineRoom())applyMineData(id,await mineRpc(id));
+    }
+   }catch(e){
+    const cache=roomCache.get(id);if(cache)cache.connected=false;
+    if(isKickedError(e)){returnKickedToLobby(id);}else if(id===activeRoom){connected=false;notify('동기화 지연: '+e.message+' · 복구 시 자동으로 다시 연결합니다.',true);}
+   }
+  }
+ }finally{
+  // These tasks never postpone the next active-room heartbeat.
+  if((!isTetrisRoom()&&!isMineRoom())||tick%4===0||!lobbyReady)pollLobbyInBackground();
+  if(tick%7===0)pollCleanupInBackground();
+  if(tick%4===0)pollOtherRoomsInBackground();
+  tick++;polling=false;
+  if(!stopped)pollTimer=setTimeout(refresh,id?(isTetrisRoom()?450:isMineRoom()?850:1200):1550);
+ }
+}
+function cell(text='',cls=''){const td=document.createElement('td');td.textContent=String(text??'');if(cls)td.className=cls;return td;}
+function row(num,values,classes=[]){const tr=document.createElement('tr');const th=document.createElement('th');th.className='row-no';th.textContent=num;tr.append(th);for(let i=0;i<10;i++)tr.append(cell(values[i]??'',classes[i]||''));return tr;}
+function sectionRow(num,label){const tr=document.createElement('tr');const th=document.createElement('th');th.className='row-no';th.textContent=num;const td=cell(label,'section');td.colSpan=10;tr.append(th,td);return tr;}
+function headingRow(num,labels){return row(num,labels,Array(10).fill('col-head'));}
+function renderLobby(){const list=$('lobby-cells');const rows=[];let n=1;
+ rows.push(sectionRow(n++,'방 현황  /  WORKSHEET STATUS'));
+ rows.push(row(n++,[`전체 ${roomList.length}개 방`,`접속 ${waitingList.length}명 대기`, '내 닉네임',nicknameFor(myLobbyNumber||0),'','','','','','']));
+ rows.push(headingRow(n++,['시트','종류','작업명','진행','1P/흑','2P/백','대기','접속','착수/줄','입장']));
+ const display=roomList.slice(0,25);
+ for(const room of display){const status=room.status==='placing'?'설치 중':room.status==='playing'?'진행 중':room.status==='ready'?'준비 완료':room.status==='done'?'완료':'대기 중';
+  const tr=row(n++,[room.sheet,'',room.title,'',room.black?nicknameFor(room.black):'-',room.white?nicknameFor(room.white):'-',room.waiting,room.count,room.moves,''],['sheet-link','','','','','','','','','']);tr.className='room-row';tr.dataset.room=room.id;
+  const gameLabel=document.createElement('span');gameLabel.className='game-type-pill'+(room.game==='tetris'?' tetris':'');gameLabel.textContent=room.game==='tetris'?'테트리스':room.game==='mine_battle'?'지뢰탐색게임':'오목';tr.children[2].append(gameLabel);
+  const statusTd=tr.children[4],pill=document.createElement('span');pill.className='status-pill '+(room.status==='playing'?'':room.status);pill.textContent=status;statusTd.append(pill);
+  const joinBtn=document.createElement('button');joinBtn.type='button';joinBtn.className='room-open';joinBtn.textContent='열기';joinBtn.setAttribute('aria-label',room.sheet+' 열기');tr.lastElementChild.append(joinBtn);
+  rows.push(tr);
+ }
+ if(!display.length)rows.push(row(n++,['새 방을 만들면 여기에 표시됩니다.','','','','','','','','',''],['muted']));
+ while(n<11)rows.push(row(n++,[]));
+ rows.push(sectionRow(n++,'대기자 현황  /  WAITING LIST'));
+ rows.push(headingRow(n++,['번호','사용자','상태','', '', '', '', '', '', '']));
+ if(!waitingList.length)rows.push(row(n++,['-','대기자 없음','','','','','','','',''],['muted','muted']));
+ else for(const p of waitingList.slice(0,24))rows.push(row(n++,[p.number,nicknameFor(p.number,p.name),'대기 중','','','','','','',''],['','','you-row']));
+ for(let i=0;i<4;i++)rows.push(row(n++,[]));
+ while(n<=20)rows.push(row(n++,[]));
+ list.replaceChildren(...rows);updateSheet1RowNumbers();refreshNicknameAccess();
+ $('lobby-count').textContent=roomList.length+'개 시트 · 대기 '+waitingList.length+'명';
+ if(!activeRoom){$('cell-address').textContent='A1';$('formula-value').textContent='=COUNTIF(방현황,"접속중")';}
+}
+function formatTime(input){if(!input)return '-';const d=new Date(input);if(Number.isNaN(d.valueOf()))return '-';return new Intl.DateTimeFormat('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).format(d);}
+function roomLabel(id){return roomList.find(r=>r.id===id)?.sheet||'Room';}
+function updateSheetTabs(){const nav=$('sheet-nav');nav.querySelectorAll('[data-room-tab]').forEach(e=>e.remove());
+ for(const id of openRooms){const tab=document.createElement('button');tab.type='button';tab.className='sheet-tab'+(id===activeRoom?' active':'');tab.dataset.roomTab=id;tab.title='시트 열기';tab.textContent=roomLabel(id)+(roomList.find(r=>r.id===id)?.game==='tetris'?' · T':roomList.find(r=>r.id===id)?.game==='mine_battle'?' · M':'');
+  const close=document.createElement('span');close.className='tab-close';close.textContent='×';close.title='시트 닫기';close.dataset.closeRoom=id;tab.append(close);nav.insertBefore(tab,$('add-sheet-btn'));}
+ const lobby=nav.querySelector('[data-sheet="lobby"]');lobby.classList.toggle('active',activeRoom===null);}
+function changeUrl(id){const url=new URL(location.href);if(id)url.searchParams.set('room',id);else url.searchParams.delete('room');try{history.replaceState(null,'',url.pathname+url.search+url.hash);}catch(_){}}
+function switchView(id){if(id && !requireNickname())return;activeRoom=id;$('lobby-view').hidden=!!id;$('room-view').hidden=!id;$('chat').hidden=!id;chatLastSeen='';hover=null;
+ $('chat-title-button').firstElementChild.firstChild.textContent='메모 ';
+ showOperatorMessage('');if(!id){sheet1LastPaint='';paintSheet1Chat();setTimeout(()=>syncSheet1Chat(true),0);}
+ if(id){const item=roomList.find(r=>r.id===id);$('room-name').textContent=(item?.sheet||'Sheet')+'  '+(item?.game==='mine_battle'?'지뢰탐색게임':(item?.title||''));$('room-info').textContent='  '+id;activateCache();setTimeout(resizeCanvas,30);}else{$('cell-address').textContent='A1';$('formula-value').textContent='=COUNTIF(방현황,"접속중")';}
+ updateSheetTabs();changeUrl(id);renderTetrisRoom();renderMineRoom();renderMatchGate();}
+function isKickedError(error){return /강퇴되었습니다/.test(String(error?.message||error||''));}
+const kickedRooms=new Set();
+function returnKickedToLobby(id){
+ if(!id)return;
+ kickedRooms.add(id);
+ openRooms=openRooms.filter(x=>x!==id);
+ roomCache.delete(id);tetrisDataByRoom.delete(id);tetrisLocalByRoom.delete(id);
+ mineDataByRoom.delete(id);matchGateByRoom.delete(id);matchGateRestarting.delete(id);
+ if(activeRoom===id)switchView(null);else updateSheetTabs();
+ lobbyNotify('운영자에 의해 해당 방에서 강퇴되었습니다. 다른 방은 이용할 수 있습니다.',true);
+}
+async function openRoom(id){if(!requireNickname())return;
+ if(kickedRooms.has(id)){lobbyNotify('해당 방에서는 강퇴되어 다시 입장할 수 없습니다.',true);return;}if(!ROOM_REGEX.test(id)){lobbyNotify('잘못된 방 주소입니다.',true);return;}
+ if(!roomList.some(r=>r.id===id)){lobbyNotify('현재 목록에 없는 시트입니다.',true);return;}
+ if(!openRooms.includes(id)){if(openRooms.length>=8){lobbyNotify('동시에 열 수 있는 시트는 8개입니다.',true);return;}openRooms.push(id);}
+ switchView(id);try{applyRoom(id,await roomRpc(id));applyGate(id,await gateRpc(id));notify('');}catch(e){if(isKickedError(e))returnKickedToLobby(id);else notify(e.message,true);}
+}
+function createRoom(){if(!requireNickname())return;$('create-modal').hidden=false;}
+function closeCreateModal(){$('create-modal').hidden=true;}
+async function doCreateRoom(game){if(!requireNickname())return;if(creating)return;closeCreateModal();creating=true;$('create-room-btn').disabled=true;$('add-sheet-btn').disabled=true;lobbyNotify('새 시트 생성 중...');
+ try{const data=await lobbyRpc('create','',game);applyLobby(data);if(!data.created_room)throw new Error('방 생성 정보가 없습니다.');await openRoom(data.created_room);lobbyNotify('');}
+ catch(e){lobbyNotify(e.message,true);}
+ finally{creating=false;$('create-room-btn').disabled=false;$('add-sheet-btn').disabled=false;}
+}
+async function closeRoom(id){
+ if(!openRooms.includes(id))return;
+ openRooms=openRooms.filter(x=>x!==id);roomCache.delete(id);tetrisDataByRoom.delete(id);tetrisLocalByRoom.delete(id);mineDataByRoom.delete(id);matchGateByRoom.delete(id);matchGateRestarting.delete(id);
+ if(activeRoom===id)switchView(null);else updateSheetTabs();
+ try{
+   await roomRpc(id,'leave');
+   const reply=await cleanupRpc(id);
+   if(reply.deleted>0){
+     roomList=roomList.filter(r=>r.id!==id);
+     renderLobby();updateSheetTabs();
+   }
+ }catch(_){ /* The lobby refresh will reconcile expired rooms. */ }
+}
+async function gameAction(type,args={}){if(!activeRoom)return false;const id=activeRoom;
+ try{const data=await roomRpc(id,type,args);applyRoom(id,data);notify('');return true;}
+ catch(e){notify(e.message,true);return false;}}
+function shareLink(){return location.origin+location.pathname+(activeRoom?'?room='+encodeURIComponent(activeRoom):'');}
+async function copyShare(){const link=shareLink();try{await navigator.clipboard.writeText(link);if(activeRoom)notify('주소 복사 완료',false,true);else lobbyNotify('주소를 복사했어요.');}catch(_){if(activeRoom)notify(link);else lobbyNotify(link);}}
+$('copy-link-btn').addEventListener('click',copyShare);$('room-copy').addEventListener('click',copyShare);
+$('room-lobby').addEventListener('click',()=>switchView(null));
+$('create-room-btn').addEventListener('click',createRoom);$('add-sheet-btn').addEventListener('click',createRoom);
+updateNicknameInput();refreshNicknameAccess();
+$('member-open').addEventListener('click',()=>openMemberPanel());
+$('member-cancel').addEventListener('click',closeMemberPanel);
+$('member-login-tab').addEventListener('click',()=>memberChooseTab('login'));
+$('member-register-tab').addEventListener('click',()=>memberChooseTab('register'));
+$('member-overlay').addEventListener('click',e=>{if(e.target.id==='member-overlay')closeMemberPanel();});
+$('member-form').addEventListener('submit',async e=>{
+ e.preventDefault();if(memberAuthPending)return;
+ const nickname=$('member-nickname').value.trim().replace(/\s+/g,' ').slice(0,16);
+ const password=$('member-password').value;
+ if([...nickname].length<1||[...password].length<4){$('member-feedback').textContent='아이디는 1자 이상, 비밀번호는 4자 이상 입력해 주세요.';return;}
+ memberAuthPending=true;$('member-submit').disabled=true;
+ try{
+  const result=await memberRpc(memberPanelMode,{p_nickname:nickname,p_password:password});
+  if(!result.token||!result.profile)throw new Error('계정 인증 결과가 올바르지 않습니다.');
+  saveMemberToken(result.token);persistAdminToken(result.admin_token||'');
+  useMemberProfile(result.profile);closeMemberPanel();
+  lobbyNotify(memberPanelMode==='register'?'회원가입 완료! 계정으로 로그인되었습니다.':'로그인 완료!');
+  await syncNicknames(true);await refreshMemberStats();maybeOpenInitialRoom();
+ }catch(error){$('member-feedback').textContent=error.message||'가입·로그인 오류입니다.';}
+ finally{memberAuthPending=false;$('member-submit').disabled=false;}
+});
+$('member-logout').addEventListener('click',async()=>{
+ if(!memberToken)return;
+ const token=memberToken;
+ for(const id of [...openRooms])await closeRoom(id);
+ try{await memberRpc('logout',{p_token:token});}
+ catch(e){lobbyNotify(e.message,true);return;}
+ saveMemberToken('');persistAdminToken('');memberProfile=null;myNickname='';nicknameLocalPublished=false;
+ try{localStorage.removeItem(NICKNAME_STORAGE);}catch(_){}
+ paintMemberPanel();updateNicknameInput();refreshNicknameAccess();
+ if(activeRoom)switchView(null);
+ lobbyNotify('로그아웃했습니다. 닉네임 저장 또는 로그인 후 게임에 입장할 수 있습니다.');
+});
+paintMemberPanel();
+setTimeout(()=>{loadMemberSession().then(refreshMemberStats);},0);
+setInterval(refreshMemberStats,12000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshMemberStats();});
+$('nickname-form').addEventListener('submit',async e=>{
+ e.preventDefault();const input=$('nickname-input'),button=$('nickname-save');
+ if(memberProfile){lobbyNotify('회원 닉네임은 로그아웃 후 변경할 수 있습니다.',true);return;}
+ const nickname=input.value.trim().replace(/\s+/g,' ').slice(0,16);
+ if(nickname==='운영자'){openMemberPanel('login');$('member-nickname').value='운영자';lobbyNotify('운영자 계정은 가입 / 로그인에서 비밀번호로 로그인해 주세요.');return;}
+ if(!nickname){lobbyNotify('닉네임을 1자 이상 입력한 뒤 저장해 주세요.',true);input.focus();return;}
+ if(!lobbyReady){lobbyNotify('서버 연결 후 저장할 수 있습니다.',true);return;}
+ button.disabled=true;button.textContent='저장 중';
+ try{
+  let newAdminToken=null;
+  if(nickname==='운영자'){
+   const password=await requestAdminPassword();
+   if(password===null){lobbyNotify('운영자 비밀번호 입력을 취소했습니다.');return;}
+   const login=await callRpc('renju_admin_login',{p_client:CLIENT_ID,p_password:password});
+   newAdminToken=login.token;
+   if(!newAdminToken)throw new Error('운영자 인증 정보를 받지 못했습니다.');
+  }
+  const data=await nicknameRpc(nickname,newAdminToken);
+  persistAdminToken(nickname==='운영자'?newAdminToken:'');
+  myNickname=nickname;nicknameLocalPublished=true;
+  try{if(nickname)localStorage.setItem(NICKNAME_STORAGE,nickname);else localStorage.removeItem(NICKNAME_STORAGE);}catch(_){}
+  nicknameSyncFailed=false;applyNicknameData(data);renderLobby();if(activeRoom)paintState();
+  lobbyNotify('닉네임 저장 완료! 이제 게임에 입장할 수 있습니다.');maybeOpenInitialRoom();
+ }catch(error){lobbyNotify(error.message+' · Supabase 닉네임 SQL 적용 여부를 확인해 주세요.',true);}
+ finally{button.disabled=false;button.textContent='저장';}
+});
+$('chooser-close').addEventListener('click',closeCreateModal);
+$('create-modal').addEventListener('click',e=>{if(e.target.id==='create-modal')closeCreateModal();const c=e.target.closest('[data-choice]');if(c)doCreateRoom(c.dataset.choice);});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCreateModal();});
+$('sheet-nav').addEventListener('click',e=>{const closer=e.target.closest('[data-close-room]');if(closer){e.stopPropagation();closeRoom(closer.dataset.closeRoom);return;}
+ const tab=e.target.closest('[data-room-tab]');if(tab){switchView(tab.dataset.roomTab);return;}
+ if(e.target.closest('[data-sheet="lobby"]'))switchView(null);});
+$('lobby-cells').addEventListener('click',e=>{const tr=e.target.closest('[data-room]');if(tr)openRoom(tr.dataset.room);});
+$('rematch-btn').addEventListener('click',async()=>{if(state&&state.winner!==null&&['host','guest'].includes(mySeat))await gameAction('rematch');});
+let lastNoticeId=null;
+function showOperatorMessage(message,error=false){
+ const lobby=activeRoom===null;
+ const el=$(lobby?'sheet1-chat-feedback':'admin-chat-feedback');
+ const other=$(lobby?'admin-chat-feedback':'sheet1-chat-feedback');
+ other.textContent='';other.hidden=true;other.classList.remove('error');
+ el.textContent=message||'';el.hidden=!message;el.classList.toggle('error',!!error);
+ $('sheet1-chat-feedback-row').hidden=!!$('sheet1-chat-feedback').hidden;
+ updateSheet1RowNumbers();
+}
+async function pollAnnouncement(){
+ if(document.hidden)return;
+ try{
+  const data=await callRpc('renju_admin_notice_sync',{});
+  const notice=data.notice;
+  if(!notice){$('admin-notice').hidden=true;lastNoticeId=null;return;}
+  const id=String(notice.id);
+  if(lastNoticeId!==id)lastNoticeId=id;
+  let dismissed='';try{dismissed=sessionStorage.getItem('excel-games-dismissed-notice')||'';}catch(_){}
+  if(dismissed===id){$('admin-notice').hidden=true;return;}
+  $('admin-notice-text').textContent=notice.text;
+  $('admin-notice').hidden=false;
+ }catch(_){/* Optional add-on; core game remains operational while network is offline. */}
+}
+$('admin-notice-close').addEventListener('click',()=>{
+ $('admin-notice').hidden=true;
+ try{sessionStorage.setItem('excel-games-dismissed-notice',lastNoticeId||'');}catch(_){}
+});
+setInterval(pollAnnouncement,3200);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollAnnouncement();});
+setTimeout(pollAnnouncement,800);
+// Shared Sheet1 notes: separate feed from each room's existing memo.
+let sheet1Messages=[],sheet1LastPaint='',sheet1ChatPending=false,sheet1LastSync=0;
+async function syncSheet1Chat(force=false){
+ if(activeRoom!==null||document.hidden||sheet1ChatPending)return;
+ if(!force&&Date.now()-sheet1LastSync<2200)return;
+ sheet1ChatPending=true;
+ try{
+  const data=await callRpc('renju_sheet1_chat',{p_client:CLIENT_ID,p_action:'list',p_text:null});
+  sheet1Messages=Array.isArray(data.messages)?data.messages:[];
+  sheet1LastSync=Date.now();paintSheet1Chat();
+ }catch(e){
+  if(!sheet1LastPaint)showOperatorMessage('Sheet1 메모 연결 확인: '+e.message,true);
+ }finally{sheet1ChatPending=false;}
+}
+function updateSheet1RowNumbers(){
+ const last=$('lobby-cells')?.lastElementChild?.querySelector('.row-no');
+ let n=Math.max(21,(parseInt(last?.textContent||'20',10)||20)+1);
+ document.querySelectorAll('#sheet1-chat-area [data-chat-row-no]').forEach(el=>{el.textContent=n++;});
+}
+function paintSheet1Chat(){
+ if(activeRoom!==null)return;
+ const messages=sheet1Messages;
+ const key=nicknameRevision+':'+messages.map(m=>String(m.id)+':'+String(m.nickname)+':'+String(m.text)).join('|');
+ updateSheet1RowNumbers();
+ if(key===sheet1LastPaint)return;
+ sheet1LastPaint=key;
+ const panel=$('sheet1-chat-rows');const rows=[];
+ if(!messages.length){
+  const tr=document.createElement('tr'),th=document.createElement('th');th.className='row-no';th.dataset.chatRowNo='';
+  const td=document.createElement('td');td.colSpan=10;td.className='sheet1-chat-empty';td.textContent='아직 대화가 없습니다. 아래 입력 행에서 메시지를 보내보세요.';
+  tr.append(th,td);rows.push(tr);
+ }else for(const m of messages.slice(-15)){
+  const tr=document.createElement('tr');if(m.nickname===myNickname)tr.className='sheet1-chat-own';
+  const th=document.createElement('th');th.className='row-no';th.dataset.chatRowNo='';
+  const time=document.createElement('td');time.className='sheet1-chat-id';time.textContent=String(m.id||'');
+  const name=document.createElement('td');name.className='sheet1-chat-name';name.textContent=m.nickname||'Player';
+  const body=document.createElement('td');body.colSpan=8;body.className='sheet1-chat-text';body.textContent=m.text||'';
+  tr.append(th,time,name,body);rows.push(tr);
+ }
+ panel.replaceChildren(...rows);updateSheet1RowNumbers();
+}
+setInterval(()=>syncSheet1Chat(),2500);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncSheet1Chat(true);});
+window.addEventListener('focus',()=>syncSheet1Chat(true));
+setTimeout(()=>syncSheet1Chat(true),450);
+
+async function handleChatSubmit(e){
+ e.preventDefault();const form=e.currentTarget,input=form.querySelector('input'),text=input.value.trim();
+ if(!text||chatPending)return;
+ if(/^\/(강퇴|공지|포인트)(?:\s|$)/.test(text)){
+  if(myNickname!=='운영자'||!adminToken||!hasSavedNickname()||!memberProfile){
+   showOperatorMessage('회원 로그인으로 인증된 운영자만 명령을 사용할 수 있습니다.',true);return;
+  }
+  let operation=null,params={},notice=false;
+  const pointMatch=text.match(/^\/포인트\s+(.+?)\s+(\d+)\s*$/);
+  const commandMatch=text.match(/^\/(강퇴|공지)\s+([\s\S]+)$/);
+  if(text.startsWith('/포인트')){
+   if(!pointMatch){showOperatorMessage('사용법: /포인트 닉네임 숫자',true);return;}
+   const target=pointMatch[1].trim(),amount=Number(pointMatch[2]);
+   if(!target||target.length>16||!Number.isSafeInteger(amount)||amount<1||amount>100000){
+    showOperatorMessage('지급 포인트는 1~100000 사이의 정수여야 합니다.',true);return;
+   }
+   operation='renju_admin_points';params={p_client:CLIENT_ID,p_token:adminToken,p_target_nickname:target,p_amount:amount};
+  }else if(commandMatch){
+   const cmd=commandMatch[1],value=commandMatch[2].trim();
+   if(!value){showOperatorMessage('명령 뒤에 내용을 입력해 주세요.',true);return;}
+   if(cmd==='강퇴'&&!activeRoom){showOperatorMessage('/강퇴는 강퇴할 사용자가 있는 게임방의 메모에서 사용해 주세요.',true);return;}
+   notice=cmd==='공지';
+   if(notice&&!activeRoom){
+    operation='renju_admin_lobby_notice';params={p_client:CLIENT_ID,p_token:adminToken,p_message:value};
+   }else{
+    operation='renju_admin_command';params={p_client:CLIENT_ID,p_token:adminToken,
+     p_action:cmd==='강퇴'?'kick':'notice',p_room:activeRoom,
+     p_target_nickname:cmd==='강퇴'?value:null,p_message:notice?value:null};
+   }
+  }else{showOperatorMessage('사용법: /포인트 닉네임 숫자, /공지 내용, /강퇴 닉네임',true);return;}
+  chatPending=true;form.querySelector('button').disabled=true;
+  try{
+   const result=await callRpc(operation,params);
+   showOperatorMessage(result.message||'명령 처리 완료');input.value='';input.focus();
+   if(notice)await pollAnnouncement();
+   if(operation==='renju_admin_points')await refreshMemberStats();
+  }catch(err){showOperatorMessage(err.message,true);}
+  finally{chatPending=false;form.querySelector('button').disabled=false;}
+  return;
+ }
+ if(!hasSavedNickname()){showOperatorMessage('메모를 작성하려면 닉네임을 저장하거나 로그인해 주세요.',true);return;}
+ if(text.length>180){showOperatorMessage('일반 메모는 180자 이내로 작성해 주세요.',true);return;}
+ chatPending=true;form.querySelector('button').disabled=true;
+ try{
+  if(activeRoom){if(!connected){showOperatorMessage('현재 게임방 연결을 확인 중입니다.',true);return;}
+    const ok=await gameAction('chat',{p_text:text});if(ok){input.value='';input.focus();}}
+  else{const data=await callRpc('renju_sheet1_chat',{p_client:CLIENT_ID,p_action:'send',p_text:text});
+    sheet1Messages=Array.isArray(data.messages)?data.messages:[];sheet1LastPaint='';sheet1LastSync=Date.now();
+    paintSheet1Chat();input.value='';input.focus();showOperatorMessage('');}
+ }catch(err){showOperatorMessage(err.message,true);}
+ finally{chatPending=false;form.querySelector('button').disabled=false;}
+}
+$('chat-form').addEventListener('submit',handleChatSubmit);
+$('sheet1-chat-form').addEventListener('submit',handleChatSubmit);
+
+// Memo minimize / restore: state persists when switching sheets or reloading.
+const MEMO_COLLAPSED_KEY='excel-games-memo-collapsed-v2';
+let memoCollapsed=false;
+try{memoCollapsed=localStorage.getItem(MEMO_COLLAPSED_KEY)==='1';}catch(_){}
+function setMemoCollapsed(next){
+ memoCollapsed=!!next;
+ $('chat').classList.toggle('collapsed',memoCollapsed);
+ $('chat-title-button').setAttribute('aria-expanded',String(!memoCollapsed));
+ $('chat-toggle-glyph').textContent=memoCollapsed?'+':'−';
+ $('chat-title-button').title=memoCollapsed?'메모 펼치기':'메모 접기';
+ try{localStorage.setItem(MEMO_COLLAPSED_KEY,memoCollapsed?'1':'0');}catch(_){}
+}
+$('chat-title-button').addEventListener('click',()=>setMemoCollapsed(!memoCollapsed));
+setMemoCollapsed(memoCollapsed);
+
+function paintChat(){const messages=Array.isArray(state?.chat)?state.chat:[];const key=activeRoom+':'+nicknameRevision+':'+messages.map(m=>m.id).join(',');if(chatLastSeen===key)return;chatLastSeen=key;
+ const panel=$('chat-messages'),nearBottom=panel.scrollHeight-panel.scrollTop-panel.clientHeight<60;panel.replaceChildren();
+ if(!messages.length){const div=document.createElement('div');div.className='chat-empty';div.textContent='내용 없음';panel.append(div);}
+ else for(const m of messages){const item=document.createElement('div');item.className='chat-item'+(m.number===myNumber?' mine':'');const sender=document.createElement('div');sender.className='sender';sender.textContent=nicknameFor(m.number);const bubble=document.createElement('div');bubble.className='bubble';bubble.textContent=m.text;item.append(sender,bubble);panel.append(item);}
+ if(nearBottom)panel.scrollTop=panel.scrollHeight;}
+function paintState(){const s=state;if(!s)return;
+ const black=s.players?.black,white=s.players?.white;const ready=Boolean(black?.online&&white?.online),finished=s.winner!==null;
+ $('black-name').textContent=nicknameForPlayer(black);$('white-name').textContent=nicknameForPlayer(white);
+ $('black-status').textContent='흑'+(black?.number===myNumber?' · 나':'');$('white-status').textContent='백'+(white?.number===myNumber?' · 나':'');
+ $('black-card').classList.toggle('active',Boolean(!finished&&ready&&s.turn===1));$('white-card').classList.toggle('active',Boolean(!finished&&ready&&s.turn===2));
+ $('my-role').textContent=(myNumber?nicknameFor(myNumber):'')+(mySeat==='waiting'&&state?.players?.white?' · 관전':'');$('turn-label').textContent=!ready?'대기 중':finished?'완료':s.turn===1?'흑 차례':'백 차례';
+ $('game-status').textContent=!ready?'상대 접속 대기':finished?(s.winner==='draw'?'무승부':(s.winner==='black'?nicknameForPlayer(black):nicknameForPlayer(white))+' 승리'):(s.turn===1?nicknameForPlayer(black):nicknameForPlayer(white))+' 작업 중';
+ if(finished&&s.winReason==='timeout') $('game-status').textContent='30초 시간 초과 · '+(s.winner==='black'?nicknameForPlayer(black):nicknameForPlayer(white))+' 승리';
+ paintGomokuClock();
+ $('move-count').textContent=(s.moves?.length||0)+'개 셀 입력';
+ const q=Array.isArray(s.queue)?s.queue:[];$('queue-count').textContent=q.length+'명';const list=$('queue-list');list.replaceChildren();
+ if(!q.length){const x=document.createElement('div');x.className='queue-empty';x.textContent='없음';list.append(x);}else for(const p of q){const item=document.createElement('div');item.className='queue-row';const name=document.createElement('span');name.textContent=nicknameFor(p.number,p.name);item.append(name);if(p.number===myNumber){const you=document.createElement('span');you.className='you';you.textContent='나';item.append(you);}list.append(item);}
+ $('rematch-btn').hidden=!finished||!['host','guest'].includes(mySeat);
+ if(!$('rematch-btn').hidden)$('rematch-btn').textContent=s.ready?.[mySeat]?'취소':'새로 시작';
+ $('history-total').textContent=String(s.moves?.length||0);const hist=$('move-list');hist.replaceChildren();for(const m of (s.moves||[]).slice(-14).reverse()){const span=document.createElement('span');span.className=m.color===1?'black':'white';span.textContent=m.n+'. '+LETTERS[m.x]+(15-m.y);hist.append(span);}
+ paintChat();updateFormula(hover);draw();}
+// Do not explicitly leave on pagehide: the same session can recover after refresh.
+// Offline detection and empty-room cleanup use server-side presence deadlines.
+window.addEventListener('pagehide',()=>{stopped=true;clearTimeout(pollTimer);});
+window.addEventListener('load',()=>{setNetwork('서버 연결 중',false);refresh();},{once:true});
+function resizeCanvas() {
+  const bounds = canvas.getBoundingClientRect();
+  if(!bounds.width)return;
+  const side=Math.round(bounds.width),ratio=Math.min(devicePixelRatio||1,3);
+  canvas.width=Math.round(side*ratio);canvas.height=Math.round(side*ratio);
+  ctx.setTransform(ratio,0,0,ratio,0,0);
+  const header=Math.max(21,Math.round(side*.048));
+  geometry={size:side,header,step:(side-header)/15};
+  draw();
+}
+function cellPoint(x,y) {
+  return [geometry.header+(x+.5)*geometry.step,geometry.header+(y+.5)*geometry.step];
+}
+function drawStone(x,y,color){
+  // Spreadsheet-style filled square markers, less conspicuous than stones.
+  const {header:h,step:t}=geometry;
+  const left=h+x*t, top=h+y*t;
+  const pad=Math.max(3,Math.min(7,t*.18));
+  ctx.save();
+  ctx.fillStyle=color===1?'#5f6d63':'#dbe2dd';
+  ctx.strokeStyle=color===1?'#4e5b52':'#c5cec8';
+  ctx.lineWidth=1;
+  ctx.fillRect(left+pad,top+pad,t-pad*2,t-pad*2);
+  ctx.strokeRect(left+pad+.5,top+pad+.5,t-pad*2-1,t-pad*2-1);
+  ctx.restore();
+}
+function drawUrgentStone(x,y,color){
+  // Urgent display only: black/white remain distinguishable by red tone.
+  // The board data stays unchanged, and normal colours return at the next turn.
+  const {header:h,step:t}=geometry;
+  const pad=Math.max(3,Math.min(7,t*.18));
+  const left=h+x*t,top=h+y*t;
+  ctx.save();
+  ctx.fillStyle=color===1?'#b84752':'#f2a7ad';
+  ctx.strokeStyle=color===1?'#872b34':'#b45460';
+  ctx.lineWidth=Math.max(1,t*.035);
+  ctx.fillRect(left+pad,top+pad,t-2*pad,t-2*pad);
+  ctx.strokeRect(left+pad+.5,top+pad+.5,t-2*pad-1,t-2*pad-1);
+  ctx.restore();
+}
+function draw(){
+  if(!geometry.size)return;
+  const {size:s,header:h,step:t}=geometry;
+  const b=state?.board||Array(225).fill(0);
+  ctx.clearRect(0,0,s,s);ctx.fillStyle='#fff';ctx.fillRect(0,0,s,s);
+  // Row and column headers are integrated into the canvas, keeping click geometry aligned.
+  ctx.fillStyle='#f4f6f4';ctx.fillRect(0,0,s,h);ctx.fillRect(0,0,h,s);
+  const last=state?.moves?.at(-1);
+  if(last){ctx.fillStyle='#eef8f1';ctx.fillRect(h+last.x*t,h+last.y*t,t,t);}
+  if(hover&&inside(hover.x,hover.y)){
+    ctx.fillStyle=gomokuUrgentPreview&&canPlayAt(hover.x,hover.y)?'#fff0f0':'#f1f8f3';ctx.fillRect(h+hover.x*t,h+hover.y*t,t,t);
+  }
+  ctx.strokeStyle='#e3e8e4';ctx.lineWidth=1;
+  ctx.beginPath();
+  for(let i=0;i<=15;i++){
+    const p=h+i*t;
+    ctx.moveTo(h,p+.5);ctx.lineTo(s,p+.5);
+    ctx.moveTo(p+.5,h);ctx.lineTo(p+.5,s);
+  }
+  ctx.stroke();
+  ctx.strokeStyle='#cbd5cd';ctx.beginPath();
+  ctx.moveTo(h+.5,0);ctx.lineTo(h+.5,s);
+  ctx.moveTo(0,h+.5);ctx.lineTo(s,h+.5);ctx.stroke();
+  ctx.fillStyle='#647468';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.font=`${Math.max(9,Math.min(12,t*.29))}px Arial,sans-serif`;
+  for(let i=0;i<15;i++){
+    ctx.fillText(LETTERS[i],h+(i+.5)*t,h/2);
+    ctx.fillText(String(i+1),h/2,h+(i+.5)*t);
+  }
+  if(last){
+    ctx.strokeStyle='#16804a';ctx.lineWidth=Math.max(1.5,t*.045);
+    ctx.strokeRect(h+last.x*t+1.5,h+last.y*t+1.5,t-3,t-3);
+  }
+  if(hover&&inside(hover.x,hover.y)){
+    ctx.strokeStyle=gomokuUrgentPreview&&canPlayAt(hover.x,hover.y)?'#c76870':'#19a15c';ctx.lineWidth=gomokuUrgentPreview?2:1.5;
+    ctx.strokeRect(h+hover.x*t+1,h+hover.y*t+1,t-2,t-2);
+  }
+  for(let y=0;y<15;y++)for(let x=0;x<15;x++)if(b[y*15+x]){if(gomokuUrgentBoard)drawUrgentStone(x,y,b[y*15+x]);else drawStone(x,y,b[y*15+x]);}
+  if(hover&&canPlayAt(hover.x,hover.y)){
+    if(gomokuUrgentPreview)drawUrgentStone(hover.x,hover.y,state.turn);
+    else {ctx.save();ctx.globalAlpha=.40;drawStone(hover.x,hover.y,state.turn);ctx.restore();}
+  }
+  if(pendingMovePoint?.room===activeRoom && !b[index(pendingMovePoint.x,pendingMovePoint.y)]){
+    if(pendingMovePoint.urgent&&gomokuUrgentBoard)drawUrgentStone(pendingMovePoint.x,pendingMovePoint.y,pendingMovePoint.color);
+    else {ctx.save();ctx.globalAlpha=.53;drawStone(pendingMovePoint.x,pendingMovePoint.y,pendingMovePoint.color);ctx.restore();}
+  }
+}
+function locate(e){
+  const rect=canvas.getBoundingClientRect();
+  const px=(e.clientX-rect.left)/rect.width*geometry.size;
+  const py=(e.clientY-rect.top)/rect.height*geometry.size;
+  const x=Math.floor((px-geometry.header)/geometry.step);
+  const y=Math.floor((py-geometry.header)/geometry.step);
+  return inside(x,y)?{x,y}:null;
+}
+function updateFormula(p){
+  const target=p||state?.moves?.at(-1);
+  if(!target){$('cell-address').textContent='H8';$('formula-value').textContent='';return;}
+  $('cell-address').textContent=LETTERS[target.x]+(target.y+1);
+  const v=state?.board?.[index(target.x,target.y)];
+  $('formula-value').textContent=v===1?'■':v===2?'□':'';
+}
+function canPlayAt(x,y) {
+  if ((remainingGomokuMs()!==null && remainingGomokuMs()<=0) || !hasMatchStarted() || !connected || movePending || !state || state.winner!==null || !inside(x,y)
+       || state.board[index(x,y)]!==0) return false;
+  if (mySeat!=='host'&&mySeat!=='guest') return false;
+  if (!state.players?.black?.online || !state.players?.white?.online) return false;
+  return state.turn===myColor();
+}
+canvas.addEventListener('mousemove',e=>{const p=locate(e);if(p?.x!==hover?.x||p?.y!==hover?.y){hover=p;updateFormula(p);draw();}});
+canvas.addEventListener('mouseleave',()=>{hover=null;updateFormula(null);draw();});
+// A click should either place a stone or explain exactly why it could not.
+// Refresh stale turn/presence before rejecting an otherwise legal click.
+async function placeGomokuStone(p){
+ const id=activeRoom;
+ if(!id)return;
+ if(!hasMatchStarted()){notify('2P 준비 후 1P가 시작 버튼을 눌러야 합니다.',true);return;}
+ if(remainingGomokuMs()!==null && remainingGomokuMs()<=0){notify('30초를 초과했습니다. 서버 판정을 확인합니다.',true);paintGomokuClock();return;}
+ if(movePending){notify('이전 돌을 서버에 입력 중입니다. 잠시 후 다시 확인해 주세요.');return;}
+ if(state?.board?.[index(p.x,p.y)]){notify('이미 돌이 놓인 칸입니다.',true);return;}
+ movePending=true;
+ let turnColor=0;
+ try{
+  if(!connected||!state||!state.players?.black?.online||!state.players?.white?.online||state.turn!==myColor()){
+   notify('최신 대국 상태 확인 중...');
+   try{const latest=await roomRpc(id);applyRoom(id,latest);}catch(e){notify('서버 연결을 확인해 주세요: '+e.message,true);return;}
+  }
+  if(id!==activeRoom)return;
+  if(!state){notify('대국 정보를 가져오지 못했습니다.',true);return;}
+  if(state.winner!==null){notify('이미 종료된 대국입니다.',true);return;}
+  if(remainingGomokuMs()!==null && remainingGomokuMs()<=0){notify('30초를 초과하여 착수할 수 없습니다.',true);paintGomokuClock();return;}
+  if(mySeat!=='host'&&mySeat!=='guest'){notify('관전자는 돌을 둘 수 없습니다.',true);return;}
+  if(state.board[index(p.x,p.y)]!==0){notify('이미 돌이 놓인 칸입니다.',true);return;}
+  if(!state.players?.black?.online||!state.players?.white?.online){notify('상대 접속을 확인하는 중입니다. 잠시 후 다시 시도해 주세요.',true);return;}
+  if(state.turn!==myColor()){notify('지금은 상대 차례입니다.',true);return;}
+  const checked=evaluateMove(state.board,p.x,p.y,state.turn);
+  if(checked.result==='forbidden'||checked.result==='invalid'){notify(checked.reason,true);return;}
+  turnColor=state.turn;
+  pendingMovePoint={...p,room:id,color:turnColor,urgent:gomokuUrgentPreview};
+  hover=null;notify('돌 입력 중...');draw();
+  try{
+   const data=await roomRpc(id,'move',{p_x:p.x,p_y:p.y});
+   applyRoom(id,data);
+   if(id===activeRoom)notify('');
+  }catch(e){
+   // A request can time out after the server has committed the move.
+   // Re-read first so that a successful move is not sent a second time.
+   let confirmed=false;
+   try{const latest=await roomRpc(id);applyRoom(id,latest);confirmed=latest.state?.board?.[index(p.x,p.y)]===turnColor;}catch(_){}
+   if(id===activeRoom)notify(confirmed?'돌이 정상 반영되었습니다.':'입력에 실패했습니다: '+e.message,!confirmed,confirmed);
+  }
+ }finally{
+  pendingMovePoint=null;movePending=false;
+  if(id===activeRoom)draw();
+ }
+}
+canvas.addEventListener('click',e=>{
+ const p=locate(e);if(!p)return;
+ placeGomokuStone(p);
+});
+window.addEventListener('resize',resizeCanvas);
+resizeCanvas();
+
+
+/* TETRIS BATTLE: deterministic shared 7-bag, separate boards, server snapshots. */
+const TETROMINOES={
+ I:[[0,1],[1,1],[2,1],[3,1]],
+ O:[[1,0],[2,0],[1,1],[2,1]],
+ T:[[1,0],[0,1],[1,1],[2,1]],
+ S:[[1,0],[2,0],[0,1],[1,1]],
+ Z:[[0,0],[1,0],[1,1],[2,1]],
+ J:[[0,0],[0,1],[1,1],[2,1]],
+ L:[[2,0],[0,1],[1,1],[2,1]]
+};
+const TCOLOR={I:'#6f7973',O:'#77817b',T:'#636e67',S:'#858e87',Z:'#717b75',J:'#7f8982',L:'#69746d',G:'#a9b1ab'};
+const TKEYS=['I','O','T','S','Z','J','L'];
+let tetrisLocal=null,tetrisRemote=null,tetrisServer=null,tetrisDataByRoom=new Map(),tetrisLocalByRoom=new Map();
+let tetrisLastFrame=performance.now(),tetrisSyncPending=false,tetrisUpdateAt=0;
+function currentGameType(){return (roomList.find(r=>r.id===activeRoom)?.game||'gomoku');}
+function isTetrisRoom(){return !!activeRoom && currentGameType()==='tetris';}
+function tetrisRpc(id,action='sync',payload=null){return callRpc('renju_tetris_sync',{p_room:id,p_client:CLIENT_ID,p_action:action,p_snapshot:payload});}
+function makeShuffler(seed){
+ let s=(seed|0)||1,bag=[],position=0;
+ function rnd(){s^=s<<13;s^=s>>>17;s^=s<<5;return(s>>>0)/4294967296;}
+ return {get(index){while(position<=index){let next=TKEYS.slice();for(let i=next.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[next[i],next[j]]=[next[j],next[i]];}bag.push(...next);position+=next.length;}return bag[index];}};
+}
+function tCells(type,rotation){
+ let arr=TETROMINOES[type].map(([x,y])=>[x,y]);
+ if(type==='O')return arr;
+ for(let i=0;i<(rotation+4)%4;i++)arr=arr.map(([x,y])=>[3-y,x]);
+ return arr;
+}
+function createTetris(seed,round){
+ const game={seed,round,bag:makeShuffler(seed),board:Array(200).fill(0),next:0,active:null,hold:null,holdUsed:false,lines:0,score:0,attackTotal:0,pending:0,received:0,alive:true,started:false,gravity:0,dirty:true};
+ tSpawn(game);return game;
+}
+function tFits(game,piece,dx=0,dy=0,rotation=piece.r){
+ return tCells(piece.type,rotation).every(([px,py])=>{const x=px+piece.x+dx,y=py+piece.y+dy;return x>=0&&x<10&&y<20&&(y<0||game.board[y*10+x]===0);});
+}
+function tSpawn(game,type=null){
+ const next=type||game.bag.get(game.next++);
+ game.active={type:next,x:3,y:-1,r:0};game.holdUsed=false;
+ if(!tFits(game,game.active))game.alive=false;
+ game.dirty=true;
+}
+function tStep(game,dx,dy){if(!game?.alive||!game.active)return false;
+ if(tFits(game,game.active,dx,dy)){game.active.x+=dx;game.active.y+=dy;game.dirty=true;return true;}return false;}
+function tRotate(game,dir){if(!game?.alive||!game.active)return false;
+ const p=game.active;const r=(p.r+dir+4)%4;
+ for(const [dx,dy] of [[0,0],[-1,0],[1,0],[-2,0],[2,0],[0,-1],[-1,-1],[1,-1]]){
+  if(tFits(game,p,dx,dy,r)){p.x+=dx;p.y+=dy;p.r=r;game.dirty=true;return true;}
+ }return false;
+}
+function tHold(game){if(!game?.alive||!game.active||game.holdUsed)return;
+ const old=game.active.type,carry=game.hold;
+ if(carry){game.active={type:carry,x:3,y:-1,r:0};if(!tFits(game,game.active))game.alive=false;}
+ else tSpawn(game);
+ game.hold=old;game.holdUsed=true;game.dirty=true;
+}
+function tGarbage(game){
+ if(!game.pending)return;
+ const count=Math.min(game.pending,8);game.pending-=count;
+ for(let n=0;n<count;n++){
+  if(game.board.slice(0,10).some(Boolean))game.alive=false;
+  game.board.splice(0,10);
+  const hole=(game.seed+game.received*7+game.round*3)%10;
+  game.board.push(...Array.from({length:10},(_,i)=>i===hole?0:8));game.received++;
+ }
+ game.dirty=true;
+}
+function tLock(game){if(!game?.active||!game.alive)return;
+ for(const [px,py] of tCells(game.active.type,game.active.r)){
+  const x=px+game.active.x,y=py+game.active.y;
+  if(y<0){game.alive=false;return;}
+  game.board[y*10+x]=TKEYS.indexOf(game.active.type)+1;
+ }
+ let cleared=0;
+ for(let y=19;y>=0;){
+  if(game.board.slice(y*10,y*10+10).every(Boolean)){
+   game.board.splice(y*10,10);game.board.unshift(...Array(10).fill(0));cleared++;
+  }else y--;
+ }
+ if(cleared){game.lines+=cleared;game.score+=[0,100,300,500,800][cleared];game.attackTotal+=[0,0,1,2,4][cleared];}
+ tGarbage(game);if(game.alive)tSpawn(game);
+ game.dirty=true;
+}
+function tHard(game){if(!game?.alive)return;let cells=0;while(tStep(game,0,1))cells++;game.score+=cells*2;tLock(game);}
+function tSoft(game){if(tStep(game,0,1)){game.score+=1;}else tLock(game);}
+function tSnapshot(game){return {board:game.board.slice(),active:game.active?{...game.active}:null,hold:game.hold,lines:game.lines,score:game.score,attackTotal:game.attackTotal,alive:game.alive,next:game.next};}
+function opponentOf(data){return data?.players?.[data.seat==='host'?'guest':'host']||null;}
+function tDisplayStatus(){
+ if(!isTetrisRoom())return;
+ const data=tetrisServer;const round=data?.round||0,phase=data?.phase||'waiting';
+ const left=nicknameForPlayer(data?.players?.host?.info),right=nicknameForPlayer(data?.players?.guest?.info);
+ $('tetris-p1').textContent=left;$('tetris-p2').textContent=right;
+ $('tetris-me').textContent=data?.seat==='host'?'1P':data?.seat==='guest'?'2P':'관전';
+ const start=data?.start_at?new Date(data.start_at).getTime():0;
+ const remain=Math.max(0,Math.ceil((start-Date.now())/1000));
+ const who= data?.winner && (data.winner===data.players?.host?.client?left:right);
+ $('tetris-phase').textContent=phase==='finished'?`${who||'대국'} 승리`:!hasMatchStarted()?'준비 대기':phase==='waiting'?'상대 대기':phase==='countdown'?`시작 ${remain}`:phase==='playing'?'진행 중':'대기 중';
+ $('tetris-round').textContent='ROUND '+round;
+ const mine=tetrisLocal;
+ $('tetris-score').textContent=mine?mine.score.toLocaleString('ko-KR'):'0';
+ $('tetris-lines').textContent=mine?String(mine.lines):'0';
+ $('tetris-attack').textContent=mine?String(mine.attackTotal):'0';
+ $('tetris-next').textContent=mine?mine.bag.get(mine.next):'—';
+ $('tetris-hold').textContent=mine?.hold||'—';
+ $('tetris-rematch').hidden=phase!=='finished'||!['host','guest'].includes(data?.seat);
+ $('tetris-rematch').textContent=data?.ready?.[data.seat]?'준비 취소':'재대결';
+ $('tetris-help').textContent=phase==='finished'?`종료 · ${who||''}`:!hasMatchStarted()?'2P 준비 후 1P가 시작합니다.':phase==='waiting'?'시작 준비 중':phase==='countdown'?`${remain}초 후 시작`:
+   (data?.seat==='waiting'?'관전 중':'← → 이동   ↑ 회전   ↓ 내리기   Space 즉시 낙하   Shift 홀드');
+ const queue=Array.isArray(state?.queue)?state.queue:[];
+ $('tetris-queue').textContent=queue.length?queue.map(p=>nicknameFor(p.number,p.name)).join(' · '):'없음';
+}
+function applyTetrisData(id,data){
+ tetrisDataByRoom.set(id,data);
+ if(activeRoom!==id)return;
+ const prev=tetrisServer;tetrisServer=data;
+ const playSeat=['host','guest'].includes(data.seat);
+ if(playSeat && (!tetrisLocal||tetrisLocal.round!==data.round||tetrisLocal.seed!==data.seed)){
+  tetrisLocal=createTetris(data.seed,data.round);tetrisLocalByRoom.set(id,tetrisLocal);
+ }
+ if(!playSeat){tetrisLocal=null;tetrisLocalByRoom.delete(id);}
+ const other=opponentOf(data);tetrisRemote=other?.snapshot||null;
+ if(tetrisLocal&&other){
+  const current=Number(other.attacks||0),previous=tetrisLocal.opponentAttacks||0;
+  if(current>previous)tetrisLocal.pending+=Math.min(16,current-previous);
+  tetrisLocal.opponentAttacks=current;
+ }
+ if(data.phase==='playing'&&tetrisLocal&&!tetrisLocal.started){tetrisLocal.started=true;tetrisLocal.gravity=0;}
+ if(!prev||prev.phase!==data.phase||prev.round!==data.round) tDisplayStatus();
+ drawTetris();tDisplayStatus();renderMatchGate();
+}
+function renderTetrisRoom(){
+ const isT=isTetrisRoom(),isM=isMineRoom();$('renju-game').hidden=isT||isM;$('tetris-game').hidden=!isT;
+ if(isT){tetrisServer=tetrisDataByRoom.get(activeRoom)||null;tetrisLocal=tetrisLocalByRoom.get(activeRoom)||null;tetrisRemote=opponentOf(tetrisServer)?.snapshot||null;tDisplayStatus();drawTetris();}
+}
+function tetrisFrame(){
+ const now=performance.now(),dt=Math.min(100,now-tetrisLastFrame);tetrisLastFrame=now;
+ if(!isTetrisRoom()||!hasMatchStarted())return;
+ if(tetrisLocal?.started && tetrisServer?.phase==='playing'&&tetrisLocal.alive){
+  tetrisLocal.gravity+=dt;
+  const delay=Math.max(130,780*Math.pow(.9,Math.floor(tetrisLocal.lines/10)));
+  if(tetrisLocal.gravity>=delay){tetrisLocal.gravity%=delay;if(!tStep(tetrisLocal,0,1))tLock(tetrisLocal);}
+ }
+ if(tetrisLocal?.dirty){drawTetris();tetrisLocal.dirty=false;tDisplayStatus();}
+ if(tetrisServer?.phase==='countdown')tDisplayStatus();
+}
+function tGameControl(action){
+ if(!isTetrisRoom()||!hasMatchStarted()||!tetrisLocal?.alive||!tetrisLocal.started||tetrisServer?.phase!=='playing')return;
+ if(action==='left')tStep(tetrisLocal,-1,0);
+ else if(action==='right')tStep(tetrisLocal,1,0);
+ else if(action==='down')tSoft(tetrisLocal);
+ else if(action==='rotate')tRotate(tetrisLocal,1);
+ else if(action==='ccw')tRotate(tetrisLocal,-1);
+ else if(action==='drop')tHard(tetrisLocal);
+ else if(action==='hold')tHold(tetrisLocal);
+}
+document.addEventListener('keydown',e=>{
+ if(isTetrisRoom()&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName)){
+  const keys={ArrowLeft:'left',ArrowRight:'right',ArrowDown:'down',ArrowUp:'rotate',Space:'drop',KeyC:'hold',ShiftLeft:'hold',ShiftRight:'hold',KeyZ:'ccw',KeyX:'rotate'};
+  const key=keys[e.code];if(key){e.preventDefault();if(e.repeat&&['drop','hold','rotate','ccw'].includes(key))return;tGameControl(key);}
+ }
+});
+$('tetris-controls').addEventListener('click',e=>{const button=e.target.closest('[data-tetris]');if(button)tGameControl(button.dataset.tetris);});
+$('tetris-rematch').addEventListener('click',async()=>{
+ if(!activeRoom||!isTetrisRoom())return;
+ try{applyTetrisData(activeRoom,await tetrisRpc(activeRoom,'rematch'));}catch(e){notify(e.message,true);}
+});
+function fillTetrisCanvas(id,snapshot,ghost=false){
+ const canvas=$(id);if(!canvas)return;
+ const ctx=canvas.getContext('2d');if(!ctx)return;
+ const w=canvas.width,h=canvas.height,size=Math.min(w/10,h/20);
+ ctx.clearRect(0,0,w,h);ctx.fillStyle='#fcfdfc';ctx.fillRect(0,0,w,h);
+ const board=(snapshot?.board?.length===200)?snapshot.board:Array(200).fill(0);
+ function square(x,y,c,alpha=1){if(y<0||x<0||x>=10||y>=20)return;ctx.globalAlpha=alpha;ctx.fillStyle=typeof c==='number'?(c===8?'#b0b8b2':TCOLOR[TKEYS[c-1]]||'#aab2ac'):c;
+  ctx.fillRect(x*size+.5,y*size+.5,size-1,size-1);ctx.strokeStyle='#d8ddd999';ctx.strokeRect(x*size+1.5,y*size+1.5,size-3,size-3);ctx.globalAlpha=1;}
+ for(let y=0;y<20;y++)for(let x=0;x<10;x++){const cell=board[y*10+x];if(cell)square(x,y,cell);else{ctx.fillStyle='#fff';ctx.fillRect(x*size+.5,y*size+.5,size-1,size-1);ctx.strokeStyle='#e6ebe7';ctx.strokeRect(x*size+.5,y*size+.5,size-1,size-1);}}
+ const active=snapshot?.active;
+ if(active&&TETROMINOES[active.type]){
+  const cells=tCells(active.type,active.r||0);
+  if(ghost){let dy=0;const shadow={board,type:active.type};while(cells.every(([px,py])=>{const x=active.x+px,y=active.y+py+dy+1;return x>=0&&x<10&&y<20&&(y<0||!board[y*10+x]);}))dy++;
+    for(const [px,py] of cells)square(active.x+px,active.y+py+dy,'#9fa8a1',.20);
+  }
+  for(const [px,py] of cells)square(active.x+px,active.y+py,TCOLOR[active.type]);
+ }
+}
+function drawTetris(){
+ if(!isTetrisRoom())return;
+ const mine=tetrisLocal?tSnapshot(tetrisLocal):tetrisServer?.players?.host?.snapshot;
+ const other=tetrisLocal?(tetrisRemote||{}):(tetrisServer?.players?.guest?.snapshot||{});
+ fillTetrisCanvas('tetris-board',mine,true);fillTetrisCanvas('tetris-opponent',other,false);
+ const score=Number(other?.score||0);$('tetris-opponent-score').textContent=score.toLocaleString('ko-KR');
+}
+setInterval(tetrisFrame,34);
+
+// Mine vs Robot v2.5 — server-authoritative online 1:1 integration.
+// The existing Excel lobby and Omok/Tetris code remain unchanged.
+let mineServer=null,mineDataByRoom=new Map(),mineRequestQueue=Promise.resolve();
+let hunterPick=null,hunterMode='move',hunterSetupPiece='mine',hunterSetupSlot=1,hunterNotes=new Set(),hunterNotesKey='';
+const MINE_SIDE=12,MINE_MAX_TURNS=36,MINE_COLS='ABCDEFGHIJKL';
+function isMineRoom(){return !!activeRoom&&currentGameType()==='mine_battle';}
+const mineEphemeralTokens=new Map();
+function mineToken(id){
+ const key='renju-mine-auth:'+id;
+ try{let token=sessionStorage.getItem(key);if(token&&/^[a-f0-9-]{36}$/.test(token))return token;
+  token=makeUuid();sessionStorage.setItem(key,token);return token;}
+ catch(_){if(!mineEphemeralTokens.has(id))mineEphemeralTokens.set(id,makeUuid());return mineEphemeralTokens.get(id);}
+}
+function mineRpc(id,action='sync',index=null,piece=null,slot=null){
+ return callRpc('renju_hunter_sync',{p_room:id,p_client:CLIENT_ID,p_token:mineToken(id),p_action:action,p_index:index,p_piece:piece,p_slot:slot});
+}
+function mineCoord(i){return Number.isInteger(i)&&i>=0?MINE_COLS[i%12]+(Math.floor(i/12)+1):'-';}
+function mineRow(i){return Math.floor(i/12);}
+function mineCol(i){return i%12;}
+function mineAdj(a,b){return a!=null&&b!=null&&Math.abs(mineRow(a)-mineRow(b))+Math.abs(mineCol(a)-mineCol(b))===1;}
+function mineNear(a,b){return a!=null&&b!=null&&a!==b&&Math.max(Math.abs(mineRow(a)-mineRow(b)),Math.abs(mineCol(a)-mineCol(b)))===1;}
+function mineNeighbors(i,diag){return Array.from({length:144},(_,n)=>n).filter(n=>diag?mineNear(i,n):mineAdj(i,n));}
+function buildMineGrid(){let root=$('mine-grid');if(root.children.length)return;
+ const head=document.createElement('div');head.className='hunter-cell hunter-axis';head.textContent='';root.append(head);
+ for(let x=0;x<12;x++){const c=document.createElement('div');c.className='hunter-cell hunter-axis';c.textContent=MINE_COLS[x];root.append(c);}
+ for(let y=0;y<12;y++){
+  const row=document.createElement('div');row.className='hunter-cell hunter-axis';row.textContent=y+1;root.append(row);
+  for(let x=0;x<12;x++){
+   const button=document.createElement('button');button.type='button';button.className='hunter-cell hunter-square';button.dataset.hunterIdx=String(y*12+x);button.setAttribute('aria-label',MINE_COLS[x]+(y+1));root.append(button);
+  }
+ }
+}
+function saveHunterNotes(){if(!activeRoom)return;try{localStorage.setItem(hunterNotesKey,JSON.stringify([...hunterNotes]));}catch(_){}}
+function loadHunterNotes(d){const key='mine-hunter-notes:'+activeRoom+':'+d.round;
+ if(key===hunterNotesKey)return;hunterNotesKey=key;hunterNotes=new Set();hunterPick=null;hunterMode='move';hunterSetupPiece=d.role==='robot'?'robot':'mine';hunterSetupSlot=1;
+ try{let items=JSON.parse(localStorage.getItem(key)||'[]');if(Array.isArray(items))hunterNotes=new Set(items.filter(n=>Number.isInteger(n)&&n>=0&&n<144));}catch(_){}
+ hunterNotesKey=key;
+}
+function applyMineData(id,data){
+ if(!data?.ok){if(id===activeRoom)$('mine-note').textContent=data?.error||'연결 오류';return;}
+ const old=mineDataByRoom.get(id);
+ if(old&&data.round===old.round&&Number(data.revision)<Number(old.revision))return;
+ mineDataByRoom.set(id,data);if(id!==activeRoom)return;
+ const prior=mineServer;mineServer=data;
+ if(!prior||prior.round!==data.round||prior.phase!==data.phase||prior.turn!==data.turn||prior.chosen_robot!==data.chosen_robot){hunterPick=null;hunterMode='move';}
+ loadHunterNotes(data);renderMineRoom();renderMatchGate();
+}
+function hunterCanAct(d){return hasMatchStarted()&&d&&d.phase==='playing'&&d.role===d.turn;}
+function mineAction(action,index=null,piece=null,slot=null){
+ if(!activeRoom||!isMineRoom()||!hasMatchStarted())return Promise.resolve();
+ const room=activeRoom;
+ mineRequestQueue=mineRequestQueue.catch(()=>{}).then(async()=>{
+  if(activeRoom!==room)return;
+  try{applyMineData(room,await mineRpc(room,action,index,piece,slot));}
+  catch(error){if(activeRoom===room)$('mine-note').textContent=error.message;}
+ });return mineRequestQueue;
+}
+function mineSetupSlot(piece,slot){hunterSetupPiece=piece;hunterSetupSlot=slot;renderMineRoom();}
+async function hunterAutoPlace(){
+ const d=mineServer;if(!hasMatchStarted()||!d||d.phase!=='placing'||!['robot','mine'].includes(d.role))return;
+ const rnd=a=>a[Math.floor(Math.random()*a.length)];
+ const shuffle=a=>{let b=[...a];for(let i=b.length-1;i>0;i--){let k=Math.floor(Math.random()*(i+1));[b[i],b[k]]=[b[k],b[i]];}return b;};
+ const pool=Array.from({length:144},(_,i)=>i);
+ if(d.role==='robot'){
+  const picks=shuffle(pool.filter(i=>mineCol(i)<=2));
+  await mineAction('place',picks[0],'robot',1);
+  await mineAction('place',picks.find(i=>Math.abs(mineRow(i)-mineRow(picks[0]))+Math.abs(mineCol(i)-mineCol(picks[0]))>=3)||picks[1],'robot',2);
+ }else{
+  let picks=shuffle(pool.filter(i=>mineCol(i)>=3&&mineCol(i)<=9));let chosen=[];
+  for(let slot=1;slot<=3;slot++){
+   let choice=rnd(picks.filter(i=>!chosen.includes(i)&&chosen.every(k=>Math.abs(mineRow(i)-mineRow(k))+Math.abs(mineCol(i)-mineCol(k))>=3)));
+   if(choice==null)choice=picks.find(i=>!chosen.includes(i));chosen.push(choice);
+   await mineAction('place',choice,'mine',slot);
+  }
+  await mineAction('place',rnd(pool.filter(i=>mineCol(i)>=10)),'hunter',null);
+ }
+}
+function hunterClick(i){
+ const d=mineServer;if(!isMineRoom()||!d||!hasMatchStarted())return;
+ if(d.phase==='placing'){
+  if(!['robot','mine'].includes(d.role)||(d.role==='mine'?d.ready_mine:d.ready_robot))return;
+  const pos=d.role==='robot'?d.robots?.[hunterSetupSlot-1]:hunterSetupPiece==='hunter'?d.hunter:d.mines?.[hunterSetupSlot-1];
+  mineAction('place',i===pos?null:i,hunterSetupPiece,hunterSetupPiece==='hunter'?null:hunterSetupSlot);return;
+ }
+ if(!hunterCanAct(d))return;
+ if(d.role==='mine'){
+  if(i===d.hunter){hunterPick='H';renderMineRoom();return;}
+  if(hunterPick==='H'&&mineNear(d.hunter,i))mineAction('mine_move',i);
+  else{$('mine-note').textContent='설치자 H를 누른 뒤 주변 8방향의 한 칸을 클릭하세요.';}
+  return;
+ }
+ if(d.role!=='robot')return;
+ if(hunterMode==='note'){
+  hunterNotes.has(i)?hunterNotes.delete(i):hunterNotes.add(i);saveHunterNotes();renderMineRoom();return;
+ }
+ const robots=d.robots||[];let slot=null;
+ if(d.robot_steps===1){slot=d.chosen_robot;hunterPick=slot;}
+ else if(hunterPick&&robots[hunterPick-1]!=null)slot=hunterPick;
+ if(d.robot_steps===0&&(i===robots[0]||i===robots[1])){
+   hunterPick=i===robots[0]?1:2;hunterMode='move';renderMineRoom();return;
+ }
+ if(!slot){$('mine-note').textContent='먼저 로봇 R1 또는 R2를 선택하세요.';return;}
+ const here=robots[slot-1];if(here==null)return;
+ if(hunterMode==='defuse'){
+  if(d.robot_steps!==1){$('mine-note').textContent='한 칸 이동한 다음 해체할 수 있습니다.';return;}
+  if(!mineNear(here,i)){$('mine-note').textContent='주변 8칸 중 하나를 지정해 해체하세요.';return;}
+  mineAction('robot_defuse',i,null,slot);return;
+ }
+ if(!mineAdj(here,i)){$('mine-note').textContent='로봇은 상하좌우 1칸씩 이동합니다.';return;}
+ if(robots.some((p,j)=>j!==slot-1&&p===i))return;
+ mineAction('robot_move',i,null,slot);
+}
+function hunterToggleNotes(i){const d=mineServer;if(!isMineRoom()||d?.role!=='robot'||d.phase!=='playing')return;
+ hunterNotes.has(i)?hunterNotes.delete(i):hunterNotes.add(i);saveHunterNotes();renderMineRoom();}
+function renderMineRoom(){
+ const visible=isMineRoom();$('mine-game').hidden=!visible;if(!visible)return;
+ buildMineGrid();mineServer=mineDataByRoom.get(activeRoom)||null;const d=mineServer;
+ if(!d){$('mine-phase').textContent='연결 중';$('mine-note').textContent=hasMatchStarted()?'서버에서 게임 정보를 불러오는 중입니다.':'2P 준비 후 1P가 시작하면 배치할 수 있습니다.';return;}
+ const mineSide=d.role==='mine',robotSide=d.role==='robot',inSetup=d.phase==='placing',inPlay=d.phase==='playing',finished=d.phase==='finished';
+ const myTurn=hunterCanAct(d),myReady=mineSide?d.ready_mine:d.ready_robot;
+ const robotSlots=d.robots||[null,null];const mineSlots=d.mines||[];
+ const alive=robotSlots.filter(x=>x!=null).length;
+ $('mine-phase').textContent=d.phase==='waiting'?'상대 접속 대기':inSetup?'초기 배치':inPlay?(d.turn==='robot'?'탐색팀 차례':'설치자 차례'):'대국 종료';
+ $('mine-round').textContent=String(d.round||1);
+ $('mine-robot-count').textContent=(inSetup?'2':alive)+' / 2';
+ $('mine-mine-count').textContent=Number(d.remaining_mines??3)+' / 3';
+ $('mine-turn-count').textContent=String(d.robot_turns||0)+' / '+MINE_MAX_TURNS;
+ $('mine-result').textContent=finished?(d.winner==='robot'?'탐색팀 승리':'지뢰팀 승리'):'진행 중';
+ $('mine-host-name').textContent=nicknameFromServer(d.players?.host?.name||'Player 1');
+ $('mine-guest-name').textContent=nicknameFromServer(d.players?.guest?.name||'Player 2');
+ $('mine-host-progress').textContent=d.mine_seat==='host'?'지뢰팀':'탐색팀';
+ $('mine-guest-progress').textContent=d.mine_seat==='guest'?'지뢰팀':'탐색팀';
+ $('mine-record').textContent=(d.record?.won||0)+' / '+(d.record?.lost||0);
+ const roleText=robotSide?'탐색팀':mineSide?'지뢰팀':'관전자';
+ $('mine-role').textContent=roleText;
+ $('mine-ready').hidden=!inSetup||!['robot','mine'].includes(d.role);
+ $('mine-ready').disabled=!hasMatchStarted()||Boolean(myReady)||!((robotSide&&robotSlots.every(v=>v!=null))||(mineSide&&mineSlots.length===3&&mineSlots.every(v=>v>=0)&&d.hunter!=null));
+ $('mine-ready').textContent=myReady?'확정 · 상대 대기':'배치 완료';
+ $('mine-rematch').hidden=!finished||!['robot','mine'].includes(d.role);
+ $('mine-rematch').textContent=(d.mine_seat===d.seat?d.ready_mine:d.ready_robot)?'재대결 취소':'재대결 · 역할 교대';
+ $('mine-setup-controls').hidden=!inSetup||!['robot','mine'].includes(d.role);
+ $('mine-play-controls').hidden=!inPlay||!['robot','mine'].includes(d.role);
+ const setupBtns=$('mine-setup-buttons');setupBtns.replaceChildren();
+ if(inSetup&&['robot','mine'].includes(d.role)){
+  const opts=mineSide?[['mine',1,'지뢰 M1'],['mine',2,'지뢰 M2'],['mine',3,'지뢰 M3'],['hunter',null,'설치자 H']]:[['robot',1,'로봇 R1'],['robot',2,'로봇 R2']];
+  for(const [piece,slot,label] of opts){let b=document.createElement('button');b.className='hunter-btn'+(piece===hunterSetupPiece&&slot===hunterSetupSlot?' on':'');b.type='button';b.textContent=label;b.disabled=!!myReady;b.onclick=()=>mineSetupSlot(piece,slot);setupBtns.append(b);}
+ }
+ $('mine-setup-hint').textContent=robotSide?'로봇 2개를 A~C열에 배치하세요.':mineSide?'지뢰 3개는 D~J열, 설치자는 K~L열에 배치하세요.':'관전 중';
+ $('mine-setup-random').disabled=!hasMatchStarted()||!!myReady;
+ $('mine-move').classList.toggle('on',hunterMode==='move');$('mine-defuse').classList.toggle('on',hunterMode==='defuse');$('mine-note-mode').classList.toggle('on',hunterMode==='note');
+ $('mine-move').disabled=!myTurn||!robotSide;
+ $('mine-defuse').disabled=!myTurn||!robotSide||d.robot_steps!==1;
+ $('mine-note-mode').disabled=!robotSide;
+ if(inSetup)$('mine-note').textContent=!hasMatchStarted()?'1P의 시작 버튼을 기다리는 중입니다.':!['robot','mine'].includes(d.role)?'관전 중':myReady?'배치 확정 · 상대를 기다리는 중':'배치한 말을 다시 누르면 배치 취소 · 완료 버튼으로 확정';
+ else if(inPlay)$('mine-note').textContent=!['robot','mine'].includes(d.role)?'관전 중':!myTurn?'상대 차례입니다.':mineSide?'설치자 H를 누른 후 대각선 포함 1칸 이동 · 로봇을 잡으세요.':d.robot_steps===1?'이제 같은 로봇으로 1칸 더 이동하거나 지뢰를 해체하세요.':'로봇 선택 → 십자 1칸 이동 → 추가 1칸 이동 또는 해체';
+ else if(finished)$('mine-note').textContent=(d.winner==='robot'?'로봇이 지뢰를 모두 제거했습니다.':d.reason==='turns'?'로봇 행동 36회 소진 · 지뢰팀 승리':'로봇이 모두 파괴되었습니다.')+' · 재대결하면 역할이 바뀝니다.';
+ else $('mine-note').textContent='2P가 준비하면 1P가 시작할 수 있습니다.';
+ const sig=d.signals||[null,null];
+ $('mine-signal').textContent=robotSide&&inPlay?robotSlots.map((p,k)=>p==null?'R'+(k+1)+' 파괴':`R${k+1} ${sig[k]?'⚠ 근처에 지뢰 있음':'✓ 주변 지뢰 신호 없음'}`).join(' · '):mineSide?'고정 지뢰 3개 · 설치자는 8방향 이동':'로봇 주변 3×3 지뢰 감지 · 정확한 위치 비공개';
+ const logRoot=$('mine-log');logRoot.replaceChildren();for(const x of (d.log||[]).slice(0,7)){const li=document.createElement('div');li.className='hunter-log-row';li.textContent=x.message||'';logRoot.append(li);}
+ if(!(d.log||[]).length)logRoot.textContent='행동 기록 없음';
+ const safe=new Set(d.safe||[]),defused=new Set(d.defused||[]),clues=d.clues||{};
+ let allowed=new Set();let chosenPos=null;
+ if(myTurn){
+  if(robotSide){const slot=d.robot_steps===1?d.chosen_robot:hunterPick;chosenPos=slot?robotSlots[slot-1]:null;
+   if(chosenPos!=null){allowed=new Set(hunterMode==='defuse'&&d.robot_steps===1?mineNeighbors(chosenPos,true):mineNeighbors(chosenPos,false).filter(i=>!robotSlots.includes(i)));}}
+  if(mineSide){chosenPos=hunterPick==='H'?d.hunter:null;if(chosenPos!=null)allowed=new Set(mineNeighbors(chosenPos,true));}
+ }
+ const mineVisible=mineSide||finished;
+ const pieces=Array.from($('mine-grid').querySelectorAll('button[data-hunter-idx]'));
+ for(const el of pieces){const i=Number(el.dataset.hunterIdx);let token='',css='hunter-cell hunter-square',label=mineCoord(i);
+  if(inSetup){if(robotSide&&mineCol(i)<=2||mineSide&&((hunterSetupPiece==='hunter'&&mineCol(i)>=10)||(hunterSetupPiece==='mine'&&mineCol(i)>=3&&mineCol(i)<=9)))css+=' hunter-zone';}
+  else if(robotSide&&safe.has(i))css+=' hunter-visited';
+  if(inPlay&&robotSide&&Object.prototype.hasOwnProperty.call(clues,String(i)))css+=clues[i]?' hunter-risk':' hunter-clear';
+  if(allowed.has(i))css+=' hunter-legal';if(chosenPos===i)css+=' hunter-selected';
+  if(defused.has(i)){css+=' hunter-disarmed';token='×';}
+  if(mineVisible&&mineSlots.includes(i)&&!defused.has(i)&&mineSlots.length){css+=' hunter-mine';token='◆';}
+  if(d.hunter===i&&(finished||mineSide||inPlay)){css+=' hunter-hunter';token='H';}
+  if((finished||inPlay||robotSide&&inSetup)&&robotSlots.includes(i)){
+   css+=' hunter-robot';token='R'+(robotSlots[0]===i?1:2);
+   if(robotSide&&inPlay&&sig[robotSlots[0]===i?0:1])css+=' hunter-alert';
+  }
+  if(!token&&inPlay&&robotSide&&hunterNotes.has(i)){css+=' hunter-noted';token='?';}
+  if(!token&&inPlay&&robotSide&&Object.prototype.hasOwnProperty.call(clues,String(i)))token=clues[i]?'!':'·';
+  el.className=css;el.textContent=token;el.title=label;el.disabled=!hasMatchStarted()||finished||!(['robot','mine'].includes(d.role)&&((inSetup&&!myReady)||(inPlay&&myTurn)));
+ }
+}
+$('mine-grid').addEventListener('click',e=>{const cell=e.target.closest('[data-hunter-idx]');if(cell)hunterClick(Number(cell.dataset.hunterIdx));});
+$('mine-grid').addEventListener('contextmenu',e=>{const cell=e.target.closest('[data-hunter-idx]');if(cell){e.preventDefault();hunterToggleNotes(Number(cell.dataset.hunterIdx));}});
+$('mine-setup-random').addEventListener('click',hunterAutoPlace);
+$('mine-ready').addEventListener('click',()=>mineAction('ready'));
+$('mine-rematch').addEventListener('click',()=>mineAction('rematch'));
+$('mine-leave').addEventListener('click',()=>{if(activeRoom)closeRoom(activeRoom);});
+$('mine-move').addEventListener('click',()=>{hunterMode='move';renderMineRoom();});
+$('mine-defuse').addEventListener('click',()=>{hunterMode='defuse';renderMineRoom();});
+$('mine-note-mode').addEventListener('click',()=>{hunterMode=hunterMode==='note'?'move':'note';renderMineRoom();});
+
+</script></body></html>
