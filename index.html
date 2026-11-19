@@ -230,6 +230,31 @@
 .member-progress{font-size:10px;color:#54745e;display:inline-flex;align-items:center;gap:5px}
 .member-level-tag{font-size:10px;font-weight:700;background:#dff1e3;border:1px solid #b9dabf;color:#216139;padding:2px 4px;border-radius:2px}
 @media(max-width:780px){.member-tools{width:100%}.member-status{flex:1}.member-tools button{padding:8px}}
+
+/* Sheet1 always-open worksheet chat from row 21; room memo remains floating. */
+#lobby-view .grid-scroll{max-height:none;overflow-x:auto;overflow-y:visible}
+.sheet1-chat-area{margin-top:0;margin-bottom:22px;background:#fff}
+.sheet1-chat-grid{table-layout:fixed;border-top:0;min-width:0;width:100%}
+.sheet1-chat-grid-scroll{min-height:0!important}
+.sheet1-chat-grid col.row-col{width:43px}
+.sheet1-chat-grid col.c1{width:94px}
+.sheet1-chat-grid col.c2{width:142px}
+.sheet1-chat-grid col.c3,.sheet1-chat-grid col.c4,.sheet1-chat-grid col.c5,.sheet1-chat-grid col.c6,.sheet1-chat-grid col.c7,.sheet1-chat-grid col.c8,.sheet1-chat-grid col.c9,.sheet1-chat-grid col.c10{width:auto}
+.sheet1-chat-grid .section{background:#e7f1e9;color:#176b3d}
+.sheet1-chat-grid .col-head{text-align:left}
+.sheet1-chat-grid td.sheet1-chat-text{white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;height:auto;min-height:32px;line-height:1.55;color:#374c3e}
+.sheet1-chat-grid td.sheet1-chat-name{font-weight:700;color:#157445;white-space:normal;word-break:break-all}
+.sheet1-chat-grid td.sheet1-chat-id{color:#728278;font-size:10px;font-variant-numeric:tabular-nums}
+.sheet1-chat-grid td.sheet1-chat-empty{color:#92a396;text-align:left;padding:12px 8px}
+.sheet1-chat-grid tr.sheet1-chat-own td{background:#f5faf6}
+.sheet1-chat-grid .sheet1-chat-form-cell{padding:3px 5px!important}
+.sheet1-chat-form{display:flex;align-items:center;gap:5px;min-width:0}
+.sheet1-chat-form input{flex:1;min-width:0;border:1px solid #c9d8ce;color:#304a37;background:#fff;outline-color:#107c41;border-radius:0;padding:7px 9px;font-size:11px;min-height:31px}
+.sheet1-chat-form button{flex:none;background:#f3faf5;border:1px solid #a6cbb0;color:#14693b;padding:7px 14px;font-size:11px;font-weight:700;min-height:31px;border-radius:0}
+.sheet1-chat-form button:disabled{opacity:.45}
+.sheet1-chat-grid #sheet1-chat-feedback{display:block;padding:8px 11px}
+.sheet1-chat-grid #sheet1-chat-feedback[hidden]{display:none}
+@media(max-width:700px){.sheet1-chat-area{margin-bottom:20px}.sheet1-chat-grid{min-width:0;width:100%}.sheet1-chat-grid col.row-col{width:30px}.sheet1-chat-grid col.c1{width:54px}.sheet1-chat-grid col.c2{width:80px}.sheet1-chat-grid td,.sheet1-chat-grid th{padding:4px 5px}.sheet1-chat-grid td.sheet1-chat-form-cell{padding:3px!important}.sheet1-chat-grid .sheet1-chat-form button{padding:7px 8px}.sheet1-chat-grid .sheet1-chat-form input{padding:7px 5px}}
 </style></head>
 <body>
 <div class="titlebar"><span class="app-icon" aria-hidden="true">▦</span><span class="doc-name">업무현황_2026.xlsx</span><span class="title-space"></span><span id="member-top-level" class="member-level-tag" hidden>Lv.1</span><span id="connection-label" class="connection">연결 중</span><button id="copy-link-btn" type="button" class="share-btn">주소 복사</button></div>
@@ -239,7 +264,19 @@
 <div id="member-overlay" class="member-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="member-dialog-title"><form id="member-form" class="member-dialog" autocomplete="on"><h2 id="member-dialog-title">계정 로그인</h2><p class="member-desc">처음엔 익명 Player로 접속합니다. 가입하면 승리 기록과 레벨이 저장돼요.</p><div class="member-switch"><button type="button" id="member-login-tab" class="active">로그인</button><button type="button" id="member-register-tab">회원가입</button></div><label for="member-nickname">닉네임 (로그인 아이디)</label><input id="member-nickname" name="username" type="text" maxlength="16" minlength="1" autocomplete="username" required placeholder="1~16자 아이디"><label for="member-password">비밀번호</label><input id="member-password" name="password" type="password" minlength="4" maxlength="72" autocomplete="current-password" required placeholder="4자 이상 비밀번호 (형식 자유)"><div class="member-hint">이메일 없이 닉네임과 비밀번호로 가입합니다. 비밀번호 분실 시 자동 복구는 지원하지 않아요.</div><div id="member-feedback" class="member-feedback" role="alert"></div><div class="member-actions"><button type="button" id="member-cancel">닫기</button><button type="submit" id="member-submit">로그인</button></div></form></div>
 <div class="admin-notice" id="admin-notice" role="alert" hidden><strong class="admin-notice-label">공지</strong><span class="admin-notice-text" id="admin-notice-text"></span><button type="button" id="admin-notice-close" class="admin-notice-close" aria-label="공지 닫기">×</button></div>
 <div id="admin-auth-overlay" class="admin-auth-overlay" role="dialog" aria-modal="true" aria-labelledby="admin-auth-title" hidden><form id="admin-auth-form" class="admin-auth-dialog" autocomplete="off"><h2 id="admin-auth-title">운영자 인증</h2><p>닉네임 ‘운영자’를 사용하려면 운영자 비밀번호를 입력해야 합니다.</p><input id="admin-auth-password" type="password" name="operator_password" autocomplete="off" placeholder="운영자 비밀번호" required aria-label="운영자 비밀번호"><div class="admin-auth-actions"><button type="button" id="admin-auth-cancel">취소</button><button type="submit">확인</button></div></form></div>
-<section class="lobby-shell" id="lobby-view"><div class="lobby-toolbar"><div class="left"><span class="lobby-title">Sheet1 · 업무 진행 현황</span><span id="lobby-count" class="lobby-summary">0개 시트</span></div><div class="lobby-actions"><form id="nickname-form" class="nickname-form" autocomplete="off"><label for="nickname-input">내 닉네임</label><input id="nickname-input" name="nickname" type="text" maxlength="16" placeholder="Player" spellcheck="false" autocomplete="off" aria-label="닉네임 16자 이하"><button type="submit" id="nickname-save">저장</button></form><div class="member-tools"><span id="member-status" class="member-status">익명 Player</span><button id="member-open" type="button">가입 / 로그인</button><button id="member-logout" type="button" hidden>로그아웃</button></div><button id="create-room-btn" type="button" class="excel-action">＋ 새 방 만들기</button></div></div><div id="nickname-required-note" class="nickname-required-note" role="status" aria-live="polite" hidden>익명 Player로 둘러볼 수 있어요. 방에 들어가려면 닉네임을 저장하거나 <strong>가입 / 로그인</strong>해 주세요. 회원은 게임 결과에 따라 포인트와 레벨이 기록됩니다.</div><div id="lobby-notice" class="lobby-notice" aria-live="polite"></div><div class="grid-scroll"><table class="xl-grid" aria-label="방 현황과 대기자 목록"><colgroup><col class="row-col"><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"><col class="c7"><col class="c8"><col class="c9"><col class="c10"></colgroup><thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th><th>J</th></tr></thead><tbody id="lobby-cells"><tr><th class="row-no">1</th><td class="section" colspan="10">방 목록 불러오는 중...</td></tr></tbody></table></div></section>
+<section class="lobby-shell" id="lobby-view"><div class="lobby-toolbar"><div class="left"><span class="lobby-title">Sheet1 · 업무 진행 현황</span><span id="lobby-count" class="lobby-summary">0개 시트</span></div><div class="lobby-actions"><form id="nickname-form" class="nickname-form" autocomplete="off"><label for="nickname-input">내 닉네임</label><input id="nickname-input" name="nickname" type="text" maxlength="16" placeholder="Player" spellcheck="false" autocomplete="off" aria-label="닉네임 16자 이하"><button type="submit" id="nickname-save">저장</button></form><div class="member-tools"><span id="member-status" class="member-status">익명 Player</span><button id="member-open" type="button">가입 / 로그인</button><button id="member-logout" type="button" hidden>로그아웃</button></div><button id="create-room-btn" type="button" class="excel-action">＋ 새 방 만들기</button></div></div><div id="nickname-required-note" class="nickname-required-note" role="status" aria-live="polite" hidden>익명 Player로 둘러볼 수 있어요. 방에 들어가려면 닉네임을 저장하거나 <strong>가입 / 로그인</strong>해 주세요. 회원은 게임 결과에 따라 포인트와 레벨이 기록됩니다.</div><div id="lobby-notice" class="lobby-notice" aria-live="polite"></div><div class="grid-scroll"><table class="xl-grid" aria-label="방 현황과 대기자 목록"><colgroup><col class="row-col"><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"><col class="c7"><col class="c8"><col class="c9"><col class="c10"></colgroup><thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th><th>J</th></tr></thead><tbody id="lobby-cells"><tr><th class="row-no">1</th><td class="section" colspan="10">방 목록 불러오는 중...</td></tr></tbody></table></div>
+<div id="sheet1-chat-area" class="sheet1-chat-area" aria-label="Sheet1 공용 채팅">
+ <div class="grid-scroll sheet1-chat-grid-scroll"><table class="xl-grid sheet1-chat-grid" aria-label="공용 채팅 기록과 메시지 입력">
+  <colgroup><col class="row-col"><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"><col class="c7"><col class="c8"><col class="c9"><col class="c10"></colgroup>
+  <thead><tr><th aria-label="행 번호"></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th><th>J</th></tr></thead>
+  <tbody><tr><th data-chat-row-no class="row-no">21</th><td colspan="10" class="section">공용 채팅 / COMMUNICATION LOG</td></tr>
+  <tr><th data-chat-row-no class="row-no">22</th><td class="col-head">번호</td><td class="col-head">닉네임</td><td colspan="8" class="col-head">내용</td></tr></tbody>
+  <tbody id="sheet1-chat-rows"><tr><th data-chat-row-no class="row-no">23</th><td colspan="10" class="sheet1-chat-empty">대화를 불러오는 중...</td></tr></tbody>
+  <tbody><tr class="sheet1-chat-input-row"><th data-chat-row-no class="row-no">24</th><td class="col-head">입력</td><td colspan="9" class="sheet1-chat-form-cell"><form id="sheet1-chat-form" class="sheet1-chat-form" autocomplete="off"><input id="sheet1-chat-input" type="text" maxlength="280" placeholder="메시지 입력" aria-label="Sheet1 공용 채팅 메시지"><button type="submit">전송</button></form></td></tr>
+  <tr id="sheet1-chat-feedback-row" hidden><th data-chat-row-no class="row-no">25</th><td colspan="10"><div id="sheet1-chat-feedback" role="status" class="admin-chat-feedback" hidden></div></td></tr></tbody>
+ </table></div>
+</div>
+</section>
 <section id="room-view" hidden><div class="room-bar"><div><span id="room-name" class="room-name">Sheet2</span><span id="room-info" class="room-info"></span></div><div class="room-control"><button id="room-copy" type="button">초대 링크 복사</button><button id="room-lobby" type="button">Sheet1</button></div></div>
 <div id="match-gate" class="match-gate" role="region" aria-label="게임 준비 및 시작">
  <div class="match-gate-info"><strong id="match-gate-title">대기 중</strong><span id="match-gate-desc" role="status" aria-live="polite">방 정보를 확인하고 있습니다.</span></div>
@@ -297,7 +334,7 @@
   <div class="chooser-grid"><button type="button" class="game-choice" data-choice="gomoku"><span class="choice-symbol">▣ ▤</span><span>오목</span></button><button type="button" class="game-choice" data-choice="tetris"><span class="choice-symbol">▦</span><span>테트리스</span></button><button type="button" class="game-choice mine-choice" data-choice="mine_battle"><span class="choice-symbol">▥</span><span>지뢰탐색게임</span></button></div><p class="chooser-note">선택하면 새 시트가 생성됩니다.</p>
  </div>
 </div>
-<div id="chat" class="chat"><button type="button" id="chat-title-button" class="chat-title" aria-expanded="true" aria-controls="chat-body" title="메모 접기/펼치기"><span>Sheet1 메모 <span id="chat-count"></span></span><span class="chat-toggle" id="chat-toggle-glyph">−</span></button><div class="chat-body" id="chat-body"><div id="chat-messages" class="chat-messages"><div class="chat-empty">내용 없음</div></div><div id="admin-chat-feedback" class="admin-chat-feedback" role="status" hidden></div><form class="chat-form" id="chat-form"><input id="chat-input" class="chat-input" placeholder="메모 / 운영자: /포인트 닉네임 100" maxlength="280" autocomplete="off" aria-label="채팅 메시지"><button type="submit" class="chat-send">보내기</button></form></div></div>
+<div id="chat" class="chat" hidden><button type="button" id="chat-title-button" class="chat-title" aria-expanded="true" aria-controls="chat-body" title="메모 접기/펼치기"><span>메모 <span id="chat-count"></span></span><span class="chat-toggle" id="chat-toggle-glyph">−</span></button><div class="chat-body" id="chat-body"><div id="chat-messages" class="chat-messages"><div class="chat-empty">내용 없음</div></div><div id="admin-chat-feedback" class="admin-chat-feedback" role="status" hidden></div><form class="chat-form" id="chat-form"><input id="chat-input" class="chat-input" placeholder="메시지 입력" maxlength="280" autocomplete="off" aria-label="채팅 메시지"><button type="submit" class="chat-send">보내기</button></form></div></div>
 <footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right">100%</span></footer>
 <script>
 'use strict';
@@ -938,7 +975,8 @@ function renderLobby(){const list=$('lobby-cells');const rows=[];let n=1;
  if(!waitingList.length)rows.push(row(n++,['-','대기자 없음','','','','','','','',''],['muted','muted']));
  else for(const p of waitingList.slice(0,24))rows.push(row(n++,[p.number,nicknameFor(p.number,p.name),'대기 중','','','','','','',''],['','','you-row']));
  for(let i=0;i<4;i++)rows.push(row(n++,[]));
- list.replaceChildren(...rows);refreshNicknameAccess();
+ while(n<=20)rows.push(row(n++,[]));
+ list.replaceChildren(...rows);updateSheet1RowNumbers();refreshNicknameAccess();
  $('lobby-count').textContent=roomList.length+'개 시트 · 대기 '+waitingList.length+'명';
  if(!activeRoom){$('cell-address').textContent='A1';$('formula-value').textContent='=COUNTIF(방현황,"접속중")';}
 }
@@ -949,8 +987,8 @@ function updateSheetTabs(){const nav=$('sheet-nav');nav.querySelectorAll('[data-
   const close=document.createElement('span');close.className='tab-close';close.textContent='×';close.title='시트 닫기';close.dataset.closeRoom=id;tab.append(close);nav.insertBefore(tab,$('add-sheet-btn'));}
  const lobby=nav.querySelector('[data-sheet="lobby"]');lobby.classList.toggle('active',activeRoom===null);}
 function changeUrl(id){const url=new URL(location.href);if(id)url.searchParams.set('room',id);else url.searchParams.delete('room');try{history.replaceState(null,'',url.pathname+url.search+url.hash);}catch(_){}}
-function switchView(id){if(id && !requireNickname())return;activeRoom=id;$('lobby-view').hidden=!!id;$('room-view').hidden=!id;$('chat').hidden=false;chatLastSeen='';hover=null;
- $('chat-title-button').firstElementChild.firstChild.textContent=id?'메모 ':'Sheet1 메모 ';
+function switchView(id){if(id && !requireNickname())return;activeRoom=id;$('lobby-view').hidden=!!id;$('room-view').hidden=!id;$('chat').hidden=!id;chatLastSeen='';hover=null;
+ $('chat-title-button').firstElementChild.firstChild.textContent='메모 ';
  showOperatorMessage('');if(!id){sheet1LastPaint='';paintSheet1Chat();setTimeout(()=>syncSheet1Chat(true),0);}
  if(id){const item=roomList.find(r=>r.id===id);$('room-name').textContent=(item?.sheet||'Sheet')+'  '+(item?.game==='mine_battle'?'지뢰탐색게임':(item?.title||''));$('room-info').textContent='  '+id;activateCache();setTimeout(resizeCanvas,30);}else{$('cell-address').textContent='A1';$('formula-value').textContent='=COUNTIF(방현황,"접속중")';}
  updateSheetTabs();changeUrl(id);renderTetrisRoom();renderMineRoom();renderMatchGate();}
@@ -1073,8 +1111,13 @@ $('lobby-cells').addEventListener('click',e=>{const tr=e.target.closest('[data-r
 $('rematch-btn').addEventListener('click',async()=>{if(state&&state.winner!==null&&['host','guest'].includes(mySeat))await gameAction('rematch');});
 let lastNoticeId=null;
 function showOperatorMessage(message,error=false){
- const el=$('admin-chat-feedback');el.textContent=message||'';
- el.hidden=!message;el.classList.toggle('error',!!error);
+ const lobby=activeRoom===null;
+ const el=$(lobby?'sheet1-chat-feedback':'admin-chat-feedback');
+ const other=$(lobby?'admin-chat-feedback':'sheet1-chat-feedback');
+ other.textContent='';other.hidden=true;other.classList.remove('error');
+ el.textContent=message||'';el.hidden=!message;el.classList.toggle('error',!!error);
+ $('sheet1-chat-feedback-row').hidden=!!$('sheet1-chat-feedback').hidden;
+ updateSheet1RowNumbers();
 }
 async function pollAnnouncement(){
  if(document.hidden)return;
@@ -1111,30 +1154,40 @@ async function syncSheet1Chat(force=false){
   if(!sheet1LastPaint)showOperatorMessage('Sheet1 메모 연결 확인: '+e.message,true);
  }finally{sheet1ChatPending=false;}
 }
+function updateSheet1RowNumbers(){
+ const last=$('lobby-cells')?.lastElementChild?.querySelector('.row-no');
+ let n=Math.max(21,(parseInt(last?.textContent||'20',10)||20)+1);
+ document.querySelectorAll('#sheet1-chat-area [data-chat-row-no]').forEach(el=>{el.textContent=n++;});
+}
 function paintSheet1Chat(){
  if(activeRoom!==null)return;
  const messages=sheet1Messages;
- const key=nicknameRevision+':'+messages.map(m=>m.id+':'+m.nickname).join(',');
+ const key=nicknameRevision+':'+messages.map(m=>String(m.id)+':'+String(m.nickname)+':'+String(m.text)).join('|');
+ updateSheet1RowNumbers();
  if(key===sheet1LastPaint)return;
  sheet1LastPaint=key;
- const panel=$('chat-messages');const nearBottom=panel.scrollHeight-panel.scrollTop-panel.clientHeight<65;
- panel.replaceChildren();
- if(!messages.length){const empty=document.createElement('div');empty.className='chat-empty';empty.textContent='Sheet1 공용 메모입니다.';panel.append(empty);}
- for(const m of messages){
-  const item=document.createElement('div');item.className='chat-item'+(m.nickname===myNickname?' mine':'');
-  const sender=document.createElement('div');sender.className='sender';sender.textContent=m.nickname||'Player';
-  const bubble=document.createElement('div');bubble.className='bubble';bubble.textContent=m.text||'';
-  item.append(sender,bubble);panel.append(item);
+ const panel=$('sheet1-chat-rows');const rows=[];
+ if(!messages.length){
+  const tr=document.createElement('tr'),th=document.createElement('th');th.className='row-no';th.dataset.chatRowNo='';
+  const td=document.createElement('td');td.colSpan=10;td.className='sheet1-chat-empty';td.textContent='아직 대화가 없습니다. 아래 입력 행에서 메시지를 보내보세요.';
+  tr.append(th,td);rows.push(tr);
+ }else for(const m of messages.slice(-15)){
+  const tr=document.createElement('tr');if(m.nickname===myNickname)tr.className='sheet1-chat-own';
+  const th=document.createElement('th');th.className='row-no';th.dataset.chatRowNo='';
+  const time=document.createElement('td');time.className='sheet1-chat-id';time.textContent=String(m.id||'');
+  const name=document.createElement('td');name.className='sheet1-chat-name';name.textContent=m.nickname||'Player';
+  const body=document.createElement('td');body.colSpan=8;body.className='sheet1-chat-text';body.textContent=m.text||'';
+  tr.append(th,time,name,body);rows.push(tr);
  }
- if(nearBottom)panel.scrollTop=panel.scrollHeight;
+ panel.replaceChildren(...rows);updateSheet1RowNumbers();
 }
 setInterval(()=>syncSheet1Chat(),2500);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncSheet1Chat(true);});
 window.addEventListener('focus',()=>syncSheet1Chat(true));
 setTimeout(()=>syncSheet1Chat(true),450);
 
-$('chat-form').addEventListener('submit',async e=>{
- e.preventDefault();const input=$('chat-input'),text=input.value.trim();
+async function handleChatSubmit(e){
+ e.preventDefault();const form=e.currentTarget,input=form.querySelector('input'),text=input.value.trim();
  if(!text||chatPending)return;
  if(/^\/(강퇴|공지|포인트)(?:\s|$)/.test(text)){
   if(myNickname!=='운영자'||!adminToken||!hasSavedNickname()||!memberProfile){
@@ -1163,19 +1216,19 @@ $('chat-form').addEventListener('submit',async e=>{
      p_target_nickname:cmd==='강퇴'?value:null,p_message:notice?value:null};
    }
   }else{showOperatorMessage('사용법: /포인트 닉네임 숫자, /공지 내용, /강퇴 닉네임',true);return;}
-  chatPending=true;$('chat-form').querySelector('button').disabled=true;
+  chatPending=true;form.querySelector('button').disabled=true;
   try{
    const result=await callRpc(operation,params);
    showOperatorMessage(result.message||'명령 처리 완료');input.value='';input.focus();
    if(notice)await pollAnnouncement();
    if(operation==='renju_admin_points')await refreshMemberStats();
   }catch(err){showOperatorMessage(err.message,true);}
-  finally{chatPending=false;$('chat-form').querySelector('button').disabled=false;}
+  finally{chatPending=false;form.querySelector('button').disabled=false;}
   return;
  }
  if(!hasSavedNickname()){showOperatorMessage('메모를 작성하려면 닉네임을 저장하거나 로그인해 주세요.',true);return;}
  if(text.length>180){showOperatorMessage('일반 메모는 180자 이내로 작성해 주세요.',true);return;}
- chatPending=true;$('chat-form').querySelector('button').disabled=true;
+ chatPending=true;form.querySelector('button').disabled=true;
  try{
   if(activeRoom){if(!connected){showOperatorMessage('현재 게임방 연결을 확인 중입니다.',true);return;}
     const ok=await gameAction('chat',{p_text:text});if(ok){input.value='';input.focus();}}
@@ -1183,8 +1236,10 @@ $('chat-form').addEventListener('submit',async e=>{
     sheet1Messages=Array.isArray(data.messages)?data.messages:[];sheet1LastPaint='';sheet1LastSync=Date.now();
     paintSheet1Chat();input.value='';input.focus();showOperatorMessage('');}
  }catch(err){showOperatorMessage(err.message,true);}
- finally{chatPending=false;$('chat-form').querySelector('button').disabled=false;}
-});
+ finally{chatPending=false;form.querySelector('button').disabled=false;}
+}
+$('chat-form').addEventListener('submit',handleChatSubmit);
+$('sheet1-chat-form').addEventListener('submit',handleChatSubmit);
 
 // Memo minimize / restore: state persists when switching sheets or reloading.
 const MEMO_COLLAPSED_KEY='excel-games-memo-collapsed-v2';
