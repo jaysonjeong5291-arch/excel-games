@@ -401,6 +401,11 @@
 .holdem-chat-form button{background:#167b44;color:white;border:0;padding:8px 15px;font-weight:700;cursor:pointer}
 .holdem-chat-form button:disabled{opacity:.45;cursor:default}
 .holdem-chat-feedback{font-size:11px;color:#a43c3c;padding:3px 12px 9px}
+.holdem-admin-guide{padding:7px 12px;font-size:11px;line-height:1.6;border-top:1px solid #e4ebe5;background:#f1f8f2;color:#1c6e3c}
+.holdem-admin-guide[hidden]{display:none!important}
+.holdem-admin-guide code{padding:1px 3px;border:1px solid #b9d6c0;background:#fff}
+.holdem-chat-feedback.success{color:#236a3d;background:#ecf7ee}
+.holdem-chat-message .nick.admin{color:#126c35;font-weight:900}
 @media(max-width:650px){.holdem-showdown-row{gap:7px;padding:8px}.holdem-showdown-cards .holdem-card{width:36px;min-width:36px;height:47px}.holdem-chat-messages{height:160px}.holdem-chat-message .nick{max-width:66px}.holdem-chat-message .clock{font-size:9px}}
 
 /* v2.5 Gomoku reward/streak status and Sheet1 server-announced match results */
@@ -441,7 +446,7 @@
  <div class="match-gate-info"><strong id="match-gate-title">대기 중</strong><span id="match-gate-desc" role="status" aria-live="polite">방 정보를 확인하고 있습니다.</span></div>
  <div class="match-gate-controls"><button id="match-guest-ready" type="button" class="match-gate-button secondary" hidden>준비</button><button id="match-host-start" type="button" class="match-gate-button" hidden disabled>시작</button></div>
 </div>
-<main id="renju-game" class="main-shell"><section class="sheet-col"><div class="sheet-caption"><span id="game-status" class="caption-label">데이터 불러오는 중</span><span id="turn-label" class="turn">동기화 중</span><span id="gomoku-clock" class="turn gomoku-clock" aria-label="오목 남은 착수 시간">--:--</span></div><div class="sheet-card"><div class="board-frame"><canvas id="board" role="img" aria-label="15x15 오목 시트"></canvas><div class="board-overlay" id="board-overlay">시트 불러오는 중...</div></div></div><div class="below-board"><span id="move-count" class="move-counter">0개 셀 입력</span><div id="message" class="notice" role="status" aria-live="polite"></div><button id="rematch-btn" type="button" class="rematch" hidden>새로 시작</button></div><div id="gomoku-reward-status" class="arcade-reward-status" role="status" aria-live="polite">오목 점수: 대국 시작 +10P · 승리 1% / 5연승 2% / 10연승 5%</div></section><aside class="sidebar"><section class="side-panel"><div class="panel-heading"><span>작업자 현황</span><span id="my-role" class="small-count"></span></div><div class="table-heading"><span>구분</span><span>사용자</span><span>상태</span></div><div id="black-card" class="seat"><span class="stone"></span><div class="seat-info"><div id="black-name" class="seat-name">대기</div></div><div id="black-status" class="seat-meta">흑</div></div><div id="white-card" class="seat"><span class="stone white"></span><div class="seat-info"><div id="white-name" class="seat-name">대기</div></div><div id="white-status" class="seat-meta">백</div></div></section><section class="side-panel"><div class="panel-heading"><span>대기 목록</span><span id="queue-count" class="small-count">0명</span></div><div class="queue" id="queue-list"></div></section><section class="side-panel"><div class="panel-heading"><span>변경 내역</span><span id="history-total" class="small-count">0</span></div><div id="move-list" class="history"></div></section></aside></main>
+<main id="renju-game" class="main-shell"><section class="sheet-col"><div class="sheet-caption"><span id="game-status" class="caption-label">데이터 불러오는 중</span><span id="turn-label" class="turn">동기화 중</span><span id="gomoku-clock" class="turn gomoku-clock" aria-label="오목 남은 착수 시간">--:--</span></div><div class="sheet-card"><div class="board-frame"><canvas id="board" role="img" aria-label="15x15 오목 시트"></canvas><div class="board-overlay" id="board-overlay">시트 불러오는 중...</div></div></div><div class="below-board"><span id="move-count" class="move-counter">0개 셀 입력</span><div id="message" class="notice" role="status" aria-live="polite"></div><button id="rematch-btn" type="button" class="rematch" hidden>새로 시작</button></div><div id="gomoku-reward-status" class="arcade-reward-status" role="status" aria-live="polite">오목 점수: 대국 시작 +10P · 승리 10% / 5연승 15% / 10연승 20% (패자 10% 차감)</div></section><aside class="sidebar"><section class="side-panel"><div class="panel-heading"><span>작업자 현황</span><span id="my-role" class="small-count"></span></div><div class="table-heading"><span>구분</span><span>사용자</span><span>상태</span></div><div id="black-card" class="seat"><span class="stone"></span><div class="seat-info"><div id="black-name" class="seat-name">대기</div></div><div id="black-status" class="seat-meta">흑</div></div><div id="white-card" class="seat"><span class="stone white"></span><div class="seat-info"><div id="white-name" class="seat-name">대기</div></div><div id="white-status" class="seat-meta">백</div></div></section><section class="side-panel"><div class="panel-heading"><span>대기 목록</span><span id="queue-count" class="small-count">0명</span></div><div class="queue" id="queue-list"></div></section><section class="side-panel"><div class="panel-heading"><span>변경 내역</span><span id="history-total" class="small-count">0</span></div><div id="move-list" class="history"></div></section></aside></main>
 <main id="tetris-game" class="tetris-shell" hidden>
  <div class="tetris-sheet"><div class="tetris-header"><strong id="tetris-round">ROUND 1</strong><strong id="tetris-phase">상대 대기</strong></div>
   <div class="tetris-match"><div><div class="tetris-col-head">내 작업 영역 <span id="tetris-me"></span></div><div class="tetris-grid-frame"><div class="tetris-grid-columns"><span class="corner-cell"></span><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span></div><div class="tetris-grid-body"><div class="tetris-grid-rows"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span></div><canvas width="300" height="600" id="tetris-board" class="tetris-main-board" aria-label="내 테트리스 보드"></canvas></div></div></div>
@@ -449,7 +454,7 @@
    <div class="tetris-stats"><div class="tetris-stat">내 점수<strong id="tetris-score">0</strong></div><div class="tetris-stat">상대 점수<strong id="tetris-opponent-score">0</strong></div><div class="tetris-stat">줄 삭제<strong id="tetris-lines">0</strong></div><div class="tetris-stat">공격<strong id="tetris-attack">0</strong></div><div class="tetris-stat">다음<strong id="tetris-next">-</strong></div><div class="tetris-stat">보관<strong id="tetris-hold">-</strong></div></div>
   </div></div>
   <div class="tetris-controls" id="tetris-controls"><button type="button" data-tetris="left" title="왼쪽">◀</button><button type="button" data-tetris="rotate" title="회전">↻</button><button type="button" data-tetris="right" title="오른쪽">▶</button><button type="button" data-tetris="down" title="아래">▼</button><button type="button" data-tetris="drop" title="즉시 낙하">DROP</button><button type="button" data-tetris="hold" title="보관">HOLD</button></div>
-  <div id="tetris-help" class="tetris-tip">2P 준비 후 1P가 시작</div><div id="tetris-reward-status" class="arcade-reward-status" role="status" aria-live="polite">테트리스: 시작 +100P · 승리 1% / 5연승 10% / 10연승 20% (상대 1% 차감)</div><div style="text-align:center"><button type="button" class="tetris-replay" id="tetris-rematch" hidden>재대결</button></div>
+  <div id="tetris-help" class="tetris-tip">2P 준비 후 1P가 시작</div><div id="tetris-reward-status" class="arcade-reward-status" role="status" aria-live="polite">테트리스: 시작 +100P · 승리 10% / 5연승 15% / 10연승 20% (상대 10% 차감)</div><div style="text-align:center"><button type="button" class="tetris-replay" id="tetris-rematch" hidden>재대결</button></div>
  </div>
  <aside class="tetris-sidebar"><div class="tetris-sidebox"><h3>참가자</h3><div class="tetris-details">1P · <strong id="tetris-p1">대기</strong><br>2P · <strong id="tetris-p2">대기</strong></div></div><div class="tetris-sidebox"><h3>대기자</h3><div id="tetris-queue" class="tetris-details">없음</div></div></aside>
 </main>
@@ -470,7 +475,7 @@
   <div id="mine-play-controls" hidden>
    <div class="hunter-actions"><button type="button" id="mine-move" class="hunter-btn on">이동</button><button type="button" id="mine-defuse" class="hunter-btn">지뢰 해체</button><button type="button" id="mine-note-mode" class="hunter-btn">? 의심 표시</button></div>
   </div>
-  <p class="hunter-info" id="mine-note" role="status">대기 중입니다.</p><div id="mine-reward-status" class="arcade-reward-status" role="status" aria-live="polite">지뢰찾기: 시작 +100P · 승리 1% / 5연승 10% / 10연승 20% (상대 1% 차감)</div>
+  <p class="hunter-info" id="mine-note" role="status">대기 중입니다.</p><div id="mine-reward-status" class="arcade-reward-status" role="status" aria-live="polite">지뢰찾기: 시작 +100P · 승리 10% / 5연승 15% / 10연승 20% (상대 10% 차감)</div>
   <div class="hunter-sensor" id="mine-signal">로봇 주변 3×3 지뢰 신호 · 정확한 위치 비공개</div>
   <div class="hunter-sheet">
    <div class="hunter-minihead">상태 현황 / GAME MAP</div>
@@ -519,7 +524,7 @@
   <div id="holdem-result" class="holdem-result" hidden></div>
    <section class="holdem-chat" aria-label="홀덤방 채팅">
     <div class="holdem-section-head holdem-chat-title"><span>채팅 / ROOM CHAT</span><span id="holdem-chat-count">0개 메시지</span></div>
-    <div id="holdem-chat-messages" class="holdem-chat-messages" role="log" aria-live="polite" aria-relevant="additions"><div class="holdem-chat-empty">이 홀덤방에서 대화를 시작해 보세요.</div></div>
+    <div id="holdem-chat-messages" class="holdem-chat-messages" role="log" aria-live="polite" aria-relevant="additions"><div class="holdem-chat-empty">이 홀덤방에서 대화를 시작해 보세요.</div></div><div id="holdem-admin-guide" class="holdem-admin-guide" hidden>★ 운영자 명령: <code>/공지 내용</code> · <code>/강퇴 닉네임</code> · <code>/포인트 닉네임 숫자</code> (공용채팅에 노출되지 않음)</div>
     <form id="holdem-chat-form" class="holdem-chat-form" autocomplete="off">
      <input id="holdem-chat-input" type="text" maxlength="280" placeholder="같은 홀덤방 참가자와 관전자가 볼 수 있는 메시지" aria-label="홀덤방 메시지">
      <button id="holdem-chat-send" type="submit">보내기</button>
@@ -530,7 +535,7 @@
  </div>
 </section>
 <div id="chat" class="chat" hidden><button type="button" id="chat-title-button" class="chat-title" aria-expanded="true" aria-controls="chat-body" title="메모 접기/펼치기"><span>메모 <span id="chat-count"></span></span><span class="chat-toggle" id="chat-toggle-glyph">−</span></button><div class="chat-body" id="chat-body"><div id="chat-messages" class="chat-messages"><div class="chat-empty">내용 없음</div></div><div id="admin-chat-feedback" class="admin-chat-feedback" role="status" hidden></div><form class="chat-form" id="chat-form"><input id="chat-input" class="chat-input" placeholder="메시지 입력" maxlength="280" autocomplete="off" aria-label="채팅 메시지"><button type="submit" class="chat-send">보내기</button></form></div></div>
-<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="상위 레벨 및 운영자 등급 v2.0">100% · v2.6 게임 포인트</span></footer>
+<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="상위 레벨 및 운영자 등급 v2.0">100% · v2.7 게임 포인트</span></footer>
 <script>
 'use strict';
 const SIZE = 15;
@@ -1340,7 +1345,7 @@ function switchView(id){if(id && !requireNickname())return;activeRoom=id;const p
  $('chat-title-button').firstElementChild.firstChild.textContent='메모 ';
  showOperatorMessage('');if(!id){sheet1LastPaint='';paintSheet1Chat();setTimeout(()=>syncSheet1Chat(true),0);}
  if(id&&!poker){gomokuRewardRoom=null;gomokuRewardData=null;gomokuRewardSyncAt=0;arcadeRewardRoom=null;arcadeRewardData=null;arcadeRewardSyncAt=0;setTimeout(()=>{syncGomokuRewards(true);syncArcadeRewards(true);},350);const item=roomList.find(r=>r.id===id);$('room-name').textContent=(item?.sheet||'Sheet')+'  '+(item?.game==='mine_battle'?'지뢰탐색게임':(item?.title||''));$('room-info').textContent='  '+id;activateCache();setTimeout(resizeCanvas,30);}else{$('cell-address').textContent='A1';$('formula-value').textContent='=COUNTIF(방현황,"접속중")';}
- updateSheetTabs();changeUrl(id);if(poker){renderHoldem();holdemChatState(id).signature=null;holdemChatFeedback('');holdemChatRender(id);holdemChatSync(id,true);}else{renderTetrisRoom();renderMineRoom();renderMatchGate();}}
+ updateSheetTabs();changeUrl(id);if(poker){$('holdem-admin-guide').hidden=!(myNickname==='운영자'&&adminToken&&memberProfile);renderHoldem();holdemChatState(id).signature=null;holdemChatFeedback('');holdemChatRender(id);holdemChatSync(id,true);}else{renderTetrisRoom();renderMineRoom();renderMatchGate();}}
 function isKickedError(error){return /강퇴되었습니다/.test(String(error?.message||error||''));}
 const kickedRooms=new Set();
 function returnKickedToLobby(id){
@@ -1356,7 +1361,7 @@ async function openRoom(id){if(!requireNickname())return;
  if(kickedRooms.has(id)){lobbyNotify('해당 방에서는 강퇴되어 다시 입장할 수 없습니다.',true);return;}if(!ROOM_REGEX.test(id)){lobbyNotify('잘못된 방 주소입니다.',true);return;}
  if(!roomList.some(r=>r.id===id)){lobbyNotify('현재 목록에 없는 시트입니다.',true);return;}
  if(!openRooms.includes(id)){if(openRooms.length>=8){lobbyNotify('동시에 열 수 있는 시트는 8개입니다.',true);return;}openRooms.push(id);}
- switchView(id);try{if(id.startsWith('h-')){if(!memberToken)throw new Error('홀덤은 회원 로그인이 필요합니다.');applyHoldemData(id,await holdemRpc('join',id));}else{applyRoom(id,await roomRpc(id));applyGate(id,await gateRpc(id));}notify('');}catch(e){if(isKickedError(e))returnKickedToLobby(id);else notify(e.message,true);}
+ switchView(id);try{if(id.startsWith('h-')){if(!memberToken)throw new Error('홀덤은 회원 로그인이 필요합니다.');await callRpc('renju_holdem_chat',{p_client:CLIENT_ID,p_token:memberToken,p_room:id,p_action:'list',p_text:null});applyHoldemData(id,await holdemRpc('join',id));}else{applyRoom(id,await roomRpc(id));applyGate(id,await gateRpc(id));}notify('');}catch(e){if(isKickedError(e))returnKickedToLobby(id);else notify(e.message,true);}
 }
 function createRoom(){if(!requireNickname())return;$('create-modal').hidden=false;}
 function closeCreateModal(){$('create-modal').hidden=true;}
@@ -1653,7 +1658,7 @@ async function syncGomokuRewards(force=false){
 function paintGomokuRewards(){
  const el=$('gomoku-reward-status');if(!el)return;
  el.classList.remove('is-result','is-loss');
- if(!memberToken){el.textContent='오목: 대국 시작 +10P · 승리 1%, 5연승 2%, 10연승 5% (포인트는 회원 로그인 필요)';return;}
+ if(!memberToken){el.textContent='오목: 대국 시작 +10P · 승리 10%, 5연승 15%, 10연승 20% (포인트는 회원 로그인 필요)';return;}
  const streak=memberGomokuStreak??0,rr=gomokuRewardRoom===activeRoom?gomokuRewardData:null;
  const money=n=>Math.max(0,Number(n)||0).toLocaleString('ko-KR');
  if(rr?.finished){
@@ -1662,8 +1667,8 @@ function paintGomokuRewards(){
   else if(rr.my_result==='loss'){el.classList.add('is-loss');el.textContent='대국 종료 · -'+money(rr.loser_points)+'P · 연승 초기화 · 시작 보너스 +'+money(rr.start_points)+'P';}
   else el.textContent='무승부 · 연승 초기화 · 시작 보너스 +'+money(rr.start_points)+'P';
  } else if(rr){
-  el.textContent='대국 참가 +'+money(rr.start_points)+'P 지급 · 현재 '+money(streak)+'연승 · 승리 시 '+(streak>=9?'5%':streak>=4?'2%':'1%')+' 획득 (상대는 항상 1% 차감)';
- }else el.textContent='현재 '+money(streak)+'연승 · 대국 시작 +10P · 승리 시 '+(streak>=9?'5%':streak>=4?'2%':'1%')+' / 상대는 1% 차감';
+  el.textContent='대국 참가 +'+money(rr.start_points)+'P 지급 · 현재 '+money(streak)+'연승 · 승리 시 '+(streak>=9?'20%':streak>=4?'15%':'10%')+' 획득 (상대는 항상 10% 차감)';
+ }else el.textContent='현재 '+money(streak)+'연승 · 대국 시작 +10P · 승리 시 '+(streak>=9?'20%':streak>=4?'15%':'10%')+' / 상대는 10% 차감';
 }
 // v2.6: server-only Tetris/Mines payout and independent persistent streak status.
 async function syncArcadeRewards(force=false){
@@ -1688,7 +1693,7 @@ function paintArcadeRewards(game){
  el.classList.remove('is-result','is-loss');
  const name=game==='tetris'?'테트리스':'지뢰찾기';
  const money=n=>Math.max(0,Number(n)||0).toLocaleString('ko-KR');
- if(!memberToken){el.textContent=name+': 시작 +100P · 승리 1%, 5연승 10%, 10연승 20% · 패자 1% 차감 (회원 로그인 필요)';return;}
+ if(!memberToken){el.textContent=name+': 시작 +100P · 승리 10%, 5연승 15%, 10연승 20% · 패자 10% 차감 (회원 로그인 필요)';return;}
  const streak=memberArcadeStreaks[game]??0;
  const rr=arcadeRewardRoom===activeRoom&&arcadeRewardData?.game===game?arcadeRewardData:null;
  if(rr?.finished){
@@ -1697,8 +1702,8 @@ function paintArcadeRewards(game){
   else if(rr.my_result==='loss'){el.classList.add('is-loss');el.textContent='패배 · -'+money(rr.loser_points)+'P · 연승 초기화 · 시작 +'+money(rr.start_points)+'P';}
   else el.textContent='무승부 · 연승 초기화 · 시작 +'+money(rr.start_points)+'P';
  }else if(rr){
-  el.textContent='참가 +'+money(rr.start_points)+'P 지급 · 현재 '+money(streak)+'연승 · 다음 승리 시 '+(streak>=9?'20%':streak>=4?'10%':'1%')+' 획득 (상대는 1% 차감)';
- }else el.textContent=name+' · 현재 '+money(streak)+'연승 · 게임 시작 +100P · 다음 승리 '+(streak>=9?'20%':streak>=4?'10%':'1%')+' / 패자는 1% 차감';
+  el.textContent='참가 +'+money(rr.start_points)+'P 지급 · 현재 '+money(streak)+'연승 · 다음 승리 시 '+(streak>=9?'20%':streak>=4?'15%':'10%')+' 획득 (상대는 10% 차감)';
+ }else el.textContent=name+' · 현재 '+money(streak)+'연승 · 게임 시작 +100P · 다음 승리 '+(streak>=9?'20%':streak>=4?'15%':'10%')+' / 패자는 10% 차감';
 }
 setInterval(()=>syncArcadeRewards(),6500);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncArcadeRewards(true);});
@@ -2569,15 +2574,16 @@ async function holdemChatSync(id,force=false){
   const data=await callRpc('renju_holdem_chat',{p_client:CLIENT_ID,p_token:memberToken,p_room:id,p_action:'list',p_text:null});
   state.messages=Array.isArray(data.messages)?data.messages:[];state.last=Date.now();
   if(activeRoom===id)holdemChatRender(id);
- }catch(err){if(activeRoom===id&&state.last===0)holdemChatFeedback('채팅 SQL 적용 여부 확인: '+err.message);}
+ }catch(err){if(isKickedError(err)){if(activeRoom===id)returnKickedToLobby(id);}else if(activeRoom===id&&state.last===0)holdemChatFeedback('채팅 SQL 적용 여부 확인: '+err.message);}
  finally{state.busy=false;}
 }
-function holdemChatFeedback(msg=''){
- const feedback=$('holdem-chat-feedback');feedback.textContent=msg;feedback.hidden=!msg;
+function holdemChatFeedback(msg='',error=true){
+ const feedback=$('holdem-chat-feedback');feedback.textContent=msg;feedback.hidden=!msg;feedback.classList.toggle('success',!!msg&&!error);
 }
 function holdemChatRender(id){
  if(activeRoom!==id)return;
  const state=holdemChatState(id),root=$('holdem-chat-messages');
+ $('holdem-admin-guide').hidden=!(myNickname==='운영자'&&adminToken&&memberProfile);
  const signature=state.messages.map(m=>m.id+'|'+m.text+'|'+m.nickname).join('~');
  $('holdem-chat-count').textContent=state.messages.length+'개 메시지';
  if(state.signature===signature)return;
@@ -2586,7 +2592,7 @@ function holdemChatRender(id){
  if(!state.messages.length){const empty=document.createElement('div');empty.className='holdem-chat-empty';empty.textContent='이 홀덤방에서 대화를 시작해 보세요.';root.append(empty);return;}
  for(const m of state.messages){
   const msg=document.createElement('div');msg.className='holdem-chat-message'+(m.nickname===memberProfile?.nickname?' me':'');
-  const name=document.createElement('span');name.className='nick';name.textContent=m.nickname||'참가자';
+  const name=document.createElement('span');name.className='nick';name.textContent=m.nickname==='운영자'?'★ 운영자':(m.nickname||'참가자');if(m.nickname==='운영자')name.classList.add('admin');
   const body=document.createElement('span');body.className='text';body.textContent=m.text||'';
   const date=document.createElement('span');date.className='clock';
   const time=new Date(m.created_at);date.textContent=Number.isNaN(time.getTime())?'':time.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',hour12:false});
@@ -2594,12 +2600,50 @@ function holdemChatRender(id){
  }
  if(atBottom||state.messages.length<=3)root.scrollTop=root.scrollHeight;
 }
+// v2.7: Protected operator commands in Holdem, never posted as ordinary chat text.
+async function holdemAdminCommand(id,text){
+ if(!/^\/(?:공지|강퇴|포인트|clean)(?:\s|$)/i.test(text))return false;
+ if(myNickname!=='운영자'||!adminToken||!memberProfile){
+  holdemChatFeedback('회원 로그인으로 인증된 운영자만 명령을 사용할 수 있습니다.');return true;
+ }
+ if(/^\/clean(?:\s|$)/i.test(text)){
+  holdemChatFeedback('/clean은 Sheet1 공용채팅에서만 실행할 수 있습니다.');return true;
+ }
+ let rpc='',params={},notice=false;
+ if(text.startsWith('/포인트')){
+  const match=text.match(/^\/포인트\s+(.+?)\s+(\d+)\s*$/);
+  if(!match){holdemChatFeedback('사용법: /포인트 닉네임 숫자');return true;}
+  const target=match[1].trim(),amount=Number(match[2]);
+  if(!target||target.length>16||!Number.isSafeInteger(amount)||amount<1||amount>100000){
+   holdemChatFeedback('지급 포인트는 1~100000 사이의 정수여야 합니다.');return true;
+  }
+  rpc='renju_admin_points';params={p_client:CLIENT_ID,p_token:adminToken,p_target_nickname:target,p_amount:amount};
+ }else if(text.startsWith('/공지')){
+  const msg=text.slice(3).trim();
+  if(!msg||msg.length>250){holdemChatFeedback('공지 내용은 1~250자여야 합니다.');return true;}
+  notice=true;rpc='renju_admin_lobby_notice';params={p_client:CLIENT_ID,p_token:adminToken,p_message:msg};
+ }else if(text.startsWith('/강퇴')){
+  const nick=text.slice(3).trim();
+  if(!nick||nick.length>16){holdemChatFeedback('사용법: /강퇴 닉네임');return true;}
+  rpc='renju_holdem_admin_command';params={p_client:CLIENT_ID,p_token:adminToken,p_room:id,p_action:'kick',p_target_nickname:nick};
+ }else{holdemChatFeedback('사용법: /공지 내용, /강퇴 닉네임, /포인트 닉네임 숫자');return true;}
+ const state=holdemChatState(id),send=$('holdem-chat-send');state.sending=true;send.disabled=true;
+ try{
+  const result=await callRpc(rpc,params);
+  if(activeRoom===id){$('holdem-chat-input').value='';$('holdem-chat-input').focus();holdemChatFeedback('✓ '+(result.message||'운영자 명령 처리 완료'),false);}
+  if(notice)await pollAnnouncement();
+  if(rpc==='renju_admin_points')await refreshMemberStats();
+ }catch(err){if(activeRoom===id)holdemChatFeedback('명령 실패: '+err.message);}
+ finally{state.sending=false;send.disabled=false;}
+ return true;
+}
 $('holdem-chat-form').addEventListener('submit',async e=>{
  e.preventDefault();const id=activeRoom;
  if(!id?.startsWith('h-'))return;
  const state=holdemChatState(id),input=$('holdem-chat-input'),msg=input.value.trim();
  if(!msg||state.sending)return;
  if(!memberToken){holdemChatFeedback('회원 로그인 후 채팅할 수 있습니다.');return;}
+ if(await holdemAdminCommand(id,msg))return;
  if([...msg].length>280){holdemChatFeedback('메시지는 280자 이내로 작성해 주세요.');return;}
  const send=$('holdem-chat-send');state.sending=true;send.disabled=true;holdemChatFeedback('');
  try{
