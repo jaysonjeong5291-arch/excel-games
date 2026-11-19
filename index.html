@@ -443,6 +443,13 @@
 .role-switch-btn{font:inherit;background:#fff;color:#116a42;border:1px solid #6aa984;border-radius:3px;padding:8px 11px;cursor:pointer;font-weight:700}
 .role-switch-btn:hover,.match-gate-button.secondary:hover{background:#e9f6ed}
 .role-switch-btn:disabled,.match-gate-button:disabled{opacity:.48;cursor:not-allowed}
+
+/* v3.4.3 role switch: show acknowledgement/error beside the action rather than under the board */
+.role-switch-feedback{display:block;margin-top:4px;padding:7px 9px;border:1px solid #a8d4b6;background:#ebf7ee;color:#155e39;border-radius:3px;font-size:11px;line-height:1.5;font-weight:700;max-width:620px}
+.role-switch-feedback.error{border-color:#e6b7b7;background:#fff1f1;color:#a53434}
+.role-switch-feedback[hidden]{display:none!important}
+.match-gate-controls .match-gate-button{touch-action:manipulation}
+
 </style></head>
 <body>
 <div class="titlebar"><span class="app-icon" aria-hidden="true">▦</span><span class="doc-name">업무현황_2026.xlsx</span><span class="title-space"></span><span id="member-top-level" class="member-level-tag" hidden>Lv.1</span><span id="connection-label" class="connection">연결 중</span><button id="copy-link-btn" type="button" class="share-btn">주소 복사</button></div>
@@ -468,7 +475,7 @@
 </section>
 <section id="room-view" hidden><div class="room-bar"><div><span id="room-name" class="room-name">Sheet2</span><span id="room-info" class="room-info"></span></div><div class="room-control"><button id="room-copy" type="button">초대 링크 복사</button><button id="room-lobby" type="button">Sheet1</button></div></div>
 <div id="match-gate" class="match-gate" role="region" aria-label="게임 준비 및 시작">
- <div class="match-gate-info"><strong id="match-gate-title">대기 중</strong><span id="match-gate-desc" role="status" aria-live="polite">방 정보를 확인하고 있습니다.</span></div>
+ <div class="match-gate-info"><strong id="match-gate-title">대기 중</strong><span id="match-gate-desc" role="status" aria-live="polite">방 정보를 확인하고 있습니다.</span><span id="match-role-feedback" class="role-switch-feedback" role="alert" hidden></span></div>
  <div class="match-gate-controls"><button id="match-role-switch" class="match-gate-button secondary" type="button" hidden>참가/관전 전환</button><button id="match-guest-ready" type="button" class="match-gate-button secondary" hidden>준비</button><button id="match-host-start" type="button" class="match-gate-button" hidden disabled>시작</button></div>
 </div>
 <main id="renju-game" class="main-shell"><section class="sheet-col"><div class="sheet-caption"><span id="game-status" class="caption-label">데이터 불러오는 중</span><span id="turn-label" class="turn">동기화 중</span><span id="gomoku-clock" class="turn gomoku-clock" aria-label="오목 남은 착수 시간">--:--</span></div><div class="sheet-card"><div class="board-frame"><canvas id="board" role="img" aria-label="15x15 오목 시트"></canvas><div class="board-overlay" id="board-overlay">시트 불러오는 중...</div></div></div><div class="below-board"><span id="move-count" class="move-counter">0개 셀 입력</span><div id="message" class="notice" role="status" aria-live="polite"></div><button id="rematch-btn" type="button" class="rematch" hidden>새로 시작</button></div><div id="gomoku-reward-status" class="arcade-reward-status" role="status" aria-live="polite">오목 점수: 대국 시작 +10P · 승리 10% / 5연승 15% / 10연승 20% (패자 10% 차감 · 상대 포인트가 더 낮으면 내 포인트 5%)</div></section><aside class="sidebar"><section class="side-panel"><div class="panel-heading"><span>작업자 현황</span><span id="my-role" class="small-count"></span></div><div class="table-heading"><span>구분</span><span>사용자</span><span>상태</span></div><div id="black-card" class="seat"><span class="stone"></span><div class="seat-info"><div id="black-name" class="seat-name">대기</div></div><div id="black-status" class="seat-meta">흑</div></div><div id="white-card" class="seat"><span class="stone white"></span><div class="seat-info"><div id="white-name" class="seat-name">대기</div></div><div id="white-status" class="seat-meta">백</div></div></section><section class="side-panel"><div class="panel-heading"><span>대기 목록</span><span id="queue-count" class="small-count">0명</span></div><div class="queue" id="queue-list"></div></section><section class="side-panel"><div class="panel-heading"><span>변경 내역</span><span id="history-total" class="small-count">0</span></div><div id="move-list" class="history"></div></section></aside></main>
@@ -1129,29 +1136,66 @@ let roleSwitchPending=false;
 function roleSwitchRpc(room,mode){return callRpc('renju_role_switch',{
  p_room:room,p_client:CLIENT_ID,p_token:memberToken||null,p_mode:mode
 });}
+function roleSwitchFeedback(message,isError=false){
+ const label=$('match-role-feedback');
+ if(label){label.hidden=!message;label.textContent=message||'';label.classList.toggle('error',!!isError);}
+ if(activeRoom && !isHoldemRoom() && !isOddEvenRoom())notify(message,isError,!isError);
+}
 async function changeMyRole(mode){
- const id=activeRoom;if(!id||roleSwitchPending)return;
+ const id=activeRoom;
+ if(!id)return;
+ if(roleSwitchPending){roleSwitchFeedback('이미 전환을 처리 중입니다.');return;}
+ const oneVsOne=!id.startsWith('h-')&&!id.startsWith('e-');
+ // Never rely on potentially stale gate cache to reject a click locally.
+ // The server validates running games and the 2-seat limit atomically.
  roleSwitchPending=true;
+ if(oneVsOne)roleSwitchFeedback('참가/관전 전환을 서버에 요청 중입니다...');
+ else if(id.startsWith('h-')){holdemInfoText='좌석 전환 요청 중...';renderHoldem();}
+ else{oddEvenInfo='좌석 전환 요청 중...';renderOddEven();}
  try{
+  // Refresh heartbeat. The server's switch RPC rejects a participant whose last_seen is over 45 s old.
+  if(oneVsOne){
+   const refreshed=await roomRpc(id);
+   if(id!==activeRoom)return;
+   applyRoom(id,refreshed);
+  }
   const result=await roleSwitchRpc(id,mode);
   if(result?.ok!==true)throw new Error(result?.error||'전환 요청이 거부되었습니다.');
+  if(id!==activeRoom)return;
   if(id.startsWith('h-')){
-   holdemInfoText=mode==='player'?'참가 좌석으로 이동했습니다.':'관전석으로 이동했습니다.';
    applyHoldemData(id,await holdemRpc('sync',id));
+   holdemInfoText=mode==='player'?'참가석으로 이동했습니다.':'관전석으로 이동했습니다.';
   }else if(id.startsWith('e-')){
-   oddEvenInfo=mode==='player'?'참가 좌석으로 이동했습니다.':'관전석으로 이동했습니다.';
    applyOddEvenData(id,await oddEvenRpc('sync',id));
+   oddEvenInfo=mode==='player'?'참가석으로 이동했습니다.':'관전석으로 이동했습니다.';
   }else{
-   applyRoom(id,await roomRpc(id));
-   applyGate(id,await gateRpc(id));
+   const roomData=await roomRpc(id);
+   if(id!==activeRoom)return;
+   applyRoom(id,roomData);
+   const gateData=await gateRpc(id);
+   if(id!==activeRoom)return;
+   applyGate(id,gateData);
+   // Verify effective seat; do not falsely report success when legacy core still returns an occupied seat.
+   const actualSeat=gateData?.seat;
+   if(mode==='spectator'&&actualSeat!=='spectator'){
+    throw new Error('서버는 관전 전환을 접수했지만 좌석 조회가 아직 참가자로 나옵니다. v3.4.2 SQL 설치 여부와 renju_match_gate_sync_core를 확인해 주세요.');
+   }
+   if(mode==='player'&&!['host','guest'].includes(actualSeat)){
+    throw new Error('서버는 참가 전환을 접수했지만 좌석 조회가 관전자로 나옵니다. 서버 좌석 동기화 함수를 확인해 주세요.');
+   }
    if(currentGameType()==='tetris')applyTetrisData(id,await tetrisRpc(id));
    else if(currentGameType()==='mine_battle')applyMineData(id,await mineRpc(id));
-   notify(mode==='player'?'참가석으로 이동했습니다.':'관전석으로 이동했습니다.',false,true);
+   roleSwitchFeedback(mode==='player'?'참가석으로 이동했습니다. 이제 준비할 수 있습니다.':'관전석으로 이동했습니다.',false);
   }
  }catch(err){
-  if(id.startsWith('h-')){holdemInfoText='전환 실패: '+err.message;renderHoldem();}
-  else if(id.startsWith('e-')){oddEvenInfo='전환 실패: '+err.message;renderOddEven();}
-  else notify('전환 실패: '+err.message,true);
+  const reason=String(err?.message||err);
+  if(id.startsWith('h-')){holdemInfoText='전환 실패: '+reason;renderHoldem();}
+  else if(id.startsWith('e-')){oddEvenInfo='전환 실패: '+reason;renderOddEven();}
+  else {
+   roleSwitchFeedback('전환 실패: '+reason,true);
+   // Error appears by button; a dialog makes it visible even when scrolled to the top.
+   alert('참가/관전 전환 실패\n'+reason);
+  }
  }finally{
   roleSwitchPending=false;
   if(id===activeRoom){if(id.startsWith('h-'))renderHoldem();else if(id.startsWith('e-'))renderOddEven();else renderMatchGate();}
@@ -1189,18 +1233,18 @@ function renderMatchGate(){
  panel.classList.toggle('running',running);
  const isHost=Boolean(g?.seat==='host');
  const isGuest=Boolean(g?.seat==='guest');
- const canRoleChange=Boolean(g&&!running&&!matchGateActionPending&&!roleSwitchPending);
  const isSpectator=Boolean(g?.seat==='spectator');
- roleButton.hidden=!g;
- roleButton.textContent=isSpectator?'참가하기':'관전으로 이동';
- roleButton.disabled=!canRoleChange||(isSpectator&&Boolean(g?.host_present&&g?.guest_present));
- roleButton.title=running?'게임 종료 후 변경할 수 있습니다.':isSpectator&&g?.host_present&&g?.guest_present?'1대1 게임은 참가자가 먼저 관전으로 내려와야 합니다.':'';
+ roleButton.hidden=false;
+ roleButton.textContent=roleSwitchPending?'전환 중...':isSpectator?'참가하기':'관전으로 이동';
+ // Clicks on ineligible states show the reason next to the button. The RPC still forbids live changes.
+ roleButton.disabled=roleSwitchPending;
+ roleButton.title=!g?'좌석 정보 확인 중':running?'진행 중에는 변경할 수 없습니다.':isSpectator&&g?.host_present&&g?.guest_present?'참가자가 내려와야 빈자리가 생깁니다.':'';
  // Fail closed while identity/permissions are being refreshed. Spectators never get controls.
  readyButton.hidden=!isGuest||running;
  startButton.hidden=!isHost||running;
  readyButton.disabled=!isGuest||matchGateActionPending||!g?.host_present||!g?.guest_present;
  startButton.disabled=!isHost||matchGateActionPending||!g?.host_present||!g?.guest_present||!g?.guest_ready;
- if(!g){title.textContent='방 연결 중';desc.textContent='준비 상태를 확인하는 중입니다.';return;}
+ if(!g){title.textContent='방 연결 중';desc.textContent='준비 상태를 확인하는 중입니다. 전환 버튼을 누르면 연결 상태를 확인할 수 있습니다.';return;}
  if(g.seat==='spectator'){
    title.textContent=running?'관전 중':'대기 중';desc.textContent='관전자는 준비하거나 시작할 수 없습니다.';return;
  }
@@ -1417,7 +1461,7 @@ function updateSheetTabs(){const nav=$('sheet-nav');nav.querySelectorAll('[data-
   const close=document.createElement('span');close.className='tab-close';close.textContent='×';close.title='시트 닫기';close.dataset.closeRoom=id;tab.append(close);nav.insertBefore(tab,$('add-sheet-btn'));}
  const lobby=nav.querySelector('[data-sheet="lobby"]');lobby.classList.toggle('active',activeRoom===null);}
 function changeUrl(id){const url=new URL(location.href);if(id)url.searchParams.set('room',id);else url.searchParams.delete('room');try{history.replaceState(null,'',url.pathname+url.search+url.hash);}catch(_){}}
-function switchView(id){if(id && !requireNickname())return;activeRoom=id;const poker=Boolean(id&&id.startsWith('h-')),parity=Boolean(id&&id.startsWith('e-'));$('lobby-view').hidden=!!id;$('room-view').hidden=!id||poker||parity;$('holdem-view').hidden=!poker;$('oddeven-view').hidden=!parity;$('chat').hidden=!id||poker||parity;chatLastSeen='';hover=null;
+function switchView(id){if(id && !requireNickname())return;const f=$('match-role-feedback');if(f){f.hidden=true;f.textContent='';f.classList.remove('error');}activeRoom=id;const poker=Boolean(id&&id.startsWith('h-')),parity=Boolean(id&&id.startsWith('e-'));$('lobby-view').hidden=!!id;$('room-view').hidden=!id||poker||parity;$('holdem-view').hidden=!poker;$('oddeven-view').hidden=!parity;$('chat').hidden=!id||poker||parity;chatLastSeen='';hover=null;
  $('chat-title-button').firstElementChild.firstChild.textContent='메모 ';
  showOperatorMessage('');if(!id){sheet1LastPaint='';paintSheet1Chat();setTimeout(()=>syncSheet1Chat(true),0);}
  if(id&&!poker&&!parity){gomokuRewardRoom=null;gomokuRewardData=null;gomokuRewardSyncAt=0;arcadeRewardRoom=null;arcadeRewardData=null;arcadeRewardSyncAt=0;setTimeout(()=>{syncGomokuRewards(true);syncArcadeRewards(true);},350);const item=roomList.find(r=>r.id===id);$('room-name').textContent=(item?.sheet||'Sheet')+'  '+(item?.game==='mine_battle'?'지뢰탐색게임':(item?.title||''));$('room-info').textContent='  '+id;activateCache();setTimeout(resizeCanvas,30);}else{$('cell-address').textContent='A1';$('formula-value').textContent='=COUNTIF(방현황,"접속중")';}
