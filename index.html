@@ -339,6 +339,19 @@
  .lobby-actions .member-tools button{padding:6px 8px}
 }
 @media(min-width:701px){.xl-grid:not(.sheet1-chat-grid) col.c5,.xl-grid:not(.sheet1-chat-grid) col.c6{width:145px}.xl-grid:not(.sheet1-chat-grid){min-width:1080px}}
+/* Texas Hold'em: sober spreadsheet look, full-width 2-6 seat card table. */
+#holdem-view{width:min(1060px,calc(100% - 22px));margin:10px auto 72px;background:#fff;border:1px solid #cbd7cd}
+#holdem-view[hidden]{display:none!important}
+.holdem-panel{padding:0;background:#fff}.holdem-header{padding:12px 14px;background:#edf5ef;border-bottom:1px solid #d1dfd4;display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between;color:#246341;font-size:12px}
+.holdem-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-bottom:1px solid #d7e0d8}.holdem-stats>div{padding:9px 13px;border-right:1px solid #e4e9e5;min-width:0}.holdem-stats>div:last-child{border:0}.holdem-stats small{display:block;color:#849084;font-size:10px;margin-bottom:5px}.holdem-stats strong{font-size:15px;color:#225a37;font-variant-numeric:tabular-nums}
+.holdem-table{padding:14px 11px 16px;border-bottom:1px solid #dbe4dc;text-align:center;background:repeating-linear-gradient(0deg,#fff 0 32px,#f5f9f5 32px 33px)}.holdem-board-label{font-size:10px;letter-spacing:.1em;color:#62816b;margin:5px auto 9px;font-weight:700}.holdem-cards{display:flex;gap:6px;justify-content:center;min-height:77px;align-items:center;margin:0 auto 15px}
+.holdem-card{min-width:49px;width:55px;height:75px;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid #bfcfc3;background:#fff;border-radius:3px;box-shadow:0 2px 4px #243b2a15;color:#28362c;font-size:20px;font-weight:700;line-height:1.1}.holdem-card em{font-style:normal;font-size:17px}.holdem-card.red{color:#ad4146}.holdem-card.back{background:#e8f1ec;color:#7f9989;border-color:#c6d7cc}.holdem-card.empty{border-style:dashed;box-shadow:none;color:#adbbaf;background:#fdfefd}
+.holdem-section-head{background:#e9f2ec;padding:9px 12px;color:#2e6641;font-weight:700;border-bottom:1px solid #dce5de}
+.holdem-players-scroll{overflow-x:auto}.holdem-players-table{border-collapse:collapse;width:100%;font-size:11px;min-width:570px}.holdem-players-table th,.holdem-players-table td{padding:8px 10px;text-align:left;border-bottom:1px solid #e0e7e1;border-right:1px solid #eaf0eb}.holdem-players-table th{color:#66806b;background:#f6faf7;font-weight:700}.holdem-players-table tr.active{background:#eaf8ee}.holdem-players-table tr.me{font-weight:700}.holdem-tiny-cards{display:flex;gap:4px}.holdem-tiny-cards span{border:1px solid #d4ddd5;display:inline-block;padding:2px 4px;background:#fff}.holdem-tiny-cards .red{color:#b1434b}
+.holdem-gate{padding:11px 13px;display:flex;gap:10px;justify-content:space-between;align-items:center;border-top:1px solid #e0e7e1;flex-wrap:wrap;color:#51705c}.holdem-action-buttons{display:flex;gap:7px}.holdem-action-buttons button,.holdem-bet-controls button{padding:9px 13px;background:#f8fcf9;border:1px solid #accdb5;color:#136e3b;font-weight:700;border-radius:2px;cursor:pointer}.holdem-action-buttons #holdem-start{background:#107c41;color:#fff}.holdem-action-buttons button:disabled,.holdem-bet-controls button:disabled{opacity:.4;cursor:default}
+.holdem-bet-controls{padding:10px 12px;display:flex;gap:7px;align-items:center;flex-wrap:wrap;background:#f7faf8;border-top:1px solid #dce9df}.holdem-bet-controls label{font-size:11px;display:flex;align-items:center;gap:5px;color:#5b6f5f}.holdem-bet-controls input{width:90px;padding:8px;border:1px solid #c4d5c7;background:#fff;color:#22452f}.holdem-bet-controls button[data-h-action=fold]{color:#aa5555;border-color:#e5b9b9}.holdem-bet-controls button[data-h-action=allin]{background:#365b46;color:#fff}
+.holdem-result{padding:12px 14px;background:#eef7ef;color:#225e39;white-space:pre-wrap;border-top:1px solid #cadecf}.holdem-footnote{padding:10px 13px;color:#829386;font-size:10px;line-height:1.6;border-top:1px solid #e3ebe4}
+@media(max-width:650px){#holdem-view{width:calc(100% - 10px);margin:5px auto 50px}.holdem-header{gap:5px;font-size:10px}.holdem-stats>div{padding:8px 6px}.holdem-stats strong{font-size:12px}.holdem-card{min-width:38px;width:43px;height:62px;font-size:16px}.holdem-card em{font-size:14px}.holdem-cards{min-height:63px;gap:4px}.holdem-bet-controls{gap:5px}.holdem-bet-controls button{padding:8px 9px;font-size:11px}.holdem-bet-controls label{width:100%;justify-content:flex-end}}
 </style></head>
 <body>
 <div class="titlebar"><span class="app-icon" aria-hidden="true">▦</span><span class="doc-name">업무현황_2026.xlsx</span><span class="title-space"></span><span id="member-top-level" class="member-level-tag" hidden>Lv.1</span><span id="connection-label" class="connection">연결 중</span><button id="copy-link-btn" type="button" class="share-btn">주소 복사</button></div>
@@ -416,11 +429,29 @@
 
 <div id="create-modal" class="game-chooser" hidden role="dialog" aria-modal="true" aria-labelledby="chooser-title">
  <div class="chooser-panel"><div class="chooser-top"><span id="chooser-title">새 시트 만들기</span><button type="button" class="chooser-close" id="chooser-close" aria-label="닫기">×</button></div>
-  <div class="chooser-grid"><button type="button" class="game-choice" data-choice="gomoku"><span class="choice-symbol">▣ ▤</span><span>오목</span></button><button type="button" class="game-choice" data-choice="tetris"><span class="choice-symbol">▦</span><span>테트리스</span></button><button type="button" class="game-choice mine-choice" data-choice="mine_battle"><span class="choice-symbol">▥</span><span>지뢰탐색게임</span></button></div><p class="chooser-note">선택하면 새 시트가 생성됩니다.</p>
+  <div class="chooser-grid"><button type="button" class="game-choice" data-choice="gomoku"><span class="choice-symbol">▣ ▤</span><span>오목</span></button><button type="button" class="game-choice" data-choice="tetris"><span class="choice-symbol">▦</span><span>테트리스</span></button><button type="button" class="game-choice mine-choice" data-choice="mine_battle"><span class="choice-symbol">▥</span><span>지뢰탐색게임</span></button><button type="button" class="game-choice" data-choice="holdem"><span class="choice-symbol">♠</span><span>홀덤 (2~6명)</span></button></div><p class="chooser-note">선택하면 새 시트가 생성됩니다.</p>
  </div>
 </div>
+<section id="holdem-view" hidden aria-label="텍사스 홀덤 시트">
+ <div class="room-bar"><div><span id="holdem-sheet" class="room-name">홀덤</span><span class="room-info"> · 2~6인 포인트 베팅</span></div>
+ <div class="room-control"><button type="button" id="holdem-link">초대 링크 복사</button><button type="button" id="holdem-exit">Sheet1</button></div></div>
+ <div class="holdem-panel">
+  <div class="holdem-header"><strong>POKER / TEXAS HOLD'EM</strong><span id="holdem-hand">HAND 0</span><span id="holdem-street">참가자 대기</span></div>
+  <div class="holdem-stats"><div><small>팟 / POT</small><strong id="holdem-pot">0 P</strong></div><div><small>현재 베팅</small><strong id="holdem-bet">0 P</strong></div><div><small>내 포인트</small><strong id="holdem-wallet">0 P</strong></div><div><small>남은 시간</small><strong id="holdem-time">--</strong></div></div>
+  <div class="holdem-table"><div class="holdem-board-label">COMMUNITY CARDS · 공용 카드</div><div id="holdem-board" class="holdem-cards"></div><div class="holdem-board-label">MY HAND · 내 카드</div><div id="holdem-hole" class="holdem-cards"></div></div>
+  <div class="holdem-section-head">참가자 / 좌석별 진행 현황</div><div class="holdem-players-scroll"><table class="holdem-players-table"><thead><tr><th>좌석</th><th>닉네임</th><th>상태</th><th>베팅</th><th>잔액</th><th>카드</th></tr></thead><tbody id="holdem-players"></tbody></table></div>
+  <div class="holdem-gate"><div id="holdem-notice" role="status">최소 2명부터 시작할 수 있습니다.</div><div class="holdem-action-buttons"><button type="button" id="holdem-ready" hidden>준비</button><button type="button" id="holdem-start" hidden>시작</button></div></div>
+  <div id="holdem-bet-controls" class="holdem-bet-controls" hidden>
+   <button type="button" data-h-action="fold">폴드</button><button type="button" data-h-action="check">체크</button><button type="button" data-h-action="call">콜</button>
+   <label>레이즈 총액 <input id="holdem-raise" type="number" inputmode="numeric" min="10" step="1" value="20" aria-label="현재 거리 베팅 총액"></label>
+   <button type="button" data-h-action="raise">레이즈</button><button type="button" data-h-action="allin">올인</button>
+  </div>
+  <div id="holdem-result" class="holdem-result" hidden></div>
+  <div class="holdem-footnote">회원 계정 전용 · 블라인드 5P/10P · 한 차례 45초 · 현금 충전/환전 없는 게임 포인트 · 승패에 따라 총 포인트와 레벨이 변할 수 있음</div>
+ </div>
+</section>
 <div id="chat" class="chat" hidden><button type="button" id="chat-title-button" class="chat-title" aria-expanded="true" aria-controls="chat-body" title="메모 접기/펼치기"><span>메모 <span id="chat-count"></span></span><span class="chat-toggle" id="chat-toggle-glyph">−</span></button><div class="chat-body" id="chat-body"><div id="chat-messages" class="chat-messages"><div class="chat-empty">내용 없음</div></div><div id="admin-chat-feedback" class="admin-chat-feedback" role="status" hidden></div><form class="chat-form" id="chat-form"><input id="chat-input" class="chat-input" placeholder="메시지 입력" maxlength="280" autocomplete="off" aria-label="채팅 메시지"><button type="submit" class="chat-send">보내기</button></form></div></div>
-<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="상위 레벨 및 운영자 등급 v2.0">100% · v2.0</span></footer>
+<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="상위 레벨 및 운영자 등급 v2.0">100% · v2.1 홀덤</span></footer>
 <script>
 'use strict';
 const SIZE = 15;
@@ -853,14 +884,14 @@ const SUPABASE_PUBLISHABLE_KEY='sb_publishable_dWxi5S2-WH8Rn2sE0ADHJQ_JvbBjGBu';
 function makeUuid(){if(globalThis.crypto&&typeof crypto.randomUUID==='function')return crypto.randomUUID();const a=new Uint8Array(16);crypto.getRandomValues(a);a[6]=(a[6]&15)|64;a[8]=(a[8]&63)|128;const h=[...a].map(x=>x.toString(16).padStart(2,'0')).join('');return h.slice(0,8)+'-'+h.slice(8,12)+'-'+h.slice(12,16)+'-'+h.slice(16,20)+'-'+h.slice(20);}
 function makeClientId(){try{const value=sessionStorage.getItem('renju-multi-client-v1');if(value && /^[a-f0-9-]{36}$/.test(value))return value;const id=crypto.randomUUID();sessionStorage.setItem('renju-multi-client-v1',id);return id;}catch(_){return makeUuid();}}
 const CLIENT_ID=makeClientId();
-const ROOM_REGEX=/^r-[0-9a-f]{10}$/;
+const ROOM_REGEX=/^(?:r-[0-9a-f]{10}|h-[0-9a-f]{12})$/;
 let geometry={size:600,header:31,step:37.93},hover=null;
 let state=null,myNumber=null,mySeat='waiting',connected=false;
 let activeRoom=null,openRooms=[],roomCache=new Map(),roomList=[],waitingList=[];
 let chatLastSeen='',movePending=false,pendingMovePoint=null,chatPending=false,revision=-1;
 let tick=0,polling=false,stopped=false,pollTimer=null,initialDeepLink=new URLSearchParams(location.search).get('room');
 let lobbyHealthy=false,lobbyReady=false,creating=false,lobbySignature="";
-let hunterLobbyStatuses=new Map(),matchGateLobbyStatuses=new Map();
+let hunterLobbyStatuses=new Map(),matchGateLobbyStatuses=new Map(),holdemLobbyRooms=[];
 let matchGateByRoom=new Map(),matchGateActionPending=false,matchGateRestarting=new Map();
 // Rematch UX: keep the small ready/start gate fresh independently of the heavier room/game poll.
 // Only poll quickly while waiting for Ready/Start or after a completed round.
@@ -875,7 +906,7 @@ function remainingGomokuMs(){
 }
 function paintGomokuClock(){
  const el=$('gomoku-clock');if(!el)return;
- el.hidden=!activeRoom || isMineRoom() || isTetrisRoom();
+ el.hidden=!activeRoom || isMineRoom() || isTetrisRoom() || isHoldemRoom();
  if(el.hidden)return;
  const ms=hasMatchStarted() && state?.winner==null?remainingGomokuMs():null;
  const urgent=ms!==null && ms<=10000;
@@ -907,7 +938,7 @@ setInterval(paintGomokuClock,150);
 
 async function pollMatchGateQuick(){
  const id=activeRoom;
- if(!id||stopped||matchGateQuickBusy||matchGateActionPending||document.hidden)return;
+ if(!id||isHoldemRoom()||stopped||matchGateQuickBusy||matchGateActionPending||document.hidden)return;
  const gate=gateState(id);
  if(gate?.started&&!currentGameFinished())return;
  matchGateQuickBusy=true;
@@ -973,6 +1004,7 @@ function currentGameFinished(){
  if(!activeRoom)return false;
  if(isTetrisRoom())return tetrisDataByRoom.get(activeRoom)?.phase==='finished';
  if(isMineRoom())return mineDataByRoom.get(activeRoom)?.phase==='finished';
+ if(isHoldemRoom())return holdemDataByRoom.get(activeRoom)?.phase==='finished';
  return roomCache.get(activeRoom)?.state?.winner!=null;
 }
 function applyGate(id,data){
@@ -1110,6 +1142,7 @@ function pollLobbyInBackground(){
  (async()=>{
   try{
    const data=await lobbyRpc();
+   try{const h=await holdemRpc('list');if(Array.isArray(h.rooms))holdemLobbyRooms=h.rooms;}catch(_){/* Poker listing temporarily unavailable; keep other games usable. */}
    try{
     const statuses=await callRpc('renju_match_gate_lobby_status',{});
     if(Array.isArray(statuses))matchGateLobbyStatuses=new Map(statuses.map(z=>[z.room_id,z]));
@@ -1117,7 +1150,7 @@ function pollLobbyInBackground(){
    if(Array.isArray(data.rooms)&&data.rooms.some(r=>r.game==='mine_battle')){
     try{const h=await callRpc('renju_hunter_lobby_status',{});if(Array.isArray(h))hunterLobbyStatuses=new Map(h.map(z=>[z.room_id,z]));}catch(_){/* Optional extension. */}
    }
-   const removed=applyLobby(data);if(!removed)lobbyNotify('');
+   const removed=applyLobby({...data,rooms:[...(data.rooms||[]),...holdemLobbyRooms]});if(!removed)lobbyNotify('');
    await syncNicknames();
    maybeOpenInitialRoom();
   }catch(e){lobbyHealthy=false;setNetwork('연결 확인 중',false);lobbyNotify(e.message,true);}
@@ -1131,7 +1164,7 @@ function pollCleanupInBackground(){
 function pollOtherRoomsInBackground(){
  if(stopped)return;
  for(const id of openRooms){
-  if(id===activeRoom||roomPollInFlight.has(id))continue;
+  if(id===activeRoom||id.startsWith('h-')||roomPollInFlight.has(id))continue;
   roomPollInFlight.add(id);
   roomRpc(id).then(data=>applyRoom(id,data)).catch(e=>{if(isKickedError(e))returnKickedToLobby(id);}).finally(()=>roomPollInFlight.delete(id));
  }
@@ -1145,6 +1178,8 @@ async function refresh(){
   // Avoid making result detection wait behind the room and permission heartbeats.
   if(id){
    try{
+    if(id.startsWith('h-')){applyHoldemData(id,await holdemRpc('sync',id));}
+    else {
     let gamePolled=false;
     if(id===activeRoom&&hasMatchStarted(id)&&isTetrisRoom()){
      let action='sync',snapshot=null;
@@ -1162,6 +1197,7 @@ async function refresh(){
      if(isTetrisRoom())applyTetrisData(id,await tetrisRpc(id));
      else if(isMineRoom())applyMineData(id,await mineRpc(id));
     }
+    }
    }catch(e){
     const cache=roomCache.get(id);if(cache)cache.connected=false;
     if(isKickedError(e)){returnKickedToLobby(id);}else if(id===activeRoom){connected=false;notify('동기화 지연: '+e.message+' · 복구 시 자동으로 다시 연결합니다.',true);}
@@ -1169,11 +1205,11 @@ async function refresh(){
   }
  }finally{
   // These tasks never postpone the next active-room heartbeat.
-  if((!isTetrisRoom()&&!isMineRoom())||tick%4===0||!lobbyReady)pollLobbyInBackground();
+  if((!isTetrisRoom()&&!isMineRoom()&&!isHoldemRoom())||tick%4===0||!lobbyReady)pollLobbyInBackground();
   if(tick%7===0)pollCleanupInBackground();
   if(tick%4===0)pollOtherRoomsInBackground();
   tick++;polling=false;
-  if(!stopped)pollTimer=setTimeout(refresh,id?(isTetrisRoom()?450:isMineRoom()?850:1200):1550);
+  if(!stopped)pollTimer=setTimeout(refresh,id?(isHoldemRoom()?750:isTetrisRoom()?450:isMineRoom()?850:1200):1550);
  }
 }
 function cell(text='',cls=''){const td=document.createElement('td');td.textContent=String(text??'');if(cls)td.className=cls;return td;}
@@ -1185,9 +1221,9 @@ function renderLobby(){const list=$('lobby-cells');const rows=[];let n=1;
  {const r=row(n++,[`전체 ${roomList.length}개 방`,`접속 ${waitingList.length}명 대기`, '내 닉네임',nicknameFor(myLobbyNumber||0),'','','','','','']);nameWithRank(r.children[4],myLobbyNumber||0,myNickname);rows.push(r);}
  rows.push(headingRow(n++,['시트','종류','작업명','진행','1P/흑','2P/백','대기','접속','착수/줄','입장']));
  const display=roomList.slice(0,25);
- for(const room of display){const status=room.status==='placing'?'설치 중':room.status==='playing'?'진행 중':room.status==='ready'?'준비 완료':room.status==='done'?'완료':'대기 중';
+ for(const room of display){const status=room.status==='placing'?'설치 중':room.status==='playing'?'진행 중':room.status==='ready'?'준비 완료':room.status==='finished'?'완료':room.status==='done'?'완료':'대기 중';
   const tr=row(n++,[room.sheet,'',room.title,'',room.black?nicknameFor(room.black):'-',room.white?nicknameFor(room.white):'-',room.waiting,room.count,room.moves,''],['sheet-link','','','','','','','','','']);tr.className='room-row';tr.dataset.room=room.id;if(room.black)nameWithRank(tr.children[5],room.black);if(room.white)nameWithRank(tr.children[6],room.white);
-  const gameLabel=document.createElement('span');gameLabel.className='game-type-pill'+(room.game==='tetris'?' tetris':'');gameLabel.textContent=room.game==='tetris'?'테트리스':room.game==='mine_battle'?'지뢰탐색게임':'오목';tr.children[2].append(gameLabel);
+  const gameLabel=document.createElement('span');gameLabel.className='game-type-pill'+(room.game==='tetris'?' tetris':'');gameLabel.textContent=room.game==='tetris'?'테트리스':room.game==='mine_battle'?'지뢰탐색게임':room.game==='holdem'?'홀덤':'오목';tr.children[2].append(gameLabel);
   const statusTd=tr.children[4],pill=document.createElement('span');pill.className='status-pill '+(room.status==='playing'?'':room.status);pill.textContent=status;statusTd.append(pill);
   const joinBtn=document.createElement('button');joinBtn.type='button';joinBtn.className='room-open';joinBtn.textContent='열기';joinBtn.setAttribute('aria-label',room.sheet+' 열기');tr.lastElementChild.append(joinBtn);
   rows.push(tr);
@@ -1207,15 +1243,15 @@ function renderLobby(){const list=$('lobby-cells');const rows=[];let n=1;
 function formatTime(input){if(!input)return '-';const d=new Date(input);if(Number.isNaN(d.valueOf()))return '-';return new Intl.DateTimeFormat('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).format(d);}
 function roomLabel(id){return roomList.find(r=>r.id===id)?.sheet||'Room';}
 function updateSheetTabs(){const nav=$('sheet-nav');nav.querySelectorAll('[data-room-tab]').forEach(e=>e.remove());
- for(const id of openRooms){const tab=document.createElement('button');tab.type='button';tab.className='sheet-tab'+(id===activeRoom?' active':'');tab.dataset.roomTab=id;tab.title='시트 열기';tab.textContent=roomLabel(id)+(roomList.find(r=>r.id===id)?.game==='tetris'?' · T':roomList.find(r=>r.id===id)?.game==='mine_battle'?' · M':'');
+ for(const id of openRooms){const tab=document.createElement('button');tab.type='button';tab.className='sheet-tab'+(id===activeRoom?' active':'');tab.dataset.roomTab=id;tab.title='시트 열기';tab.textContent=roomLabel(id)+(roomList.find(r=>r.id===id)?.game==='tetris'?' · T':roomList.find(r=>r.id===id)?.game==='mine_battle'?' · M':id.startsWith('h-')?' · H':'');
   const close=document.createElement('span');close.className='tab-close';close.textContent='×';close.title='시트 닫기';close.dataset.closeRoom=id;tab.append(close);nav.insertBefore(tab,$('add-sheet-btn'));}
  const lobby=nav.querySelector('[data-sheet="lobby"]');lobby.classList.toggle('active',activeRoom===null);}
 function changeUrl(id){const url=new URL(location.href);if(id)url.searchParams.set('room',id);else url.searchParams.delete('room');try{history.replaceState(null,'',url.pathname+url.search+url.hash);}catch(_){}}
-function switchView(id){if(id && !requireNickname())return;activeRoom=id;$('lobby-view').hidden=!!id;$('room-view').hidden=!id;$('chat').hidden=!id;chatLastSeen='';hover=null;
+function switchView(id){if(id && !requireNickname())return;activeRoom=id;const poker=Boolean(id&&id.startsWith('h-'));$('lobby-view').hidden=!!id;$('room-view').hidden=!id||poker;$('holdem-view').hidden=!poker;$('chat').hidden=!id||poker;chatLastSeen='';hover=null;
  $('chat-title-button').firstElementChild.firstChild.textContent='메모 ';
  showOperatorMessage('');if(!id){sheet1LastPaint='';paintSheet1Chat();setTimeout(()=>syncSheet1Chat(true),0);}
- if(id){const item=roomList.find(r=>r.id===id);$('room-name').textContent=(item?.sheet||'Sheet')+'  '+(item?.game==='mine_battle'?'지뢰탐색게임':(item?.title||''));$('room-info').textContent='  '+id;activateCache();setTimeout(resizeCanvas,30);}else{$('cell-address').textContent='A1';$('formula-value').textContent='=COUNTIF(방현황,"접속중")';}
- updateSheetTabs();changeUrl(id);renderTetrisRoom();renderMineRoom();renderMatchGate();}
+ if(id&&!poker){const item=roomList.find(r=>r.id===id);$('room-name').textContent=(item?.sheet||'Sheet')+'  '+(item?.game==='mine_battle'?'지뢰탐색게임':(item?.title||''));$('room-info').textContent='  '+id;activateCache();setTimeout(resizeCanvas,30);}else{$('cell-address').textContent='A1';$('formula-value').textContent='=COUNTIF(방현황,"접속중")';}
+ updateSheetTabs();changeUrl(id);if(poker){renderHoldem();}else{renderTetrisRoom();renderMineRoom();renderMatchGate();}}
 function isKickedError(error){return /강퇴되었습니다/.test(String(error?.message||error||''));}
 const kickedRooms=new Set();
 function returnKickedToLobby(id){
@@ -1231,12 +1267,18 @@ async function openRoom(id){if(!requireNickname())return;
  if(kickedRooms.has(id)){lobbyNotify('해당 방에서는 강퇴되어 다시 입장할 수 없습니다.',true);return;}if(!ROOM_REGEX.test(id)){lobbyNotify('잘못된 방 주소입니다.',true);return;}
  if(!roomList.some(r=>r.id===id)){lobbyNotify('현재 목록에 없는 시트입니다.',true);return;}
  if(!openRooms.includes(id)){if(openRooms.length>=8){lobbyNotify('동시에 열 수 있는 시트는 8개입니다.',true);return;}openRooms.push(id);}
- switchView(id);try{applyRoom(id,await roomRpc(id));applyGate(id,await gateRpc(id));notify('');}catch(e){if(isKickedError(e))returnKickedToLobby(id);else notify(e.message,true);}
+ switchView(id);try{if(id.startsWith('h-')){if(!memberToken)throw new Error('홀덤은 회원 로그인이 필요합니다.');applyHoldemData(id,await holdemRpc('join',id));}else{applyRoom(id,await roomRpc(id));applyGate(id,await gateRpc(id));}notify('');}catch(e){if(isKickedError(e))returnKickedToLobby(id);else notify(e.message,true);}
 }
 function createRoom(){if(!requireNickname())return;$('create-modal').hidden=false;}
 function closeCreateModal(){$('create-modal').hidden=true;}
 async function doCreateRoom(game){if(!requireNickname())return;if(creating)return;closeCreateModal();creating=true;$('create-room-btn').disabled=true;$('add-sheet-btn').disabled=true;lobbyNotify('새 시트 생성 중...');
- try{const data=await lobbyRpc('create','',game);applyLobby(data);if(!data.created_room)throw new Error('방 생성 정보가 없습니다.');await openRoom(data.created_room);lobbyNotify('');}
+ try{if(game==='holdem'){
+   if(!memberToken){openMemberPanel('login');throw new Error('홀덤은 회원 로그인 후 이용할 수 있습니다.');}
+   const data=await holdemRpc('create');if(!data.created_room)throw new Error('홀덤 방 생성에 실패했습니다.');
+   holdemLobbyRooms=[{id:data.created_room,sheet:data.sheet,title:'홀덤',game:'holdem',status:'waiting',count:1,waiting:5,moves:0},...holdemLobbyRooms];
+   roomList=[...roomList.filter(x=>x.id!==data.created_room),holdemLobbyRooms[0]];
+   renderLobby();applyHoldemData(data.created_room,data);await openRoom(data.created_room);lobbyNotify('');
+  }else{const data=await lobbyRpc('create','',game);applyLobby({...data,rooms:[...(data.rooms||[]),...holdemLobbyRooms]});if(!data.created_room)throw new Error('방 생성 정보가 없습니다.');await openRoom(data.created_room);lobbyNotify('');}}
  catch(e){lobbyNotify(e.message,true);}
  finally{creating=false;$('create-room-btn').disabled=false;$('add-sheet-btn').disabled=false;}
 }
@@ -1244,6 +1286,7 @@ async function closeRoom(id){
  if(!openRooms.includes(id))return;
  openRooms=openRooms.filter(x=>x!==id);roomCache.delete(id);tetrisDataByRoom.delete(id);tetrisLocalByRoom.delete(id);mineDataByRoom.delete(id);matchGateByRoom.delete(id);matchGateRestarting.delete(id);
  if(activeRoom===id)switchView(null);else updateSheetTabs();
+ if(id.startsWith('h-')){holdemDataByRoom.delete(id);holdemRpc('leave',id).catch(()=>{});return;}
  try{
    await roomRpc(id,'leave');
    const reply=await cleanupRpc(id);
@@ -1702,6 +1745,7 @@ let tetrisLocal=null,tetrisRemote=null,tetrisServer=null,tetrisDataByRoom=new Ma
 let tetrisLastFrame=performance.now(),tetrisSyncPending=false,tetrisUpdateAt=0;
 function currentGameType(){return (roomList.find(r=>r.id===activeRoom)?.game||'gomoku');}
 function isTetrisRoom(){return !!activeRoom && currentGameType()==='tetris';}
+function isHoldemRoom(){return !!activeRoom && (activeRoom.startsWith('h-') || currentGameType()==='holdem');}
 function tetrisRpc(id,action='sync',payload=null){return callRpc('renju_tetris_sync',{p_room:id,p_client:CLIENT_ID,p_action:action,p_snapshot:payload});}
 function makeShuffler(seed){
  let s=(seed|0)||1,bag=[],position=0;
@@ -2074,5 +2118,132 @@ $('mine-leave').addEventListener('click',()=>{if(activeRoom)closeRoom(activeRoom
 $('mine-move').addEventListener('click',()=>{hunterMode='move';renderMineRoom();});
 $('mine-defuse').addEventListener('click',()=>{hunterMode='defuse';renderMineRoom();});
 $('mine-note-mode').addEventListener('click',()=>{hunterMode=hunterMode==='note'?'move':'note';renderMineRoom();});
+
+
+
+/* Poker sheet. Server handles the deck, player wallet, betting turns and showdown. */
+const holdemDataByRoom=new Map();
+let holdemActionPending=false,holdemClockOffset=0,holdemInfoText='';
+function holdemRpc(action='list',room=null,amount=null){
+ return callRpc('renju_holdem_rpc',{p_action:action,p_client:CLIENT_ID,p_token:memberToken||null,p_room:room,p_amount:amount});
+}
+function applyHoldemData(id,data){
+ if(!data||data.ok!==true)return;
+ const old=holdemDataByRoom.get(id);
+ if(old&&Number(old.revision)>Number(data.revision))return;
+ holdemDataByRoom.set(id,data);
+ if(id!==activeRoom)return;
+ const ms=Date.parse(data.server_now);
+ if(Number.isFinite(ms))holdemClockOffset=ms-Date.now();
+ if(old&&old.hand!==data.hand&&data.hand>0)holdemInfoText='새 라운드가 시작됐습니다.';
+ if(old&&(old.phase!==data.phase||old.pot!==data.pot))refreshMemberStats();
+ renderHoldem();
+}
+function holdemCardNode(card,small=false){
+ const node=document.createElement(small?'span':'div');
+ if(card===null||card===undefined||card<0){node.className=small?'':'holdem-card empty';node.textContent=small?'-':'·';return node;}
+ if(card==='back'){node.className=small?'':'holdem-card back';node.textContent=small?'▧':'▤';return node;}
+ const ranks='23456789TJQKA',suits=['♠','♥','♦','♣'];
+ const r=ranks[Math.floor(Number(card)/4)],s=suits[Number(card)%4];
+ node.className=(small?'':'holdem-card ')+((s==='♥'||s==='♦')?'red':'');
+ if(small)node.textContent=r+s;
+ else{node.append(document.createTextNode(r));const sym=document.createElement('em');sym.textContent=s;node.append(sym);}
+ return node;
+}
+function formatHoldemScore(v){return Number(v||0).toLocaleString('ko-KR')+'P';}
+function renderHoldem(){
+ if(!isHoldemRoom())return;
+ const d=holdemDataByRoom.get(activeRoom);
+ const $h=id=>document.getElementById(id);
+ $h('holdem-sheet').textContent=d?.sheet||'홀덤';
+ if(!d){$h('holdem-notice').textContent='홀덤방 서버 연결 중…';return;}
+ const players=d.players||[],mine=players.find(p=>p.seat===d.my_seat);
+ const playing=d.phase==='playing',finished=d.phase==='finished',myTurn=playing&&mine&&d.acting===mine.seat;
+ const labels={preflop:'프리플롭',flop:'플롭 (3장)',turn:'턴 (4장)',river:'리버 (5장)',showdown:'쇼다운'};
+ $h('holdem-hand').textContent='HAND '+d.hand;
+ $h('holdem-street').textContent=playing?(labels[d.street]||d.street):finished?'결과 확인':'참가자 준비';
+ $h('holdem-pot').textContent=formatHoldemScore(d.pot);
+ $h('holdem-bet').textContent=formatHoldemScore(d.current_bet);
+ $h('holdem-wallet').textContent=formatHoldemScore(d.my_points);
+ const board=$h('holdem-board');board.replaceChildren();for(let i=0;i<5;i++)board.append(holdemCardNode((d.board||[])[i]??null));
+ const hole=$h('holdem-hole');hole.replaceChildren();
+ const own=mine?.cards||[];for(let i=0;i<2;i++)hole.append(holdemCardNode(own[i]??(mine?.in_hand?'back':null)));
+ const t=$h('holdem-players');t.replaceChildren();
+ for(let seat=0;seat<6;seat++){
+   const p=players.find(x=>x.seat===seat);
+   const tr=document.createElement('tr');tr.className=(p?.seat===d.acting&&playing?'active ':'')+(p?.seat===d.my_seat?'me':'');
+   const status=!p?'빈 좌석':!p.present?'오프라인':finished?'종료':playing?(p.folded?'폴드':p.allin?'올인':p.seat===d.acting?'행동 중':'참가 중'):(p.ready?'준비 완료':'대기');
+   const fields=[seat+1,p?.nickname||'-',status,p?.in_hand?formatHoldemScore(p.total_bet):'-',p?formatHoldemScore(p.points):'-'];
+   for(const v of fields){const td=document.createElement('td');td.textContent=v;tr.append(td);}
+   const cd=document.createElement('td');cd.className='holdem-tiny-cards';
+   if(p?.in_hand){const shown=p.cards||[];for(let i=0;i<2;i++)cd.append(holdemCardNode(shown[i]??'back',true));}
+   tr.append(cd);t.append(tr);
+ }
+ const ready=$h('holdem-ready'),start=$h('holdem-start');
+ ready.hidden=playing||!mine||d.is_host||!mine.present;
+ ready.disabled=holdemActionPending;
+ ready.textContent=mine?.ready?'준비 취소':'준비';
+ start.hidden=playing||!d.is_host;
+ start.disabled=holdemActionPending||players.filter(p=>p.present).length<2||players.some(p=>p.present&&!p.ready&&!((p.seat===d.my_seat)&&d.is_host));
+ start.textContent=finished?'다음 판 시작':'시작';
+ $h('holdem-bet-controls').hidden=!myTurn;
+ const need=mine?Math.max(0,d.current_bet-mine.bet):0;
+ for(const button of $h('holdem-bet-controls').querySelectorAll('[data-h-action]')){
+   const a=button.dataset.hAction;button.disabled=!myTurn||holdemActionPending;
+   if(a==='check')button.disabled=button.disabled||need>0;
+   if(a==='raise')button.disabled=button.disabled||(d.my_points<=need);
+   if(a==='call')button.textContent=need===0?'콜 (0P)':'콜 '+formatHoldemScore(Math.min(need,d.my_points));
+ }
+ const raiseInput=$h('holdem-raise'),min=Math.max(d.current_bet+d.min_raise,10);
+ raiseInput.min=String(min);
+ if(document.activeElement!==raiseInput)raiseInput.value=String(min);
+ const status=finished?'라운드 종료 · 2P~6P가 준비하고 방장이 시작해 주세요.':playing?
+    (myTurn?'내 차례: 체크·콜·레이즈·폴드 중 선택하세요.':(players.find(p=>p.seat===d.acting)?.nickname||'상대')+' 차례입니다.'):
+    (mine?(d.is_host?'참가자 준비 후 시작할 수 있습니다.':'준비 버튼을 눌러 주세요.'):'관전 중: 경기가 끝난 후 빈 좌석이 있으면 참가할 수 있습니다.');
+ $h('holdem-notice').textContent=holdemInfoText||status;
+ const result=$h('holdem-result');result.hidden=!finished;
+ if(finished){
+  const payouts=new Map();for(const x of d.summary?.awards||[]){
+    const key=String(x.account_id);const value=payouts.get(key)||{name:x.nickname||'참가자',amount:0};
+    value.amount+=Number(x.won||0);payouts.set(key,value);
+  }
+  let lines=['쇼다운 · 전체 팟 '+formatHoldemScore(d.summary?.pot)];
+  for(const x of payouts.values())lines.push(x.name+' +'+formatHoldemScore(x.amount));
+  if(lines.length===1)lines.push('라운드가 종료됐습니다.');
+  result.textContent=lines.join('\n');
+ }
+}
+async function holdemAct(action,amount=null){
+ if(!isHoldemRoom()||holdemActionPending)return;
+ const room=activeRoom;holdemActionPending=true;holdemInfoText='요청 처리 중…';renderHoldem();
+ try{
+  const response=await holdemRpc(action,room,amount);
+  holdemInfoText='';applyHoldemData(room,response);
+  if(['fold','call','raise','check','allin'].includes(action)&&response.phase==='finished')refreshMemberStats();
+ }catch(e){holdemInfoText='처리 실패: '+e.message;renderHoldem();}
+ finally{holdemActionPending=false;if(activeRoom===room)renderHoldem();}
+}
+$('holdem-ready').addEventListener('click',()=>holdemAct('ready'));
+$('holdem-start').addEventListener('click',()=>holdemAct('start'));
+$('holdem-link').addEventListener('click',copyShare);
+$('holdem-exit').addEventListener('click',()=>{if(activeRoom)closeRoom(activeRoom)});
+$('holdem-bet-controls').addEventListener('click',e=>{
+ const target=e.target.closest('[data-h-action]');if(!target)return;
+ const action=target.dataset.hAction;
+ let amount=null;
+ if(action==='raise'){
+  amount=Math.floor(Number($('holdem-raise').value));
+  if(!Number.isSafeInteger(amount)||amount<=0){holdemInfoText='올바른 레이즈 포인트를 입력해 주세요.';renderHoldem();return;}
+ }
+ if(action==='allin'&&!confirm('남은 포인트 전액을 베팅할까요?'))return;
+ holdemAct(action,amount);
+});
+setInterval(()=>{
+ if(!isHoldemRoom())return;
+ const d=holdemDataByRoom.get(activeRoom);if(!d||d.phase!=='playing'||!d.deadline){$('holdem-time').textContent='--';return;}
+ const ms=Date.parse(d.deadline)-Date.now()-holdemClockOffset;
+ const remaining=Math.max(0,Math.ceil(ms/1000));$('holdem-time').textContent=remaining+'초';
+ $('holdem-time').style.color=remaining<=10?'#b13131':'#225a37';
+},350);
 
 </script></body></html>
