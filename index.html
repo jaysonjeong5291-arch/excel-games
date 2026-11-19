@@ -413,6 +413,32 @@
 .sheet1-chat-grid tr.sheet1-game-result .sheet1-chat-name{color:#965b16}
 .sheet1-chat-grid tr.sheet1-game-result .sheet1-chat-text{color:#266141;font-weight:700}
 @media(max-width:700px){.arcade-reward-status{padding:8px 9px;font-size:11px}}
+
+/* Odd / even: worksheet-style multiplayer betting with 1-6 seats. */
+#oddeven-view[hidden]{display:none!important}
+#oddeven-view{width:min(950px,calc(100% - 22px));margin:11px auto 80px;background:#fff;border:1px solid #cbd8cd;color:#2a4433;font-size:12px}
+.oe-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:#eaf4ec;padding:13px 15px;border-bottom:1px solid #cbdccc}
+.oe-header strong{color:#185b36;letter-spacing:.025em}.oe-header button{border:1px solid #b9d0bc;background:#fff;color:#1a633b;padding:7px 12px;cursor:pointer}
+.oe-meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-bottom:1px solid #d9e5db}
+.oe-meta>div{padding:12px 14px;border-right:1px solid #e2eae3;min-width:0}.oe-meta>div:last-child{border:0}.oe-meta small{color:#738b7b;display:block;margin-bottom:5px;font-size:10px}.oe-meta strong{font-size:17px;font-variant-numeric:tabular-nums;color:#135f39}
+.oe-dice-zone{text-align:center;padding:23px 12px 22px;background:repeating-linear-gradient(0deg,#fff 0 30px,#f8fbf8 30px 31px);border-bottom:1px solid #d9e7dc}
+.oe-dice-label{font-size:11px;letter-spacing:.05em;font-weight:700;color:#77907b;margin-bottom:12px}
+.oe-dice-pair{display:flex;justify-content:center;align-items:center;gap:16px}
+.oe-die{width:88px;height:88px;display:grid;place-items:center;background:#fff;border:2px solid #b4d2bd;border-radius:8px;box-shadow:0 5px 11px #0c4a2312;color:#226c40;font-weight:800;font-size:44px;font-variant-numeric:tabular-nums}
+.oe-dice-pair.rolling .oe-die{animation:oe-shake .18s infinite alternate}
+@keyframes oe-shake{from{transform:translateX(-3px) rotate(-3deg)}to{transform:translateX(3px) rotate(3deg)}}
+.oe-result{font-size:20px;font-weight:800;color:#145d36;min-height:30px;margin:15px auto 3px}
+.oe-result.muted{color:#83998b;font-size:13px;font-weight:500}.oe-subtext{color:#718476;font-size:11px}
+.oe-config{padding:12px 15px;display:flex;flex-wrap:wrap;gap:9px;align-items:center;border-bottom:1px solid #dee6df}
+.oe-config input{width:110px;max-width:30vw;border:1px solid #c4d8c9;padding:8px;color:#27513a}.oe-config button,.oe-actions button,.oe-choice button{cursor:pointer;background:#f7fbf8;border:1px solid #b8d2bf;color:#19623b;border-radius:3px;padding:9px 14px;font-weight:700;font-size:12px}
+.oe-choice{display:flex;justify-content:center;gap:13px;padding:16px 12px;border-bottom:1px solid #e2eae3}
+.oe-choice button{min-width:136px;min-height:62px;font-size:18px}.oe-choice button.selected{border:2px solid #167542;color:#0e5932;background:#e5f5eb;box-shadow:inset 0 0 0 1px #fff}
+.oe-choice button:disabled,.oe-actions button:disabled,.oe-config button:disabled{opacity:.42;cursor:default}
+.oe-actions{padding:12px 15px;display:flex;gap:9px;flex-wrap:wrap;align-items:center}.oe-actions .primary{color:white;background:#138348;border-color:#138348}.oe-actions .primary:disabled{background:#e6efe8;color:#719080;border-color:#d7e2d9}
+.oe-feedback{padding:8px 15px;color:#8f5135;background:#fff4eb;min-height:24px}.oe-feedback:empty{display:none}
+.oe-grid{width:100%;border-collapse:collapse}.oe-grid th,.oe-grid td{padding:10px 13px;border:1px solid #e0e9e1;text-align:left}.oe-grid th{background:#f1f8f2;color:#557564;font-weight:700}.oe-grid tr.mine{background:#f1faf3;font-weight:700}.oe-grid .hit{color:#168349;font-weight:700}.oe-grid .miss{color:#a05149;font-weight:700}.oe-grid-scroll{overflow-x:auto}
+.oe-footnote{padding:10px 15px;font-size:11px;color:#7e9281;background:#fafdfa;border-top:1px solid #e1e8e2;line-height:1.6}
+@media(max-width:700px){.oe-meta{grid-template-columns:repeat(2,minmax(0,1fr))}.oe-die{width:65px;height:65px;font-size:34px}.oe-choice button{min-width:110px}.oe-grid{min-width:530px}.oe-header{padding:9px 11px}}
 </style></head>
 <body>
 <div class="titlebar"><span class="app-icon" aria-hidden="true">▦</span><span class="doc-name">업무현황_2026.xlsx</span><span class="title-space"></span><span id="member-top-level" class="member-level-tag" hidden>Lv.1</span><span id="connection-label" class="connection">연결 중</span><button id="copy-link-btn" type="button" class="share-btn">주소 복사</button></div>
@@ -490,7 +516,7 @@
 
 <div id="create-modal" class="game-chooser" hidden role="dialog" aria-modal="true" aria-labelledby="chooser-title">
  <div class="chooser-panel"><div class="chooser-top"><span id="chooser-title">새 시트 만들기</span><button type="button" class="chooser-close" id="chooser-close" aria-label="닫기">×</button></div>
-  <div class="chooser-grid"><button type="button" class="game-choice" data-choice="gomoku"><span class="choice-symbol">▣ ▤</span><span>오목</span></button><button type="button" class="game-choice" data-choice="tetris"><span class="choice-symbol">▦</span><span>테트리스</span></button><button type="button" class="game-choice mine-choice" data-choice="mine_battle"><span class="choice-symbol">▥</span><span>지뢰탐색게임</span></button><button type="button" class="game-choice" data-choice="holdem"><span class="choice-symbol">♠</span><span>홀덤 (2~6명)</span></button></div><p class="chooser-note">선택하면 새 시트가 생성됩니다.</p>
+  <div class="chooser-grid"><button type="button" class="game-choice" data-choice="gomoku"><span class="choice-symbol">▣ ▤</span><span>오목</span></button><button type="button" class="game-choice" data-choice="tetris"><span class="choice-symbol">▦</span><span>테트리스</span></button><button type="button" class="game-choice mine-choice" data-choice="mine_battle"><span class="choice-symbol">▥</span><span>지뢰탐색게임</span></button><button type="button" class="game-choice" data-choice="holdem"><span class="choice-symbol">♠</span><span>홀덤 (2~6명)</span></button><button type="button" class="game-choice" data-choice="oddeven"><span class="choice-symbol">⚀ ⚄</span><span>홀짝 (1~6명)</span></button></div><p class="chooser-note">선택하면 새 시트가 생성됩니다.</p>
  </div>
 </div>
 <section id="holdem-view" hidden aria-label="텍사스 홀덤 시트">
@@ -529,8 +555,20 @@
   <div class="holdem-footnote">잔액 0P로 패배하면 정산 후 자동 퇴장 · 회원 계정 전용 · 블라인드 5P/10P · 한 차례 45초 · 현금 충전/환전 없는 게임 포인트 · 게임 포인트·랭킹 표시 · 10,000P = Lv.50</div>
  </div>
 </section>
+
+<section id="oddeven-view" hidden aria-label="온라인 홀짝 게임 시트">
+ <div class="oe-header"><div><strong id="oe-sheet">홀짝</strong> <span> · ODD / EVEN · 1~6인 온라인</span></div><div><button type="button" id="oe-share">초대 링크 복사</button> <button type="button" id="oe-exit">Sheet1</button></div></div>
+ <div class="oe-meta"><div><small>고정 판돈</small><strong id="oe-stake">100P</strong></div><div><small>준비 인원</small><strong id="oe-ready-count">0 / 1</strong></div><div><small>보유 포인트</small><strong id="oe-wallet">0P</strong></div><div><small>라운드</small><strong id="oe-round">#0</strong></div></div>
+ <div class="oe-dice-zone"><div class="oe-dice-label">SERVER ROLL · 두 주사위 합계의 홀짝</div><div id="oe-dice-pair" class="oe-dice-pair"><div id="oe-die-a" class="oe-die">?</div><div id="oe-die-b" class="oe-die">?</div></div><div id="oe-result" class="oe-result muted">참가자 준비를 기다리는 중</div><div class="oe-subtext">홀수 = 홀 · 짝수 = 짝 · 동일한 결과로 모든 참가자 정산</div></div>
+ <div class="oe-config" id="oe-config"><strong>방장 판돈 설정</strong><label for="oe-stake-input">포인트(P)</label><input id="oe-stake-input" type="number" min="1" max="1000000" step="1" value="100" inputmode="numeric"><button type="button" id="oe-set-stake">판돈 적용</button><span>변경하면 모두의 준비가 해제됩니다.</span></div>
+ <div class="oe-choice"><button type="button" data-oe-guess="odd" aria-pressed="false">홀 · ODD</button><button type="button" data-oe-guess="even" aria-pressed="false">짝 · EVEN</button></div>
+ <div class="oe-actions"><button type="button" id="oe-join" hidden>참가</button><button type="button" id="oe-ready">준비</button><button type="button" class="primary" id="oe-start">게임 시작</button><span id="oe-notice" role="status" aria-live="polite">홀 또는 짝을 고르고 준비하세요.</span></div>
+ <div id="oe-feedback" class="oe-feedback" role="alert"></div>
+ <div class="oe-grid-scroll"><table class="oe-grid" aria-label="홀짝 참가자와 라운드 결과"><thead><tr><th>좌석</th><th>참가자</th><th>선택</th><th>준비</th><th>보유 포인트</th><th>최근 정산</th></tr></thead><tbody id="oe-players"></tbody></table></div>
+ <div class="oe-footnote">적중 시 베팅금의 2배를 지급합니다(원금 포함, 순이익 +판돈). 실패 시 판돈만 차감됩니다. 방장도 선택과 준비가 필요하며, 1명만 있어도 시작할 수 있습니다. 게임 포인트만 사용하며 현금 환전은 지원하지 않습니다.</div>
+</section>
 <div id="chat" class="chat" hidden><button type="button" id="chat-title-button" class="chat-title" aria-expanded="true" aria-controls="chat-body" title="메모 접기/펼치기"><span>메모 <span id="chat-count"></span></span><span class="chat-toggle" id="chat-toggle-glyph">−</span></button><div class="chat-body" id="chat-body"><div id="chat-messages" class="chat-messages"><div class="chat-empty">내용 없음</div></div><div id="admin-chat-feedback" class="admin-chat-feedback" role="status" hidden></div><form class="chat-form" id="chat-form"><input id="chat-input" class="chat-input" placeholder="메시지 입력" maxlength="280" autocomplete="off" aria-label="채팅 메시지"><button type="submit" class="chat-send">보내기</button></form></div></div>
-<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="레벨 등급 v3.0">100% · v3.0 레벨 등급</span></footer>
+<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="레벨 등급 v3.0">100% · v3.3 홀짝 추가</span></footer>
 <script>
 'use strict';
 const SIZE = 15;
@@ -969,14 +1007,14 @@ const SUPABASE_PUBLISHABLE_KEY='sb_publishable_dWxi5S2-WH8Rn2sE0ADHJQ_JvbBjGBu';
 function makeUuid(){if(globalThis.crypto&&typeof crypto.randomUUID==='function')return crypto.randomUUID();const a=new Uint8Array(16);crypto.getRandomValues(a);a[6]=(a[6]&15)|64;a[8]=(a[8]&63)|128;const h=[...a].map(x=>x.toString(16).padStart(2,'0')).join('');return h.slice(0,8)+'-'+h.slice(8,12)+'-'+h.slice(12,16)+'-'+h.slice(16,20)+'-'+h.slice(20);}
 function makeClientId(){try{const value=sessionStorage.getItem('renju-multi-client-v1');if(value && /^[a-f0-9-]{36}$/.test(value))return value;const id=crypto.randomUUID();sessionStorage.setItem('renju-multi-client-v1',id);return id;}catch(_){return makeUuid();}}
 const CLIENT_ID=makeClientId();
-const ROOM_REGEX=/^(?:r-[0-9a-f]{10}|h-[0-9a-f]{12})$/;
+const ROOM_REGEX=/^(?:r-[0-9a-f]{10}|h-[0-9a-f]{12}|e-[0-9a-f]{12})$/;
 let geometry={size:600,header:31,step:37.93},hover=null;
 let state=null,myNumber=null,mySeat='waiting',connected=false;
 let activeRoom=null,openRooms=[],roomCache=new Map(),roomList=[],waitingList=[];
 let chatLastSeen='',movePending=false,pendingMovePoint=null,chatPending=false,revision=-1;
 let tick=0,polling=false,stopped=false,pollTimer=null,initialDeepLink=new URLSearchParams(location.search).get('room');
 let lobbyHealthy=false,lobbyReady=false,creating=false,lobbySignature="";
-let hunterLobbyStatuses=new Map(),matchGateLobbyStatuses=new Map(),holdemLobbyRooms=[];
+let hunterLobbyStatuses=new Map(),matchGateLobbyStatuses=new Map(),holdemLobbyRooms=[],oddEvenLobbyRooms=[];
 let matchGateByRoom=new Map(),matchGateActionPending=false,matchGateRestarting=new Map();
 // Rematch UX: keep the small ready/start gate fresh independently of the heavier room/game poll.
 // Only poll quickly while waiting for Ready/Start or after a completed round.
@@ -1023,7 +1061,7 @@ setInterval(paintGomokuClock,150);
 
 async function pollMatchGateQuick(){
  const id=activeRoom;
- if(!id||isHoldemRoom()||stopped||matchGateQuickBusy||matchGateActionPending||document.hidden)return;
+ if(!id||isHoldemRoom()||isOddEvenRoom()||stopped||matchGateQuickBusy||matchGateActionPending||document.hidden)return;
  const gate=gateState(id);
  if(gate?.started&&!currentGameFinished())return;
  matchGateQuickBusy=true;
@@ -1090,6 +1128,7 @@ function currentGameFinished(){
  if(isTetrisRoom())return tetrisDataByRoom.get(activeRoom)?.phase==='finished';
  if(isMineRoom())return mineDataByRoom.get(activeRoom)?.phase==='finished';
  if(isHoldemRoom())return holdemDataByRoom.get(activeRoom)?.phase==='finished';
+ if(isOddEvenRoom())return oddEvenDataByRoom.get(activeRoom)?.phase==='finished';
  return roomCache.get(activeRoom)?.state?.winner!=null;
 }
 function applyGate(id,data){
@@ -1170,7 +1209,7 @@ async function clickMatchHostStart(){
    if(isMineRoom()){applyMineData(id,await mineRpc(id));}
    else if(isTetrisRoom()){applyTetrisData(id,await tetrisRpc(id));}
    else applyRoom(id,await roomRpc(id));
-   if(!isTetrisRoom()&&!isMineRoom()&&!isHoldemRoom())syncGomokuRewards(true);
+   if(!isTetrisRoom()&&!isMineRoom()&&!isHoldemRoom()&&!isOddEvenRoom())syncGomokuRewards(true);
   }
  }catch(e){notify('시작 실패: '+e.message,true);alert('게임 시작에 실패했습니다. '+e.message);}
  finally{matchGateActionPending=false;if(id===activeRoom)renderMatchGate();}
@@ -1228,7 +1267,8 @@ function pollLobbyInBackground(){
  (async()=>{
   try{
    const data=await lobbyRpc();
-   try{const h=await holdemRpc('list');if(Array.isArray(h.rooms))holdemLobbyRooms=h.rooms;}catch(_){/* Poker listing temporarily unavailable; keep other games usable. */}
+   try{const h=await holdemRpc('list');if(Array.isArray(h.rooms))holdemLobbyRooms=h.rooms;}catch(_){/* Poker list optional. */}
+   try{const e=await oddEvenRpc('list');if(Array.isArray(e.rooms))oddEvenLobbyRooms=e.rooms;}catch(_){/* 홀짝 SQL 설치 전에도 기존 게임은 정상 표시. */}
    try{
     const statuses=await callRpc('renju_match_gate_lobby_status',{});
     if(Array.isArray(statuses))matchGateLobbyStatuses=new Map(statuses.map(z=>[z.room_id,z]));
@@ -1236,7 +1276,7 @@ function pollLobbyInBackground(){
    if(Array.isArray(data.rooms)&&data.rooms.some(r=>r.game==='mine_battle')){
     try{const h=await callRpc('renju_hunter_lobby_status',{});if(Array.isArray(h))hunterLobbyStatuses=new Map(h.map(z=>[z.room_id,z]));}catch(_){/* Optional extension. */}
    }
-   const removed=applyLobby({...data,rooms:[...(data.rooms||[]),...holdemLobbyRooms]});if(!removed)lobbyNotify('');
+   const removed=applyLobby({...data,rooms:[...(data.rooms||[]),...holdemLobbyRooms,...oddEvenLobbyRooms]});if(!removed)lobbyNotify('');
    await syncNicknames();
    maybeOpenInitialRoom();
   }catch(e){lobbyHealthy=false;setNetwork('연결 확인 중',false);lobbyNotify(e.message,true);}
@@ -1250,7 +1290,7 @@ function pollCleanupInBackground(){
 function pollOtherRoomsInBackground(){
  if(stopped)return;
  for(const id of openRooms){
-  if(id===activeRoom||id.startsWith('h-')||roomPollInFlight.has(id))continue;
+  if(id===activeRoom||id.startsWith('h-')||id.startsWith('e-')||roomPollInFlight.has(id))continue;
   roomPollInFlight.add(id);
   roomRpc(id).then(data=>applyRoom(id,data)).catch(e=>{if(isKickedError(e))returnKickedToLobby(id);}).finally(()=>roomPollInFlight.delete(id));
  }
@@ -1265,6 +1305,7 @@ async function refresh(){
   if(id){
    try{
     if(id.startsWith('h-')){applyHoldemData(id,await holdemRpc('sync',id));}
+    else if(id.startsWith('e-')){applyOddEvenData(id,await oddEvenRpc('sync',id));}
     else {
     let gamePolled=false;
     if(id===activeRoom&&hasMatchStarted(id)&&isTetrisRoom()){
@@ -1291,11 +1332,11 @@ async function refresh(){
   }
  }finally{
   // These tasks never postpone the next active-room heartbeat.
-  if((!isTetrisRoom()&&!isMineRoom()&&!isHoldemRoom())||tick%4===0||!lobbyReady)pollLobbyInBackground();
+  if((!isTetrisRoom()&&!isMineRoom()&&!isHoldemRoom()&&!isOddEvenRoom())||tick%4===0||!lobbyReady)pollLobbyInBackground();
   if(tick%7===0)pollCleanupInBackground();
   if(tick%4===0)pollOtherRoomsInBackground();
   tick++;polling=false;
-  if(!stopped)pollTimer=setTimeout(refresh,id?(isHoldemRoom()?750:isTetrisRoom()?450:isMineRoom()?850:1200):1550);
+  if(!stopped)pollTimer=setTimeout(refresh,id?(isHoldemRoom()?750:isOddEvenRoom()?950:isTetrisRoom()?450:isMineRoom()?850:1200):1550);
  }
 }
 function cell(text='',cls=''){const td=document.createElement('td');td.textContent=String(text??'');if(cls)td.className=cls;return td;}
@@ -1309,7 +1350,7 @@ function renderLobby(){const list=$('lobby-cells');const rows=[];let n=1;
  const display=roomList.slice(0,25);
  for(const room of display){const status=room.status==='placing'?'설치 중':room.status==='playing'?'진행 중':room.status==='ready'?'준비 완료':room.status==='finished'?'완료':room.status==='done'?'완료':'대기 중';
   const tr=row(n++,[room.sheet,'',room.title,'',room.black?nicknameFor(room.black):'-',room.white?nicknameFor(room.white):'-',room.waiting,room.count,room.moves,''],['sheet-link','','','','','','','','','']);tr.className='room-row';tr.dataset.room=room.id;if(room.black)nameWithRank(tr.children[5],room.black);if(room.white)nameWithRank(tr.children[6],room.white);
-  const gameLabel=document.createElement('span');gameLabel.className='game-type-pill'+(room.game==='tetris'?' tetris':'');gameLabel.textContent=room.game==='tetris'?'테트리스':room.game==='mine_battle'?'지뢰탐색게임':room.game==='holdem'?'홀덤':'오목';tr.children[2].append(gameLabel);
+  const gameLabel=document.createElement('span');gameLabel.className='game-type-pill'+(room.game==='tetris'?' tetris':'');gameLabel.textContent=room.game==='tetris'?'테트리스':room.game==='mine_battle'?'지뢰탐색게임':room.game==='holdem'?'홀덤':room.game==='oddeven'?'홀짝':'오목';tr.children[2].append(gameLabel);
   const statusTd=tr.children[4],pill=document.createElement('span');pill.className='status-pill '+(room.status==='playing'?'':room.status);pill.textContent=status;statusTd.append(pill);
   const joinBtn=document.createElement('button');joinBtn.type='button';joinBtn.className='room-open';joinBtn.textContent='열기';joinBtn.setAttribute('aria-label',room.sheet+' 열기');tr.lastElementChild.append(joinBtn);
   rows.push(tr);
@@ -1329,15 +1370,15 @@ function renderLobby(){const list=$('lobby-cells');const rows=[];let n=1;
 function formatTime(input){if(!input)return '-';const d=new Date(input);if(Number.isNaN(d.valueOf()))return '-';return new Intl.DateTimeFormat('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).format(d);}
 function roomLabel(id){return roomList.find(r=>r.id===id)?.sheet||'Room';}
 function updateSheetTabs(){const nav=$('sheet-nav');nav.querySelectorAll('[data-room-tab]').forEach(e=>e.remove());
- for(const id of openRooms){const tab=document.createElement('button');tab.type='button';tab.className='sheet-tab'+(id===activeRoom?' active':'');tab.dataset.roomTab=id;tab.title='시트 열기';tab.textContent=roomLabel(id)+(roomList.find(r=>r.id===id)?.game==='tetris'?' · T':roomList.find(r=>r.id===id)?.game==='mine_battle'?' · M':id.startsWith('h-')?' · H':'');
+ for(const id of openRooms){const tab=document.createElement('button');tab.type='button';tab.className='sheet-tab'+(id===activeRoom?' active':'');tab.dataset.roomTab=id;tab.title='시트 열기';tab.textContent=roomLabel(id)+(roomList.find(r=>r.id===id)?.game==='tetris'?' · T':roomList.find(r=>r.id===id)?.game==='mine_battle'?' · M':id.startsWith('h-')?' · H':id.startsWith('e-')?' · O':'');
   const close=document.createElement('span');close.className='tab-close';close.textContent='×';close.title='시트 닫기';close.dataset.closeRoom=id;tab.append(close);nav.insertBefore(tab,$('add-sheet-btn'));}
  const lobby=nav.querySelector('[data-sheet="lobby"]');lobby.classList.toggle('active',activeRoom===null);}
 function changeUrl(id){const url=new URL(location.href);if(id)url.searchParams.set('room',id);else url.searchParams.delete('room');try{history.replaceState(null,'',url.pathname+url.search+url.hash);}catch(_){}}
-function switchView(id){if(id && !requireNickname())return;activeRoom=id;const poker=Boolean(id&&id.startsWith('h-'));$('lobby-view').hidden=!!id;$('room-view').hidden=!id||poker;$('holdem-view').hidden=!poker;$('chat').hidden=!id||poker;chatLastSeen='';hover=null;
+function switchView(id){if(id && !requireNickname())return;activeRoom=id;const poker=Boolean(id&&id.startsWith('h-')),parity=Boolean(id&&id.startsWith('e-'));$('lobby-view').hidden=!!id;$('room-view').hidden=!id||poker||parity;$('holdem-view').hidden=!poker;$('oddeven-view').hidden=!parity;$('chat').hidden=!id||poker||parity;chatLastSeen='';hover=null;
  $('chat-title-button').firstElementChild.firstChild.textContent='메모 ';
  showOperatorMessage('');if(!id){sheet1LastPaint='';paintSheet1Chat();setTimeout(()=>syncSheet1Chat(true),0);}
- if(id&&!poker){gomokuRewardRoom=null;gomokuRewardData=null;gomokuRewardSyncAt=0;arcadeRewardRoom=null;arcadeRewardData=null;arcadeRewardSyncAt=0;setTimeout(()=>{syncGomokuRewards(true);syncArcadeRewards(true);},350);const item=roomList.find(r=>r.id===id);$('room-name').textContent=(item?.sheet||'Sheet')+'  '+(item?.game==='mine_battle'?'지뢰탐색게임':(item?.title||''));$('room-info').textContent='  '+id;activateCache();setTimeout(resizeCanvas,30);}else{$('cell-address').textContent='A1';$('formula-value').textContent='=COUNTIF(방현황,"접속중")';}
- updateSheetTabs();changeUrl(id);if(poker){$('holdem-admin-guide').hidden=!(myNickname==='운영자'&&adminToken&&memberProfile);renderHoldem();holdemChatState(id).signature=null;holdemChatFeedback('');holdemChatRender(id);holdemChatSync(id,true);}else{renderTetrisRoom();renderMineRoom();renderMatchGate();}}
+ if(id&&!poker&&!parity){gomokuRewardRoom=null;gomokuRewardData=null;gomokuRewardSyncAt=0;arcadeRewardRoom=null;arcadeRewardData=null;arcadeRewardSyncAt=0;setTimeout(()=>{syncGomokuRewards(true);syncArcadeRewards(true);},350);const item=roomList.find(r=>r.id===id);$('room-name').textContent=(item?.sheet||'Sheet')+'  '+(item?.game==='mine_battle'?'지뢰탐색게임':(item?.title||''));$('room-info').textContent='  '+id;activateCache();setTimeout(resizeCanvas,30);}else{$('cell-address').textContent='A1';$('formula-value').textContent='=COUNTIF(방현황,"접속중")';}
+ updateSheetTabs();changeUrl(id);if(parity){renderOddEven();}else if(poker){$('holdem-admin-guide').hidden=!(myNickname==='운영자'&&adminToken&&memberProfile);renderHoldem();holdemChatState(id).signature=null;holdemChatFeedback('');holdemChatRender(id);holdemChatSync(id,true);}else{renderTetrisRoom();renderMineRoom();renderMatchGate();}}
 function isKickedError(error){return /강퇴되었습니다/.test(String(error?.message||error||''));}
 const kickedRooms=new Set();
 function returnKickedToLobby(id){
@@ -1353,12 +1394,18 @@ async function openRoom(id){if(!requireNickname())return;
  if(kickedRooms.has(id)){lobbyNotify('해당 방에서는 강퇴되어 다시 입장할 수 없습니다.',true);return;}if(!ROOM_REGEX.test(id)){lobbyNotify('잘못된 방 주소입니다.',true);return;}
  if(!roomList.some(r=>r.id===id)){lobbyNotify('현재 목록에 없는 시트입니다.',true);return;}
  if(!openRooms.includes(id)){if(openRooms.length>=8){lobbyNotify('동시에 열 수 있는 시트는 8개입니다.',true);return;}openRooms.push(id);}
- switchView(id);try{if(id.startsWith('h-')){if(!memberToken)throw new Error('홀덤은 회원 로그인이 필요합니다.');await callRpc('renju_holdem_chat',{p_client:CLIENT_ID,p_token:memberToken,p_room:id,p_action:'list',p_text:null});applyHoldemData(id,await holdemRpc('join',id));}else{applyRoom(id,await roomRpc(id));applyGate(id,await gateRpc(id));}notify('');}catch(e){if(isKickedError(e))returnKickedToLobby(id);else notify(e.message,true);}
+ switchView(id);try{if(id.startsWith('e-')){if(!memberToken)throw new Error('홀짝은 회원 로그인이 필요합니다.');applyOddEvenData(id,await oddEvenRpc('join',id));}else if(id.startsWith('h-')){if(!memberToken)throw new Error('홀덤은 회원 로그인이 필요합니다.');await callRpc('renju_holdem_chat',{p_client:CLIENT_ID,p_token:memberToken,p_room:id,p_action:'list',p_text:null});applyHoldemData(id,await holdemRpc('join',id));}else{applyRoom(id,await roomRpc(id));applyGate(id,await gateRpc(id));}notify('');}catch(e){if(isKickedError(e))returnKickedToLobby(id);else if(id.startsWith('e-')){switchView(null);lobbyNotify(e.message,true);}else notify(e.message,true);}
 }
 function createRoom(){if(!requireNickname())return;$('create-modal').hidden=false;}
 function closeCreateModal(){$('create-modal').hidden=true;}
 async function doCreateRoom(game){if(!requireNickname())return;if(creating)return;closeCreateModal();creating=true;$('create-room-btn').disabled=true;$('add-sheet-btn').disabled=true;lobbyNotify('새 시트 생성 중...');
- try{if(game==='holdem'){
+ try{if(game==='oddeven'){
+   if(!memberToken){openMemberPanel('login');throw new Error('홀짝은 회원 로그인 후 이용할 수 있습니다.');}
+   const data=await oddEvenRpc('create');if(!data.created_room)throw new Error('홀짝 방 생성에 실패했습니다.');
+   oddEvenLobbyRooms=[{id:data.created_room,sheet:data.sheet,title:data.stake+'P 홀짝',game:'oddeven',status:'waiting',count:1,waiting:5,moves:0},...oddEvenLobbyRooms];
+   roomList=[...roomList.filter(x=>x.id!==data.created_room),oddEvenLobbyRooms[0]];
+   renderLobby();applyOddEvenData(data.created_room,data);await openRoom(data.created_room);lobbyNotify('');
+  }else if(game==='holdem'){
    if(!memberToken){openMemberPanel('login');throw new Error('홀덤은 회원 로그인 후 이용할 수 있습니다.');}
    const data=await holdemRpc('create');if(!data.created_room)throw new Error('홀덤 방 생성에 실패했습니다.');
    holdemLobbyRooms=[{id:data.created_room,sheet:data.sheet,title:'홀덤',game:'holdem',status:'waiting',count:1,waiting:5,moves:0},...holdemLobbyRooms];
@@ -1372,6 +1419,7 @@ async function closeRoom(id){
  if(!openRooms.includes(id))return;
  openRooms=openRooms.filter(x=>x!==id);roomCache.delete(id);tetrisDataByRoom.delete(id);tetrisLocalByRoom.delete(id);mineDataByRoom.delete(id);matchGateByRoom.delete(id);matchGateRestarting.delete(id);
  if(activeRoom===id)switchView(null);else updateSheetTabs();
+ if(id.startsWith('e-')){oddEvenDataByRoom.delete(id);oddEvenRevealUntil.delete(id);oddEvenRpc('leave',id).catch(()=>{});return;}
  if(id.startsWith('h-')){const v=holdemVisualByRoom.get(id);if(v){clearTimeout(v.flipTimer);clearTimeout(v.showTimer);}holdemVisualByRoom.delete(id);holdemChatByRoom.delete(id);holdemDataByRoom.delete(id);holdemRpc('leave',id).catch(()=>{});return;}
  try{
    await roomRpc(id,'leave');
@@ -1594,6 +1642,11 @@ async function handleChatSubmit(e){
    showOperatorMessage(result.message||'명령 처리 완료');input.value='';input.focus();
    if(notice)await pollAnnouncement();
    if(operation==='renju_admin_points')await refreshMemberStats();
+   if(operation==='renju_admin_clear'&&params.p_target==='room'){
+    try{const extra=await callRpc('renju_oddeven_admin_clear',{p_client:CLIENT_ID,p_token:adminToken});
+      showOperatorMessage((result.message||'방 정리 완료')+' · 홀짝 '+extra.deleted+'개 삭제');}
+    catch(err){showOperatorMessage('다른 게임방은 정리됨 · 홀짝방 정리 실패: '+err.message,true);}
+   }
    if(operation==='renju_admin_clean'||operation==='renju_admin_clear'){
     const target=operation==='renju_admin_clean'?'both':params.p_target;
     if(target==='chat'||target==='both'){
@@ -1602,12 +1655,13 @@ async function handleChatSubmit(e){
     }
     if(target==='room'||target==='both'){
      // Both lists are independent; never reuse a cached Holdem room after a clear.
-     holdemLobbyRooms=[];matchGateLobbyStatuses.clear();hunterLobbyStatuses.clear();
+     holdemLobbyRooms=[];oddEvenLobbyRooms=[];matchGateLobbyStatuses.clear();hunterLobbyStatuses.clear();
      try{
       const legacy=await lobbyRpc();
       const poker=await holdemRpc('list');
       holdemLobbyRooms=Array.isArray(poker.rooms)?poker.rooms:[];
-      applyLobby({...legacy,rooms:[...(legacy.rooms||[]),...holdemLobbyRooms]});
+      try{const even=await oddEvenRpc('list');oddEvenLobbyRooms=Array.isArray(even.rooms)?even.rooms:[];}catch(_){}
+      applyLobby({...legacy,rooms:[...(legacy.rooms||[]),...holdemLobbyRooms,...oddEvenLobbyRooms]});
      }catch(err){lobbyNotify(err.message,true);}
     }
    }
@@ -1921,6 +1975,7 @@ let tetrisLastFrame=performance.now(),tetrisSyncPending=false,tetrisUpdateAt=0;
 function currentGameType(){return (roomList.find(r=>r.id===activeRoom)?.game||'gomoku');}
 function isTetrisRoom(){return !!activeRoom && currentGameType()==='tetris';}
 function isHoldemRoom(){return !!activeRoom && (activeRoom.startsWith('h-') || currentGameType()==='holdem');}
+function isOddEvenRoom(){return !!activeRoom && activeRoom.startsWith('e-');}
 function tetrisRpc(id,action='sync',payload=null){return callRpc('renju_tetris_sync',{p_room:id,p_client:CLIENT_ID,p_action:action,p_snapshot:payload});}
 function makeShuffler(seed){
  let s=(seed|0)||1,bag=[],position=0;
@@ -2688,5 +2743,89 @@ setInterval(()=>{
  const remaining=Math.max(0,Math.ceil(ms/1000));$('holdem-time').textContent=remaining+'초';
  $('holdem-time').style.color=remaining<=10?'#b13131':'#225a37';
 },350);
+
+
+
+// =============== Odd/Even (1-6 players, authoritative Supabase RPC) ===============
+const oddEvenDataByRoom=new Map(),oddEvenRevealUntil=new Map();
+let oddEvenActionPending=false,oddEvenInfo='';
+function oddEvenRpc(action='list',room=null,stake=null,guess=null){
+ return callRpc('renju_oddeven_rpc',{p_action:action,p_client:CLIENT_ID,p_token:memberToken||null,p_room:room,p_stake:stake,p_guess:guess});
+}
+function oddEvenFmt(value){return Number(value||0).toLocaleString('ko-KR')+'P';}
+function applyOddEvenData(id,data){
+ if(!data?.ok)return;
+ const old=oddEvenDataByRoom.get(id);
+ if(old&&Number(data.revision)<Number(old.revision))return;
+ oddEvenDataByRoom.set(id,data);
+ if(old&&data.round>old.round&&data.phase==='finished'){
+  oddEvenRevealUntil.set(id,Date.now()+1600);
+  setTimeout(()=>{if(activeRoom===id){renderOddEven();refreshMemberStats();}},1700);
+ }
+ if(id===activeRoom)renderOddEven();
+}
+function renderOddEven(){
+ if(!isOddEvenRoom())return;
+ const d=oddEvenDataByRoom.get(activeRoom),el=id=>document.getElementById(id);
+ if(!d){oeEl('oe-notice').textContent='홀짝방 연결 중…';return;}
+ const participants=d.participants||[],mine=participants.find(x=>x.seat===d.my_seat),allReady=participants.length>0&&participants.every(x=>x.ready&&x.guess);
+ const animating=(oddEvenRevealUntil.get(activeRoom)||0)>Date.now();
+ oeEl('oe-sheet').textContent=d.sheet||'홀짝';oeEl('oe-stake').textContent=oddEvenFmt(d.stake);oeEl('oe-ready-count').textContent=participants.filter(p=>p.ready).length+' / '+participants.length;
+ oeEl('oe-wallet').textContent=oddEvenFmt(d.my_points);oeEl('oe-round').textContent='#'+d.round;
+ oeEl('oe-config').hidden=!d.is_host;
+ const stake=oeEl('oe-stake-input');if(document.activeElement!==stake)stake.value=d.stake;
+ oeEl('oe-set-stake').disabled=oddEvenActionPending;
+ const select=oeEl('oddeven-view').querySelectorAll('[data-oe-guess]');
+ for(const btn of select){const chosen=btn.dataset.oeGuess===mine?.guess;btn.classList.toggle('selected',chosen);btn.setAttribute('aria-pressed',String(chosen));btn.disabled=!mine||oddEvenActionPending;}
+ const ready=oeEl('oe-ready'),start=oeEl('oe-start'),join=oeEl('oe-join');
+ join.hidden=!!mine||participants.length>=6;join.disabled=oddEvenActionPending;
+ ready.hidden=!mine;ready.disabled=oddEvenActionPending||!mine?.guess||(!mine.ready&&Number(d.my_points)<Number(d.stake));ready.textContent=mine?.ready?'준비 취소':'준비 완료';
+ start.hidden=!d.is_host;start.disabled=oddEvenActionPending||!allReady;start.textContent=d.round>0?'다음 게임 시작':'게임 시작';
+ const dice=oeEl('oe-dice-pair'),result=oeEl('oe-result');dice.classList.toggle('rolling',animating);
+ if(!animating){
+  oeEl('oe-die-a').textContent=d.roll?.a??'?';oeEl('oe-die-b').textContent=d.roll?.b??'?';
+  result.className='oe-result'+(!d.roll?' muted':'');result.textContent=d.roll?`${d.roll.sum} · ${d.roll.actual==='odd'?'홀 ODD':'짝 EVEN'}`:'모두 준비하면 방장이 시작합니다.';
+ }else{result.className='oe-result muted';result.textContent='추첨 중 · 결과 공개까지 잠시…';}
+ oeEl('oe-notice').textContent=oddEvenInfo||(!mine?'관전 중 · 빈 자리가 있으면 다시 입장해 참가할 수 있습니다.':allReady?(d.is_host?'전원 준비 완료! 게임 시작을 누르세요.':'전원 준비 완료 · 방장 시작 대기'):(mine.ready?'준비 완료 · 나머지 참가자를 기다리는 중':'홀/짝 선택 후 준비 버튼을 눌러 주세요.'));
+ const tbody=oeEl('oe-players'),rows=[];
+ for(let seat=1;seat<=6;seat++){
+  const p=participants.find(x=>x.seat===seat),tr=document.createElement('tr');if(p&&p.seat===d.my_seat)tr.classList.add('mine');
+  const fields=[seat,p?.nickname||(seat===1?'빈 자리':'—'),p?.guess==='odd'?'홀':p?.guess==='even'?'짝':'—',p?(p.ready?'✓ 준비':'대기'):'—',p?oddEvenFmt(p.points):'—',animating||p?.net===null||p?.net===undefined?'—':(p.net>0?'+':'')+oddEvenFmt(p.net)];
+  fields.forEach((v,i)=>{const td=document.createElement('td');td.textContent=v;if(i===5&&p?.net>0)td.className='hit';else if(i===5&&p?.net<0)td.className='miss';tr.append(td);});rows.push(tr);
+ }
+ tbody.replaceChildren(...rows);
+}
+async function oddEvenAct(action,stake=null,guess=null){
+ if(!isOddEvenRoom()||oddEvenActionPending)return;
+ const id=activeRoom;oddEvenActionPending=true;oddEvenInfo='처리 중…';renderOddEven();
+ try{
+  const data=await oddEvenRpc(action,id,stake,guess);
+  oddEvenInfo=action==='set_stake'?'판돈 변경 완료 · 전원 준비가 해제되었습니다.':action==='ready'?'준비 상태 변경 완료':action==='choose'?'선택 완료':action==='start'?'주사위 결과를 공개합니다.':'';
+  applyOddEvenData(id,data);if(action==='start')refreshMemberStats();
+  setTimeout(()=>{if(activeRoom===id&&oddEvenInfo){oddEvenInfo='';renderOddEven();}},2100);
+ }catch(e){oddEvenInfo='요청 실패: '+e.message;renderOddEven();}
+ finally{oddEvenActionPending=false;if(activeRoom===id)renderOddEven();}
+}
+const oeEl=id=>document.getElementById(id);
+oeEl('oe-share').addEventListener('click',copyShare);
+oeEl('oe-exit').addEventListener('click',()=>{if(activeRoom)closeRoom(activeRoom)});
+oeEl('oe-set-stake').addEventListener('click',()=>{
+ const n=Number(oeEl('oe-stake-input').value);
+ if(!Number.isSafeInteger(n)||n<1||n>1000000){oddEvenInfo='판돈은 1~1,000,000P 정수로 설정해 주세요.';renderOddEven();return;}
+ oddEvenAct('set_stake',n);
+});
+oeEl('oddeven-view').querySelector('.oe-choice').addEventListener('click',event=>{
+ const target=event.target.closest('[data-oe-guess]');if(target)oddEvenAct('choose',null,target.dataset.oeGuess);
+});
+oeEl('oe-join').addEventListener('click',()=>oddEvenAct('join'));
+oeEl('oe-ready').addEventListener('click',()=>oddEvenAct('ready'));
+oeEl('oe-start').addEventListener('click',()=>oddEvenAct('start'));
+setInterval(()=>{
+ if(!isOddEvenRoom())return;
+ if((oddEvenRevealUntil.get(activeRoom)||0)>Date.now()){
+  oeEl('oe-die-a').textContent=1+Math.floor(Math.random()*6);
+  oeEl('oe-die-b').textContent=1+Math.floor(Math.random()*6);
+ }else if(oeEl('oe-dice-pair').classList.contains('rolling'))renderOddEven();
+},100);
 
 </script></body></html>
