@@ -450,6 +450,17 @@
 .role-switch-feedback[hidden]{display:none!important}
 .match-gate-controls .match-gate-button{touch-action:manipulation}
 
+/* v3.4.4: online odd/even invite and direct join, independent of lobby discovery */
+.oe-online-entry{border:1px solid #bfd5c6;background:#f5faf6;margin:0 0 11px;padding:10px 12px;display:flex;flex-wrap:wrap;align-items:center;gap:7px;color:#23593b;font-size:11px}
+.oe-online-entry strong{font-size:12px;min-width:160px}
+.oe-online-entry form{display:flex;flex:1;min-width:min(100%,270px);gap:6px}
+.oe-online-entry input{flex:1;min-width:110px;border:1px solid #c2d3c7;padding:7px 9px;background:#fff;color:#224834;border-radius:2px;font-size:12px}
+.oe-online-entry button{background:#e7f3ea;border:1px solid #9cbcaa;color:#1f6841;font-weight:700;padding:7px 11px;cursor:pointer;white-space:nowrap}
+.oe-online-entry button:disabled{opacity:.5;cursor:wait}
+.oe-online-entry small{display:block;width:100%;color:#5f7e69;font-size:10px}
+.oe-online-code{display:inline-block;margin-left:7px;padding:3px 7px;background:#f1f7f2;border:1px solid #cfdfd2;font-size:11px;font-weight:700;letter-spacing:.025em;user-select:all}
+.oe-multiplayer-note{font-size:11px;color:#4d795a;background:#f5faf6;padding:8px 10px;border-bottom:1px solid #dbe5de}
+@media(max-width:580px){.oe-online-entry{display:block}.oe-online-entry strong{display:block;margin-bottom:7px}.oe-online-entry form{min-width:0;width:100%}.oe-online-entry small{padding-top:6px}}
 </style></head>
 <body>
 <div class="titlebar"><span class="app-icon" aria-hidden="true">▦</span><span class="doc-name">업무현황_2026.xlsx</span><span class="title-space"></span><span id="member-top-level" class="member-level-tag" hidden>Lv.1</span><span id="connection-label" class="connection">연결 중</span><button id="copy-link-btn" type="button" class="share-btn">주소 복사</button></div>
@@ -460,7 +471,8 @@
 <div id="member-overlay" class="member-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="member-dialog-title"><form id="member-form" class="member-dialog" autocomplete="on"><h2 id="member-dialog-title">계정 로그인</h2><p class="member-desc">처음엔 익명 Player로 접속합니다. 가입하면 승리 기록과 레벨이 저장돼요.</p><div class="member-switch"><button type="button" id="member-login-tab" class="active">로그인</button><button type="button" id="member-register-tab">회원가입</button></div><label for="member-nickname">닉네임 (로그인 아이디)</label><input id="member-nickname" name="username" type="text" maxlength="16" minlength="1" autocomplete="username" required placeholder="1~16자 아이디"><label for="member-password">비밀번호</label><input id="member-password" name="password" type="password" minlength="4" maxlength="72" autocomplete="current-password" required placeholder="4자 이상 비밀번호 (형식 자유)"><div class="member-hint">이메일 없이 닉네임과 비밀번호로 가입합니다. 비밀번호 분실 시 자동 복구는 지원하지 않아요.</div><div id="member-feedback" class="member-feedback" role="alert"></div><div class="member-actions"><button type="button" id="member-cancel">닫기</button><button type="submit" id="member-submit">로그인</button></div></form></div>
 <div class="admin-notice" id="admin-notice" role="alert" hidden><strong class="admin-notice-label">공지</strong><span class="admin-notice-text" id="admin-notice-text"></span><button type="button" id="admin-notice-close" class="admin-notice-close" aria-label="공지 닫기">×</button></div>
 <div id="admin-auth-overlay" class="admin-auth-overlay" role="dialog" aria-modal="true" aria-labelledby="admin-auth-title" hidden><form id="admin-auth-form" class="admin-auth-dialog" autocomplete="off"><h2 id="admin-auth-title">운영자 인증</h2><p>닉네임 ‘운영자’를 사용하려면 운영자 비밀번호를 입력해야 합니다.</p><input id="admin-auth-password" type="password" name="operator_password" autocomplete="off" placeholder="운영자 비밀번호" required aria-label="운영자 비밀번호"><div class="admin-auth-actions"><button type="button" id="admin-auth-cancel">취소</button><button type="submit">확인</button></div></form></div>
-<section class="lobby-shell" id="lobby-view"><div class="lobby-toolbar"><div class="left"><span class="lobby-title">Sheet1 · 업무 진행 현황</span><span id="lobby-count" class="lobby-summary">0개 시트</span></div><div class="lobby-actions"><form id="nickname-form" class="nickname-form" autocomplete="off"><label for="nickname-input">내 닉네임</label><input id="nickname-input" name="nickname" type="text" maxlength="16" placeholder="Player" spellcheck="false" autocomplete="off" aria-label="닉네임 16자 이하"><button type="submit" id="nickname-save">저장</button></form><div class="member-tools"><span id="member-status" class="member-status">익명 Player</span><button id="member-open" type="button">가입 / 로그인</button><button id="member-logout" type="button" hidden>로그아웃</button><button id="rank-guide-open" class="rank-guide-btn" type="button" title="상위 레벨 및 운영자 등급표">등급표</button></div><button id="create-room-btn" type="button" class="excel-action">＋ 새 방 만들기</button></div></div><div id="nickname-required-note" class="nickname-required-note" role="status" aria-live="polite" hidden>익명 Player로 둘러볼 수 있어요. 방에 들어가려면 닉네임을 저장하거나 <strong>가입 / 로그인</strong>해 주세요. 회원은 게임 결과에 따라 포인트와 레벨이 기록됩니다.</div><div id="lobby-notice" class="lobby-notice" aria-live="polite"></div><div class="grid-scroll"><table class="xl-grid" aria-label="방 현황과 대기자 목록"><colgroup><col class="row-col"><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"><col class="c7"><col class="c8"><col class="c9"><col class="c10"></colgroup><thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th><th>J</th></tr></thead><tbody id="lobby-cells"><tr><th class="row-no">1</th><td class="section" colspan="10">방 목록 불러오는 중...</td></tr></tbody></table></div>
+<section class="lobby-shell" id="lobby-view"><div class="lobby-toolbar"><div class="left"><span class="lobby-title">Sheet1 · 업무 진행 현황</span><span id="lobby-count" class="lobby-summary">0개 시트</span></div><div class="lobby-actions"><form id="nickname-form" class="nickname-form" autocomplete="off"><label for="nickname-input">내 닉네임</label><input id="nickname-input" name="nickname" type="text" maxlength="16" placeholder="Player" spellcheck="false" autocomplete="off" aria-label="닉네임 16자 이하"><button type="submit" id="nickname-save">저장</button></form><div class="member-tools"><span id="member-status" class="member-status">익명 Player</span><button id="member-open" type="button">가입 / 로그인</button><button id="member-logout" type="button" hidden>로그아웃</button><button id="rank-guide-open" class="rank-guide-btn" type="button" title="상위 레벨 및 운영자 등급표">등급표</button></div><button id="create-room-btn" type="button" class="excel-action">＋ 새 방 만들기</button></div></div><div id="nickname-required-note" class="nickname-required-note" role="status" aria-live="polite" hidden>익명 Player로 둘러볼 수 있어요. 방에 들어가려면 닉네임을 저장하거나 <strong>가입 / 로그인</strong>해 주세요. 회원은 게임 결과에 따라 포인트와 레벨이 기록됩니다.</div><div id="lobby-notice" class="lobby-notice" aria-live="polite"></div>
+<div class="oe-online-entry" id="oe-online-entry"><strong>🎲 온라인 홀짝방 입장</strong><form id="oe-online-join-form" autocomplete="off"><input id="oe-online-code-input" type="text" placeholder="방 코드 e-... 또는 초대 링크" aria-label="홀짝방 코드 또는 초대 링크" spellcheck="false"><button type="submit" id="oe-online-join-button">참가하기</button></form><small id="oe-online-lobby-status">친구가 보낸 초대 링크나 방 코드를 입력하세요. 1~6명까지 같은 방에서 진행할 수 있습니다.</small></div><div class="grid-scroll"><table class="xl-grid" aria-label="방 현황과 대기자 목록"><colgroup><col class="row-col"><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"><col class="c7"><col class="c8"><col class="c9"><col class="c10"></colgroup><thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th><th>J</th></tr></thead><tbody id="lobby-cells"><tr><th class="row-no">1</th><td class="section" colspan="10">방 목록 불러오는 중...</td></tr></tbody></table></div>
 <div id="sheet1-chat-area" class="sheet1-chat-area" aria-label="Sheet1 공용 채팅">
  <div class="grid-scroll sheet1-chat-grid-scroll"><table class="xl-grid sheet1-chat-grid" aria-label="공용 채팅 기록과 메시지 입력">
   <colgroup><col class="row-col"><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"><col class="c7"><col class="c8"><col class="c9"><col class="c10"></colgroup>
@@ -568,7 +580,8 @@
 </section>
 
 <section id="oddeven-view" hidden aria-label="온라인 홀짝 게임 시트">
- <div class="oe-header"><div><strong id="oe-sheet">홀짝</strong> <span> · ODD / EVEN · 1~6인 온라인</span></div><div><button type="button" id="oe-share">초대 링크 복사</button> <button type="button" id="oe-exit">Sheet1</button></div></div>
+ <div class="oe-header"><div><strong id="oe-sheet">홀짝</strong> <span> · ODD / EVEN · 1~6인 온라인</span><code class="oe-online-code" id="oe-room-code"></code></div><div><button type="button" id="oe-share">친구 초대 링크 복사</button> <button type="button" id="oe-exit">Sheet1</button></div></div>
+<div class="oe-multiplayer-note">같은 방에 최대 6명 참가합니다. 친구에게 위 방 코드 또는 초대 링크를 보내세요. 각각 다른 회원 계정으로 로그인해야 별도의 참가 좌석을 사용할 수 있습니다.</div>
  <div class="oe-meta"><div><small>고정 판돈</small><strong id="oe-stake">100P</strong></div><div><small>준비 인원</small><strong id="oe-ready-count">0 / 1</strong></div><div><small>보유 포인트</small><strong id="oe-wallet">0P</strong></div><div><small>라운드</small><strong id="oe-round">#0</strong></div></div>
  <div class="oe-dice-zone"><div class="oe-dice-label">SERVER ROLL · 두 주사위 합계의 홀짝</div><div id="oe-dice-pair" class="oe-dice-pair"><div id="oe-die-a" class="oe-die">?</div><div id="oe-die-b" class="oe-die">?</div></div><div id="oe-result" class="oe-result muted">참가자 준비를 기다리는 중</div><div class="oe-subtext">홀수 = 홀 · 짝수 = 짝 · 동일한 결과로 모든 참가자 정산</div></div>
  <div class="oe-config" id="oe-config"><strong>방장 판돈 설정</strong><label for="oe-stake-input">포인트(P)</label><input id="oe-stake-input" type="number" min="1" max="1000000" step="1" value="100" inputmode="numeric"><button type="button" id="oe-set-stake">판돈 적용</button><span>변경하면 모두의 준비가 해제됩니다.</span></div>
@@ -579,7 +592,7 @@
  <div class="oe-footnote">적중 시 베팅금의 2배를 지급합니다(원금 포함, 순이익 +판돈). 실패 시 판돈만 차감됩니다. 방장도 선택과 준비가 필요하며, 1명만 있어도 시작할 수 있습니다. 게임 포인트만 사용하며 현금 환전은 지원하지 않습니다.</div>
 </section>
 <div id="chat" class="chat" hidden><button type="button" id="chat-title-button" class="chat-title" aria-expanded="true" aria-controls="chat-body" title="메모 접기/펼치기"><span>메모 <span id="chat-count"></span></span><span class="chat-toggle" id="chat-toggle-glyph">−</span></button><div class="chat-body" id="chat-body"><div id="chat-messages" class="chat-messages"><div class="chat-empty">내용 없음</div></div><div id="admin-chat-feedback" class="admin-chat-feedback" role="status" hidden></div><form class="chat-form" id="chat-form"><input id="chat-input" class="chat-input" placeholder="메시지 입력" maxlength="280" autocomplete="off" aria-label="채팅 메시지"><button type="submit" class="chat-send">보내기</button></form></div></div>
-<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="레벨 등급 v3.0">100% · v3.4 관전/참가 전환</span></footer>
+<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="레벨 등급 v3.0">100% · v3.4.4 온라인 홀짝방</span></footer>
 <script>
 'use strict';
 const SIZE = 15;
@@ -998,9 +1011,21 @@ function requireNickname(){
  const input=document.getElementById('nickname-input');if(input){input.focus();if(!myNickname)input.select();}
  return false;
 }
+let onlineDeepLinkPending=false;
 function maybeOpenInitialRoom(){
- if(!initialDeepLink || !lobbyReady || !hasSavedNickname())return;
- const id=initialDeepLink;initialDeepLink=null;
+ if(!initialDeepLink||!lobbyReady)return;
+ const id=initialDeepLink;
+ // 홀짝 초대는 Sheet1 목록 수신 여부와 무관하게 서버에서 직접 확인합니다.
+ if(/^e-[a-f0-9]{12}$/.test(id)){
+  if(!memberToken){lobbyNotify('홀짝 초대 링크를 받았습니다. 회원 로그인 후 자동으로 해당 방에 입장합니다.');return;}
+  if(!hasSavedNickname()||onlineDeepLinkPending)return;
+  onlineDeepLinkPending=true;
+  joinOddEvenOnline(id).then(ok=>{if(ok&&initialDeepLink===id)initialDeepLink=null;})
+    .finally(()=>{onlineDeepLinkPending=false;});
+  return;
+ }
+ if(!hasSavedNickname())return;
+ initialDeepLink=null;
  if(ROOM_REGEX.test(id)&&roomList.some(r=>r.id===id))openRoom(id);
  else lobbyNotify('존재하지 않는 시트입니다.',true);
 }
@@ -1354,16 +1379,24 @@ function pollLobbyInBackground(){
  (async()=>{
   try{
    const data=await lobbyRpc();
-   try{const h=await holdemRpc('list');if(Array.isArray(h.rooms))holdemLobbyRooms=h.rooms;}catch(_){/* Poker list optional. */}
-   try{const e=await oddEvenRpc('list');if(Array.isArray(e.rooms))oddEvenLobbyRooms=e.rooms;}catch(_){/* 홀짝 SQL 설치 전에도 기존 게임은 정상 표시. */}
-   try{
-    const statuses=await callRpc('renju_match_gate_lobby_status',{});
-    if(Array.isArray(statuses))matchGateLobbyStatuses=new Map(statuses.map(z=>[z.room_id,z]));
-   }catch(_){/* Preserve game lobby when optional gate status is delayed. */}
-   if(Array.isArray(data.rooms)&&data.rooms.some(r=>r.game==='mine_battle')){
-    try{const h=await callRpc('renju_hunter_lobby_status',{});if(Array.isArray(h))hunterLobbyStatuses=new Map(h.map(z=>[z.room_id,z]));}catch(_){/* Optional extension. */}
-   }
-   const removed=applyLobby({...data,rooms:[...(data.rooms||[]),...holdemLobbyRooms,...oddEvenLobbyRooms]});if(!removed)lobbyNotify('');
+   const reapply=()=>{
+    const removed=applyLobby({...data,rooms:[...(data.rooms||[]),...holdemLobbyRooms,...oddEvenLobbyRooms]});
+    if(!removed)lobbyNotify('');
+   };
+   reapply();
+   // A direct invitation is accepted even if the online room is not yet in Sheet1.
+   maybeOpenInitialRoom();
+   const hasMines=Array.isArray(data.rooms)&&data.rooms.some(r=>r.game==='mine_battle');
+   // All optional game lists run independently: slow Hold'em must not suppress Odd/Even.
+   const onlineTasks=[
+    holdemRpc('list').then(h=>{if(Array.isArray(h.rooms)){holdemLobbyRooms=h.rooms;reapply();}}).catch(()=>{}),
+    oddEvenRpc('list').then(e=>{if(Array.isArray(e.rooms)){oddEvenLobbyRooms=e.rooms;reapply();
+      const label=$('oe-online-lobby-status');if(label&&activeRoom===null)label.textContent='온라인 홀짝방 목록 연결됨 · 친구의 방 코드를 직접 입력할 수도 있습니다.';
+    }}).catch(error=>{const label=$('oe-online-lobby-status');if(label&&activeRoom===null)label.textContent='홀짝방 목록 연결 지연: '+String(error?.message||error)+' · 초대 코드 직접 입장을 사용할 수 있습니다.';}),
+    callRpc('renju_match_gate_lobby_status',{}).then(s=>{if(Array.isArray(s)){matchGateLobbyStatuses=new Map(s.map(z=>[z.room_id,z]));reapply();}}).catch(()=>{}),
+    hasMines?callRpc('renju_hunter_lobby_status',{}).then(h=>{if(Array.isArray(h)){hunterLobbyStatuses=new Map(h.map(z=>[z.room_id,z]));reapply();}}).catch(()=>{}):Promise.resolve()
+   ];
+   await Promise.allSettled(onlineTasks);
    await syncNicknames();
    maybeOpenInitialRoom();
   }catch(e){lobbyHealthy=false;setNetwork('연결 확인 중',false);lobbyNotify(e.message,true);}
@@ -1477,7 +1510,47 @@ function returnKickedToLobby(id){
  if(activeRoom===id)switchView(null);else updateSheetTabs();
  lobbyNotify('운영자에 의해 해당 방에서 강퇴되었습니다. 다른 방은 이용할 수 있습니다.',true);
 }
-async function openRoom(id){if(!requireNickname())return;
+let oddEvenOnlineJoinPending=false;
+function oddEvenRoomId(input){
+ const raw=String(input||'').trim();
+ if(/^e-[0-9a-f]{12}$/i.test(raw))return raw.toLowerCase();
+ try{const url=new URL(raw,location.href);if(url.origin!==location.origin)return null;
+  const room=url.searchParams.get('room');return /^e-[0-9a-f]{12}$/i.test(room||'')?room.toLowerCase():null;
+ }catch(_){return null;}
+}
+async function joinOddEvenOnline(input){
+ const id=oddEvenRoomId(input),notice=$('oe-online-lobby-status');
+ if(!id){if(notice)notice.textContent='잘못된 방 코드입니다. e-로 시작하는 방 코드 또는 같은 사이트의 초대 링크를 입력해 주세요.';lobbyNotify('유효한 홀짝방 코드나 초대 링크가 아닙니다.',true);return false;}
+ if(!memberToken){initialDeepLink=id;lobbyNotify('홀짝방에 참여하려면 회원 로그인이 필요합니다. 로그인 후 자동으로 입장합니다.',true);openMemberPanel('login');return false;}
+ if(!hasSavedNickname()){initialDeepLink=id;requireNickname();return false;}
+ if(oddEvenOnlineJoinPending)return false;
+ if(!openRooms.includes(id)&&openRooms.length>=8){lobbyNotify('열린 시트를 하나 닫은 뒤 다시 참가해 주세요. (최대 8개)',true);return false;}
+ oddEvenOnlineJoinPending=true;
+ const btn=$('oe-online-join-button');if(btn)btn.disabled=true;
+ if(notice)notice.textContent='온라인 홀짝방 서버 연결 중…';
+ try{
+  // The server join action assigns an available seat to this MEMBER ACCOUNT.
+  // It does not depend on renju_lobby_v2 or holdem list availability.
+  const data=await oddEvenRpc('join',id);
+  if(!data?.ok||data.room!==id)throw new Error(data?.error||'방 연결 응답이 올바르지 않습니다.');
+  const count=Number(data.count||data.participants?.length||0);
+  const item={id,sheet:data.sheet||'홀짝',title:Number(data.stake||0).toLocaleString('ko-KR')+'P 홀짝',game:'oddeven',status:data.phase==='finished'?'done':'waiting',count,waiting:Math.max(0,6-count),moves:Number(data.round||0)};
+  oddEvenLobbyRooms=[item,...oddEvenLobbyRooms.filter(x=>x.id!==id)];
+  roomList=[...roomList.filter(x=>x.id!==id),item];
+  if(!openRooms.includes(id))openRooms.push(id);
+  renderLobby();
+  switchView(id);applyOddEvenData(id,data);
+  oddEvenInfo=data.my_seat!=null?'온라인 홀짝방 참가 완료 · 친구와 함께 준비하세요.':'방 입장 완료 · 현재 관전 중입니다. 참가석이 비면 참가하기를 누르세요.';
+  renderOddEven();
+  if(initialDeepLink===id)initialDeepLink=null;
+  return true;
+ }catch(e){const msg='홀짝방 입장 실패: '+String(e?.message||e);lobbyNotify(msg,true);if(notice)notice.textContent=msg;return false;}
+ finally{oddEvenOnlineJoinPending=false;if(btn)btn.disabled=false;}
+}
+$('oe-online-join-form').addEventListener('submit',async e=>{
+ e.preventDefault();await joinOddEvenOnline($('oe-online-code-input').value);
+});
+async function openRoom(id){if(id?.startsWith('e-')){await joinOddEvenOnline(id);return;}if(!requireNickname())return;
  if(kickedRooms.has(id)){lobbyNotify('해당 방에서는 강퇴되어 다시 입장할 수 없습니다.',true);return;}if(!ROOM_REGEX.test(id)){lobbyNotify('잘못된 방 주소입니다.',true);return;}
  if(!roomList.some(r=>r.id===id)){lobbyNotify('현재 목록에 없는 시트입니다.',true);return;}
  if(!openRooms.includes(id)){if(openRooms.length>=8){lobbyNotify('동시에 열 수 있는 시트는 8개입니다.',true);return;}openRooms.push(id);}
@@ -1491,7 +1564,7 @@ async function doCreateRoom(game){if(!requireNickname())return;if(creating)retur
    const data=await oddEvenRpc('create');if(!data.created_room)throw new Error('홀짝 방 생성에 실패했습니다.');
    oddEvenLobbyRooms=[{id:data.created_room,sheet:data.sheet,title:data.stake+'P 홀짝',game:'oddeven',status:'waiting',count:1,waiting:5,moves:0},...oddEvenLobbyRooms];
    roomList=[...roomList.filter(x=>x.id!==data.created_room),oddEvenLobbyRooms[0]];
-   renderLobby();applyOddEvenData(data.created_room,data);await openRoom(data.created_room);lobbyNotify('');
+   renderLobby();applyOddEvenData(data.created_room,data);const joined=await joinOddEvenOnline(data.created_room);if(joined){oddEvenInfo='온라인 방 생성 완료 · 친구에게 초대 링크 또는 방 코드를 보내세요.';renderOddEven();}else lobbyNotify('방은 생성됐지만 화면 연결에 실패했습니다. 온라인 홀짝방 코드로 다시 입장해 주세요.',true);
   }else if(game==='holdem'){
    if(!memberToken){openMemberPanel('login');throw new Error('홀덤은 회원 로그인 후 이용할 수 있습니다.');}
    const data=await holdemRpc('create');if(!data.created_room)throw new Error('홀덤 방 생성에 실패했습니다.');
@@ -1521,7 +1594,11 @@ async function gameAction(type,args={}){if(!activeRoom)return false;const id=act
  try{const data=await roomRpc(id,type,args);applyRoom(id,data);notify('');return true;}
  catch(e){notify(e.message,true);return false;}}
 function shareLink(){return location.origin+location.pathname+(activeRoom?'?room='+encodeURIComponent(activeRoom):'');}
-async function copyShare(){const link=shareLink();try{await navigator.clipboard.writeText(link);if(activeRoom)notify('주소 복사 완료',false,true);else lobbyNotify('주소를 복사했어요.');}catch(_){if(activeRoom)notify(link);else lobbyNotify(link);}}
+async function copyShare(){const link=shareLink();try{await navigator.clipboard.writeText(link);
+ if(isOddEvenRoom()){oddEvenInfo='초대 링크 복사 완료 · 친구에게 보내면 같은 온라인방으로 입장합니다.';renderOddEven();}
+ else if(activeRoom)notify('주소 복사 완료',false,true);else lobbyNotify('주소를 복사했어요.');
+ }catch(_){if(isOddEvenRoom()){oddEvenInfo='초대 링크: '+link;renderOddEven();try{window.prompt('친구에게 보낼 초대 링크를 복사하세요.',link);}catch(_){}}
+ else if(activeRoom)notify(link);else lobbyNotify(link);}}
 $('copy-link-btn').addEventListener('click',copyShare);$('room-copy').addEventListener('click',copyShare);
 $('room-lobby').addEventListener('click',()=>switchView(null));
 $('create-room-btn').addEventListener('click',createRoom);$('add-sheet-btn').addEventListener('click',createRoom);
@@ -2864,7 +2941,7 @@ function renderOddEven(){
  if(!d){oeEl('oe-notice').textContent='홀짝방 연결 중…';return;}
  const participants=d.participants||[],mine=participants.find(x=>x.seat===d.my_seat),allReady=participants.length>0&&participants.every(x=>x.ready&&x.guess);
  const animating=(oddEvenRevealUntil.get(activeRoom)||0)>Date.now();
- oeEl('oe-sheet').textContent=d.sheet||'홀짝';oeEl('oe-stake').textContent=oddEvenFmt(d.stake);oeEl('oe-ready-count').textContent=participants.filter(p=>p.ready).length+' / '+participants.length;
+ oeEl('oe-sheet').textContent=d.sheet||'홀짝';oeEl('oe-room-code').textContent=d.room||activeRoom;oeEl('oe-stake').textContent=oddEvenFmt(d.stake);oeEl('oe-ready-count').textContent=participants.filter(p=>p.ready).length+' / '+participants.length;
  oeEl('oe-wallet').textContent=oddEvenFmt(d.my_points);oeEl('oe-round').textContent='#'+d.round;
  oeEl('oe-config').hidden=!d.is_host||!mine;
  const stake=oeEl('oe-stake-input');if(document.activeElement!==stake)stake.value=d.stake;
