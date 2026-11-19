@@ -319,7 +319,10 @@
 .rank-tier-admin .rank-name{color:#126448}
 .member-level-tag.rank-tier-admin{color:#fff4d5;background:linear-gradient(105deg,#193d34,#34604c);border-color:#bdab74;font-weight:800}
 .rank-guide-row:last-child{margin-top:6px;padding-top:9px;border-top:2px solid #d3dccc}
-.rank-guide-row .rank-guide-range{white-space:nowrap}
+.rank-guide-row .rank-guide-range{white-space:normal;display:flex;min-width:0;flex:1;flex-direction:column;align-items:flex-end;gap:2px;font-variant-numeric:tabular-nums;text-align:right}
+.rank-guide-levels{color:#768479;font-size:10px;line-height:1.25}
+.rank-guide-points{color:#35654a;font-size:10px;font-weight:800;line-height:1.3}
+@media(max-width:480px){.rank-guide-row{gap:7px}.rank-guide-row .rank-badge{min-width:77px;padding-left:3px;padding-right:3px}}
 
 /* Keep account controls legible on narrow phones rather than overlapping the nickname field. */
 @media(max-width:700px){
@@ -416,7 +419,7 @@
 <div class="tabs"><span class="tab file-tab">파일</span><span class="tab active">홈</span><span class="tab">삽입</span><span class="tab">페이지 레이아웃</span><span class="tab">수식</span><span class="tab">데이터</span><span class="tab">검토</span><span class="tab">보기</span></div>
 <div class="ribbon" aria-hidden="true"><div class="ribbon-group"><div class="ribbon-content"><span class="tool-icon green">▤</span><div><div class="tool-small tool-strong">붙여넣기</div><div class="tool-small">복사 · 잘라내기</div></div></div><div class="ribbon-title">클립보드</div></div><div class="ribbon-group"><div class="ribbon-content"><span class="tool-mini wide">맑은 고딕&nbsp; ▾</span><span class="tool-mini">11</span><span class="tool-divider"></span><span class="tool-strong">B</span><em>I</em><u>U</u></div><div class="ribbon-title">글꼴</div></div><div class="ribbon-group"><div class="ribbon-content"><span class="tool-icon">☷</span><span class="tool-icon">☰</span><span class="tool-small">가운데 맞춤</span></div><div class="ribbon-title">맞춤</div></div><div class="ribbon-group"><div class="ribbon-content"><span class="tool-icon green">▦</span><span class="tool-small">표 서식<br>조건부 서식</span></div><div class="ribbon-title">스타일</div></div></div>
 <div class="formula-bar"><div class="name-box"><span id="cell-address">A1</span><span>⌄</span></div><span class="fx">ƒx</span><div class="formula-value" id="formula-value">=COUNTIF(방현황,"접속중")</div></div>
-<div id="rank-guide-overlay" class="rank-guide-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="rank-guide-title"><div class="rank-guide-panel"><div class="rank-guide-heading"><strong id="rank-guide-title">등급 및 레벨 안내</strong><button type="button" id="rank-guide-close" aria-label="등급 안내 닫기">닫기 ×</button></div><div class="rank-guide-summary" id="rank-guide-summary">Lv.100 불멸 · Lv.500 천상 · Lv.1000 신 · Lv.5000 초월 · 운영자 전용 최상위</div><div id="rank-guide-list" class="rank-guide-list"></div></div></div>
+<div id="rank-guide-overlay" class="rank-guide-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="rank-guide-title"><div class="rank-guide-panel"><div class="rank-guide-heading"><strong id="rank-guide-title">등급 및 레벨 안내</strong><button type="button" id="rank-guide-close" aria-label="등급 안내 닫기">닫기 ×</button></div><div class="rank-guide-summary" id="rank-guide-summary">등급별 필요 포인트를 확인할 수 있습니다 · Lv.5000 초월 · 운영자 전용 최상위</div><div id="rank-guide-list" class="rank-guide-list"></div></div></div>
 <div id="member-overlay" class="member-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="member-dialog-title"><form id="member-form" class="member-dialog" autocomplete="on"><h2 id="member-dialog-title">계정 로그인</h2><p class="member-desc">처음엔 익명 Player로 접속합니다. 가입하면 승리 기록과 레벨이 저장돼요.</p><div class="member-switch"><button type="button" id="member-login-tab" class="active">로그인</button><button type="button" id="member-register-tab">회원가입</button></div><label for="member-nickname">닉네임 (로그인 아이디)</label><input id="member-nickname" name="username" type="text" maxlength="16" minlength="1" autocomplete="username" required placeholder="1~16자 아이디"><label for="member-password">비밀번호</label><input id="member-password" name="password" type="password" minlength="4" maxlength="72" autocomplete="current-password" required placeholder="4자 이상 비밀번호 (형식 자유)"><div class="member-hint">이메일 없이 닉네임과 비밀번호로 가입합니다. 비밀번호 분실 시 자동 복구는 지원하지 않아요.</div><div id="member-feedback" class="member-feedback" role="alert"></div><div class="member-actions"><button type="button" id="member-cancel">닫기</button><button type="submit" id="member-submit">로그인</button></div></form></div>
 <div class="admin-notice" id="admin-notice" role="alert" hidden><strong class="admin-notice-label">공지</strong><span class="admin-notice-text" id="admin-notice-text"></span><button type="button" id="admin-notice-close" class="admin-notice-close" aria-label="공지 닫기">×</button></div>
 <div id="admin-auth-overlay" class="admin-auth-overlay" role="dialog" aria-modal="true" aria-labelledby="admin-auth-title" hidden><form id="admin-auth-form" class="admin-auth-dialog" autocomplete="off"><h2 id="admin-auth-title">운영자 인증</h2><p>닉네임 ‘운영자’를 사용하려면 운영자 비밀번호를 입력해야 합니다.</p><input id="admin-auth-password" type="password" name="operator_password" autocomplete="off" placeholder="운영자 비밀번호" required aria-label="운영자 비밀번호"><div class="admin-auth-actions"><button type="button" id="admin-auth-cancel">취소</button><button type="submit">확인</button></div></form></div>
@@ -815,7 +818,13 @@ function openRankGuide(){
   const badge=rankBadge(tier.min);badge.title=tier.name;
   badge.lastChild.textContent=tier.name;
   const range=document.createElement('span');range.className='rank-guide-range';
-  range.textContent='Lv.'+tier.min+'~'+(Number.isFinite(tier.max)?tier.max:'∞');
+  const levels=document.createElement('span');levels.className='rank-guide-levels';
+  levels.textContent='Lv.'+tier.min+'~'+(Number.isFinite(tier.max)?tier.max.toLocaleString('ko-KR'):'∞');
+  const points=document.createElement('span');points.className='rank-guide-points';
+  const startPoints=pointsForLevel(tier.min);
+  const endPoints=Number.isFinite(tier.max)?pointsForLevel(tier.max+1)-1:null;
+  points.textContent=startPoints.toLocaleString('ko-KR')+'P'+(endPoints===null?' 이상':' ~ '+endPoints.toLocaleString('ko-KR')+'P');
+  range.append(levels,points);
   line.append(badge,range);node.append(line);
  }
  // Operator is a separate, non-levelled role above every earned rank.
@@ -823,7 +832,7 @@ function openRankGuide(){
  operatorLine.className='rank-guide-row'+(current?.isOperator?' current':'');
  const operatorBadge=rankBadge(1,'운영자');
  const operatorRange=document.createElement('span');operatorRange.className='rank-guide-range';
- operatorRange.textContent='운영자 전용';
+ operatorRange.textContent='운영자 전용 · 포인트 무관';
  operatorLine.append(operatorBadge,operatorRange);node.append(operatorLine);
  const summary=$('rank-guide-summary');
  summary.textContent=current?.isOperator?'현재 운영자 · 레벨과 무관한 전용 최상위 등급':current?`현재 ${current.name} · Lv.${level} · ${Number(memberProfile.points||0).toLocaleString('ko-KR')}P / 10,000P에 Lv.50 달성`:'10,000P 도달 시 Lv.50 · Lv.100 불멸 · Lv.500 천상 · Lv.1000 신 · Lv.5000 초월';
@@ -859,7 +868,7 @@ function paintMemberPanel(){
     hint.textContent=tier.isOperator?'운영자 전용 최상위 등급':'최고 일반 등급 · 누적 포인트 '+pts.toLocaleString('ko-KR')+'P';
    }
    panel.append(line,meter,hint);
-   if(memberGomokuStreak!==null){const streak=document.createElement('div');streak.className='member-arcade-streak';streak.textContent='오목 '+memberGomokuStreak+'연승 (5승 15% · 10승 20%)';panel.append(streak);}
+   if(memberGomokuStreak!==null){const streak=document.createElement('div');streak.className='member-arcade-streak';streak.textContent='오목 '+memberGomokuStreak+'연승';panel.append(streak);}
    if(memberArcadeStreaks.tetris!==null||memberArcadeStreaks.mine_battle!==null){const streak=document.createElement('div');streak.className='member-arcade-streak';streak.textContent='테트리스 '+(memberArcadeStreaks.tetris??'—')+'연승 · 지뢰찾기 '+(memberArcadeStreaks.mine_battle??'—')+'연승 (5승 15% · 10승 20%)';panel.append(streak);}
   }
  }
@@ -1660,7 +1669,7 @@ async function syncGomokuRewards(force=false){
 function paintGomokuRewards(){
  const el=$('gomoku-reward-status');if(!el)return;
  el.classList.remove('is-result','is-loss');
- if(!memberToken){el.textContent='오목: 대국 시작 +10P · 승리 10%, 5연승 15%, 10연승 20% · 상대가 더 적으면 내 포인트 5% (회원 로그인 필요)';return;}
+ if(!memberToken){el.textContent='오목: 대국 시작 +10P · 상대 점수가 더 적다면 내 포인트의 9% / 5연승 14% / 10연승 19% (회원 로그인 필요)';return;}
  const streak=memberGomokuStreak??0,rr=gomokuRewardRoom===activeRoom?gomokuRewardData:null;
  const money=n=>Math.max(0,Number(n)||0).toLocaleString('ko-KR');
  if(rr?.finished){
@@ -1669,8 +1678,8 @@ function paintGomokuRewards(){
   else if(rr.my_result==='loss'){el.classList.add('is-loss');el.textContent='대국 종료 · -'+money(rr.loser_points)+'P · 연승 초기화 · 시작 보너스 +'+money(rr.start_points)+'P';}
   else el.textContent='무승부 · 연승 초기화 · 시작 보너스 +'+money(rr.start_points)+'P';
  } else if(rr){
-  el.textContent='대국 참가 +'+money(rr.start_points)+'P 지급 · 현재 '+money(streak)+'연승 · 승리 시 '+(streak>=9?'20%':streak>=4?'15%':'10%')+' 획득 · 단 상대 포인트가 내 포인트보다 적으면 내 포인트 5% (패자는 10% 차감)';
- }else el.textContent='현재 '+money(streak)+'연승 · 대국 시작 +10P · 승리 시 '+(streak>=9?'20%':streak>=4?'15%':'10%')+' / 상대가 더 적으면 내 포인트 5% · 패자는 10% 차감';
+  el.textContent='대국 참가 +'+money(rr.start_points)+'P 지급 · 현재 '+money(streak)+'연승 · 승리 시 '+(streak>=9?'20%':streak>=4?'15%':'10%')+' 획득 · 상대 포인트가 더 낮으면 내 포인트 '+(streak>=9?'19%':streak>=4?'14%':'9%')+' 획득 (패자는 10% 차감)';
+ }else el.textContent='현재 '+money(streak)+'연승 · 대국 시작 +10P · 승리 시 '+(streak>=9?'20%':streak>=4?'15%':'10%')+' / 상대가 더 적으면 내 포인트 '+(streak>=9?'19%':streak>=4?'14%':'9%')+' · 패자는 10% 차감';
 }
 // v2.6: server-only Tetris/Mines payout and independent persistent streak status.
 async function syncArcadeRewards(force=false){
