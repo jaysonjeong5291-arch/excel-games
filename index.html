@@ -402,6 +402,17 @@
 .holdem-chat-form button:disabled{opacity:.45;cursor:default}
 .holdem-chat-feedback{font-size:11px;color:#a43c3c;padding:3px 12px 9px}
 @media(max-width:650px){.holdem-showdown-row{gap:7px;padding:8px}.holdem-showdown-cards .holdem-card{width:36px;min-width:36px;height:47px}.holdem-chat-messages{height:160px}.holdem-chat-message .nick{max-width:66px}.holdem-chat-message .clock{font-size:9px}}
+
+/* v2.5 Gomoku reward/streak status and Sheet1 server-announced match results */
+.gomoku-reward-status{margin:0 0 9px;padding:10px 13px;border:1px solid #c8d9cc;background:#f5faf6;color:#2b6342;font-size:12px;line-height:1.55;font-weight:600}
+.gomoku-reward-status.is-result{border-color:#adcaaf;background:#edf7ed;color:#175e37}
+.gomoku-reward-status.is-loss{background:#fcf8f5;color:#865c32;border-color:#e6d6c7}
+.gomoku-reward-status .streak{font-weight:800}
+.member-gomoku-streak{font-size:10px;font-weight:700;color:#277449;letter-spacing:.1px;padding:2px 0 0}
+.sheet1-chat-grid tr.sheet1-gomoku-result td{background:#eff8f1;border-bottom:1px solid #d7e8dc}
+.sheet1-chat-grid tr.sheet1-gomoku-result .sheet1-chat-name{color:#965b16}
+.sheet1-chat-grid tr.sheet1-gomoku-result .sheet1-chat-text{color:#266141;font-weight:700}
+@media(max-width:700px){.gomoku-reward-status{padding:8px 9px;font-size:11px}}
 </style></head>
 <body>
 <div class="titlebar"><span class="app-icon" aria-hidden="true">▦</span><span class="doc-name">업무현황_2026.xlsx</span><span class="title-space"></span><span id="member-top-level" class="member-level-tag" hidden>Lv.1</span><span id="connection-label" class="connection">연결 중</span><button id="copy-link-btn" type="button" class="share-btn">주소 복사</button></div>
@@ -430,7 +441,7 @@
  <div class="match-gate-info"><strong id="match-gate-title">대기 중</strong><span id="match-gate-desc" role="status" aria-live="polite">방 정보를 확인하고 있습니다.</span></div>
  <div class="match-gate-controls"><button id="match-guest-ready" type="button" class="match-gate-button secondary" hidden>준비</button><button id="match-host-start" type="button" class="match-gate-button" hidden disabled>시작</button></div>
 </div>
-<main id="renju-game" class="main-shell"><section class="sheet-col"><div class="sheet-caption"><span id="game-status" class="caption-label">데이터 불러오는 중</span><span id="turn-label" class="turn">동기화 중</span><span id="gomoku-clock" class="turn gomoku-clock" aria-label="오목 남은 착수 시간">--:--</span></div><div class="sheet-card"><div class="board-frame"><canvas id="board" role="img" aria-label="15x15 오목 시트"></canvas><div class="board-overlay" id="board-overlay">시트 불러오는 중...</div></div></div><div class="below-board"><span id="move-count" class="move-counter">0개 셀 입력</span><div id="message" class="notice" role="status" aria-live="polite"></div><button id="rematch-btn" type="button" class="rematch" hidden>새로 시작</button></div></section><aside class="sidebar"><section class="side-panel"><div class="panel-heading"><span>작업자 현황</span><span id="my-role" class="small-count"></span></div><div class="table-heading"><span>구분</span><span>사용자</span><span>상태</span></div><div id="black-card" class="seat"><span class="stone"></span><div class="seat-info"><div id="black-name" class="seat-name">대기</div></div><div id="black-status" class="seat-meta">흑</div></div><div id="white-card" class="seat"><span class="stone white"></span><div class="seat-info"><div id="white-name" class="seat-name">대기</div></div><div id="white-status" class="seat-meta">백</div></div></section><section class="side-panel"><div class="panel-heading"><span>대기 목록</span><span id="queue-count" class="small-count">0명</span></div><div class="queue" id="queue-list"></div></section><section class="side-panel"><div class="panel-heading"><span>변경 내역</span><span id="history-total" class="small-count">0</span></div><div id="move-list" class="history"></div></section></aside></main>
+<main id="renju-game" class="main-shell"><section class="sheet-col"><div class="sheet-caption"><span id="game-status" class="caption-label">데이터 불러오는 중</span><span id="turn-label" class="turn">동기화 중</span><span id="gomoku-clock" class="turn gomoku-clock" aria-label="오목 남은 착수 시간">--:--</span></div><div class="sheet-card"><div class="board-frame"><canvas id="board" role="img" aria-label="15x15 오목 시트"></canvas><div class="board-overlay" id="board-overlay">시트 불러오는 중...</div></div></div><div class="below-board"><span id="move-count" class="move-counter">0개 셀 입력</span><div id="message" class="notice" role="status" aria-live="polite"></div><button id="rematch-btn" type="button" class="rematch" hidden>새로 시작</button></div><div id="gomoku-reward-status" class="gomoku-reward-status" role="status" aria-live="polite">오목 점수: 대국 시작 +10P · 승리 1% / 5연승 2% / 10연승 5%</div></section><aside class="sidebar"><section class="side-panel"><div class="panel-heading"><span>작업자 현황</span><span id="my-role" class="small-count"></span></div><div class="table-heading"><span>구분</span><span>사용자</span><span>상태</span></div><div id="black-card" class="seat"><span class="stone"></span><div class="seat-info"><div id="black-name" class="seat-name">대기</div></div><div id="black-status" class="seat-meta">흑</div></div><div id="white-card" class="seat"><span class="stone white"></span><div class="seat-info"><div id="white-name" class="seat-name">대기</div></div><div id="white-status" class="seat-meta">백</div></div></section><section class="side-panel"><div class="panel-heading"><span>대기 목록</span><span id="queue-count" class="small-count">0명</span></div><div class="queue" id="queue-list"></div></section><section class="side-panel"><div class="panel-heading"><span>변경 내역</span><span id="history-total" class="small-count">0</span></div><div id="move-list" class="history"></div></section></aside></main>
 <main id="tetris-game" class="tetris-shell" hidden>
  <div class="tetris-sheet"><div class="tetris-header"><strong id="tetris-round">ROUND 1</strong><strong id="tetris-phase">상대 대기</strong></div>
   <div class="tetris-match"><div><div class="tetris-col-head">내 작업 영역 <span id="tetris-me"></span></div><div class="tetris-grid-frame"><div class="tetris-grid-columns"><span class="corner-cell"></span><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span></div><div class="tetris-grid-body"><div class="tetris-grid-rows"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span></div><canvas width="300" height="600" id="tetris-board" class="tetris-main-board" aria-label="내 테트리스 보드"></canvas></div></div></div>
@@ -519,7 +530,7 @@
  </div>
 </section>
 <div id="chat" class="chat" hidden><button type="button" id="chat-title-button" class="chat-title" aria-expanded="true" aria-controls="chat-body" title="메모 접기/펼치기"><span>메모 <span id="chat-count"></span></span><span class="chat-toggle" id="chat-toggle-glyph">−</span></button><div class="chat-body" id="chat-body"><div id="chat-messages" class="chat-messages"><div class="chat-empty">내용 없음</div></div><div id="admin-chat-feedback" class="admin-chat-feedback" role="status" hidden></div><form class="chat-form" id="chat-form"><input id="chat-input" class="chat-input" placeholder="메시지 입력" maxlength="280" autocomplete="off" aria-label="채팅 메시지"><button type="submit" class="chat-send">보내기</button></form></div></div>
-<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="상위 레벨 및 운영자 등급 v2.0">100% · v2.4 홀덤</span></footer>
+<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="상위 레벨 및 운영자 등급 v2.0">100% · v2.5 오목</span></footer>
 <script>
 'use strict';
 const SIZE = 15;
@@ -725,9 +736,10 @@ const MEMBER_TOKEN_KEY='excel-games-member-session-v1';
 let memberToken='';
 try{memberToken=localStorage.getItem(MEMBER_TOKEN_KEY)||'';}catch(_){}
 let memberProfile=null,memberLevelsByNumber=new Map(),memberPanelMode='login';
+let memberGomokuStreak=null, gomokuRewardData=null, gomokuRewardPending=false, gomokuRewardSyncAt=0, gomokuRewardRoom=null;
 let memberAuthPending=false,memberRefreshBusy=false;
 function memberRpc(action,rest={}){return callRpc('renju_member_auth',{p_client:CLIENT_ID,p_action:action,...rest});}
-function saveMemberToken(token){memberToken=token||'';try{if(memberToken)localStorage.setItem(MEMBER_TOKEN_KEY,memberToken);else localStorage.removeItem(MEMBER_TOKEN_KEY);}catch(_){}}
+function saveMemberToken(token){memberToken=token||'';if(!memberToken){memberGomokuStreak=null;gomokuRewardData=null;gomokuRewardSyncAt=0;}try{if(memberToken)localStorage.setItem(MEMBER_TOKEN_KEY,memberToken);else localStorage.removeItem(MEMBER_TOKEN_KEY);}catch(_){}}
 // Rank progression is a display calculation; account points and game rewards are untouched.
 // Lv.1 at 0P, Lv.50 exactly at 10,000P. Higher levels continue at the same slope.
 function pointsForLevel(lvl){return Math.ceil(Math.max(0,Number(lvl)-1)*10000/49);}
@@ -858,6 +870,7 @@ function paintMemberPanel(){
     hint.textContent=tier.isOperator?'운영자 전용 최상위 등급':'최고 일반 등급 · 누적 포인트 '+pts.toLocaleString('ko-KR')+'P';
    }
    panel.append(line,meter,hint);
+   if(memberGomokuStreak!==null){const streak=document.createElement('div');streak.className='member-gomoku-streak';streak.textContent='오목 연승 · '+memberGomokuStreak+'승 (5연승 2% · 10연승 5%)';panel.append(streak);}
   }
  }
  if(top){top.hidden=!signed;top.replaceChildren();if(signed){const rank=rankInfo(memberProfile.level,memberProfile.nickname);top.className='member-level-tag '+rank.css;top.textContent=rank.isOperator?rank.mark+' 운영자':rank.mark+' '+rank.name+' · Lv.'+rank.level;}else top.className='member-level-tag';}
@@ -873,6 +886,7 @@ function useMemberProfile(profile){
   try{localStorage.setItem(NICKNAME_STORAGE,myNickname);}catch(_){}
  }
  updateNicknameInput();paintMemberPanel();refreshNicknameAccess();
+ syncGomokuRewards(true);
  renderLobby();if(activeRoom){if(isTetrisRoom())tDisplayStatus();else if(isMineRoom())renderMineRoom();else if(state)paintState();}
 }
 async function loadMemberSession(){
@@ -1157,6 +1171,7 @@ async function clickMatchHostStart(){
    if(isMineRoom()){applyMineData(id,await mineRpc(id));}
    else if(isTetrisRoom()){applyTetrisData(id,await tetrisRpc(id));}
    else applyRoom(id,await roomRpc(id));
+   if(!isTetrisRoom()&&!isMineRoom()&&!isHoldemRoom())syncGomokuRewards(true);
   }
  }catch(e){notify('시작 실패: '+e.message,true);alert('게임 시작에 실패했습니다. '+e.message);}
  finally{matchGateActionPending=false;if(id===activeRoom)renderMatchGate();}
@@ -1172,7 +1187,7 @@ function applyRoom(id,data){if(!data?.state||!Array.isArray(data.state.board)||d
   if(Number.isFinite(serverMs))gomokuClockOffsetMs=serverMs-Date.now();
  }
  roomCache.set(id,{state:data.state,revision:data.revision,seat:data.seat,player_no:data.player_no,connected:true});
- if(activeRoom===id){const previousGame=state?.gameNumber;activateCache();if(previousGame && previousGame<state.gameNumber)notify('새 작업 시작',false,true);}
+ if(activeRoom===id){const previousGame=state?.gameNumber,previousWinner=state?.winner;activateCache();if(previousGame && previousGame<state.gameNumber)notify('새 작업 시작',false,true);if(previousGame!==state?.gameNumber||previousWinner!==state?.winner)syncGomokuRewards(true);}
 }
 function activateCache(){const data=roomData(activeRoom);state=data?.state||null;mySeat=data?.seat||'waiting';myNumber=data?.player_no||null;revision=data?.revision??-1;connected=!!data?.connected;
  if(state){$('board-overlay').hidden=true;paintState();renderMatchGate();paintGomokuClock();}else{$('board-overlay').hidden=false;draw();}
@@ -1322,7 +1337,7 @@ function changeUrl(id){const url=new URL(location.href);if(id)url.searchParams.s
 function switchView(id){if(id && !requireNickname())return;activeRoom=id;const poker=Boolean(id&&id.startsWith('h-'));$('lobby-view').hidden=!!id;$('room-view').hidden=!id||poker;$('holdem-view').hidden=!poker;$('chat').hidden=!id||poker;chatLastSeen='';hover=null;
  $('chat-title-button').firstElementChild.firstChild.textContent='메모 ';
  showOperatorMessage('');if(!id){sheet1LastPaint='';paintSheet1Chat();setTimeout(()=>syncSheet1Chat(true),0);}
- if(id&&!poker){const item=roomList.find(r=>r.id===id);$('room-name').textContent=(item?.sheet||'Sheet')+'  '+(item?.game==='mine_battle'?'지뢰탐색게임':(item?.title||''));$('room-info').textContent='  '+id;activateCache();setTimeout(resizeCanvas,30);}else{$('cell-address').textContent='A1';$('formula-value').textContent='=COUNTIF(방현황,"접속중")';}
+ if(id&&!poker){gomokuRewardRoom=null;gomokuRewardData=null;gomokuRewardSyncAt=0;setTimeout(()=>syncGomokuRewards(true),350);const item=roomList.find(r=>r.id===id);$('room-name').textContent=(item?.sheet||'Sheet')+'  '+(item?.game==='mine_battle'?'지뢰탐색게임':(item?.title||''));$('room-info').textContent='  '+id;activateCache();setTimeout(resizeCanvas,30);}else{$('cell-address').textContent='A1';$('formula-value').textContent='=COUNTIF(방현황,"접속중")';}
  updateSheetTabs();changeUrl(id);if(poker){renderHoldem();holdemChatState(id).signature=null;holdemChatFeedback('');holdemChatRender(id);holdemChatSync(id,true);}else{renderTetrisRoom();renderMineRoom();renderMatchGate();}}
 function isKickedError(error){return /강퇴되었습니다/.test(String(error?.message||error||''));}
 const kickedRooms=new Set();
@@ -1511,7 +1526,7 @@ function paintSheet1Chat(){
   const td=document.createElement('td');td.colSpan=10;td.className='sheet1-chat-empty';td.textContent='아직 대화가 없습니다. 아래 입력 행에서 메시지를 보내보세요.';
   tr.append(th,td);rows.push(tr);
  }else for(const m of messages.slice(-15)){
-  const tr=document.createElement('tr');if(m.nickname===myNickname)tr.className='sheet1-chat-own';
+  const tr=document.createElement('tr');if(m.nickname===myNickname)tr.className='sheet1-chat-own';if(m.nickname==='🏆 오목 결과')tr.classList.add('sheet1-gomoku-result');
   const th=document.createElement('th');th.className='row-no';th.dataset.chatRowNo='';
   const time=document.createElement('td');time.className='sheet1-chat-id';time.textContent=String(m.id||'');
   const name=document.createElement('td');name.className='sheet1-chat-name';nameWithRankByServer(name,m.nickname||'Player');
@@ -1617,6 +1632,39 @@ function paintChat(){const messages=Array.isArray(state?.chat)?state.chat:[];con
  if(!messages.length){const div=document.createElement('div');div.className='chat-empty';div.textContent='내용 없음';panel.append(div);}
  else for(const m of messages){const item=document.createElement('div');item.className='chat-item'+(m.number===myNumber?' mine':'');const sender=document.createElement('div');sender.className='sender';nameWithRank(sender,m.number);const bubble=document.createElement('div');bubble.className='bubble';bubble.textContent=m.text;item.append(sender,bubble);panel.append(item);}
  if(nearBottom)panel.scrollTop=panel.scrollHeight;}
+// Read-only streak/settlement query. SQL RPC is the authority: no local point transfers.
+async function syncGomokuRewards(force=false){
+ if(!memberToken||document.hidden||gomokuRewardPending)return;
+ const now=Date.now();if(!force&&now-gomokuRewardSyncAt<6500)return;
+ gomokuRewardPending=true;gomokuRewardSyncAt=now;
+ const room=activeRoom&&!activeRoom.startsWith('h-')&&currentGameType()==='gomoku'?activeRoom:null;
+ try{
+  const result=await callRpc('renju_gomoku_status',{p_client:CLIENT_ID,p_token:memberToken,p_room:room});
+  if(!result?.ok)return;
+  const st=Math.max(0,Number(result.streak)||0),changed=memberGomokuStreak!==st;
+  memberGomokuStreak=st;
+  if(room===activeRoom){gomokuRewardData=result.room||null;gomokuRewardRoom=room;paintGomokuRewards();}
+  if(changed)paintMemberPanel();
+ }catch(_){/* v2.5 SQL may not have been installed yet; continue game normally */}
+ finally{gomokuRewardPending=false;}
+}
+function paintGomokuRewards(){
+ const el=$('gomoku-reward-status');if(!el)return;
+ el.classList.remove('is-result','is-loss');
+ if(!memberToken){el.textContent='오목: 대국 시작 +10P · 승리 1%, 5연승 2%, 10연승 5% (포인트는 회원 로그인 필요)';return;}
+ const streak=memberGomokuStreak??0,rr=gomokuRewardRoom===activeRoom?gomokuRewardData:null;
+ const money=n=>Math.max(0,Number(n)||0).toLocaleString('ko-KR');
+ if(rr?.finished){
+  el.classList.add('is-result');
+  if(rr.my_result==='win')el.textContent='🏆 승리 · +'+money(rr.winner_points)+'P (상대 -'+money(rr.loser_points)+'P) · '+money(rr.winning_streak)+'연승'+(rr.bonus_points?' · 연승 추가 보너스 +'+money(rr.bonus_points)+'P':'')+' · 시작 보너스 +'+money(rr.start_points)+'P';
+  else if(rr.my_result==='loss'){el.classList.add('is-loss');el.textContent='대국 종료 · -'+money(rr.loser_points)+'P · 연승 초기화 · 시작 보너스 +'+money(rr.start_points)+'P';}
+  else el.textContent='무승부 · 연승 초기화 · 시작 보너스 +'+money(rr.start_points)+'P';
+ } else if(rr){
+  el.textContent='대국 참가 +'+money(rr.start_points)+'P 지급 · 현재 '+money(streak)+'연승 · 승리 시 '+(streak>=9?'5%':streak>=4?'2%':'1%')+' 획득 (상대는 항상 1% 차감)';
+ }else el.textContent='현재 '+money(streak)+'연승 · 대국 시작 +10P · 승리 시 '+(streak>=9?'5%':streak>=4?'2%':'1%')+' / 상대는 1% 차감';
+}
+setInterval(()=>syncGomokuRewards(),6500);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncGomokuRewards(true);});
 function paintState(){const s=state;if(!s)return;
  const black=s.players?.black,white=s.players?.white;const ready=Boolean(black?.online&&white?.online),finished=s.winner!==null;
  if(black?.number)nameWithRank($('black-name'),black.number,black.name);else $('black-name').textContent=nicknameForPlayer(black);if(white?.number)nameWithRank($('white-name'),white.number,white.name);else $('white-name').textContent=nicknameForPlayer(white);
@@ -1632,7 +1680,7 @@ function paintState(){const s=state;if(!s)return;
  $('rematch-btn').hidden=!finished||!['host','guest'].includes(mySeat);
  if(!$('rematch-btn').hidden)$('rematch-btn').textContent=s.ready?.[mySeat]?'취소':'새로 시작';
  $('history-total').textContent=String(s.moves?.length||0);const hist=$('move-list');hist.replaceChildren();for(const m of (s.moves||[]).slice(-14).reverse()){const span=document.createElement('span');span.className=m.color===1?'black':'white';span.textContent=m.n+'. '+LETTERS[m.x]+(15-m.y);hist.append(span);}
- paintChat();updateFormula(hover);draw();}
+ paintChat();updateFormula(hover);draw();paintGomokuRewards();}
 // Do not explicitly leave on pagehide: the same session can recover after refresh.
 // Offline detection and empty-room cleanup use server-side presence deadlines.
 window.addEventListener('pagehide',()=>{stopped=true;clearTimeout(pollTimer);});
