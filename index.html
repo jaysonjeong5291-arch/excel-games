@@ -191,7 +191,9 @@
 .match-gate-button{background:#107c41;color:#fff;border:1px solid #107c41;padding:9px 18px;border-radius:3px;font-size:12px;font-weight:700;min-width:96px}
 .match-gate-button.secondary{background:#fff;color:#107c41;border-color:#a7c8b1}
 .match-gate-button:disabled{opacity:.45}
-.gomoku-clock{font-variant-numeric:tabular-nums;min-width:53px;justify-content:center;background:#f3f7f3;border-color:#c8d8ce;font-weight:700}.gomoku-clock.warning{background:#fff0e9;color:#a63b19;border-color:#f0c2b3}.gomoku-clock.expired{background:#fce8e8;color:#a82020;border-color:#eab8b8}
+.gomoku-clock{font-variant-numeric:tabular-nums;min-width:53px;justify-content:center;background:#f3f7f3;border-color:#c8d8ce;font-weight:700}.gomoku-clock.warning{background:#fff0f0;color:#aa3333;border-color:#e3aaaa;box-shadow:inset 0 0 0 1px #f2cccc}
+/* Small current-player stone indicator; works on touch screens without hover. */
+.seat.urgent-stone .stone,.seat.urgent-stone .stone.white{background:#c96e73;border:1px solid #ab464d;box-shadow:0 0 0 2px #fbe7e8}.gomoku-clock.expired{background:#fce8e8;color:#a82020;border-color:#eab8b8}
 .sheet-caption{gap:8px}.sheet-caption #game-status{flex:1;min-width:0}
 .match-gate.running{background:#fbfdfb;padding:6px 17px}
 .match-gate.running .match-gate-info strong{font-size:11px}
@@ -659,7 +661,7 @@ let matchGateByRoom=new Map(),matchGateActionPending=false,matchGateRestarting=n
 // Only poll quickly while waiting for Ready/Start or after a completed round.
 let matchGateQuickBusy=false;
 // Display-only countdown. The SQL RPC checks the authoritative server deadline.
-let gomokuClockOffsetMs=0,gomokuDeadlineRefreshBusy=false,gomokuDeadlineNextCheck=0;
+let gomokuClockOffsetMs=0,gomokuDeadlineRefreshBusy=false,gomokuDeadlineNextCheck=0,gomokuUrgentPreview=false;
 function remainingGomokuMs(){
  if(!state?.turnDeadline)return null;
  const expiry=Date.parse(state.turnDeadline);
@@ -671,7 +673,18 @@ function paintGomokuClock(){
  el.hidden=!activeRoom || isMineRoom() || isTetrisRoom();
  if(el.hidden)return;
  const ms=hasMatchStarted() && state?.winner==null?remainingGomokuMs():null;
- el.classList.toggle('warning',ms!==null&&ms>0&&ms<=10000);
+ const urgent=ms!==null && ms>0 && ms<=10000;
+ // Only the player whose turn it is sees a red placement preview.
+ // Observers/opponents still see the countdown without a red stone.
+ const myUrgent=urgent && connected && (mySeat==='host'||mySeat==='guest') && state?.turn===myColor();
+ if(gomokuUrgentPreview!==myUrgent){
+   gomokuUrgentPreview=myUrgent;
+   draw(); // redraw a stationary cursor as the clock crosses the 10-second boundary
+ }
+ const mineCard=myColor()===1?'black-card':'white-card';
+ $('black-card').classList.toggle('urgent-stone',myUrgent&&mineCard==='black-card');
+ $('white-card').classList.toggle('urgent-stone',myUrgent&&mineCard==='white-card');
+ el.classList.toggle('warning',urgent);
  el.classList.toggle('expired',ms!==null&&ms<=0);
  if(ms===null){el.textContent='--:--';return;}
  const seconds=Math.max(0,Math.ceil(ms/1000));
@@ -1307,6 +1320,19 @@ function drawStone(x,y,color){
   ctx.strokeRect(left+pad+.5,top+pad+.5,t-pad*2-1,t-pad*2-1);
   ctx.restore();
 }
+function drawUrgentStone(x,y){
+  // A muted red cell marker; never alter stones that are already placed.
+  const {header:h,step:t}=geometry;
+  const pad=Math.max(3,Math.min(7,t*.18));
+  const left=h+x*t,top=h+y*t;
+  ctx.save();
+  ctx.fillStyle='#c96e73';
+  ctx.strokeStyle='#ab464d';
+  ctx.lineWidth=Math.max(1,t*.035);
+  ctx.fillRect(left+pad,top+pad,t-2*pad,t-2*pad);
+  ctx.strokeRect(left+pad+.5,top+pad+.5,t-2*pad-1,t-2*pad-1);
+  ctx.restore();
+}
 function draw(){
   if(!geometry.size)return;
   const {size:s,header:h,step:t}=geometry;
@@ -1317,7 +1343,7 @@ function draw(){
   const last=state?.moves?.at(-1);
   if(last){ctx.fillStyle='#eef8f1';ctx.fillRect(h+last.x*t,h+last.y*t,t,t);}
   if(hover&&inside(hover.x,hover.y)){
-    ctx.fillStyle='#f1f8f3';ctx.fillRect(h+hover.x*t,h+hover.y*t,t,t);
+    ctx.fillStyle=gomokuUrgentPreview&&canPlayAt(hover.x,hover.y)?'#fff0f0':'#f1f8f3';ctx.fillRect(h+hover.x*t,h+hover.y*t,t,t);
   }
   ctx.strokeStyle='#e3e8e4';ctx.lineWidth=1;
   ctx.beginPath();
@@ -1341,15 +1367,17 @@ function draw(){
     ctx.strokeRect(h+last.x*t+1.5,h+last.y*t+1.5,t-3,t-3);
   }
   if(hover&&inside(hover.x,hover.y)){
-    ctx.strokeStyle='#19a15c';ctx.lineWidth=1.5;
+    ctx.strokeStyle=gomokuUrgentPreview&&canPlayAt(hover.x,hover.y)?'#c76870':'#19a15c';ctx.lineWidth=gomokuUrgentPreview?2:1.5;
     ctx.strokeRect(h+hover.x*t+1,h+hover.y*t+1,t-2,t-2);
   }
   for(let y=0;y<15;y++)for(let x=0;x<15;x++)if(b[y*15+x])drawStone(x,y,b[y*15+x]);
   if(hover&&canPlayAt(hover.x,hover.y)){
-    ctx.save();ctx.globalAlpha=.40;drawStone(hover.x,hover.y,state.turn);ctx.restore();
+    if(gomokuUrgentPreview)drawUrgentStone(hover.x,hover.y);
+    else {ctx.save();ctx.globalAlpha=.40;drawStone(hover.x,hover.y,state.turn);ctx.restore();}
   }
   if(pendingMovePoint?.room===activeRoom && !b[index(pendingMovePoint.x,pendingMovePoint.y)]){
-    ctx.save();ctx.globalAlpha=.53;drawStone(pendingMovePoint.x,pendingMovePoint.y,pendingMovePoint.color);ctx.restore();
+    if(pendingMovePoint.urgent)drawUrgentStone(pendingMovePoint.x,pendingMovePoint.y);
+    else {ctx.save();ctx.globalAlpha=.53;drawStone(pendingMovePoint.x,pendingMovePoint.y,pendingMovePoint.color);ctx.restore();}
   }
 }
 function locate(e){
@@ -1403,7 +1431,7 @@ async function placeGomokuStone(p){
   const checked=evaluateMove(state.board,p.x,p.y,state.turn);
   if(checked.result==='forbidden'||checked.result==='invalid'){notify(checked.reason,true);return;}
   turnColor=state.turn;
-  pendingMovePoint={...p,room:id,color:turnColor};
+  pendingMovePoint={...p,room:id,color:turnColor,urgent:gomokuUrgentPreview};
   hover=null;notify('돌 입력 중...');draw();
   try{
    const data=await roomRpc(id,'move',{p_x:p.x,p_y:p.y});
