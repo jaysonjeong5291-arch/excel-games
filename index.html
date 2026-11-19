@@ -297,7 +297,7 @@
   <div class="chooser-grid"><button type="button" class="game-choice" data-choice="gomoku"><span class="choice-symbol">▣ ▤</span><span>오목</span></button><button type="button" class="game-choice" data-choice="tetris"><span class="choice-symbol">▦</span><span>테트리스</span></button><button type="button" class="game-choice mine-choice" data-choice="mine_battle"><span class="choice-symbol">▥</span><span>지뢰탐색게임</span></button></div><p class="chooser-note">선택하면 새 시트가 생성됩니다.</p>
  </div>
 </div>
-<div id="chat" class="chat" hidden><button type="button" id="chat-title-button" class="chat-title" aria-expanded="true" aria-controls="chat-body" title="메모 접기/펼치기"><span>메모 <span id="chat-count"></span></span><span class="chat-toggle" id="chat-toggle-glyph">−</span></button><div class="chat-body" id="chat-body"><div id="chat-messages" class="chat-messages"><div class="chat-empty">내용 없음</div></div><div id="admin-chat-feedback" class="admin-chat-feedback" role="status" hidden></div><form class="chat-form" id="chat-form"><input id="chat-input" class="chat-input" placeholder="내용 입력" maxlength="280" autocomplete="off" aria-label="채팅 메시지"><button type="submit" class="chat-send">보내기</button></form></div></div>
+<div id="chat" class="chat"><button type="button" id="chat-title-button" class="chat-title" aria-expanded="true" aria-controls="chat-body" title="메모 접기/펼치기"><span>Sheet1 메모 <span id="chat-count"></span></span><span class="chat-toggle" id="chat-toggle-glyph">−</span></button><div class="chat-body" id="chat-body"><div id="chat-messages" class="chat-messages"><div class="chat-empty">내용 없음</div></div><div id="admin-chat-feedback" class="admin-chat-feedback" role="status" hidden></div><form class="chat-form" id="chat-form"><input id="chat-input" class="chat-input" placeholder="메모 / 운영자: /포인트 닉네임 100" maxlength="280" autocomplete="off" aria-label="채팅 메시지"><button type="submit" class="chat-send">보내기</button></form></div></div>
 <footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right">100%</span></footer>
 <script>
 'use strict';
@@ -685,7 +685,7 @@ function applyNicknameData(data){
  const changed=JSON.stringify([...next])!==JSON.stringify([...nicknameByNumber]);
  nicknameByNumber=next;
  if(data.player_no)myLobbyNumber=Number(data.player_no);
- if(changed){nicknameRevision++;chatLastSeen='';renderLobby();if(activeRoom){if(isTetrisRoom())tDisplayStatus();else if(isMineRoom())renderMineRoom();else if(state)paintState();}}
+ if(changed){nicknameRevision++;chatLastSeen='';sheet1LastPaint='';renderLobby();if(activeRoom){if(isTetrisRoom())tDisplayStatus();else if(isMineRoom())renderMineRoom();else if(state)paintState();}}
  updateNicknameInput();refreshNicknameAccess();
 }
 function updateNicknameInput(){const input=$('nickname-input');if(document.activeElement!==input)input.value=myNickname;
@@ -949,7 +949,9 @@ function updateSheetTabs(){const nav=$('sheet-nav');nav.querySelectorAll('[data-
   const close=document.createElement('span');close.className='tab-close';close.textContent='×';close.title='시트 닫기';close.dataset.closeRoom=id;tab.append(close);nav.insertBefore(tab,$('add-sheet-btn'));}
  const lobby=nav.querySelector('[data-sheet="lobby"]');lobby.classList.toggle('active',activeRoom===null);}
 function changeUrl(id){const url=new URL(location.href);if(id)url.searchParams.set('room',id);else url.searchParams.delete('room');try{history.replaceState(null,'',url.pathname+url.search+url.hash);}catch(_){}}
-function switchView(id){if(id && !requireNickname())return;activeRoom=id;$('lobby-view').hidden=!!id;$('room-view').hidden=!id;$('chat').hidden=!id;chatLastSeen='';hover=null;
+function switchView(id){if(id && !requireNickname())return;activeRoom=id;$('lobby-view').hidden=!!id;$('room-view').hidden=!id;$('chat').hidden=false;chatLastSeen='';hover=null;
+ $('chat-title-button').firstElementChild.firstChild.textContent=id?'메모 ':'Sheet1 메모 ';
+ showOperatorMessage('');if(!id){sheet1LastPaint='';paintSheet1Chat();setTimeout(()=>syncSheet1Chat(true),0);}
  if(id){const item=roomList.find(r=>r.id===id);$('room-name').textContent=(item?.sheet||'Sheet')+'  '+(item?.game==='mine_battle'?'지뢰탐색게임':(item?.title||''));$('room-info').textContent='  '+id;activateCache();setTimeout(resizeCanvas,30);}else{$('cell-address').textContent='A1';$('formula-value').textContent='=COUNTIF(방현황,"접속중")';}
  updateSheetTabs();changeUrl(id);renderTetrisRoom();renderMineRoom();renderMatchGate();}
 function isKickedError(error){return /강퇴되었습니다/.test(String(error?.message||error||''));}
@@ -1095,36 +1097,95 @@ $('admin-notice-close').addEventListener('click',()=>{
 setInterval(pollAnnouncement,3200);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollAnnouncement();});
 setTimeout(pollAnnouncement,800);
+// Shared Sheet1 notes: separate feed from each room's existing memo.
+let sheet1Messages=[],sheet1LastPaint='',sheet1ChatPending=false,sheet1LastSync=0;
+async function syncSheet1Chat(force=false){
+ if(activeRoom!==null||document.hidden||sheet1ChatPending)return;
+ if(!force&&Date.now()-sheet1LastSync<2200)return;
+ sheet1ChatPending=true;
+ try{
+  const data=await callRpc('renju_sheet1_chat',{p_client:CLIENT_ID,p_action:'list'});
+  sheet1Messages=Array.isArray(data.messages)?data.messages:[];
+  sheet1LastSync=Date.now();paintSheet1Chat();
+ }catch(e){
+  if(!sheet1LastPaint)showOperatorMessage('Sheet1 메모 연결 확인: '+e.message,true);
+ }finally{sheet1ChatPending=false;}
+}
+function paintSheet1Chat(){
+ if(activeRoom!==null)return;
+ const messages=sheet1Messages;
+ const key=nicknameRevision+':'+messages.map(m=>m.id+':'+m.nickname).join(',');
+ if(key===sheet1LastPaint)return;
+ sheet1LastPaint=key;
+ const panel=$('chat-messages');const nearBottom=panel.scrollHeight-panel.scrollTop-panel.clientHeight<65;
+ panel.replaceChildren();
+ if(!messages.length){const empty=document.createElement('div');empty.className='chat-empty';empty.textContent='Sheet1 공용 메모입니다.';panel.append(empty);}
+ for(const m of messages){
+  const item=document.createElement('div');item.className='chat-item'+(m.nickname===myNickname?' mine':'');
+  const sender=document.createElement('div');sender.className='sender';sender.textContent=m.nickname||'Player';
+  const bubble=document.createElement('div');bubble.className='bubble';bubble.textContent=m.text||'';
+  item.append(sender,bubble);panel.append(item);
+ }
+ if(nearBottom)panel.scrollTop=panel.scrollHeight;
+}
+setInterval(()=>syncSheet1Chat(),2500);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncSheet1Chat(true);});
+window.addEventListener('focus',()=>syncSheet1Chat(true));
+setTimeout(()=>syncSheet1Chat(true),450);
+
 $('chat-form').addEventListener('submit',async e=>{
  e.preventDefault();const input=$('chat-input'),text=input.value.trim();
- if(!activeRoom||!connected||!text||chatPending)return;
- const slash=text.startsWith('/강퇴')||text.startsWith('/공지');
- if(slash){
-  if(myNickname!=='운영자'||!adminToken||!hasSavedNickname()){
-   showOperatorMessage('운영자 인증을 완료한 계정만 사용할 수 있는 명령입니다.',true);return;
+ if(!text||chatPending)return;
+ if(/^\/(강퇴|공지|포인트)(?:\s|$)/.test(text)){
+  if(myNickname!=='운영자'||!adminToken||!hasSavedNickname()||!memberProfile){
+   showOperatorMessage('회원 로그인으로 인증된 운영자만 명령을 사용할 수 있습니다.',true);return;
   }
-  const match=text.match(/^\/(강퇴|공지)\s+([\s\S]+)$/);
-  if(!match){showOperatorMessage('사용법: /강퇴 닉네임 또는 /공지 내용',true);return;}
-  const value=match[2].trim();
-  if(!value){showOperatorMessage('명령 뒤에 내용을 입력해 주세요.',true);return;}
+  let operation=null,params={},notice=false;
+  const pointMatch=text.match(/^\/포인트\s+(.+?)\s+(\d+)\s*$/);
+  const commandMatch=text.match(/^\/(강퇴|공지)\s+([\s\S]+)$/);
+  if(text.startsWith('/포인트')){
+   if(!pointMatch){showOperatorMessage('사용법: /포인트 닉네임 숫자',true);return;}
+   const target=pointMatch[1].trim(),amount=Number(pointMatch[2]);
+   if(!target||target.length>16||!Number.isSafeInteger(amount)||amount<1||amount>100000){
+    showOperatorMessage('지급 포인트는 1~100000 사이의 정수여야 합니다.',true);return;
+   }
+   operation='renju_admin_points';params={p_client:CLIENT_ID,p_token:adminToken,p_target_nickname:target,p_amount:amount};
+  }else if(commandMatch){
+   const cmd=commandMatch[1],value=commandMatch[2].trim();
+   if(!value){showOperatorMessage('명령 뒤에 내용을 입력해 주세요.',true);return;}
+   if(cmd==='강퇴'&&!activeRoom){showOperatorMessage('/강퇴는 강퇴할 사용자가 있는 게임방의 메모에서 사용해 주세요.',true);return;}
+   notice=cmd==='공지';
+   if(notice&&!activeRoom){
+    operation='renju_admin_lobby_notice';params={p_client:CLIENT_ID,p_token:adminToken,p_message:value};
+   }else{
+    operation='renju_admin_command';params={p_client:CLIENT_ID,p_token:adminToken,
+     p_action:cmd==='강퇴'?'kick':'notice',p_room:activeRoom,
+     p_target_nickname:cmd==='강퇴'?value:null,p_message:notice?value:null};
+   }
+  }else{showOperatorMessage('사용법: /포인트 닉네임 숫자, /공지 내용, /강퇴 닉네임',true);return;}
   chatPending=true;$('chat-form').querySelector('button').disabled=true;
   try{
-   const result=await callRpc('renju_admin_command',{
-    p_client:CLIENT_ID,p_token:adminToken,p_action:match[1]==='강퇴'?'kick':'notice',
-    p_room:activeRoom,p_target_nickname:match[1]==='강퇴'?value:null,
-    p_message:match[1]==='공지'?value:null
-   });
+   const result=await callRpc(operation,params);
    showOperatorMessage(result.message||'명령 처리 완료');input.value='';input.focus();
-   if(match[1]==='공지')await pollAnnouncement();
+   if(notice)await pollAnnouncement();
+   if(operation==='renju_admin_points')await refreshMemberStats();
   }catch(err){showOperatorMessage(err.message,true);}
   finally{chatPending=false;$('chat-form').querySelector('button').disabled=false;}
   return;
  }
+ if(!hasSavedNickname()){showOperatorMessage('메모를 작성하려면 닉네임을 저장하거나 로그인해 주세요.',true);return;}
  if(text.length>180){showOperatorMessage('일반 메모는 180자 이내로 작성해 주세요.',true);return;}
- chatPending=true;
- try{const ok=await gameAction('chat',{p_text:text});if(ok){input.value='';input.focus();}}
- finally{chatPending=false;}
+ chatPending=true;$('chat-form').querySelector('button').disabled=true;
+ try{
+  if(activeRoom){if(!connected){showOperatorMessage('현재 게임방 연결을 확인 중입니다.',true);return;}
+    const ok=await gameAction('chat',{p_text:text});if(ok){input.value='';input.focus();}}
+  else{const data=await callRpc('renju_sheet1_chat',{p_client:CLIENT_ID,p_action:'send',p_text:text});
+    sheet1Messages=Array.isArray(data.messages)?data.messages:[];sheet1LastPaint='';sheet1LastSync=Date.now();
+    paintSheet1Chat();input.value='';input.focus();showOperatorMessage('');}
+ }catch(err){showOperatorMessage(err.message,true);}
+ finally{chatPending=false;$('chat-form').querySelector('button').disabled=false;}
 });
+
 // Memo minimize / restore: state persists when switching sheets or reloading.
 const MEMO_COLLAPSED_KEY='excel-games-memo-collapsed-v2';
 let memoCollapsed=false;
