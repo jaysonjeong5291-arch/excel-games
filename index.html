@@ -307,25 +307,17 @@
 
 
 
-/* High-level progress (earned levels) and exclusive operator rank. */
-.rank-tier-11{--rank-bg:linear-gradient(110deg,#e1f0f3,#f2fbfd);--rank-ink:#235e72;--rank-line:#9ecbd4}
-.rank-tier-12{--rank-bg:linear-gradient(110deg,#ebebfa,#faf9ff);--rank-ink:#575d99;--rank-line:#b7b9dc}
-.rank-tier-13{--rank-bg:linear-gradient(110deg,#fee6e0,#fff8ed);--rank-ink:#a3513d;--rank-line:#dda99b}
-.rank-tier-14{--rank-bg:linear-gradient(110deg,#fff0c9,#faf3e4);--rank-ink:#916116;--rank-line:#d4af63}
-.rank-tier-15{--rank-bg:linear-gradient(115deg,#dff4ea,#eefcfa);--rank-ink:#197666;--rank-line:#8dcbba}
-.rank-tier-16{--rank-bg:linear-gradient(110deg,#e6e2fb,#f7f1ff);--rank-ink:#65469d;--rank-line:#b9a9e3}
-.rank-tier-17{--rank-bg:linear-gradient(110deg,#f3e2fb,#fff2fd);--rank-ink:#8b4299;--rank-line:#ceaad8}
-.rank-tier-18{--rank-bg:linear-gradient(110deg,#e5ebf6,#eff8ff,#faebff);--rank-ink:#385c92;--rank-line:#a2b7d5}
-.rank-tier-19{--rank-bg:linear-gradient(115deg,#e8f8fa,#e4edff,#f9f2ff);--rank-ink:#365990;--rank-line:#99bfe2}
-.rank-tier-20{--rank-bg:linear-gradient(110deg,#fce8e8,#fff2d8,#f2e7fc);--rank-ink:#994b58;--rank-line:#d5a3ad}
-.rank-tier-21{--rank-bg:linear-gradient(110deg,#f6ecd2,#fffaf0,#e1eaf3);--rank-ink:#86622a;--rank-line:#ccae76}
-.rank-tier-22{--rank-bg:linear-gradient(110deg,#e5e7fc,#faf0fc,#f5e8d8);--rank-ink:#554a94;--rank-line:#aa9dc9}
+/* High-level rank badges (purely visual, no account/points changes). */
+.rank-tier-11{--rank-bg:linear-gradient(112deg,#eef7ff,#e9eefa 55%,#f5f0ff);--rank-ink:#38588d;--rank-line:#aebfe8}
+.rank-tier-12{--rank-bg:linear-gradient(115deg,#f6eacb,#fff7df 55%,#f6e9df);--rank-ink:#8d561f;--rank-line:#d5ac5e}
+.rank-tier-13{--rank-bg:linear-gradient(105deg,#25223f,#494074 60%,#292b49);--rank-ink:#fff3c9;--rank-line:#d1b17c}
+.rank-tier-11 .rank-badge,.rank-tier-12 .rank-badge{box-shadow:inset 0 1px 0 #ffffffa0,0 1px 3px #243b2a18}
+.rank-tier-13 .rank-badge{border-width:1.5px;box-shadow:inset 0 1px 0 #ffffff40,0 1px 4px #17153355;letter-spacing:.035em}
+.member-level-tag.rank-tier-11,.member-level-tag.rank-tier-12,.member-level-tag.rank-tier-13{background:var(--rank-bg);color:var(--rank-ink);border-color:var(--rank-line)}
 .rank-tier-admin{--rank-bg:linear-gradient(105deg,#193d34,#34604c);--rank-ink:#fff4d5;--rank-line:#bdab74}
 .rank-tier-admin .rank-badge,.rank-badge.rank-tier-admin{font-weight:900;border-width:1.5px;box-shadow:0 1px 3px #17362b2b,inset 0 1px 0 #ffffff35;letter-spacing:.03em}
 .rank-tier-admin .rank-name{color:#126448}
 .member-level-tag.rank-tier-admin{color:#fff4d5;background:linear-gradient(105deg,#193d34,#34604c);border-color:#bdab74;font-weight:800}
-.rank-tier-11 .rank-badge,.rank-tier-14 .rank-badge,.rank-tier-16 .rank-badge,.rank-tier-18 .rank-badge,.rank-tier-19 .rank-badge,.rank-tier-20 .rank-badge,.rank-tier-21 .rank-badge,.rank-tier-22 .rank-badge{box-shadow:inset 0 1px 0 #ffffff90,0 1px 2px #243b2a18}
-.member-level-tag.rank-tier-11,.member-level-tag.rank-tier-14,.member-level-tag.rank-tier-16,.member-level-tag.rank-tier-18,.member-level-tag.rank-tier-19,.member-level-tag.rank-tier-20,.member-level-tag.rank-tier-21,.member-level-tag.rank-tier-22{background:var(--rank-bg);color:var(--rank-ink);border-color:var(--rank-line)}
 .rank-guide-row:last-child{margin-top:6px;padding-top:9px;border-top:2px solid #d3dccc}
 .rank-guide-row .rank-guide-range{white-space:nowrap}
 
@@ -424,7 +416,7 @@
 <div class="tabs"><span class="tab file-tab">파일</span><span class="tab active">홈</span><span class="tab">삽입</span><span class="tab">페이지 레이아웃</span><span class="tab">수식</span><span class="tab">데이터</span><span class="tab">검토</span><span class="tab">보기</span></div>
 <div class="ribbon" aria-hidden="true"><div class="ribbon-group"><div class="ribbon-content"><span class="tool-icon green">▤</span><div><div class="tool-small tool-strong">붙여넣기</div><div class="tool-small">복사 · 잘라내기</div></div></div><div class="ribbon-title">클립보드</div></div><div class="ribbon-group"><div class="ribbon-content"><span class="tool-mini wide">맑은 고딕&nbsp; ▾</span><span class="tool-mini">11</span><span class="tool-divider"></span><span class="tool-strong">B</span><em>I</em><u>U</u></div><div class="ribbon-title">글꼴</div></div><div class="ribbon-group"><div class="ribbon-content"><span class="tool-icon">☷</span><span class="tool-icon">☰</span><span class="tool-small">가운데 맞춤</span></div><div class="ribbon-title">맞춤</div></div><div class="ribbon-group"><div class="ribbon-content"><span class="tool-icon green">▦</span><span class="tool-small">표 서식<br>조건부 서식</span></div><div class="ribbon-title">스타일</div></div></div>
 <div class="formula-bar"><div class="name-box"><span id="cell-address">A1</span><span>⌄</span></div><span class="fx">ƒx</span><div class="formula-value" id="formula-value">=COUNTIF(방현황,"접속중")</div></div>
-<div id="rank-guide-overlay" class="rank-guide-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="rank-guide-title"><div class="rank-guide-panel"><div class="rank-guide-heading"><strong id="rank-guide-title">등급 및 레벨 안내</strong><button type="button" id="rank-guide-close" aria-label="등급 안내 닫기">닫기 ×</button></div><div class="rank-guide-summary" id="rank-guide-summary">Lv.100부터는 100레벨 단위, Lv.1000부터는 특별 등급으로 올라갑니다.</div><div id="rank-guide-list" class="rank-guide-list"></div></div></div>
+<div id="rank-guide-overlay" class="rank-guide-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="rank-guide-title"><div class="rank-guide-panel"><div class="rank-guide-heading"><strong id="rank-guide-title">등급 및 레벨 안내</strong><button type="button" id="rank-guide-close" aria-label="등급 안내 닫기">닫기 ×</button></div><div class="rank-guide-summary" id="rank-guide-summary">Lv.100 불멸 · Lv.500 천상 · Lv.1000 신 · Lv.5000 초월 · 운영자 전용 최상위</div><div id="rank-guide-list" class="rank-guide-list"></div></div></div>
 <div id="member-overlay" class="member-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="member-dialog-title"><form id="member-form" class="member-dialog" autocomplete="on"><h2 id="member-dialog-title">계정 로그인</h2><p class="member-desc">처음엔 익명 Player로 접속합니다. 가입하면 승리 기록과 레벨이 저장돼요.</p><div class="member-switch"><button type="button" id="member-login-tab" class="active">로그인</button><button type="button" id="member-register-tab">회원가입</button></div><label for="member-nickname">닉네임 (로그인 아이디)</label><input id="member-nickname" name="username" type="text" maxlength="16" minlength="1" autocomplete="username" required placeholder="1~16자 아이디"><label for="member-password">비밀번호</label><input id="member-password" name="password" type="password" minlength="4" maxlength="72" autocomplete="current-password" required placeholder="4자 이상 비밀번호 (형식 자유)"><div class="member-hint">이메일 없이 닉네임과 비밀번호로 가입합니다. 비밀번호 분실 시 자동 복구는 지원하지 않아요.</div><div id="member-feedback" class="member-feedback" role="alert"></div><div class="member-actions"><button type="button" id="member-cancel">닫기</button><button type="submit" id="member-submit">로그인</button></div></form></div>
 <div class="admin-notice" id="admin-notice" role="alert" hidden><strong class="admin-notice-label">공지</strong><span class="admin-notice-text" id="admin-notice-text"></span><button type="button" id="admin-notice-close" class="admin-notice-close" aria-label="공지 닫기">×</button></div>
 <div id="admin-auth-overlay" class="admin-auth-overlay" role="dialog" aria-modal="true" aria-labelledby="admin-auth-title" hidden><form id="admin-auth-form" class="admin-auth-dialog" autocomplete="off"><h2 id="admin-auth-title">운영자 인증</h2><p>닉네임 ‘운영자’를 사용하려면 운영자 비밀번호를 입력해야 합니다.</p><input id="admin-auth-password" type="password" name="operator_password" autocomplete="off" placeholder="운영자 비밀번호" required aria-label="운영자 비밀번호"><div class="admin-auth-actions"><button type="button" id="admin-auth-cancel">취소</button><button type="submit">확인</button></div></form></div>
@@ -535,7 +527,7 @@
  </div>
 </section>
 <div id="chat" class="chat" hidden><button type="button" id="chat-title-button" class="chat-title" aria-expanded="true" aria-controls="chat-body" title="메모 접기/펼치기"><span>메모 <span id="chat-count"></span></span><span class="chat-toggle" id="chat-toggle-glyph">−</span></button><div class="chat-body" id="chat-body"><div id="chat-messages" class="chat-messages"><div class="chat-empty">내용 없음</div></div><div id="admin-chat-feedback" class="admin-chat-feedback" role="status" hidden></div><form class="chat-form" id="chat-form"><input id="chat-input" class="chat-input" placeholder="메시지 입력" maxlength="280" autocomplete="off" aria-label="채팅 메시지"><button type="submit" class="chat-send">보내기</button></form></div></div>
-<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="상위 레벨 및 운영자 등급 v2.0">100% · v2.9 게임 포인트</span></footer>
+<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="레벨 등급 v3.0">100% · v3.0 레벨 등급</span></footer>
 <script>
 'use strict';
 const SIZE = 15;
@@ -762,19 +754,10 @@ const RANK_TIERS=[
  {min:70,max:79,name:'그랜드',mark:'✦'},
  {min:80,max:89,name:'레전드',mark:'✶'},
  {min:90,max:99,name:'신화',mark:'✶'},
- {min:100,max:199,name:'불멸',mark:'✹'},
- {min:200,max:299,name:'천상',mark:'✧'},
- {min:300,max:399,name:'성좌',mark:'✧'},
- {min:400,max:499,name:'패왕',mark:'✦'},
- {min:500,max:599,name:'제왕',mark:'♛'},
- {min:600,max:699,name:'초월자',mark:'✷'},
- {min:700,max:799,name:'절대자',mark:'✷'},
- {min:800,max:899,name:'창조자',mark:'✺'},
- {min:900,max:999,name:'태초',mark:'✺'},
- {min:1000,max:1999,name:'신격',mark:'✸'},
- {min:2000,max:2999,name:'초신성',mark:'✹'},
- {min:3000,max:4999,name:'창세신',mark:'✹'},
- {min:5000,max:Infinity,name:'무한',mark:'✵'}
+ {min:100,max:499,name:'불멸',mark:'✹'},
+ {min:500,max:999,name:'천상',mark:'✧'},
+ {min:1000,max:4999,name:'신',mark:'✴'},
+ {min:5000,max:Infinity,name:'초월',mark:'∞'}
 ];
 const OPERATOR_RANK={name:'운영자',mark:'★',index:RANK_TIERS.length,isOperator:true,css:'rank-tier-admin',min:null,max:null,level:null};
 function rankInfo(level,nickname=''){
@@ -843,7 +826,7 @@ function openRankGuide(){
  operatorRange.textContent='운영자 전용';
  operatorLine.append(operatorBadge,operatorRange);node.append(operatorLine);
  const summary=$('rank-guide-summary');
- summary.textContent=current?.isOperator?'현재 운영자 · 레벨과 무관한 전용 최상위 등급':current?`현재 ${current.name} · Lv.${level} · ${Number(memberProfile.points||0).toLocaleString('ko-KR')}P / 10,000P에 Lv.50 달성`:'10,000P 도달 시 Lv.50 · Lv.100부터 불멸 등급';
+ summary.textContent=current?.isOperator?'현재 운영자 · 레벨과 무관한 전용 최상위 등급':current?`현재 ${current.name} · Lv.${level} · ${Number(memberProfile.points||0).toLocaleString('ko-KR')}P / 10,000P에 Lv.50 달성`:'10,000P 도달 시 Lv.50 · Lv.100 불멸 · Lv.500 천상 · Lv.1000 신 · Lv.5000 초월';
  $('rank-guide-overlay').hidden=false;
 }
 $('rank-guide-open').addEventListener('click',openRankGuide);
