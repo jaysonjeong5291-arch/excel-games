@@ -257,16 +257,76 @@
 .sheet1-chat-grid #sheet1-chat-feedback{display:block;padding:8px 11px}
 .sheet1-chat-grid #sheet1-chat-feedback[hidden]{display:none}
 @media(max-width:700px){.sheet1-chat-area{margin-bottom:20px}.sheet1-chat-grid{min-width:0;width:100%}.sheet1-chat-grid col.row-col{width:30px}.sheet1-chat-grid col.c1{width:54px}.sheet1-chat-grid col.c2{width:80px}.sheet1-chat-grid td,.sheet1-chat-grid th{padding:4px 5px}.sheet1-chat-grid td.sheet1-chat-form-cell{padding:3px!important}.sheet1-chat-grid .sheet1-chat-form button{padding:7px 8px}.sheet1-chat-grid .sheet1-chat-form input{padding:7px 5px}}
+
+
+/* Level milestones (10-level steps).  Muted spreadsheet badges; no visual effect on game boards. */
+.rank-inline{display:inline-flex;align-items:center;gap:4px;min-width:0;max-width:100%;vertical-align:middle}
+.rank-name{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.rank-badge{display:inline-flex;align-items:center;gap:3px;flex:none;white-space:nowrap;border:1px solid var(--rank-line,#d7e1da);border-radius:3px;background:var(--rank-bg,#f3f6f4);color:var(--rank-ink,#54685a);padding:2px 5px;font-size:10px;line-height:1.25;font-weight:800;letter-spacing:.01em;font-variant-numeric:tabular-nums;box-shadow:inset 0 1px 0 #ffffff70}
+.rank-badge .rank-mark{font-size:9px}
+.rank-tier-0{--rank-bg:#f1f4f2;--rank-ink:#5d7065;--rank-line:#d4ded7}
+.rank-tier-1{--rank-bg:#f9eee2;--rank-ink:#84572e;--rank-line:#dcc2a5}
+.rank-tier-2{--rank-bg:linear-gradient(115deg,#e9ecef,#fafcfd);--rank-ink:#566371;--rank-line:#bfcbd5}
+.rank-tier-3{--rank-bg:linear-gradient(115deg,#fcf1cc,#fff9e8);--rank-ink:#8d640d;--rank-line:#ddc47c}
+.rank-tier-4{--rank-bg:linear-gradient(115deg,#dfeeea,#f4faf9);--rank-ink:#317d71;--rank-line:#a6cdc3}
+.rank-tier-5{--rank-bg:linear-gradient(115deg,#e1f3fb,#f3faff);--rank-ink:#236c9b;--rank-line:#9bcce5}
+.rank-tier-6{--rank-bg:linear-gradient(115deg,#e9e3fb,#f8f5ff);--rank-ink:#6950a1;--rank-line:#c1b0e8}
+.rank-tier-7{--rank-bg:linear-gradient(115deg,#eee2f4,#fff2f5);--rank-ink:#944b89;--rank-line:#d7accf}
+.rank-tier-8{--rank-bg:linear-gradient(115deg,#fce5e4,#fff5f0);--rank-ink:#a54444;--rank-line:#e6b1ab}
+.rank-tier-9{--rank-bg:linear-gradient(110deg,#fce8da,#f6e3fa,#e5ebff);--rank-ink:#8a456c;--rank-line:#d6afcf}
+.rank-tier-10{--rank-bg:linear-gradient(115deg,#f6e3b8,#fff4da 43%,#e5e8fc);--rank-ink:#6c4b18;--rank-line:#c7a867}
+.rank-tier-3 .rank-badge,.rank-tier-5 .rank-badge,.rank-tier-7 .rank-badge,.rank-tier-9 .rank-badge,.rank-tier-10 .rank-badge{box-shadow:inset 0 1px 0 #ffffffa0,0 1px 2px #243b2a18}
+.rank-tier-10 .rank-badge{border-width:1.5px}
+.member-status.has-member{min-width:182px;max-width:min(350px,100%);padding:6px 9px;text-align:left;background:#fbfcfb;white-space:normal}
+.member-status .member-status-line{display:flex;align-items:center;justify-content:flex-start;gap:7px;flex-wrap:wrap}
+.member-status .member-status-points{font-size:10px;color:#64816c;font-variant-numeric:tabular-nums;white-space:nowrap}
+.member-status .member-rank-progress{height:4px;border-radius:5px;background:#e5ece7;overflow:hidden;margin-top:7px}
+.member-status .member-rank-progress>span{display:block;height:100%;border-radius:5px;background:#8baf98;min-width:0}
+.member-status .member-next-tier{font-size:9px;color:#708374;padding-top:3px}
+.member-level-tag{display:inline-flex;align-items:center;gap:4px;max-width:180px;padding:4px 6px;border-radius:3px;background:#ffffffee}
+.member-level-tag.rank-tier-3,.member-level-tag.rank-tier-5,.member-level-tag.rank-tier-7,.member-level-tag.rank-tier-9,.member-level-tag.rank-tier-10{background:var(--rank-bg);color:var(--rank-ink);border-color:var(--rank-line)}
+.member-tools .rank-guide-btn{border-color:#d9cfab;background:#fcfaf2;color:#796333}
+.rank-guide-overlay{position:fixed;inset:0;background:#142a2099;z-index:4000;display:flex;justify-content:center;align-items:center;padding:14px}
+.rank-guide-overlay[hidden]{display:none!important}
+.rank-guide-panel{background:#fff;border:1px solid #d1dccf;border-radius:5px;width:min(94vw,430px);max-height:85dvh;display:flex;flex-direction:column;box-shadow:0 18px 45px #12251d55}
+.rank-guide-heading{display:flex;align-items:center;justify-content:space-between;padding:13px 15px;border-bottom:1px solid #dce6de;font-size:13px;color:#325441}
+.rank-guide-heading button{border:1px solid #d4dfd7;background:#fff;border-radius:3px;padding:4px 9px}
+.rank-guide-summary{padding:12px 15px;background:#f8faf8;font-size:11px;color:#5d7665;border-bottom:1px solid #e0e7e1}
+.rank-guide-list{overflow:auto;padding:5px 12px 12px}
+.rank-guide-row{display:flex;align-items:center;gap:10px;min-height:36px;border-bottom:1px solid #eef2ef;padding:5px 3px}
+.rank-guide-row .rank-guide-range{margin-left:auto;flex:none;color:#7b897d;font-size:10px}
+.rank-guide-row.current{background:#f0f7f2;border-left:3px solid #388957;padding-left:8px}
+.rank-guide-row .rank-badge{min-width:98px;justify-content:center}
+.xl-grid td .rank-inline{max-width:100%}
+.xl-grid td:has(.rank-inline){text-overflow:clip}
+.sheet1-chat-grid td.sheet1-chat-name:has(.rank-badge){white-space:normal;overflow-wrap:anywhere}
+.chat-item .sender .rank-inline{max-width:100%}
+.queue-row .rank-inline{flex:1}
+.seat-name:has(.rank-inline){text-overflow:clip}
+@media(max-width:700px){.member-status.has-member{max-width:none;flex:1;min-width:160px}.member-level-tag{max-width:120px;font-size:9px}.rank-badge{font-size:9px;padding:2px 3px}.rank-badge .rank-mark{font-size:8px}.sheet1-chat-grid .rank-inline{display:flex;flex-direction:column;align-items:flex-start;gap:2px}}
+
+
+/* Keep account controls legible on narrow phones rather than overlapping the nickname field. */
+@media(max-width:700px){
+ .lobby-actions{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:stretch;gap:7px}
+ .lobby-actions .nickname-form{grid-column:1/-1;width:100%;min-width:0}
+ .lobby-actions .member-tools{grid-column:1;grid-row:2;width:100%;display:flex;min-width:0;gap:5px;align-items:flex-start}
+ .lobby-actions .member-status.has-member{flex:1 1 100%;min-width:0}
+ .lobby-actions #create-room-btn{grid-column:2;grid-row:2;align-self:start}
+ .lobby-actions .member-tools button{padding:6px 8px}
+}
+@media(min-width:701px){.xl-grid:not(.sheet1-chat-grid) col.c5,.xl-grid:not(.sheet1-chat-grid) col.c6{width:145px}.xl-grid:not(.sheet1-chat-grid){min-width:1080px}}
 </style></head>
 <body>
 <div class="titlebar"><span class="app-icon" aria-hidden="true">▦</span><span class="doc-name">업무현황_2026.xlsx</span><span class="title-space"></span><span id="member-top-level" class="member-level-tag" hidden>Lv.1</span><span id="connection-label" class="connection">연결 중</span><button id="copy-link-btn" type="button" class="share-btn">주소 복사</button></div>
 <div class="tabs"><span class="tab file-tab">파일</span><span class="tab active">홈</span><span class="tab">삽입</span><span class="tab">페이지 레이아웃</span><span class="tab">수식</span><span class="tab">데이터</span><span class="tab">검토</span><span class="tab">보기</span></div>
 <div class="ribbon" aria-hidden="true"><div class="ribbon-group"><div class="ribbon-content"><span class="tool-icon green">▤</span><div><div class="tool-small tool-strong">붙여넣기</div><div class="tool-small">복사 · 잘라내기</div></div></div><div class="ribbon-title">클립보드</div></div><div class="ribbon-group"><div class="ribbon-content"><span class="tool-mini wide">맑은 고딕&nbsp; ▾</span><span class="tool-mini">11</span><span class="tool-divider"></span><span class="tool-strong">B</span><em>I</em><u>U</u></div><div class="ribbon-title">글꼴</div></div><div class="ribbon-group"><div class="ribbon-content"><span class="tool-icon">☷</span><span class="tool-icon">☰</span><span class="tool-small">가운데 맞춤</span></div><div class="ribbon-title">맞춤</div></div><div class="ribbon-group"><div class="ribbon-content"><span class="tool-icon green">▦</span><span class="tool-small">표 서식<br>조건부 서식</span></div><div class="ribbon-title">스타일</div></div></div>
 <div class="formula-bar"><div class="name-box"><span id="cell-address">A1</span><span>⌄</span></div><span class="fx">ƒx</span><div class="formula-value" id="formula-value">=COUNTIF(방현황,"접속중")</div></div>
+<div id="rank-guide-overlay" class="rank-guide-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="rank-guide-title"><div class="rank-guide-panel"><div class="rank-guide-heading"><strong id="rank-guide-title">등급 및 레벨 안내</strong><button type="button" id="rank-guide-close" aria-label="등급 안내 닫기">닫기 ×</button></div><div class="rank-guide-summary" id="rank-guide-summary">10레벨마다 닉네임 등급이 바뀝니다.</div><div id="rank-guide-list" class="rank-guide-list"></div></div></div>
 <div id="member-overlay" class="member-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="member-dialog-title"><form id="member-form" class="member-dialog" autocomplete="on"><h2 id="member-dialog-title">계정 로그인</h2><p class="member-desc">처음엔 익명 Player로 접속합니다. 가입하면 승리 기록과 레벨이 저장돼요.</p><div class="member-switch"><button type="button" id="member-login-tab" class="active">로그인</button><button type="button" id="member-register-tab">회원가입</button></div><label for="member-nickname">닉네임 (로그인 아이디)</label><input id="member-nickname" name="username" type="text" maxlength="16" minlength="1" autocomplete="username" required placeholder="1~16자 아이디"><label for="member-password">비밀번호</label><input id="member-password" name="password" type="password" minlength="4" maxlength="72" autocomplete="current-password" required placeholder="4자 이상 비밀번호 (형식 자유)"><div class="member-hint">이메일 없이 닉네임과 비밀번호로 가입합니다. 비밀번호 분실 시 자동 복구는 지원하지 않아요.</div><div id="member-feedback" class="member-feedback" role="alert"></div><div class="member-actions"><button type="button" id="member-cancel">닫기</button><button type="submit" id="member-submit">로그인</button></div></form></div>
 <div class="admin-notice" id="admin-notice" role="alert" hidden><strong class="admin-notice-label">공지</strong><span class="admin-notice-text" id="admin-notice-text"></span><button type="button" id="admin-notice-close" class="admin-notice-close" aria-label="공지 닫기">×</button></div>
 <div id="admin-auth-overlay" class="admin-auth-overlay" role="dialog" aria-modal="true" aria-labelledby="admin-auth-title" hidden><form id="admin-auth-form" class="admin-auth-dialog" autocomplete="off"><h2 id="admin-auth-title">운영자 인증</h2><p>닉네임 ‘운영자’를 사용하려면 운영자 비밀번호를 입력해야 합니다.</p><input id="admin-auth-password" type="password" name="operator_password" autocomplete="off" placeholder="운영자 비밀번호" required aria-label="운영자 비밀번호"><div class="admin-auth-actions"><button type="button" id="admin-auth-cancel">취소</button><button type="submit">확인</button></div></form></div>
-<section class="lobby-shell" id="lobby-view"><div class="lobby-toolbar"><div class="left"><span class="lobby-title">Sheet1 · 업무 진행 현황</span><span id="lobby-count" class="lobby-summary">0개 시트</span></div><div class="lobby-actions"><form id="nickname-form" class="nickname-form" autocomplete="off"><label for="nickname-input">내 닉네임</label><input id="nickname-input" name="nickname" type="text" maxlength="16" placeholder="Player" spellcheck="false" autocomplete="off" aria-label="닉네임 16자 이하"><button type="submit" id="nickname-save">저장</button></form><div class="member-tools"><span id="member-status" class="member-status">익명 Player</span><button id="member-open" type="button">가입 / 로그인</button><button id="member-logout" type="button" hidden>로그아웃</button></div><button id="create-room-btn" type="button" class="excel-action">＋ 새 방 만들기</button></div></div><div id="nickname-required-note" class="nickname-required-note" role="status" aria-live="polite" hidden>익명 Player로 둘러볼 수 있어요. 방에 들어가려면 닉네임을 저장하거나 <strong>가입 / 로그인</strong>해 주세요. 회원은 게임 결과에 따라 포인트와 레벨이 기록됩니다.</div><div id="lobby-notice" class="lobby-notice" aria-live="polite"></div><div class="grid-scroll"><table class="xl-grid" aria-label="방 현황과 대기자 목록"><colgroup><col class="row-col"><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"><col class="c7"><col class="c8"><col class="c9"><col class="c10"></colgroup><thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th><th>J</th></tr></thead><tbody id="lobby-cells"><tr><th class="row-no">1</th><td class="section" colspan="10">방 목록 불러오는 중...</td></tr></tbody></table></div>
+<section class="lobby-shell" id="lobby-view"><div class="lobby-toolbar"><div class="left"><span class="lobby-title">Sheet1 · 업무 진행 현황</span><span id="lobby-count" class="lobby-summary">0개 시트</span></div><div class="lobby-actions"><form id="nickname-form" class="nickname-form" autocomplete="off"><label for="nickname-input">내 닉네임</label><input id="nickname-input" name="nickname" type="text" maxlength="16" placeholder="Player" spellcheck="false" autocomplete="off" aria-label="닉네임 16자 이하"><button type="submit" id="nickname-save">저장</button></form><div class="member-tools"><span id="member-status" class="member-status">익명 Player</span><button id="member-open" type="button">가입 / 로그인</button><button id="member-logout" type="button" hidden>로그아웃</button><button id="rank-guide-open" class="rank-guide-btn" type="button" title="10레벨마다 달라지는 등급 보기">등급표</button></div><button id="create-room-btn" type="button" class="excel-action">＋ 새 방 만들기</button></div></div><div id="nickname-required-note" class="nickname-required-note" role="status" aria-live="polite" hidden>익명 Player로 둘러볼 수 있어요. 방에 들어가려면 닉네임을 저장하거나 <strong>가입 / 로그인</strong>해 주세요. 회원은 게임 결과에 따라 포인트와 레벨이 기록됩니다.</div><div id="lobby-notice" class="lobby-notice" aria-live="polite"></div><div class="grid-scroll"><table class="xl-grid" aria-label="방 현황과 대기자 목록"><colgroup><col class="row-col"><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"><col class="c7"><col class="c8"><col class="c9"><col class="c10"></colgroup><thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th><th>J</th></tr></thead><tbody id="lobby-cells"><tr><th class="row-no">1</th><td class="section" colspan="10">방 목록 불러오는 중...</td></tr></tbody></table></div>
 <div id="sheet1-chat-area" class="sheet1-chat-area" aria-label="Sheet1 공용 채팅">
  <div class="grid-scroll sheet1-chat-grid-scroll"><table class="xl-grid sheet1-chat-grid" aria-label="공용 채팅 기록과 메시지 입력">
   <colgroup><col class="row-col"><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"><col class="c7"><col class="c8"><col class="c9"><col class="c10"></colgroup>
@@ -337,7 +397,7 @@
  </div>
 </div>
 <div id="chat" class="chat" hidden><button type="button" id="chat-title-button" class="chat-title" aria-expanded="true" aria-controls="chat-body" title="메모 접기/펼치기"><span>메모 <span id="chat-count"></span></span><span class="chat-toggle" id="chat-toggle-glyph">−</span></button><div class="chat-body" id="chat-body"><div id="chat-messages" class="chat-messages"><div class="chat-empty">내용 없음</div></div><div id="admin-chat-feedback" class="admin-chat-feedback" role="status" hidden></div><form class="chat-form" id="chat-form"><input id="chat-input" class="chat-input" placeholder="메시지 입력" maxlength="280" autocomplete="off" aria-label="채팅 메시지"><button type="submit" class="chat-send">보내기</button></form></div></div>
-<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="Sheet1 채팅 수정 버전">100% · v1.8</span></footer>
+<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="10레벨 등급 강조 v1.9">100% · v1.9</span></footer>
 <script>
 'use strict';
 const SIZE = 15;
@@ -546,11 +606,79 @@ let memberProfile=null,memberLevelsByNumber=new Map(),memberPanelMode='login';
 let memberAuthPending=false,memberRefreshBusy=false;
 function memberRpc(action,rest={}){return callRpc('renju_member_auth',{p_client:CLIENT_ID,p_action:action,...rest});}
 function saveMemberToken(token){memberToken=token||'';try{if(memberToken)localStorage.setItem(MEMBER_TOKEN_KEY,memberToken);else localStorage.removeItem(MEMBER_TOKEN_KEY);}catch(_){}}
+// Purely visual progression. Points/levels continue to be calculated by Supabase.
+const RANK_TIERS=[
+ {name:'루키',mark:'•'}, {name:'브론즈',mark:'◆'}, {name:'실버',mark:'◆'},
+ {name:'골드',mark:'◆'}, {name:'플래티넘',mark:'◇'}, {name:'다이아',mark:'✦'},
+ {name:'마스터',mark:'✦'}, {name:'그랜드',mark:'✦'}, {name:'레전드',mark:'✶'},
+ {name:'신화',mark:'✶'}, {name:'불멸',mark:'✹'}
+];
+function rankInfo(level){const lvl=Math.max(1,Math.floor(Number(level)||1));const index=Math.min(10,Math.floor(lvl/10));return {...RANK_TIERS[index],index,level:lvl,css:'rank-tier-'+index};}
+function memberLevelForNumber(number){const n=Number(number);if(!Number.isFinite(n)||n<=0)return null;const pub=Number(memberLevelsByNumber.get(n));if(Number.isFinite(pub)&&pub>0)return pub;if(n===myLobbyNumber&&memberProfile)return Number(memberProfile.level)||1;return null;}
+function baseNicknameFor(number,fallback=''){
+ const n=Number(number);
+ return n>0?(nicknameByNumber.get(n)||(n===myLobbyNumber&&myNickname?myNickname:numbered(n))):(fallback||'대기');
+}
+function rankBadge(level){const rank=rankInfo(level);const badge=document.createElement('span');badge.className='rank-badge '+rank.css;badge.title=rank.name+' · 레벨 '+rank.level;
+ const mark=document.createElement('span');mark.className='rank-mark';mark.textContent=rank.mark;
+ const text=document.createElement('span');text.textContent=rank.name+' Lv.'+rank.level;badge.append(mark,text);return badge;}
+function nameWithRank(el,number,fallback=''){
+ const base=baseNicknameFor(number,fallback),level=memberLevelForNumber(number);
+ el.replaceChildren();if(!level){el.textContent=base;return;}
+ const wrap=document.createElement('span');wrap.className='rank-inline '+rankInfo(level).css;
+ const name=document.createElement('span');name.className='rank-name';name.textContent=base;
+ wrap.append(name,rankBadge(level));el.append(wrap);
+}
+function resolveNumberByNickname(text){const val=String(text||'').trim();if(!val)return null;
+ if(memberProfile?.nickname===val&&myLobbyNumber)return myLobbyNumber;
+ let result=null;for(const [number,name] of nicknameByNumber){if(name!==val||!memberLevelForNumber(number))continue;if(result!==null)return null;result=Number(number);}
+ return result;
+}
+function nameWithRankByServer(el,raw){const text=String(raw||'');const id=/^Player\s+(\d+)$/.exec(text);
+ if(id){nameWithRank(el,Number(id[1]));return;}
+ const number=resolveNumberByNickname(text);
+ if(number!=null){nameWithRank(el,number,text);return;}
+ el.textContent=text||'대기';
+}
+function openRankGuide(){const node=$('rank-guide-list');node.replaceChildren();const level=Number(memberProfile?.level)||0;
+ for(let i=0;i<RANK_TIERS.length;i++){
+  const line=document.createElement('div');line.className='rank-guide-row'+(level>0&&rankInfo(level).index===i?' current':'');
+  const badge=rankBadge(i===0?1:i*10);badge.title=RANK_TIERS[i].name;
+  badge.lastChild.textContent=RANK_TIERS[i].name;
+  const range=document.createElement('span');range.className='rank-guide-range';range.textContent=i===10?'Lv.100+':`Lv.${i===0?1:i*10}~${i*10+9}`;
+  line.append(badge,range);node.append(line);
+ }
+ const summary=$('rank-guide-summary');summary.textContent=level?`현재 ${rankInfo(level).name} · Lv.${level} · ${Number(memberProfile.points||0).toLocaleString('ko-KR')}P / 10레벨마다 다음 등급으로 승급`:'회원으로 로그인하면 전적과 포인트가 쌓이고 10레벨마다 등급이 상승합니다.';
+ $('rank-guide-overlay').hidden=false;
+}
+$('rank-guide-open').addEventListener('click',openRankGuide);
+$('rank-guide-close').addEventListener('click',()=>{$('rank-guide-overlay').hidden=true});
+$('rank-guide-overlay').addEventListener('click',e=>{if(e.target.id==='rank-guide-overlay')e.currentTarget.hidden=true});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('rank-guide-overlay').hidden=true});
+
 function paintMemberPanel(){
  const signed=Boolean(memberProfile);
  const panel=$('member-status'),top=$('member-top-level'),open=$('member-open'),logout=$('member-logout');
- if(panel)panel.textContent=signed?`${memberProfile.nickname} · Lv.${memberProfile.level} · ${memberProfile.points}P`:'익명 Player';
- if(top){top.hidden=!signed;top.textContent=signed?`Lv.${memberProfile.level} · ${memberProfile.points}P`:'';}
+ if(panel){panel.classList.toggle('has-member',signed);panel.replaceChildren();
+  if(!signed)panel.textContent='익명 Player';
+  else{
+   const lvl=Number(memberProfile.level)||1,pts=Number(memberProfile.points)||0;
+   const line=document.createElement('div');line.className='member-status-line';
+   const name=document.createElement('strong');name.textContent=memberProfile.nickname;name.className='rank-name '+rankInfo(lvl).css;
+   const point=document.createElement('span');point.className='member-status-points';point.textContent=pts.toLocaleString('ko-KR')+' P';
+   line.append(name,rankBadge(lvl),point);
+   const meter=document.createElement('div');meter.className='member-rank-progress';const progress=document.createElement('span');meter.append(progress);
+   const nextLevel=(Math.floor(lvl/10)+1)*10;
+   const currentTierStart=lvl<10?1:Math.floor(lvl/10)*10;
+   const startPoints=(currentTierStart-1)*100;
+   const nextPoints=(nextLevel-1)*100;
+   const remaining=Math.max(0,nextPoints-pts);
+   progress.style.width=(lvl>=100?100:Math.max(0,Math.min(100,(pts-startPoints)/(nextPoints-startPoints)*100)))+'%';
+   const hint=document.createElement('div');hint.className='member-next-tier';hint.textContent=lvl>=100?'최고 등급 · 누적 포인트 '+pts.toLocaleString('ko-KR')+'P':'다음 등급 Lv.'+nextLevel+'까지 '+remaining.toLocaleString('ko-KR')+'P';
+   panel.append(line,meter,hint);
+  }
+ }
+ if(top){top.hidden=!signed;top.replaceChildren();if(signed){const rank=rankInfo(memberProfile.level);top.className='member-level-tag '+rank.css;top.textContent=rank.mark+' '+rank.name+' · Lv.'+rank.level;}else top.className='member-level-tag';}
  if(open)open.hidden=signed;
  if(logout)logout.hidden=!signed;
  const nick=$('nickname-input'),save=$('nickname-save');
@@ -582,7 +710,7 @@ async function refreshMemberStats(){
   if(Array.isArray(data.profiles)){
    const next=new Map(data.profiles.map(p=>[Number(p.number),Number(p.level)]));
    if(JSON.stringify([...next])!==JSON.stringify([...memberLevelsByNumber])){
-    memberLevelsByNumber=next;nicknameRevision++;chatLastSeen='';
+    memberLevelsByNumber=next;nicknameRevision++;chatLastSeen='';sheet1LastPaint='';
     renderLobby();if(activeRoom){if(isTetrisRoom())tDisplayStatus();else if(isMineRoom())renderMineRoom();else if(state)paintState();}
    }
   }
@@ -634,10 +762,8 @@ function maybeOpenInitialRoom(){
 }
 
 function nicknameFor(number,fallback=''){
- const n=Number(number);
- const base=n>0?(nicknameByNumber.get(n)||(n===myLobbyNumber&&myNickname?myNickname:numbered(n))):(fallback||'대기');
- const level=n>0?memberLevelsByNumber.get(n):null;
- return level ? base+' · Lv.'+level : base;
+ const base=baseNicknameFor(number,fallback),level=memberLevelForNumber(number);
+ return level?base+' · '+rankInfo(level).name+' Lv.'+level:base;
 }
 function nicknameFromServer(name){const m=/^Player\s+(\d+)$/.exec(String(name||''));return m?nicknameFor(Number(m[1])):(name||'대기');}
 function nicknameForPlayer(player){return player?.number?nicknameFor(player.number,player.name):nicknameFromServer(player?.name||'대기');}
@@ -977,11 +1103,11 @@ function sectionRow(num,label){const tr=document.createElement('tr');const th=do
 function headingRow(num,labels){return row(num,labels,Array(10).fill('col-head'));}
 function renderLobby(){const list=$('lobby-cells');const rows=[];let n=1;
  rows.push(sectionRow(n++,'방 현황  /  WORKSHEET STATUS'));
- rows.push(row(n++,[`전체 ${roomList.length}개 방`,`접속 ${waitingList.length}명 대기`, '내 닉네임',nicknameFor(myLobbyNumber||0),'','','','','','']));
+ {const r=row(n++,[`전체 ${roomList.length}개 방`,`접속 ${waitingList.length}명 대기`, '내 닉네임',nicknameFor(myLobbyNumber||0),'','','','','','']);nameWithRank(r.children[4],myLobbyNumber||0,myNickname);rows.push(r);}
  rows.push(headingRow(n++,['시트','종류','작업명','진행','1P/흑','2P/백','대기','접속','착수/줄','입장']));
  const display=roomList.slice(0,25);
  for(const room of display){const status=room.status==='placing'?'설치 중':room.status==='playing'?'진행 중':room.status==='ready'?'준비 완료':room.status==='done'?'완료':'대기 중';
-  const tr=row(n++,[room.sheet,'',room.title,'',room.black?nicknameFor(room.black):'-',room.white?nicknameFor(room.white):'-',room.waiting,room.count,room.moves,''],['sheet-link','','','','','','','','','']);tr.className='room-row';tr.dataset.room=room.id;
+  const tr=row(n++,[room.sheet,'',room.title,'',room.black?nicknameFor(room.black):'-',room.white?nicknameFor(room.white):'-',room.waiting,room.count,room.moves,''],['sheet-link','','','','','','','','','']);tr.className='room-row';tr.dataset.room=room.id;if(room.black)nameWithRank(tr.children[5],room.black);if(room.white)nameWithRank(tr.children[6],room.white);
   const gameLabel=document.createElement('span');gameLabel.className='game-type-pill'+(room.game==='tetris'?' tetris':'');gameLabel.textContent=room.game==='tetris'?'테트리스':room.game==='mine_battle'?'지뢰탐색게임':'오목';tr.children[2].append(gameLabel);
   const statusTd=tr.children[4],pill=document.createElement('span');pill.className='status-pill '+(room.status==='playing'?'':room.status);pill.textContent=status;statusTd.append(pill);
   const joinBtn=document.createElement('button');joinBtn.type='button';joinBtn.className='room-open';joinBtn.textContent='열기';joinBtn.setAttribute('aria-label',room.sheet+' 열기');tr.lastElementChild.append(joinBtn);
@@ -992,7 +1118,7 @@ function renderLobby(){const list=$('lobby-cells');const rows=[];let n=1;
  rows.push(sectionRow(n++,'대기자 현황  /  WAITING LIST'));
  rows.push(headingRow(n++,['번호','사용자','상태','', '', '', '', '', '', '']));
  if(!waitingList.length)rows.push(row(n++,['-','대기자 없음','','','','','','','',''],['muted','muted']));
- else for(const p of waitingList.slice(0,24))rows.push(row(n++,[p.number,nicknameFor(p.number,p.name),'대기 중','','','','','','',''],['','','you-row']));
+ else for(const p of waitingList.slice(0,24)){const tr=row(n++,[p.number,nicknameFor(p.number,p.name),'대기 중','','','','','','',''],['','','you-row']);nameWithRank(tr.children[2],p.number,p.name);rows.push(tr);}
  for(let i=0;i<4;i++)rows.push(row(n++,[]));
  while(n<=20)rows.push(row(n++,[]));
  list.replaceChildren(...rows);updateSheet1RowNumbers();refreshNicknameAccess();
@@ -1194,7 +1320,7 @@ function paintSheet1Chat(){
   const tr=document.createElement('tr');if(m.nickname===myNickname)tr.className='sheet1-chat-own';
   const th=document.createElement('th');th.className='row-no';th.dataset.chatRowNo='';
   const time=document.createElement('td');time.className='sheet1-chat-id';time.textContent=String(m.id||'');
-  const name=document.createElement('td');name.className='sheet1-chat-name';name.textContent=m.nickname||'Player';
+  const name=document.createElement('td');name.className='sheet1-chat-name';nameWithRankByServer(name,m.nickname||'Player');
   const body=document.createElement('td');body.colSpan=8;body.className='sheet1-chat-text';body.textContent=m.text||'';
   tr.append(th,time,name,body);rows.push(tr);
  }
@@ -1295,11 +1421,11 @@ setMemoCollapsed(memoCollapsed);
 function paintChat(){const messages=Array.isArray(state?.chat)?state.chat:[];const key=activeRoom+':'+nicknameRevision+':'+messages.map(m=>m.id).join(',');if(chatLastSeen===key)return;chatLastSeen=key;
  const panel=$('chat-messages'),nearBottom=panel.scrollHeight-panel.scrollTop-panel.clientHeight<60;panel.replaceChildren();
  if(!messages.length){const div=document.createElement('div');div.className='chat-empty';div.textContent='내용 없음';panel.append(div);}
- else for(const m of messages){const item=document.createElement('div');item.className='chat-item'+(m.number===myNumber?' mine':'');const sender=document.createElement('div');sender.className='sender';sender.textContent=nicknameFor(m.number);const bubble=document.createElement('div');bubble.className='bubble';bubble.textContent=m.text;item.append(sender,bubble);panel.append(item);}
+ else for(const m of messages){const item=document.createElement('div');item.className='chat-item'+(m.number===myNumber?' mine':'');const sender=document.createElement('div');sender.className='sender';nameWithRank(sender,m.number);const bubble=document.createElement('div');bubble.className='bubble';bubble.textContent=m.text;item.append(sender,bubble);panel.append(item);}
  if(nearBottom)panel.scrollTop=panel.scrollHeight;}
 function paintState(){const s=state;if(!s)return;
  const black=s.players?.black,white=s.players?.white;const ready=Boolean(black?.online&&white?.online),finished=s.winner!==null;
- $('black-name').textContent=nicknameForPlayer(black);$('white-name').textContent=nicknameForPlayer(white);
+ if(black?.number)nameWithRank($('black-name'),black.number,black.name);else $('black-name').textContent=nicknameForPlayer(black);if(white?.number)nameWithRank($('white-name'),white.number,white.name);else $('white-name').textContent=nicknameForPlayer(white);
  $('black-status').textContent='흑'+(black?.number===myNumber?' · 나':'');$('white-status').textContent='백'+(white?.number===myNumber?' · 나':'');
  $('black-card').classList.toggle('active',Boolean(!finished&&ready&&s.turn===1));$('white-card').classList.toggle('active',Boolean(!finished&&ready&&s.turn===2));
  $('my-role').textContent=(myNumber?nicknameFor(myNumber):'')+(mySeat==='waiting'&&state?.players?.white?' · 관전':'');$('turn-label').textContent=!ready?'대기 중':finished?'완료':s.turn===1?'흑 차례':'백 차례';
@@ -1308,7 +1434,7 @@ function paintState(){const s=state;if(!s)return;
  paintGomokuClock();
  $('move-count').textContent=(s.moves?.length||0)+'개 셀 입력';
  const q=Array.isArray(s.queue)?s.queue:[];$('queue-count').textContent=q.length+'명';const list=$('queue-list');list.replaceChildren();
- if(!q.length){const x=document.createElement('div');x.className='queue-empty';x.textContent='없음';list.append(x);}else for(const p of q){const item=document.createElement('div');item.className='queue-row';const name=document.createElement('span');name.textContent=nicknameFor(p.number,p.name);item.append(name);if(p.number===myNumber){const you=document.createElement('span');you.className='you';you.textContent='나';item.append(you);}list.append(item);}
+ if(!q.length){const x=document.createElement('div');x.className='queue-empty';x.textContent='없음';list.append(x);}else for(const p of q){const item=document.createElement('div');item.className='queue-row';const name=document.createElement('span');nameWithRank(name,p.number,p.name);item.append(name);if(p.number===myNumber){const you=document.createElement('span');you.className='you';you.textContent='나';item.append(you);}list.append(item);}
  $('rematch-btn').hidden=!finished||!['host','guest'].includes(mySeat);
  if(!$('rematch-btn').hidden)$('rematch-btn').textContent=s.ready?.[mySeat]?'취소':'새로 시작';
  $('history-total').textContent=String(s.moves?.length||0);const hist=$('move-list');hist.replaceChildren();for(const m of (s.moves||[]).slice(-14).reverse()){const span=document.createElement('span');span.className=m.color===1?'black':'white';span.textContent=m.n+'. '+LETTERS[m.x]+(15-m.y);hist.append(span);}
@@ -1571,7 +1697,7 @@ function tDisplayStatus(){
  if(!isTetrisRoom())return;
  const data=tetrisServer;const round=data?.round||0,phase=data?.phase||'waiting';
  const left=nicknameForPlayer(data?.players?.host?.info),right=nicknameForPlayer(data?.players?.guest?.info);
- $('tetris-p1').textContent=left;$('tetris-p2').textContent=right;
+ if(data?.players?.host?.info?.number)nameWithRank($('tetris-p1'),data.players.host.info.number,data.players.host.info.name);else $('tetris-p1').textContent=left;if(data?.players?.guest?.info?.number)nameWithRank($('tetris-p2'),data.players.guest.info.number,data.players.guest.info.name);else $('tetris-p2').textContent=right;
  $('tetris-me').textContent=data?.seat==='host'?'1P':data?.seat==='guest'?'2P':'관전';
  const start=data?.start_at?new Date(data.start_at).getTime():0;
  const remain=Math.max(0,Math.ceil((start-Date.now())/1000));
@@ -1801,8 +1927,8 @@ function renderMineRoom(){
  $('mine-mine-count').textContent=Number(d.remaining_mines??3)+' / 3';
  $('mine-turn-count').textContent=String(d.robot_turns||0)+' / '+MINE_MAX_TURNS;
  $('mine-result').textContent=finished?(d.winner==='robot'?'탐색팀 승리':'지뢰팀 승리'):'진행 중';
- $('mine-host-name').textContent=nicknameFromServer(d.players?.host?.name||'Player 1');
- $('mine-guest-name').textContent=nicknameFromServer(d.players?.guest?.name||'Player 2');
+ nameWithRankByServer($('mine-host-name'),d.players?.host?.name||'Player 1');
+ nameWithRankByServer($('mine-guest-name'),d.players?.guest?.name||'Player 2');
  $('mine-host-progress').textContent=d.mine_seat==='host'?'지뢰팀':'탐색팀';
  $('mine-guest-progress').textContent=d.mine_seat==='guest'?'지뢰팀':'탐색팀';
  $('mine-record').textContent=(d.record?.won||0)+' / '+(d.record?.lost||0);
