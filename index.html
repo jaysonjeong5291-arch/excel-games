@@ -439,6 +439,10 @@
 .oe-grid{width:100%;border-collapse:collapse}.oe-grid th,.oe-grid td{padding:10px 13px;border:1px solid #e0e9e1;text-align:left}.oe-grid th{background:#f1f8f2;color:#557564;font-weight:700}.oe-grid tr.mine{background:#f1faf3;font-weight:700}.oe-grid .hit{color:#168349;font-weight:700}.oe-grid .miss{color:#a05149;font-weight:700}.oe-grid-scroll{overflow-x:auto}
 .oe-footnote{padding:10px 15px;font-size:11px;color:#7e9281;background:#fafdfa;border-top:1px solid #e1e8e2;line-height:1.6}
 @media(max-width:700px){.oe-meta{grid-template-columns:repeat(2,minmax(0,1fr))}.oe-die{width:65px;height:65px;font-size:34px}.oe-choice button{min-width:110px}.oe-grid{min-width:530px}.oe-header{padding:9px 11px}}
+
+.role-switch-btn{font:inherit;background:#fff;color:#116a42;border:1px solid #6aa984;border-radius:3px;padding:8px 11px;cursor:pointer;font-weight:700}
+.role-switch-btn:hover,.match-gate-button.secondary:hover{background:#e9f6ed}
+.role-switch-btn:disabled,.match-gate-button:disabled{opacity:.48;cursor:not-allowed}
 </style></head>
 <body>
 <div class="titlebar"><span class="app-icon" aria-hidden="true">▦</span><span class="doc-name">업무현황_2026.xlsx</span><span class="title-space"></span><span id="member-top-level" class="member-level-tag" hidden>Lv.1</span><span id="connection-label" class="connection">연결 중</span><button id="copy-link-btn" type="button" class="share-btn">주소 복사</button></div>
@@ -465,7 +469,7 @@
 <section id="room-view" hidden><div class="room-bar"><div><span id="room-name" class="room-name">Sheet2</span><span id="room-info" class="room-info"></span></div><div class="room-control"><button id="room-copy" type="button">초대 링크 복사</button><button id="room-lobby" type="button">Sheet1</button></div></div>
 <div id="match-gate" class="match-gate" role="region" aria-label="게임 준비 및 시작">
  <div class="match-gate-info"><strong id="match-gate-title">대기 중</strong><span id="match-gate-desc" role="status" aria-live="polite">방 정보를 확인하고 있습니다.</span></div>
- <div class="match-gate-controls"><button id="match-guest-ready" type="button" class="match-gate-button secondary" hidden>준비</button><button id="match-host-start" type="button" class="match-gate-button" hidden disabled>시작</button></div>
+ <div class="match-gate-controls"><button id="match-role-switch" class="match-gate-button secondary" type="button" hidden>참가/관전 전환</button><button id="match-guest-ready" type="button" class="match-gate-button secondary" hidden>준비</button><button id="match-host-start" type="button" class="match-gate-button" hidden disabled>시작</button></div>
 </div>
 <main id="renju-game" class="main-shell"><section class="sheet-col"><div class="sheet-caption"><span id="game-status" class="caption-label">데이터 불러오는 중</span><span id="turn-label" class="turn">동기화 중</span><span id="gomoku-clock" class="turn gomoku-clock" aria-label="오목 남은 착수 시간">--:--</span></div><div class="sheet-card"><div class="board-frame"><canvas id="board" role="img" aria-label="15x15 오목 시트"></canvas><div class="board-overlay" id="board-overlay">시트 불러오는 중...</div></div></div><div class="below-board"><span id="move-count" class="move-counter">0개 셀 입력</span><div id="message" class="notice" role="status" aria-live="polite"></div><button id="rematch-btn" type="button" class="rematch" hidden>새로 시작</button></div><div id="gomoku-reward-status" class="arcade-reward-status" role="status" aria-live="polite">오목 점수: 대국 시작 +10P · 승리 10% / 5연승 15% / 10연승 20% (패자 10% 차감 · 상대 포인트가 더 낮으면 내 포인트 5%)</div></section><aside class="sidebar"><section class="side-panel"><div class="panel-heading"><span>작업자 현황</span><span id="my-role" class="small-count"></span></div><div class="table-heading"><span>구분</span><span>사용자</span><span>상태</span></div><div id="black-card" class="seat"><span class="stone"></span><div class="seat-info"><div id="black-name" class="seat-name">대기</div></div><div id="black-status" class="seat-meta">흑</div></div><div id="white-card" class="seat"><span class="stone white"></span><div class="seat-info"><div id="white-name" class="seat-name">대기</div></div><div id="white-status" class="seat-meta">백</div></div></section><section class="side-panel"><div class="panel-heading"><span>대기 목록</span><span id="queue-count" class="small-count">0명</span></div><div class="queue" id="queue-list"></div></section><section class="side-panel"><div class="panel-heading"><span>변경 내역</span><span id="history-total" class="small-count">0</span></div><div id="move-list" class="history"></div></section></aside></main>
 <main id="tetris-game" class="tetris-shell" hidden>
@@ -535,7 +539,7 @@
     </div>
    </div></div>
   <div class="holdem-section-head">참가자 / 좌석별 진행 현황</div><div class="holdem-players-scroll"><table class="holdem-players-table"><thead><tr><th>좌석</th><th>닉네임</th><th>상태</th><th>베팅</th><th>잔액</th><th>카드</th></tr></thead><tbody id="holdem-players"></tbody></table></div>
-  <div class="holdem-gate"><div id="holdem-notice" role="status">최소 2명부터 시작할 수 있습니다.</div><div class="holdem-action-buttons"><button type="button" id="holdem-ready" hidden>준비</button><button type="button" id="holdem-start" hidden>시작</button></div></div>
+  <div class="holdem-gate"><div id="holdem-notice" role="status">최소 2명부터 시작할 수 있습니다.</div><div class="holdem-action-buttons"><button type="button" id="holdem-role-switch" class="role-switch-btn" hidden>참가/관전 전환</button><button type="button" id="holdem-ready" hidden>준비</button><button type="button" id="holdem-start" hidden>시작</button></div></div>
   <div id="holdem-action-banner" class="holdem-action-banner" role="status" aria-live="polite"></div>
    <div id="holdem-bet-controls" class="holdem-bet-controls" hidden>
    <button type="button" data-h-action="fold">폴드</button><button type="button" data-h-action="check">체크</button><button type="button" data-h-action="call">콜</button>
@@ -562,13 +566,13 @@
  <div class="oe-dice-zone"><div class="oe-dice-label">SERVER ROLL · 두 주사위 합계의 홀짝</div><div id="oe-dice-pair" class="oe-dice-pair"><div id="oe-die-a" class="oe-die">?</div><div id="oe-die-b" class="oe-die">?</div></div><div id="oe-result" class="oe-result muted">참가자 준비를 기다리는 중</div><div class="oe-subtext">홀수 = 홀 · 짝수 = 짝 · 동일한 결과로 모든 참가자 정산</div></div>
  <div class="oe-config" id="oe-config"><strong>방장 판돈 설정</strong><label for="oe-stake-input">포인트(P)</label><input id="oe-stake-input" type="number" min="1" max="1000000" step="1" value="100" inputmode="numeric"><button type="button" id="oe-set-stake">판돈 적용</button><span>변경하면 모두의 준비가 해제됩니다.</span></div>
  <div class="oe-choice"><button type="button" data-oe-guess="odd" aria-pressed="false">홀 · ODD</button><button type="button" data-oe-guess="even" aria-pressed="false">짝 · EVEN</button></div>
- <div class="oe-actions"><button type="button" id="oe-join" hidden>참가</button><button type="button" id="oe-ready">준비</button><button type="button" class="primary" id="oe-start">게임 시작</button><span id="oe-notice" role="status" aria-live="polite">홀 또는 짝을 고르고 준비하세요.</span></div>
+ <div class="oe-actions"><button type="button" class="role-switch-btn" id="oe-role-switch" hidden>참가/관전 전환</button><button type="button" id="oe-join" hidden>참가</button><button type="button" id="oe-ready">준비</button><button type="button" class="primary" id="oe-start">게임 시작</button><span id="oe-notice" role="status" aria-live="polite">홀 또는 짝을 고르고 준비하세요.</span></div>
  <div id="oe-feedback" class="oe-feedback" role="alert"></div>
  <div class="oe-grid-scroll"><table class="oe-grid" aria-label="홀짝 참가자와 라운드 결과"><thead><tr><th>좌석</th><th>참가자</th><th>선택</th><th>준비</th><th>보유 포인트</th><th>최근 정산</th></tr></thead><tbody id="oe-players"></tbody></table></div>
  <div class="oe-footnote">적중 시 베팅금의 2배를 지급합니다(원금 포함, 순이익 +판돈). 실패 시 판돈만 차감됩니다. 방장도 선택과 준비가 필요하며, 1명만 있어도 시작할 수 있습니다. 게임 포인트만 사용하며 현금 환전은 지원하지 않습니다.</div>
 </section>
 <div id="chat" class="chat" hidden><button type="button" id="chat-title-button" class="chat-title" aria-expanded="true" aria-controls="chat-body" title="메모 접기/펼치기"><span>메모 <span id="chat-count"></span></span><span class="chat-toggle" id="chat-toggle-glyph">−</span></button><div class="chat-body" id="chat-body"><div id="chat-messages" class="chat-messages"><div class="chat-empty">내용 없음</div></div><div id="admin-chat-feedback" class="admin-chat-feedback" role="status" hidden></div><form class="chat-form" id="chat-form"><input id="chat-input" class="chat-input" placeholder="메시지 입력" maxlength="280" autocomplete="off" aria-label="채팅 메시지"><button type="submit" class="chat-send">보내기</button></form></div></div>
-<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="레벨 등급 v3.0">100% · v3.3 홀짝 추가</span></footer>
+<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="레벨 등급 v3.0">100% · v3.4 관전/참가 전환</span></footer>
 <script>
 'use strict';
 const SIZE = 15;
@@ -1121,6 +1125,38 @@ async function syncNicknames(force=false){
 function roomRpc(id,action='sync',args={},keepalive=false){return callRpc('renju_room_sync',{p_room:id,p_client:CLIENT_ID,p_action:action,...args},keepalive);}
 function cleanupRpc(id=null){return callRpc('renju_cleanup',{p_room:id});}
 function gateRpc(id,action='sync'){return callRpc('renju_match_gate_sync',{p_room:id,p_client:CLIENT_ID,p_action:action});}
+let roleSwitchPending=false;
+function roleSwitchRpc(room,mode){return callRpc('renju_role_switch',{
+ p_room:room,p_client:CLIENT_ID,p_token:memberToken||null,p_mode:mode
+});}
+async function changeMyRole(mode){
+ const id=activeRoom;if(!id||roleSwitchPending)return;
+ roleSwitchPending=true;
+ try{
+  const result=await roleSwitchRpc(id,mode);
+  if(result?.ok!==true)throw new Error(result?.error||'전환 요청이 거부되었습니다.');
+  if(id.startsWith('h-')){
+   holdemInfoText=mode==='player'?'참가 좌석으로 이동했습니다.':'관전석으로 이동했습니다.';
+   applyHoldemData(id,await holdemRpc('sync',id));
+  }else if(id.startsWith('e-')){
+   oddEvenInfo=mode==='player'?'참가 좌석으로 이동했습니다.':'관전석으로 이동했습니다.';
+   applyOddEvenData(id,await oddEvenRpc('sync',id));
+  }else{
+   applyRoom(id,await roomRpc(id));
+   applyGate(id,await gateRpc(id));
+   if(currentGameType()==='tetris')applyTetrisData(id,await tetrisRpc(id));
+   else if(currentGameType()==='mine_battle')applyMineData(id,await mineRpc(id));
+   notify(mode==='player'?'참가석으로 이동했습니다.':'관전석으로 이동했습니다.',false,true);
+  }
+ }catch(err){
+  if(id.startsWith('h-')){holdemInfoText='전환 실패: '+err.message;renderHoldem();}
+  else if(id.startsWith('e-')){oddEvenInfo='전환 실패: '+err.message;renderOddEven();}
+  else notify('전환 실패: '+err.message,true);
+ }finally{
+  roleSwitchPending=false;
+  if(id===activeRoom){if(id.startsWith('h-'))renderHoldem();else if(id.startsWith('e-'))renderOddEven();else renderMatchGate();}
+ }
+}
 function gateState(id=activeRoom){return matchGateByRoom.get(id)||null;}
 function hasMatchStarted(id=activeRoom){return Boolean(gateState(id)?.started);}
 function currentGameFinished(){
@@ -1145,7 +1181,7 @@ function applyGate(id,data){
 function renderMatchGate(){
  const panel=$('match-gate');if(!panel||!activeRoom)return;
  const g=gateState(),title=$('match-gate-title'),desc=$('match-gate-desc');
- const readyButton=$('match-guest-ready'),startButton=$('match-host-start');
+ const readyButton=$('match-guest-ready'),startButton=$('match-host-start'),roleButton=$('match-role-switch');
  const finished=currentGameFinished();
  if(!finished)matchGateRestarting.delete(activeRoom);
  const restarting=finished && g?.started && Date.now()-(matchGateRestarting.get(activeRoom)||0)<12000;
@@ -1153,6 +1189,12 @@ function renderMatchGate(){
  panel.classList.toggle('running',running);
  const isHost=Boolean(g?.seat==='host');
  const isGuest=Boolean(g?.seat==='guest');
+ const canRoleChange=Boolean(g&&!running&&!matchGateActionPending&&!roleSwitchPending);
+ const isSpectator=Boolean(g?.seat==='spectator');
+ roleButton.hidden=!g;
+ roleButton.textContent=isSpectator?'참가하기':'관전으로 이동';
+ roleButton.disabled=!canRoleChange||(isSpectator&&Boolean(g?.host_present&&g?.guest_present));
+ roleButton.title=running?'게임 종료 후 변경할 수 있습니다.':isSpectator&&g?.host_present&&g?.guest_present?'1대1 게임은 참가자가 먼저 관전으로 내려와야 합니다.':'';
  // Fail closed while identity/permissions are being refreshed. Spectators never get controls.
  readyButton.hidden=!isGuest||running;
  startButton.hidden=!isHost||running;
@@ -1216,6 +1258,7 @@ async function clickMatchHostStart(){
 }
 $('match-guest-ready').addEventListener('click',clickMatchGuestReady);
 $('match-host-start').addEventListener('click',clickMatchHostStart);
+$('match-role-switch').addEventListener('click',()=>changeMyRole(gateState()?.seat==='spectator'?'player':'spectator'));
 
 function roomData(id){return roomCache.get(id)||null;}
 function applyRoom(id,data){if(!data?.state||!Array.isArray(data.state.board)||data.state.board.length!==225)return;
@@ -2511,7 +2554,13 @@ function renderHoldem(){
  if(!d){$h('holdem-notice').textContent='홀덤방 서버 연결 중…';return;}
  const v=holdemVisualByRoom.get(activeRoom),players=d.players||[],mine=players.find(p=>p.seat===d.my_seat);
  const playing=d.phase==='playing',finished=d.phase==='finished';
- const dealing=Boolean(v?.revealing),myTurn=Boolean(playing&&mine&&d.acting===mine.seat&&!dealing);
+ const dealing=Boolean(v?.revealing),myTurn=Boolean(playing&&mine&&mine.present&&d.acting===mine.seat&&!dealing);
+ const roleBtn=$h('holdem-role-switch');
+ const seated=Boolean(mine?.present);
+ roleBtn.hidden=false;
+ roleBtn.textContent=seated?'관전으로 이동':'참가하기';
+ roleBtn.disabled=playing||holdemActionPending||roleSwitchPending||(!seated&&players.filter(p=>p.present).length>=6);
+ roleBtn.title=playing?'현재 게임 종료 후 전환할 수 있습니다.':!seated&&players.filter(p=>p.present).length>=6?'참가 좌석이 가득 찼습니다.':'';
  const labels={preflop:'프리플롭',flop:'플롭 (3장)',turn:'턴 (4장)',river:'리버 (5장)',showdown:'쇼다운'};
  $h('holdem-hand').textContent='HAND '+d.hand;
  $h('holdem-street').textContent=playing?(labels[d.street]||d.street):finished?'결과 확인':'참가자 준비';
@@ -2560,9 +2609,9 @@ function renderHoldem(){
   tr.append(cd);t.append(tr);
  }
  const ready=$h('holdem-ready'),start=$h('holdem-start');
- ready.hidden=playing||!mine||d.is_host||!mine.present||d.busted===true;
+ ready.hidden=playing||!seated||d.is_host||d.busted===true;
  ready.disabled=holdemActionPending;ready.textContent=mine?.ready?'준비 취소':'준비';
- start.hidden=playing||!d.is_host||d.busted===true;
+ start.hidden=playing||!seated||!d.is_host||d.busted===true;
  start.disabled=holdemActionPending||(finished&&v&&v.showing<holdemShowSequence(d).length)||players.filter(p=>p.present).length<2||players.some(p=>p.present&&!p.ready&&!((p.seat===d.my_seat)&&d.is_host));
  start.textContent=finished?'다음 판 시작':'시작';
  const need=mine?Math.max(0,d.current_bet-mine.bet):0;
@@ -2722,6 +2771,7 @@ $('holdem-chat-form').addEventListener('submit',async e=>{
 setInterval(()=>{if(isHoldemRoom())holdemChatSync(activeRoom);},1700);
 
 $('holdem-ready').addEventListener('click',()=>holdemAct('ready'));
+$('holdem-role-switch').addEventListener('click',()=>{const d=holdemDataByRoom.get(activeRoom);const mine=d?.players?.find(p=>p.seat===d.my_seat);changeMyRole(mine?.present?'spectator':'player');});
 $('holdem-start').addEventListener('click',()=>holdemAct('start'));
 $('holdem-link').addEventListener('click',copyShare);
 $('holdem-exit').addEventListener('click',()=>{if(activeRoom)closeRoom(activeRoom)});
@@ -2772,15 +2822,19 @@ function renderOddEven(){
  const animating=(oddEvenRevealUntil.get(activeRoom)||0)>Date.now();
  oeEl('oe-sheet').textContent=d.sheet||'홀짝';oeEl('oe-stake').textContent=oddEvenFmt(d.stake);oeEl('oe-ready-count').textContent=participants.filter(p=>p.ready).length+' / '+participants.length;
  oeEl('oe-wallet').textContent=oddEvenFmt(d.my_points);oeEl('oe-round').textContent='#'+d.round;
- oeEl('oe-config').hidden=!d.is_host;
+ oeEl('oe-config').hidden=!d.is_host||!mine;
  const stake=oeEl('oe-stake-input');if(document.activeElement!==stake)stake.value=d.stake;
  oeEl('oe-set-stake').disabled=oddEvenActionPending;
  const select=oeEl('oddeven-view').querySelectorAll('[data-oe-guess]');
  for(const btn of select){const chosen=btn.dataset.oeGuess===mine?.guess;btn.classList.toggle('selected',chosen);btn.setAttribute('aria-pressed',String(chosen));btn.disabled=!mine||oddEvenActionPending;}
- const ready=oeEl('oe-ready'),start=oeEl('oe-start'),join=oeEl('oe-join');
- join.hidden=!!mine||participants.length>=6;join.disabled=oddEvenActionPending;
+ const ready=oeEl('oe-ready'),start=oeEl('oe-start'),join=oeEl('oe-join'),roleBtn=oeEl('oe-role-switch');
+ roleBtn.hidden=false;
+ roleBtn.textContent=mine?'관전으로 이동':'참가하기';
+ roleBtn.disabled=oddEvenActionPending||roleSwitchPending||(!mine&&participants.length>=6);
+ roleBtn.title=!mine&&participants.length>=6?'참가 좌석 6개가 가득 찼습니다.':'';
+ join.hidden=true;join.disabled=true;
  ready.hidden=!mine;ready.disabled=oddEvenActionPending||!mine?.guess||(!mine.ready&&Number(d.my_points)<Number(d.stake));ready.textContent=mine?.ready?'준비 취소':'준비 완료';
- start.hidden=!d.is_host;start.disabled=oddEvenActionPending||!allReady;start.textContent=d.round>0?'다음 게임 시작':'게임 시작';
+ start.hidden=!d.is_host||!mine;start.disabled=oddEvenActionPending||!allReady;start.textContent=d.round>0?'다음 게임 시작':'게임 시작';
  const dice=oeEl('oe-dice-pair'),result=oeEl('oe-result');dice.classList.toggle('rolling',animating);
  if(!animating){
   oeEl('oe-die-a').textContent=d.roll?.a??'?';oeEl('oe-die-b').textContent=d.roll?.b??'?';
@@ -2817,7 +2871,8 @@ oeEl('oe-set-stake').addEventListener('click',()=>{
 oeEl('oddeven-view').querySelector('.oe-choice').addEventListener('click',event=>{
  const target=event.target.closest('[data-oe-guess]');if(target)oddEvenAct('choose',null,target.dataset.oeGuess);
 });
-oeEl('oe-join').addEventListener('click',()=>oddEvenAct('join'));
+oeEl('oe-join').addEventListener('click',()=>changeMyRole('player'));
+oeEl('oe-role-switch').addEventListener('click',()=>{const d=oddEvenDataByRoom.get(activeRoom);changeMyRole(d?.my_seat!=null?'spectator':'player');});
 oeEl('oe-ready').addEventListener('click',()=>oddEvenAct('ready'));
 oeEl('oe-start').addEventListener('click',()=>oddEvenAct('start'));
 setInterval(()=>{
