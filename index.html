@@ -196,12 +196,24 @@
 .match-gate.running{background:#fbfdfb;padding:6px 17px}
 .match-gate.running .match-gate-info strong{font-size:11px}
 @media(max-width:620px){.match-gate{padding:9px 10px}.match-gate-info{min-width:170px}.match-gate-button{min-width:83px;padding:8px 12px}}
+
+/* Operator controls: subdued Excel notifications */
+.admin-notice{position:fixed;z-index:120;top:52px;left:50%;transform:translateX(-50%);width:min(620px,calc(100vw - 24px));display:flex;align-items:flex-start;gap:12px;background:#f3faf5;border:1px solid #4d9870;border-left:5px solid #107c41;box-shadow:0 8px 26px #122b1c30;padding:12px 14px;color:#204b30}
+.admin-notice-label{font-weight:800;color:#107c41;white-space:nowrap}.admin-notice-text{white-space:pre-wrap;overflow-wrap:anywhere;flex:1;line-height:1.5}.admin-notice-close{border:0;background:transparent;color:#476b53;font-size:20px;padding:0 4px;line-height:1}
+.admin-auth-overlay{position:fixed;z-index:160;inset:0;background:#07150e7a;display:flex;align-items:center;justify-content:center;padding:16px}
+.admin-auth-dialog{width:min(360px,100%);background:#fff;border:1px solid #b7d1bd;padding:20px;box-shadow:0 12px 45px #06180a4d}
+.admin-auth-dialog h2{font-size:16px;margin:0 0 9px;color:#175832}.admin-auth-dialog p{font-size:12px;color:#64776a;line-height:1.5;margin:0 0 14px}
+.admin-auth-dialog input{width:100%;border:1px solid #b9cabe;padding:12px;font-size:15px;margin-bottom:12px}
+.admin-auth-actions{display:flex;justify-content:flex-end;gap:8px}.admin-auth-actions button{padding:8px 16px;border:1px solid #b9cabe;background:white;color:#244936}.admin-auth-actions button[type=submit]{background:#107c41;color:#fff;border-color:#107c41}
+.admin-chat-feedback{padding:8px 10px;font-size:11px;border-top:1px solid #dce7df;color:#12683a;background:#f1faf3}.admin-chat-feedback.error{color:#a72525;background:#fff4f4}
 </style></head>
 <body>
 <div class="titlebar"><span class="app-icon" aria-hidden="true">▦</span><span class="doc-name">업무현황_2026.xlsx</span><span class="title-space"></span><span id="connection-label" class="connection">연결 중</span><button id="copy-link-btn" type="button" class="share-btn">주소 복사</button></div>
 <div class="tabs"><span class="tab file-tab">파일</span><span class="tab active">홈</span><span class="tab">삽입</span><span class="tab">페이지 레이아웃</span><span class="tab">수식</span><span class="tab">데이터</span><span class="tab">검토</span><span class="tab">보기</span></div>
 <div class="ribbon" aria-hidden="true"><div class="ribbon-group"><div class="ribbon-content"><span class="tool-icon green">▤</span><div><div class="tool-small tool-strong">붙여넣기</div><div class="tool-small">복사 · 잘라내기</div></div></div><div class="ribbon-title">클립보드</div></div><div class="ribbon-group"><div class="ribbon-content"><span class="tool-mini wide">맑은 고딕&nbsp; ▾</span><span class="tool-mini">11</span><span class="tool-divider"></span><span class="tool-strong">B</span><em>I</em><u>U</u></div><div class="ribbon-title">글꼴</div></div><div class="ribbon-group"><div class="ribbon-content"><span class="tool-icon">☷</span><span class="tool-icon">☰</span><span class="tool-small">가운데 맞춤</span></div><div class="ribbon-title">맞춤</div></div><div class="ribbon-group"><div class="ribbon-content"><span class="tool-icon green">▦</span><span class="tool-small">표 서식<br>조건부 서식</span></div><div class="ribbon-title">스타일</div></div></div>
 <div class="formula-bar"><div class="name-box"><span id="cell-address">A1</span><span>⌄</span></div><span class="fx">ƒx</span><div class="formula-value" id="formula-value">=COUNTIF(방현황,"접속중")</div></div>
+<div class="admin-notice" id="admin-notice" role="alert" hidden><strong class="admin-notice-label">공지</strong><span class="admin-notice-text" id="admin-notice-text"></span><button type="button" id="admin-notice-close" class="admin-notice-close" aria-label="공지 닫기">×</button></div>
+<div id="admin-auth-overlay" class="admin-auth-overlay" role="dialog" aria-modal="true" aria-labelledby="admin-auth-title" hidden><form id="admin-auth-form" class="admin-auth-dialog" autocomplete="off"><h2 id="admin-auth-title">운영자 인증</h2><p>닉네임 ‘운영자’를 사용하려면 운영자 비밀번호를 입력해야 합니다.</p><input id="admin-auth-password" type="password" name="operator_password" autocomplete="off" placeholder="운영자 비밀번호" required aria-label="운영자 비밀번호"><div class="admin-auth-actions"><button type="button" id="admin-auth-cancel">취소</button><button type="submit">확인</button></div></form></div>
 <section class="lobby-shell" id="lobby-view"><div class="lobby-toolbar"><div class="left"><span class="lobby-title">Sheet1 · 업무 진행 현황</span><span id="lobby-count" class="lobby-summary">0개 시트</span></div><div class="lobby-actions"><form id="nickname-form" class="nickname-form" autocomplete="off"><label for="nickname-input">내 닉네임</label><input id="nickname-input" name="nickname" type="text" maxlength="16" placeholder="Player" spellcheck="false" autocomplete="off" aria-label="닉네임 16자 이하"><button type="submit" id="nickname-save">저장</button></form><button id="create-room-btn" type="button" class="excel-action">＋ 새 방 만들기</button></div></div><div id="nickname-required-note" class="nickname-required-note" role="status" aria-live="polite" hidden>게임에 입장하려면 먼저 위의 <strong>내 닉네임</strong>을 입력하고 <strong>저장</strong>을 눌러 주세요. 저장이 완료되면 오목·테트리스·지뢰탐색게임의 방 생성과 입장이 가능합니다.</div><div id="lobby-notice" class="lobby-notice" aria-live="polite"></div><div class="grid-scroll"><table class="xl-grid" aria-label="방 현황과 대기자 목록"><colgroup><col class="row-col"><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"><col class="c7"><col class="c8"><col class="c9"><col class="c10"></colgroup><thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th><th>J</th></tr></thead><tbody id="lobby-cells"><tr><th class="row-no">1</th><td class="section" colspan="10">방 목록 불러오는 중...</td></tr></tbody></table></div></section>
 <section id="room-view" hidden><div class="room-bar"><div><span id="room-name" class="room-name">Sheet2</span><span id="room-info" class="room-info"></span></div><div class="room-control"><button id="room-copy" type="button">초대 링크 복사</button><button id="room-lobby" type="button">Sheet1</button></div></div>
 <div id="match-gate" class="match-gate" role="region" aria-label="게임 준비 및 시작">
@@ -260,7 +272,7 @@
   <div class="chooser-grid"><button type="button" class="game-choice" data-choice="gomoku"><span class="choice-symbol">▣ ▤</span><span>오목</span></button><button type="button" class="game-choice" data-choice="tetris"><span class="choice-symbol">▦</span><span>테트리스</span></button><button type="button" class="game-choice mine-choice" data-choice="mine_battle"><span class="choice-symbol">▥</span><span>지뢰탐색게임</span></button></div><p class="chooser-note">선택하면 새 시트가 생성됩니다.</p>
  </div>
 </div>
-<div id="chat" class="chat" hidden><button type="button" id="chat-title-button" class="chat-title" aria-expanded="true" aria-controls="chat-body" title="메모 접기/펼치기"><span>메모 <span id="chat-count"></span></span><span class="chat-toggle" id="chat-toggle-glyph">−</span></button><div class="chat-body" id="chat-body"><div id="chat-messages" class="chat-messages"><div class="chat-empty">내용 없음</div></div><form class="chat-form" id="chat-form"><input id="chat-input" class="chat-input" placeholder="내용 입력" maxlength="180" autocomplete="off" aria-label="채팅 메시지"><button type="submit" class="chat-send">보내기</button></form></div></div>
+<div id="chat" class="chat" hidden><button type="button" id="chat-title-button" class="chat-title" aria-expanded="true" aria-controls="chat-body" title="메모 접기/펼치기"><span>메모 <span id="chat-count"></span></span><span class="chat-toggle" id="chat-toggle-glyph">−</span></button><div class="chat-body" id="chat-body"><div id="chat-messages" class="chat-messages"><div class="chat-empty">내용 없음</div></div><div id="admin-chat-feedback" class="admin-chat-feedback" role="status" hidden></div><form class="chat-form" id="chat-form"><input id="chat-input" class="chat-input" placeholder="내용 입력" maxlength="280" autocomplete="off" aria-label="채팅 메시지"><button type="submit" class="chat-send">보내기</button></form></div></div>
 <footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right">100%</span></footer>
 <script>
 'use strict';
@@ -434,12 +446,38 @@ const $ = id => document.getElementById(id);
 const LETTERS='ABCDEFGHIJKLMNO';
 const numbered=n=>'Player '+n;
 const NICKNAME_STORAGE='excel-games-my-nickname-v1';
+const ADMIN_SESSION_KEY='excel-games-admin-token-v1';
+let adminToken='';
+try{adminToken=sessionStorage.getItem(ADMIN_SESSION_KEY)||'';}catch(_){}
+function persistAdminToken(token){
+ adminToken=token||'';
+ try{if(adminToken)sessionStorage.setItem(ADMIN_SESSION_KEY,adminToken);else sessionStorage.removeItem(ADMIN_SESSION_KEY);}catch(_){}
+}
+let adminAuthResolve=null;
+function requestAdminPassword(){
+ if(adminAuthResolve)return Promise.resolve(null);
+ const overlay=$('admin-auth-overlay'),field=$('admin-auth-password');
+ overlay.hidden=false;field.value='';
+ setTimeout(()=>field.focus(),0);
+ return new Promise(resolve=>{adminAuthResolve=resolve;});
+}
+function finishAdminPassword(value){
+ const done=adminAuthResolve;adminAuthResolve=null;
+ $('admin-auth-overlay').hidden=true;$('admin-auth-password').value='';
+ if(done)done(value);
+}
+$('admin-auth-form').addEventListener('submit',e=>{
+ e.preventDefault();finishAdminPassword($('admin-auth-password').value);
+});
+$('admin-auth-cancel').addEventListener('click',()=>finishAdminPassword(null));
+$('admin-auth-overlay').addEventListener('click',e=>{if(e.target.id==='admin-auth-overlay')finishAdminPassword(null);});
+
 let myNickname='';
 try{myNickname=(localStorage.getItem(NICKNAME_STORAGE)||'').trim().slice(0,16);}catch(_){}
 let myLobbyNumber=0,nicknameByNumber=new Map(),nicknameLastSync=0,nicknameSyncFailed=false,nicknameLocalPublished=false,nicknameRevision=0;
 // Access requires an explicitly chosen nickname and a successful Supabase profile sync.
 // A generated fallback such as "Player 12" is never an admission credential.
-function hasSavedNickname(){return Boolean(myNickname.trim() && nicknameLocalPublished);}
+function hasSavedNickname(){return Boolean(myNickname.trim() && nicknameLocalPublished && (myNickname!=='운영자'||adminToken));}
 function refreshNicknameAccess(){
  const allowed=hasSavedNickname();
  const banner=document.getElementById('nickname-required-note');if(banner)banner.hidden=allowed;
@@ -546,7 +584,7 @@ async function callRpc(fn,params,keepalive=false){
  }catch(e){if(e.name==='AbortError')throw new Error('서버 응답 시간 초과');throw e;}finally{clearTimeout(timeout);}
 }
 function lobbyRpc(action='list',title='',game='gomoku'){return callRpc('renju_lobby_v2',{p_client:CLIENT_ID,p_action:action,p_title:title,p_game:game});}
-function nicknameRpc(nickname=null){return callRpc('renju_nickname_sync',{p_client:CLIENT_ID,p_nickname:nickname});}
+function nicknameRpc(nickname=null,token=null){return callRpc('renju_nickname_sync',{p_client:CLIENT_ID,p_nickname:nickname,p_admin_token:token});}
 function applyNicknameData(data){
  const next=new Map();for(const p of (data.profiles||[])){const n=Number(p.number);if(n>0&&typeof p.name==='string'&&p.name.trim())next.set(n,p.name.trim());}
  const changed=JSON.stringify([...next])!==JSON.stringify([...nicknameByNumber]);
@@ -562,8 +600,9 @@ async function syncNicknames(force=false){
  nicknameLastSync=now;
  try{
   const shouldPublish=Boolean(myNickname&&!nicknameLocalPublished);
-  const data=await nicknameRpc(shouldPublish?myNickname:null);
-  if(shouldPublish)nicknameLocalPublished=true;
+  const publishAllowed=!shouldPublish||myNickname!=='운영자'||Boolean(adminToken);
+  const data=await nicknameRpc(shouldPublish&&publishAllowed?myNickname:null,adminToken);
+  if(shouldPublish&&publishAllowed)nicknameLocalPublished=true;
   nicknameSyncFailed=false;
   applyNicknameData(data);maybeOpenInitialRoom();
  }catch(e){nicknameSyncFailed=true;refreshNicknameAccess();/* Keep the room gate closed if profile sync fails. */}
@@ -738,7 +777,7 @@ function pollOtherRoomsInBackground(){
  for(const id of openRooms){
   if(id===activeRoom||roomPollInFlight.has(id))continue;
   roomPollInFlight.add(id);
-  roomRpc(id).then(data=>applyRoom(id,data)).catch(()=>{}).finally(()=>roomPollInFlight.delete(id));
+  roomRpc(id).then(data=>applyRoom(id,data)).catch(e=>{if(isKickedError(e))returnKickedToLobby(id);}).finally(()=>roomPollInFlight.delete(id));
  }
 }
 async function refresh(){
@@ -769,7 +808,7 @@ async function refresh(){
     }
    }catch(e){
     const cache=roomCache.get(id);if(cache)cache.connected=false;
-    if(id===activeRoom){connected=false;notify('동기화 지연: '+e.message+' · 복구 시 자동으로 다시 연결합니다.',true);}
+    if(isKickedError(e)){returnKickedToLobby(id);}else if(id===activeRoom){connected=false;notify('동기화 지연: '+e.message+' · 복구 시 자동으로 다시 연결합니다.',true);}
    }
   }
  }finally{
@@ -818,10 +857,22 @@ function changeUrl(id){const url=new URL(location.href);if(id)url.searchParams.s
 function switchView(id){if(id && !requireNickname())return;activeRoom=id;$('lobby-view').hidden=!!id;$('room-view').hidden=!id;$('chat').hidden=!id;chatLastSeen='';hover=null;
  if(id){const item=roomList.find(r=>r.id===id);$('room-name').textContent=(item?.sheet||'Sheet')+'  '+(item?.game==='mine_battle'?'지뢰탐색게임':(item?.title||''));$('room-info').textContent='  '+id;activateCache();setTimeout(resizeCanvas,30);}else{$('cell-address').textContent='A1';$('formula-value').textContent='=COUNTIF(방현황,"접속중")';}
  updateSheetTabs();changeUrl(id);renderTetrisRoom();renderMineRoom();renderMatchGate();}
-async function openRoom(id){if(!requireNickname())return;if(!ROOM_REGEX.test(id)){lobbyNotify('잘못된 방 주소입니다.',true);return;}
+function isKickedError(error){return /강퇴되었습니다/.test(String(error?.message||error||''));}
+const kickedRooms=new Set();
+function returnKickedToLobby(id){
+ if(!id)return;
+ kickedRooms.add(id);
+ openRooms=openRooms.filter(x=>x!==id);
+ roomCache.delete(id);tetrisDataByRoom.delete(id);tetrisLocalByRoom.delete(id);
+ mineDataByRoom.delete(id);matchGateByRoom.delete(id);matchGateRestarting.delete(id);
+ if(activeRoom===id)switchView(null);else updateSheetTabs();
+ lobbyNotify('운영자에 의해 해당 방에서 강퇴되었습니다. 다른 방은 이용할 수 있습니다.',true);
+}
+async function openRoom(id){if(!requireNickname())return;
+ if(kickedRooms.has(id)){lobbyNotify('해당 방에서는 강퇴되어 다시 입장할 수 없습니다.',true);return;}if(!ROOM_REGEX.test(id)){lobbyNotify('잘못된 방 주소입니다.',true);return;}
  if(!roomList.some(r=>r.id===id)){lobbyNotify('현재 목록에 없는 시트입니다.',true);return;}
  if(!openRooms.includes(id)){if(openRooms.length>=8){lobbyNotify('동시에 열 수 있는 시트는 8개입니다.',true);return;}openRooms.push(id);}
- switchView(id);try{applyRoom(id,await roomRpc(id));applyGate(id,await gateRpc(id));notify('');}catch(e){notify(e.message,true);}
+ switchView(id);try{applyRoom(id,await roomRpc(id));applyGate(id,await gateRpc(id));notify('');}catch(e){if(isKickedError(e))returnKickedToLobby(id);else notify(e.message,true);}
 }
 function createRoom(){if(!requireNickname())return;$('create-modal').hidden=false;}
 function closeCreateModal(){$('create-modal').hidden=true;}
@@ -859,7 +910,17 @@ $('nickname-form').addEventListener('submit',async e=>{
  if(!lobbyReady){lobbyNotify('서버 연결 후 저장할 수 있습니다.',true);return;}
  button.disabled=true;button.textContent='저장 중';
  try{
-  const data=await nicknameRpc(nickname);myNickname=nickname;nicknameLocalPublished=true;
+  let newAdminToken=null;
+  if(nickname==='운영자'){
+   const password=await requestAdminPassword();
+   if(password===null){lobbyNotify('운영자 비밀번호 입력을 취소했습니다.');return;}
+   const login=await callRpc('renju_admin_login',{p_client:CLIENT_ID,p_password:password});
+   newAdminToken=login.token;
+   if(!newAdminToken)throw new Error('운영자 인증 정보를 받지 못했습니다.');
+  }
+  const data=await nicknameRpc(nickname,newAdminToken);
+  persistAdminToken(nickname==='운영자'?newAdminToken:'');
+  myNickname=nickname;nicknameLocalPublished=true;
   try{if(nickname)localStorage.setItem(NICKNAME_STORAGE,nickname);else localStorage.removeItem(NICKNAME_STORAGE);}catch(_){}
   nicknameSyncFailed=false;applyNicknameData(data);renderLobby();if(activeRoom)paintState();
   lobbyNotify('닉네임 저장 완료! 이제 게임에 입장할 수 있습니다.');maybeOpenInitialRoom();
@@ -874,8 +935,62 @@ $('sheet-nav').addEventListener('click',e=>{const closer=e.target.closest('[data
  if(e.target.closest('[data-sheet="lobby"]'))switchView(null);});
 $('lobby-cells').addEventListener('click',e=>{const tr=e.target.closest('[data-room]');if(tr)openRoom(tr.dataset.room);});
 $('rematch-btn').addEventListener('click',async()=>{if(state&&state.winner!==null&&['host','guest'].includes(mySeat))await gameAction('rematch');});
-$('chat-form').addEventListener('submit',async e=>{e.preventDefault();const input=$('chat-input');const text=input.value.trim();if(!activeRoom||!connected||!text||chatPending)return;
- chatPending=true;const ok=await gameAction('chat',{p_text:text});chatPending=false;if(ok){input.value='';input.focus();}});
+let lastNoticeId=null;
+function showOperatorMessage(message,error=false){
+ const el=$('admin-chat-feedback');el.textContent=message||'';
+ el.hidden=!message;el.classList.toggle('error',!!error);
+}
+async function pollAnnouncement(){
+ if(document.hidden)return;
+ try{
+  const data=await callRpc('renju_admin_notice_sync',{});
+  const notice=data.notice;
+  if(!notice){$('admin-notice').hidden=true;lastNoticeId=null;return;}
+  const id=String(notice.id);
+  if(lastNoticeId!==id)lastNoticeId=id;
+  let dismissed='';try{dismissed=sessionStorage.getItem('excel-games-dismissed-notice')||'';}catch(_){}
+  if(dismissed===id){$('admin-notice').hidden=true;return;}
+  $('admin-notice-text').textContent=notice.text;
+  $('admin-notice').hidden=false;
+ }catch(_){/* Optional add-on; core game remains operational while network is offline. */}
+}
+$('admin-notice-close').addEventListener('click',()=>{
+ $('admin-notice').hidden=true;
+ try{sessionStorage.setItem('excel-games-dismissed-notice',lastNoticeId||'');}catch(_){}
+});
+setInterval(pollAnnouncement,3200);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollAnnouncement();});
+setTimeout(pollAnnouncement,800);
+$('chat-form').addEventListener('submit',async e=>{
+ e.preventDefault();const input=$('chat-input'),text=input.value.trim();
+ if(!activeRoom||!connected||!text||chatPending)return;
+ const slash=text.startsWith('/강퇴')||text.startsWith('/공지');
+ if(slash){
+  if(myNickname!=='운영자'||!adminToken||!hasSavedNickname()){
+   showOperatorMessage('운영자 인증을 완료한 계정만 사용할 수 있는 명령입니다.',true);return;
+  }
+  const match=text.match(/^\/(강퇴|공지)\s+([\s\S]+)$/);
+  if(!match){showOperatorMessage('사용법: /강퇴 닉네임 또는 /공지 내용',true);return;}
+  const value=match[2].trim();
+  if(!value){showOperatorMessage('명령 뒤에 내용을 입력해 주세요.',true);return;}
+  chatPending=true;$('chat-form').querySelector('button').disabled=true;
+  try{
+   const result=await callRpc('renju_admin_command',{
+    p_client:CLIENT_ID,p_token:adminToken,p_action:match[1]==='강퇴'?'kick':'notice',
+    p_room:activeRoom,p_target_nickname:match[1]==='강퇴'?value:null,
+    p_message:match[1]==='공지'?value:null
+   });
+   showOperatorMessage(result.message||'명령 처리 완료');input.value='';input.focus();
+   if(match[1]==='공지')await pollAnnouncement();
+  }catch(err){showOperatorMessage(err.message,true);}
+  finally{chatPending=false;$('chat-form').querySelector('button').disabled=false;}
+  return;
+ }
+ if(text.length>180){showOperatorMessage('일반 메모는 180자 이내로 작성해 주세요.',true);return;}
+ chatPending=true;
+ try{const ok=await gameAction('chat',{p_text:text});if(ok){input.value='';input.focus();}}
+ finally{chatPending=false;}
+});
 // Memo minimize / restore: state persists when switching sheets or reloading.
 const MEMO_COLLAPSED_KEY='excel-games-memo-collapsed-v2';
 let memoCollapsed=false;
