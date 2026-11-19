@@ -661,7 +661,7 @@ let matchGateByRoom=new Map(),matchGateActionPending=false,matchGateRestarting=n
 // Only poll quickly while waiting for Ready/Start or after a completed round.
 let matchGateQuickBusy=false;
 // Display-only countdown. The SQL RPC checks the authoritative server deadline.
-let gomokuClockOffsetMs=0,gomokuDeadlineRefreshBusy=false,gomokuDeadlineNextCheck=0,gomokuUrgentPreview=false;
+let gomokuClockOffsetMs=0,gomokuDeadlineRefreshBusy=false,gomokuDeadlineNextCheck=0,gomokuUrgentPreview=false,gomokuUrgentBoard=false;
 function remainingGomokuMs(){
  if(!state?.turnDeadline)return null;
  const expiry=Date.parse(state.turnDeadline);
@@ -673,13 +673,14 @@ function paintGomokuClock(){
  el.hidden=!activeRoom || isMineRoom() || isTetrisRoom();
  if(el.hidden)return;
  const ms=hasMatchStarted() && state?.winner==null?remainingGomokuMs():null;
- const urgent=ms!==null && ms>0 && ms<=10000;
- // Only the player whose turn it is sees a red placement preview.
- // Observers/opponents still see the countdown without a red stone.
+ const urgent=ms!==null && ms<=10000;
+ // All already-placed black/white stones change to two distinguishable red tones
+ // for everyone watching the board. Only the active player gets a red cursor preview.
  const myUrgent=urgent && connected && (mySeat==='host'||mySeat==='guest') && state?.turn===myColor();
- if(gomokuUrgentPreview!==myUrgent){
+ if(gomokuUrgentBoard!==urgent || gomokuUrgentPreview!==myUrgent){
+   gomokuUrgentBoard=urgent;
    gomokuUrgentPreview=myUrgent;
-   draw(); // redraw a stationary cursor as the clock crosses the 10-second boundary
+   draw(); // redraw immediately, even if the pointer has not moved
  }
  const mineCard=myColor()===1?'black-card':'white-card';
  $('black-card').classList.toggle('urgent-stone',myUrgent&&mineCard==='black-card');
@@ -1320,14 +1321,15 @@ function drawStone(x,y,color){
   ctx.strokeRect(left+pad+.5,top+pad+.5,t-pad*2-1,t-pad*2-1);
   ctx.restore();
 }
-function drawUrgentStone(x,y){
-  // A muted red cell marker; never alter stones that are already placed.
+function drawUrgentStone(x,y,color){
+  // Urgent display only: black/white remain distinguishable by red tone.
+  // The board data stays unchanged, and normal colours return at the next turn.
   const {header:h,step:t}=geometry;
   const pad=Math.max(3,Math.min(7,t*.18));
   const left=h+x*t,top=h+y*t;
   ctx.save();
-  ctx.fillStyle='#c96e73';
-  ctx.strokeStyle='#ab464d';
+  ctx.fillStyle=color===1?'#b84752':'#f2a7ad';
+  ctx.strokeStyle=color===1?'#872b34':'#b45460';
   ctx.lineWidth=Math.max(1,t*.035);
   ctx.fillRect(left+pad,top+pad,t-2*pad,t-2*pad);
   ctx.strokeRect(left+pad+.5,top+pad+.5,t-2*pad-1,t-2*pad-1);
@@ -1370,13 +1372,13 @@ function draw(){
     ctx.strokeStyle=gomokuUrgentPreview&&canPlayAt(hover.x,hover.y)?'#c76870':'#19a15c';ctx.lineWidth=gomokuUrgentPreview?2:1.5;
     ctx.strokeRect(h+hover.x*t+1,h+hover.y*t+1,t-2,t-2);
   }
-  for(let y=0;y<15;y++)for(let x=0;x<15;x++)if(b[y*15+x])drawStone(x,y,b[y*15+x]);
+  for(let y=0;y<15;y++)for(let x=0;x<15;x++)if(b[y*15+x]){if(gomokuUrgentBoard)drawUrgentStone(x,y,b[y*15+x]);else drawStone(x,y,b[y*15+x]);}
   if(hover&&canPlayAt(hover.x,hover.y)){
-    if(gomokuUrgentPreview)drawUrgentStone(hover.x,hover.y);
+    if(gomokuUrgentPreview)drawUrgentStone(hover.x,hover.y,state.turn);
     else {ctx.save();ctx.globalAlpha=.40;drawStone(hover.x,hover.y,state.turn);ctx.restore();}
   }
   if(pendingMovePoint?.room===activeRoom && !b[index(pendingMovePoint.x,pendingMovePoint.y)]){
-    if(pendingMovePoint.urgent)drawUrgentStone(pendingMovePoint.x,pendingMovePoint.y);
+    if(pendingMovePoint.urgent&&gomokuUrgentBoard)drawUrgentStone(pendingMovePoint.x,pendingMovePoint.y,pendingMovePoint.color);
     else {ctx.save();ctx.globalAlpha=.53;drawStone(pendingMovePoint.x,pendingMovePoint.y,pendingMovePoint.color);ctx.restore();}
   }
 }
