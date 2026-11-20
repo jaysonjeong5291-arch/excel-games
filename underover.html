@@ -196,13 +196,13 @@ $('uo-chat-form').addEventListener('submit',async e=>{
 });
 function resetSocial(){socialData=null;socialSignature='';socialMissing=false;socialRoom=room;$('uo-count').textContent='관전 0명';$('uo-spectators').textContent='관전자 확인 중…';$('uo-chat-list').innerHTML='<div class="uo-chat-empty">채팅을 불러오는 중…</div>';}
 function isMineTurn(){return !!data?.my_seat&&data.actor===data.my_seat;}
-function humanPhase(p){return {waiting:'참가·준비',choose1:'첫 주사위 선택',bet1:'1차 베팅',sides:'비공개 예측',choose2:'2차 주사위 선택',bet2:'2차 베팅',finished:'최종 결과'}[p]||p}
-function stageBar(){let order=['waiting','choose1','bet1','sides','choose2','bet2','finished'];$('stage').innerHTML=order.map((s,i)=>`<span class="stage ${s===data?.phase?'current':''}">${i+1}. ${humanPhase(s)}</span>`).join('')}
+function humanPhase(p){return {waiting:'참가·준비',sides:'비공개 진영 선택',choose1:'비공개 1차 주사위',bet1:'1차 베팅',choose2:'공개 2차 주사위',bet2:'2차 베팅',finished:'최종 결과'}[p]||p}
+function stageBar(){let order=['waiting','sides','choose1','bet1','choose2','bet2','finished'];$('stage').innerHTML=order.map((s,i)=>`<span class="stage ${s===data?.phase?'current':''}">${i+1}. ${humanPhase(s)}</span>`).join('')}
 function render(){stageBar();if(!data){$('wallet').textContent='회원 공용 포인트';$('uo-social').hidden=true;renderLobby();return}$('wallet').textContent='내 포인트 '+fmt(data.my_balance)+'P';renderRoom();renderSocial();updateClock()}
 function updateClock(){const el=$('uo-clock');if(!el)return;if(!data?.deadline){el.textContent='';return}const seconds=Math.max(0,Math.ceil((new Date(data.deadline).getTime()-Date.now())/1000));el.textContent=seconds+'초 남음';}
 function back(){if(window.parent!==window)window.parent.postMessage({type:'UO_CLOSE'},location.origin);else{room='';data=null;history.replaceState(null,'',location.pathname);refresh();}}
 $('back').addEventListener('click',back);
-function renderLobby(){let html='<div class="heading">언더오버 1:1 · 온라인 방 목록</div><div class="flex"><button id="create" class="button primary">＋ 새 언더오버방</button><button id="reload" class="button">↻ 새로고침</button></div><p class="game-hint">목표 11~17 공개 → 첫 주사위 각자 선택·동시 공개 → 높은 숫자부터 1차 베팅 → 언더·오버·타겟 비공개 선택 → 두 번째 주사위 각자 비공개 선택 → 2차 베팅 → 합계 공개 및 정산. 실제 공용 포인트 사용.</p><div class="flex share"><input class="input" id="join-code" placeholder="방 코드 u-xxxxxxxxxxxx"/><button id="join" class="button">입장</button></div><div class="room-list"><table class="sheet"><thead><tr><th>방 번호</th><th>방장</th><th>참가자</th><th>진행</th><th></th></tr></thead><tbody>';
+function renderLobby(){let html='<div class="heading">언더오버 1:1 · 온라인 방 목록</div><div class="flex"><button id="create" class="button primary">＋ 새 언더오버방</button><button id="reload" class="button">↻ 새로고침</button></div><p class="game-hint">목표 11~17 공개 → 진영 비공개 선택 → 첫 주사위 비공개 선택 → 높은 숫자부터 1차 베팅 → 두 번째 주사위 동시 공개 → 높은 숫자부터 2차 베팅 → 최종 공개 및 정산. 실제 공용 포인트 사용.</p><div class="flex share"><input class="input" id="join-code" placeholder="방 코드 u-xxxxxxxxxxxx"/><button id="join" class="button">입장</button></div><div class="room-list"><table class="sheet"><thead><tr><th>방 번호</th><th>방장</th><th>참가자</th><th>진행</th><th></th></tr></thead><tbody>';
  html+=(lobby.length?lobby.map(x=>`<tr><td>${esc(x.id)}</td><td>${esc(x.p1)}</td><td>${esc(x.p2||'대기')}</td><td>${humanPhase(x.status)}</td><td><div class="flex"><button data-join="${esc(x.id)}" class="button">입장</button><button data-watch="${esc(x.id)}" class="button">관전</button></div></td></tr>`).join(''):'<tr><td colspan="5">아직 생성된 언더오버방이 없습니다.</td></tr>');html+='</tbody></table></div>';$('root').innerHTML=html;
  $('create').onclick=()=>act('create');$('reload').onclick=refresh;
  $('join').onclick=()=>join($('join-code').value.trim());$('root').querySelectorAll('[data-join]').forEach(el=>el.onclick=()=>join(el.dataset.join));$('root').querySelectorAll('[data-watch]').forEach(el=>el.onclick=()=>join(el.dataset.watch,true));
@@ -217,8 +217,8 @@ function renderRoom(){
  html+=`<div class="bets"><div><small>진행 단계</small><strong>${esc(humanPhase(d.phase))}</strong></div><div><small>총 판돈</small><strong>${fmt(d.pot)}P</strong>${d.carry_count?`<small>이월 ${d.carry_count}회 · 다음 예치 ${fmt(d.next_ante)}P/인</small>`:''}</div><div><small>현재 베팅</small><strong>${fmt(d.current_bet)}P</strong></div><div><small>내 포인트</small><strong>${fmt(d.my_balance)}P</strong></div></div>`;
  html+='<div class="cards">';
  for(const p of players){
-  const mine=p.seat===me,seen1=d.phase!=='choose1'&&d.phase!=='waiting',
-        knownDie2=d.phase==='finished'?d.die2?.[p.seat-1]:mine?d.my_die2:null;
+  const mine=p.seat===me,seen1=d.phase==='finished',
+        knownDie2=d.phase==='finished'?d.die2?.[p.seat-1]:p.die2||(mine?d.my_die2:null);
   let sideLabel=p.side?sideText(p.side):(d.phase==='finished'?'선택 없음':mine&&d.my_side_selected?'내 선택 확정':'비공개 / 미선택');
   html+=`<div class="card ${mine?'self':''} ${d.actor===p.seat?'turn':''}"><div class="who"><span>${p.seat===1?'1P':'2P'} · ${esc(p.name||'입장 대기')}</span><small>${p.ready?'준비 ✓':''}</small></div><div class="dice">${dieHtml(seen1?p.die1:null)}${dieHtml(knownDie2)}</div><div class="uo-card-row"><span>예측: <b>${esc(sideLabel)}</b></span><span>이번 거리 베팅 ${fmt(p.bet||0)}P</span></div><div class="note">잔액 ${p.balance==null?'비공개':fmt(p.balance)+'P'} · 총 예치 ${fmt(p.committed||0)}P</div></div>`;
  }
@@ -231,16 +231,16 @@ function renderRoom(){
  if(d.phase==='waiting'){
    html+=`<div class="notice">두 사람 모두 준비하면 목표 숫자(11~17)가 공개됩니다. 시작 예치금은 각각 10P이며, 이월 중이면 매판 두 배가 됩니다.</div><div class="flex">${me>0?`<button data-act="ready" class="button ${p.ready?'':'primary'}">${p.ready?'준비 취소':'준비 완료'}</button>`:''}${me===1?`<button data-act="start" class="button primary" ${!(players[0].ready&&players[1].ready&&players[1].name)?'disabled':''}>게임 시작</button>`:''}</div>`;
  }else if(d.phase==='choose1'){
-   html+='<div class="notice">첫 번째 주사위를 각자 직접 선택합니다. 둘 다 고르면 <b>동시에 공개</b>되고, 숫자가 높은 사람이 1차 베팅을 시작합니다. 같으면 1P가 선입니다.</div>';
+   html+='<div class="notice">첫 번째 주사위를 각자 직접 고르세요. <b>두 사람의 숫자는 1차·2차 베팅 중 모두 비공개</b>이며 최종 정산 때 공개됩니다. 숫자가 높은 사람부터 1차 베팅을 시작하며 동점이면 1P가 먼저입니다.</div>';
    if(me>0&&!d.my_die_selected)html+=`<div class="choice-row">${[1,2,3,4,5,6].map(n=>`<button class="die option" data-die="${n}" aria-label="주사위 ${n} 선택">${faces[n]}</button>`).join('')}</div>`;
    else html+=`<div class="notice">${d.my_die_selected?'주사위 확정 완료 · 상대방 대기':'주사위가 확정되기를 기다리는 중'}</div>`;
  }else if(d.phase==='bet1'||d.phase==='bet2'){
    const first=d.phase==='bet1';
-   html+=`<div class="notice">${first?'1차 베팅: 공개 주사위가 높은 사람이 레이즈 또는 올인. 후순위는 <b>콜·폴드</b>만 가능합니다.':'2차 베팅: 첫 주사위가 낮았던 사람부터 시작합니다. 양쪽 모두 체크·레이즈·재레이즈·콜·폴드·올인이 가능합니다.'}</div>`;
+   html+=`<div class="notice">${first?'1차 베팅: 비공개 첫 주사위가 높은 사람이 먼저 레이즈·올인. 후순위는 <b>콜·폴드</b>만 가능합니다. 숫자는 공개하지 않습니다.':'2차 베팅: 방금 공개된 두 번째 주사위가 높은 사람이 먼저 레이즈·올인. 후순위는 <b>콜·폴드</b>만 가능합니다.'}</div>`;
    if(isTurn&&me>0){
-     const canRaise=!first||me===d.first_bettor;
+     const canRaise=me===(first?d.first_bettor:d.second_bettor);
      html+='<div class="choice-row">';
-     if(gap===0&&!first&&canRaise)html+='<button class="button" data-bet="check">체크</button>';
+     // 선순위는 두 거리 모두 레이즈/올인, 후순위는 콜/폴드만 허용
      if(gap>0)html+=`<button class="button primary" data-bet="call">콜 ${fmt(Math.min(gap,p.balance||0))}P</button>`;
      html+='<button class="button danger" data-bet="fold">폴드</button>';
      if(canRaise&&max>d.current_bet){
@@ -250,11 +250,11 @@ function renderRoom(){
      html+=`<div class="note">콜 ${fmt(gap)}P · 양측이 감당 가능한 베팅 최대 ${fmt(max)}P · 별도 상한 없음</div>`;
    }else html+='<div class="note">상대방이 베팅 중입니다.</div>';
  }else if(d.phase==='sides'){
-   html+='<div class="notice">이번 결과를 <b>언더 / 오버 / 타겟</b> 중 하나로 예측하세요. 선택은 비공개이며 두 사람이 같은 답을 선택해도 됩니다. 상대가 무엇을 선택했는지는 결과 발표 때 공개돼요.</div>';
+   html+='<div class="notice">목표 숫자가 공개됐습니다. <b>언더 / 오버 / 타겟을 먼저 비공개로 선택</b>하세요. 두 사람이 같은 답도 가능합니다. 이후 1차 비공개 주사위 → 1차 베팅 순서로 진행됩니다.</div>';
    if(me>0&&!d.my_side_selected)html+='<div class="choice-row"><button class="button primary" data-side="under">언더 · 목표 미만</button><button class="button primary" data-side="over">오버 · 목표 초과</button><button class="button primary" data-side="target">타겟 · 정확히 일치</button></div>';
    else html+=`<div class="notice">${d.my_side_selected?'예측 확정 완료 · 상대방 선택 대기':'비공개 선택 대기 중'}</div>`;
  }else if(d.phase==='choose2'){
-   html+='<div class="notice">두 번째 주사위도 각자 <b>1~6을 직접 선택</b>합니다. 내 선택만 확인 가능하며 상대방과 관전자에게는 최종 공개 때까지 숨겨집니다.</div>';
+   html+='<div class="notice">두 번째 주사위도 각자 1~6 중 직접 고릅니다. <b>두 명 모두 확정하면 동시에 공개</b>하고, 높은 숫자부터 2차 베팅을 시작합니다. 첫 주사위와 비공개 예측은 여전히 숨겨집니다.</div>';
    if(me>0&&!d.my_die2_selected)html+=`<div class="choice-row">${[1,2,3,4,5,6].map(n=>`<button class="die option" data-die2="${n}" aria-label="비공개 주사위 ${n} 선택">${faces[n]}</button>`).join('')}</div>`;
    else html+=`<div class="notice">${d.my_die2_selected?'두 번째 주사위 확정 완료 · 상대방 대기':'주사위 선택 대기 중'}</div>`;
  }else if(d.phase==='finished'){
@@ -272,7 +272,7 @@ function renderRoom(){
  }
  html+='</div>';
  html+=`<div class="uo-rules-grid"><b>적중 시 판돈 분배</b><div>혼자 언더·오버 적중 <strong>100%</strong></div><div>혼자 타겟 적중 <strong>125%</strong></div><div>둘 다 언더·오버 적중 <strong>각 50%</strong></div><div>둘 다 타겟 적중 <strong>각 75%</strong></div><small>둘 다 실패하면 팟 이월, 다음 판 기본 예치금 2배. 이월 종료 시 각자 누적 원금 반환.</small></div>`;
- if(!me)html+='<div class="notice">관전 중 · 두 번째 주사위와 예측은 판 종료 전까지 공개되지 않습니다. 베팅에는 참가할 수 없지만 채팅은 가능해요.</div>';
+ if(!me)html+='<div class="notice">관전 중 · 첫 번째 주사위와 진영 예측은 판 종료 전까지 비공개입니다. 두 번째 주사위는 2차 베팅 전 공개됩니다. 베팅에는 참가할 수 없지만 채팅은 가능해요.</div>';
  $('root').innerHTML=html;
  $('invite').onclick=()=>{const parentUrl=new URL(location.origin+location.pathname.replace(/underover\.html$/,'index.html'));parentUrl.searchParams.set('room',d.room);navigator.clipboard?.writeText(parentUrl.href).then(()=>feedback('초대 링크 복사 완료')).catch(()=>feedback('링크: '+parentUrl.href));};
  const takeSeat=$('takeSeat');if(takeSeat)takeSeat.onclick=()=>act('join');

@@ -1564,9 +1564,9 @@ function applyLobby(data){
  const present=new Set(roomList.map(r=>r.id));
  // Online rooms are queried independently of the legacy lobby. A transient missing
  // optional-list response must never eject a player from a live Hold'em/Odd-Even sheet.
- const vanished=openRooms.filter(id=>!present.has(id)&&!id.startsWith('e-')&&!id.startsWith('h-'));
+ const vanished=openRooms.filter(id=>!present.has(id)&&!id.startsWith('e-')&&!id.startsWith('h-')&&!id.startsWith('u-'));
  if(vanished.length){
-   openRooms=openRooms.filter(id=>present.has(id));
+   openRooms=openRooms.filter(id=>present.has(id)||id.startsWith('e-')||id.startsWith('h-')||id.startsWith('u-'));
    for(const id of vanished)roomCache.delete(id);
    if(activeRoom&&vanished.includes(activeRoom)){
      switchView(null);
@@ -1880,7 +1880,7 @@ function switchView(id){
   $('territory-view').hidden=true;$('lobby-view').hidden=true;$('room-view').hidden=true;
   $('holdem-view').hidden=true;$('oddeven-view').hidden=true;$('chat').hidden=true;
   $('underover-view').hidden=false;
-  const frame=$('underover-frame');const src='./underover.html?build=uo06&room='+encodeURIComponent(id);
+  const frame=$('underover-frame');const src='./underover.html?build=uo07&room='+encodeURIComponent(id);
   if(!frame.getAttribute('src')||!frame.getAttribute('src').endsWith(encodeURIComponent(id)))frame.src=src;
   setTimeout(deliverUnderOverAuth,0);
   $('cell-address').textContent='A1';$('formula-value').textContent='=언더오버(1:1)';
