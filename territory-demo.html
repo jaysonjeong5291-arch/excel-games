@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>영토전 | 플레이 가능한 테스트</title>
+<title>업무현황_영토전_VER.2026</title>
 <style>
 :root{color-scheme:dark;--bg:#101922;--panel:#1a2831;--panel2:#22323c;--line:#3c535a;--text:#f0eddf;--muted:#aebcbb;--accent:#e3b86f;--green:#84b79c;--red:#ec968a;--blue:#89afd9}
 *{box-sizing:border-box}body{margin:0;font-family:'Pretendard','Malgun Gothic','Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-width:315px}
@@ -133,20 +133,42 @@ body{background:var(--bg);color:var(--text);font-family:Arial,'Malgun Gothic','A
 .divider{border-top-color:#e5ebe6}
 .progress{border-radius:0}
 @media(max-width:700px){.sidebar{border-top:1px solid #cdd8d0}.sidecontent{padding:11px 10px 24px}}
+
+/* v0.4: left canvas embedded into a worksheet grid. Keep previous map art and right Excel tables. */
+.main{grid-template-columns:minmax(0,1fr) 318px}
+.map-sheet{display:flex;flex-direction:column;min-height:0;min-width:0;background:#fff;overflow:hidden;border-right:1px solid #d0dcd2}
+.map-sheet-cols{display:grid;grid-template-columns:33px repeat(12,minmax(0,1fr));height:25px;flex-shrink:0;background:#f1f3f1;border-bottom:1px solid #bfcfc2;font:11px Consolas,monospace;color:#65796c;text-align:center}
+.map-sheet-cols span{display:flex;align-items:center;justify-content:center;border-right:1px solid #d7e0d8;min-width:0}
+.map-sheet-cols .map-corner{background:#e9eeea}
+.map-sheet-body{display:grid;grid-template-columns:33px minmax(0,1fr);flex:1;min-height:0}
+.map-sheet-rows{display:grid;grid-template-rows:repeat(26,minmax(0,1fr));background:#f2f4f2;color:#718477;font:10px Consolas,monospace;border-right:1px solid #bfcfc2;min-height:0}
+.map-sheet-rows span{display:flex;align-items:center;justify-content:center;border-bottom:1px solid #d9e2da;min-height:0}
+.map-sheet .mapwrap{height:100%;min-height:0;position:relative;background:#a6bd8d;box-shadow:inset 0 0 0 1px #bbcbbd}
+.map-label{top:9px;left:10px;z-index:3;gap:2px}
+.map-label .title{background:#fffefcf5;color:#205b3a;border:1px solid #9ebda8;border-left:4px solid #107c41;border-radius:0;box-shadow:1px 1px 0 #a6bbaa6b;font:800 14px/1.2 Arial,'Malgun Gothic',sans-serif;letter-spacing:0;padding:8px 10px}
+.map-label small{background:#fffffff0;color:#506b58;border:1px solid #d5e2d8;font:10px/1.5 Arial,'Malgun Gothic',sans-serif;padding:5px 8px}
+.map-sheet .map-legend{background:#fffefcf4;color:#34543d;border:1px solid #bfcfc2;box-shadow:0 1px 2px #0002;border-radius:0}
+.map-sheet .map-controls .btn{background:#fffefcf0;border-radius:0;color:#256442;border:1px solid #a6c7b0}
+@media(max-width:700px){.main{display:flex;flex-direction:column}.map-sheet{height:50vh;min-height:300px;flex:0 0 auto}.map-sheet .mapwrap{height:100%;min-height:0}.map-sheet-rows,.map-sheet-cols{font-size:9px}.map-sheet-body{grid-template-columns:26px minmax(0,1fr)}.map-sheet-cols{grid-template-columns:26px repeat(12,minmax(0,1fr));height:21px}.map-label{top:5px;left:5px}.map-label .title{font-size:10px;padding:5px 7px}.map-label small{font-size:8px;max-width:240px}.map-legend{font-size:8px}.sidebar{flex:none}}
 </style>
 </head>
 <body>
 <div class="game">
 <header class="top">
-  <div class="brand"><div class="seal">⚔</div><div><div class="brand-title">영토전</div><div class="subtitle">한국 지역 영토전 · TEST v0.3</div></div></div>
+  <div class="brand"><div class="seal">⚔</div><div><div class="brand-title">영토전</div><div class="subtitle">서울 25개 구 · TEST v0.4</div></div></div>
   <div class="top-stats"><div class="statpill">세력 <strong id="topFaction">PLAYER군</strong></div><div class="statpill">포인트 <strong id="topPoints">15,000 P</strong></div><div class="statpill">군량 <strong id="topGrain">6,000</strong></div><button class="btn" id="recruitBtn">＋ 병력 모집</button><button class="btn ghost" id="resetBtn" title="모든 테스트 데이터 초기화">↺ 초기화</button><button class="btn ghost" id="exitBtn">↩ Sheet1</button></div>
 </header>
 <div class="sheetline" aria-hidden="true"><span>영토전</span></div>
 <div class="main">
-  <section class="mapwrap" id="mapFrame" aria-label="영토전 영토 지도"><canvas id="world" aria-label="클릭 가능한 24개 영토 지도"></canvas>
-    <div class="map-label"><div class="title">전국 영토 지도</div><small>성 또는 땅을 클릭하면 정보가 나와요. 드래그로 이동 · 휠로 확대</small></div>
-    <div class="map-controls"><button class="btn" id="zoomIn" aria-label="확대">＋</button><button class="btn" id="zoomOut" aria-label="축소">－</button><button class="btn" id="centerMap">⌖ 전체</button></div>
-    <div class="map-legend"><span><i class="dot" style="background:#5099cb"></i>내 영토</span><span><i class="dot" style="background:#d16d62"></i>적국</span><span><i class="dot" style="background:#d2c9a8"></i>중립</span></div>
+  <section class="map-sheet" aria-label="서울 영토전 엑셀 지도 시트">
+    <div class="map-sheet-cols" aria-hidden="true"><span class="map-corner"></span><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span></div>
+    <div class="map-sheet-body"><div class="map-sheet-rows" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span><span>26</span></div>
+      <section class="mapwrap" id="mapFrame" aria-label="서울 25개 자치구 지도"><canvas id="world" aria-label="클릭 가능한 서울 25개 자치구 지도"></canvas>
+        <div class="map-label"><div class="title">업무현황_영토전_VER.2026</div><small>서울 25개 구 · 클릭하여 영토 선택 · 드래그 이동 · 휠 확대</small></div>
+        <div class="map-controls"><button class="btn" id="zoomIn" aria-label="확대">＋</button><button class="btn" id="zoomOut" aria-label="축소">－</button><button class="btn" id="centerMap">⌖ 전체</button></div>
+        <div class="map-legend"><span><i class="dot" style="background:#5099cb"></i>내 영토</span><span><i class="dot" style="background:#d16d62"></i>상대</span><span><i class="dot" style="background:#d2c9a8"></i>중립</span></div>
+      </section>
+    </div>
   </section>
   <aside class="sidebar"><div class="sheet-column-headers" aria-hidden="true"><span class="sheet-col-corner"></span><span>A</span><span>B</span></div><div class="side-header" id="summary"></div><div class="tabs" id="tabs"><button data-tab="overview" class="selected">영토 정보</button><button data-tab="garrison">병력 배치</button><button data-tab="defense">자동 방어</button><button data-tab="logs">전투 기록</button></div><div class="sidecontent" id="panel"></div></aside>
 </div>
@@ -154,8 +176,8 @@ body{background:var(--bg);color:var(--text);font-family:Arial,'Malgun Gothic','A
 </div><div class="toast" id="toast"></div>
 <script>
 (()=>{'use strict';
-const KEY='territory_prototype_v03', LEGACY_KEY='cheonha_prototype_v01'; const COLS=6,ROWS=4,PER=8,TILE=32,W=COLS*PER*TILE,H=ROWS*PER*TILE;
-const NAMES=['파주','고양','서울','의정부','춘천','강릉','인천','부천','수원','용인','원주','동해','평택','천안','대전','청주','충주','안동','군산','전주','광주','대구','울산','부산'];
+const KEY='territory_prototype_v04', LEGACY_KEY='territory_prototype_v03', OLDER_KEY='cheonha_prototype_v01'; const W=1280,H=900;
+const NAMES=["강남구","강동구","강북구","강서구","관악구","광진구","구로구","금천구","노원구","도봉구","동대문구","동작구","마포구","서대문구","서초구","성동구","성북구","송파구","양천구","영등포구","용산구","은평구","종로구","중구","중랑구"];
 const OWNERS={player:{name:'내 세력',color:'#5c9ed0',fill:'rgba(63,151,214,.17)'},wei:{name:'서부 연합',color:'#d57668',fill:'rgba(222,102,88,.16)'},shu:{name:'북부 연합',color:'#72ad7c',fill:'rgba(99,170,113,.17)'},wu:{name:'남부 연합',color:'#b49cdd',fill:'rgba(168,143,224,.15)'},neutral:{name:'중립',color:'#d2bc91',fill:'rgba(223,189,136,.035)'}};
 const GENERALS=['김유신','강감찬','권율','이순신','계백','을지문덕'];
 const UNIT_META=[['inf','보병','🛡',300],['arch','궁병','🏹',400],['cav','기병','🐎',600]];
@@ -164,65 +186,80 @@ const ATTACK_TACTICS={charge:{name:'전면 돌격',value:1.16},siege:{name:'포�
 const $=s=>document.querySelector(s);const fmt=n=>Math.round(n).toLocaleString('ko-KR'); const now=()=>Date.now();
 function hash(x,y,z=0){let n=(Math.imul(x+17,374761393)+Math.imul(y+41,668265263)+Math.imul(z+7,1274126177))|0;n=Math.imul(n^(n>>>13),1274126177);return ((n^(n>>>16))>>>0)/4294967295}
 function emptyTroops(){return {inf:0,arch:0,cav:0}}function troopCount(a){return (a?.inf||0)+(a?.arch||0)+(a?.cav||0)}function copyTroops(a){return {inf:a.inf||0,arch:a.arch||0,cav:a.cav||0}}
-function baseState(){let lands=NAMES.map((name,id)=>{let r=Math.floor(id/COLS),c=id%COLS;let owner=([13,14].includes(id)?'player':[9,10,15].includes(id)?'wei':[3,4].includes(id)?'shu':[22,23].includes(id)?'wu':'neutral');let level=id===14?3:owner==='player'?2:owner==='neutral'?1:2;let troops=owner==='player'? (id===14?{inf:420,arch:220,cav:120}:{inf:260,arch:130,cav:80}):{inf:80+Math.floor(hash(id,1)*95),arch:20+Math.floor(hash(id,2)*60),cav:Math.floor(hash(id,3)*35)};return {id,name,owner,level,troops,defense:'balanced',general:id===14?'김유신':id===13?'강감찬':owner==='neutral'?'지역수비대':'수비대장',protectUntil:0,terrain:hash(c,r,21)>.64?'숲':hash(c,r,22)>.8?'산악':'평야'}});return {version:1,localeVersion:3,name:'PLAYER',points:15000,grain:6000,reserve:{inf:450,arch:300,cav:170},generalPool:['권율','이순신'],lands,pending:null,attackReadyAt:0,logs:[{time:now(),type:'system',text:'한국 영토전 테스트가 시작됐습니다. 대전과 천안에서 출발합니다.'}],lastSeen:now(),lastRegen:now(),selected:14,tab:'overview',recruitType:'inf',recruitQty:100,attackSource:13,attackPercent:75,attackTactic:'charge',raid:null}}
-const HISTORIC_NAMES={"서량":"파주","천수":"고양","안정":"서울","장안":"의정부","상당":"춘천","업":"강릉","한중":"인천","무도":"부천","낙양":"수원","진류":"용인","평원":"원주","북해":"동해","성도":"평택","양양":"천안","허창":"대전","수춘":"청주","하비":"충주","광릉":"안동","영안":"군산","강릉":"전주","장사":"광주","무릉":"대구","건업":"울산","회계":"부산","조운":"김유신","장료":"강감찬","서황":"권율","관우":"이순신","황충":"계백","태사자":"을지문덕","위군":"서부 연합","촉군":"북부 연합","오군":"남부 연합","PLAYER군":"내 세력"};
-function upgradeSave(s){
- if(s.localeVersion===3)return s;
- // Only visible terms change. Existing owners, troop counts, general assignments and cooldowns stay intact.
- s.lands.forEach((t,i)=>{t.name=NAMES[i];t.general=HISTORIC_NAMES[t.general]||t.general});
- s.generalPool=(s.generalPool||[]).map(n=>HISTORIC_NAMES[n]||n);
- if(Array.isArray(s.logs))s.logs.forEach(l=>{if(typeof l.text==='string'){l.text=l.text.replaceAll('장안으로','의정부로');for(const [oldName,newName] of Object.entries(HISTORIC_NAMES)){if(oldName==='업'){l.text=l.text.replaceAll('업 →','고양 →').replaceAll('→ 업','→ 고양').replaceAll('업 공격','고양 공격').replaceAll('업에서','고양에서')}else l.text=l.text.replaceAll(oldName,newName)}}});
- s.localeVersion=3;
- return s;
-}
-function safeLoad(){try{const raw=localStorage.getItem(KEY)||localStorage.getItem(LEGACY_KEY);const saved=raw&&JSON.parse(raw);if(saved&&saved.version===1&&Array.isArray(saved.lands)&&saved.lands.length===24&&saved.reserve)return upgradeSave(saved)}catch(e){console.warn('Saved data migration failed',e)}return baseState()}
+function baseState(){let lands=NAMES.map((name,id)=>{let owner=(['마포구','영등포구'].includes(name)?'player':['강남구','서초구','송파구','강동구'].includes(name)?'wei':['노원구','도봉구','강북구'].includes(name)?'shu':['구로구','금천구'].includes(name)?'wu':'neutral');let level= name==='마포구'?3:owner==='player'?2:owner==='neutral'?1:2;let troops=owner==='player'?(name==='마포구'?{inf:420,arch:220,cav:120}:{inf:260,arch:130,cav:80}):{inf:80+Math.floor(hash(id,1)*95),arch:20+Math.floor(hash(id,2)*60),cav:Math.floor(hash(id,3)*35)};return {id,name,owner,level,troops,defense:'balanced',general:name==='마포구'?'김유신':name==='영등포구'?'강감찬':owner==='neutral'?'지역수비대':'수비대장',protectUntil:0,terrain:['노원구','도봉구','강북구','은평구','관악구','서초구'].includes(name)?'산악':['마포구','강서구','종로구','성북구','중랑구'].includes(name)?'숲':'평야'}});return {version:2,localeVersion:4,name:'PLAYER',points:15000,grain:6000,reserve:{inf:450,arch:300,cav:170},generalPool:['권율','이순신'],lands,pending:null,attackReadyAt:0,logs:[{time:now(),type:'system',text:'서울 25개 구 영토전이 열렸습니다. 마포구와 영등포구에서 시작합니다.'}],lastSeen:now(),lastRegen:now(),selected:12,tab:'overview',recruitType:'inf',recruitQty:100,attackSource:19,attackPercent:75,attackTactic:'charge',raid:null}}
+function safeLoad(){try{const current=localStorage.getItem(KEY);if(current){const saved=JSON.parse(current);if(saved?.version===2&&saved.lands?.length===25)return saved;}const prev=localStorage.getItem(LEGACY_KEY)||localStorage.getItem(OLDER_KEY);if(prev){const old=JSON.parse(prev);if(old?.lands?.length===24&&old.reserve){let s=baseState();s.points=old.points??s.points;s.grain=old.grain??s.grain;s.reserve={...s.reserve,...old.reserve};s.generalPool=Array.isArray(old.generalPool)?old.generalPool:s.generalPool;s.name=old.name||s.name;const prevOwned=old.lands.filter(t=>t.owner==='player');const nextOwned=['마포구','영등포구','서대문구','용산구','양천구','은평구','동작구'];for(let i=0;i<Math.min(prevOwned.length,nextOwned.length);i++){const t=s.lands[NAMES.indexOf(nextOwned[i])],o=prevOwned[i];t.owner='player';t.troops={...o.troops};t.level=o.level;t.defense=o.defense;t.general=o.general;}s.pending=null;s.raid=null;s.attackReadyAt=0;s.logs=[{time:now(),type:'system',text:'서울 25개 구 지도로 변경되었습니다. 기존 테스트 포인트, 예비병, 보유 영토의 병력 정보를 옮겼습니다. 진행 중인 출정은 취소되었습니다.'},...(old.logs||[]).slice(0,12)];return s;}}}catch(e){console.warn('Saved data migration failed',e)}return baseState()}
 let state=safeLoad();let toastTimer=null;function save(){state.lastSeen=now();try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){console.warn('Local save unavailable',e)}}
 function toast(s){$('#toast').textContent=s;$('#toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),3400)}
 function log(msg,type='event'){state.logs.unshift({text:msg,type,time:now()});state.logs=state.logs.slice(0,45)}
-function selected(){return state.lands[state.selected]}function owns(id){return state.lands[id]?.owner==='player'}function adjacent(a,b){return Math.abs(Math.floor(a/COLS)-Math.floor(b/COLS))+Math.abs(a%COLS-b%COLS)===1}function sourcesFor(id){return state.lands.filter(t=>owns(t.id)&&adjacent(t.id,id)&&troopCount(t.troops)>0)}
+const EDGE_PAIRS=[[0,14],[0,15],[0,17],[1,5],[1,17],[2,8],[2,9],[2,16],[2,22],[3,12],[3,18],[4,6],[4,7],[4,11],[4,14],[5,10],[5,15],[5,17],[5,24],[6,7],[6,18],[6,19],[8,9],[8,16],[8,24],[10,15],[10,16],[10,22],[10,24],[11,14],[11,19],[11,20],[12,13],[12,19],[12,20],[12,21],[13,21],[13,22],[13,23],[14,17],[15,20],[15,23],[16,22],[16,24],[18,19],[20,23],[21,22],[22,23]];const CONNECTIONS=new Set(EDGE_PAIRS.map(([a,b])=>[a,b].sort((x,y)=>x-y).join(':')));
+function selected(){return state.lands[state.selected]}function owns(id){return state.lands[id]?.owner==='player'}function adjacent(a,b){return CONNECTIONS.has([a,b].sort((x,y)=>x-y).join(':'))}function sourcesFor(id){return state.lands.filter(t=>owns(t.id)&&adjacent(t.id,id)&&troopCount(t.troops)>0)}
 function terrainBonus(t){return t.terrain==='산악'?.17:t.terrain==='숲'?.10:0}function unitPower(t){return t.inf+t.arch*1.2+t.cav*1.45}
 function battle(attacker,defender,atype,territory,seed){let A=unitPower(attacker)*(ATTACK_TACTICS[atype]?.value||1)*1.1;let D=unitPower(defender)*(1+(territory.level||1)*.09+terrainBonus(territory))*(TACTICS[territory.defense]?.value||1);let f=.94+hash(Math.floor(seed/1000),territory.id,54)*.12;let win=A*f>D;let aLoss=win?.20:.38;let dLoss=win?.63:.25;if(atype==='safe')aLoss*=.65;if(atype==='charge')aLoss*=1.16;if(territory.defense==='hold')dLoss*=win?1.12:1;if(territory.defense==='preserve')dLoss*=win?.7:.85;let surv={};for(const [key] of UNIT_META)surv[key]=Math.max(0,Math.floor(attacker[key]*(1-aLoss)));return {win,attack:Math.round(A*f),defense:Math.round(D),surv,attackerLoss:troopCount(attacker)-troopCount(surv),defenderLoss:Math.floor(troopCount(defender)*dLoss)}}
 function regen(){let elapsed=Math.floor((now()-(state.lastRegen||now()))/60000);if(elapsed>0){let gain=Math.min(elapsed,720)*state.lands.filter(t=>t.owner==='player').length*5;state.grain=Math.min(50000,state.grain+gain);state.lastRegen=now()}}
-function updatePending(){regen();let n=now(),dirty=false;if(state.pending&&state.pending.dueAt<=n){const p=state.pending,target=state.lands[p.target],source=state.lands[p.source],result=battle(p.troops,target.troops,p.tactic,target,p.createdAt);if(result.win){target.owner='player';target.troops=result.surv;target.general=source?.general==='조운'?'무장':'무장';target.defense='balanced';target.protectUntil=n+20000;target.level=Math.max(1,target.level-1);state.points+=150;log(`⚔ ${target.name} 점령 성공! 아군 ${fmt(result.attackerLoss)}명 손실 · 보상 150P`,'win');toast(`${target.name} 점령 성공! +150P`)}else{if(source)for(let k of ['inf','arch','cav'])source.troops[k]+=result.surv[k];target.protectUntil=n+12000;log(`⚔ ${target.name} 공격 실패 · 귀환 병력 ${fmt(troopCount(result.surv))}명`,'lose');toast(`${target.name} 공격 실패. 잔여 병력 귀환`)}state.pending=null;state.selected=p.target;dirty=true}
+function updatePending(){regen();let n=now(),dirty=false;if(state.pending&&state.pending.dueAt<=n){const p=state.pending,target=state.lands[p.target],source=state.lands[p.source],result=battle(p.troops,target.troops,p.tactic,target,p.createdAt);if(result.win){target.owner='player';target.troops=result.surv;target.general='점령군 지휘관';target.defense='balanced';target.protectUntil=n+20000;target.level=Math.max(1,target.level-1);state.points+=150;log(`⚔ ${target.name} 점령 성공! 아군 ${fmt(result.attackerLoss)}명 손실 · 보상 150P`,'win');toast(`${target.name} 점령 성공! +150P`)}else{if(source)for(let k of ['inf','arch','cav'])source.troops[k]+=result.surv[k];target.protectUntil=n+12000;log(`⚔ ${target.name} 공격 실패 · 귀환 병력 ${fmt(troopCount(result.surv))}명`,'lose');toast(`${target.name} 공격 실패. 잔여 병력 귀환`)}state.pending=null;state.selected=p.target;dirty=true}
 if(state.raid&&state.raid.dueAt<=n){let r=state.raid,t=state.lands[r.target];let result=battle(r.troops,t.troops,'charge',t,r.createdAt);log(`🛡 ${t.name} 자동 방어 시험: ${result.win?'방어 실패':'방어 성공'} (공격 ${fmt(result.attack)} / 수비 ${fmt(result.defense)})`,'defense');toast(`${t.name} 모의 침공: ${result.win?'방어 실패':'방어 성공'} (실제 병력·영토는 그대로)`);state.raid=null;dirty=true}if(dirty)save();return dirty}
-function pick(id){state.selected=id;state.tab='overview';state.attackSource=sourcesFor(id)[0]?.id??14;render();save();}
-// Static pixel-art world. All graphics generated locally, without external images.
-const art=document.createElement('canvas');art.width=W;art.height=H;const a=art.getContext('2d');a.imageSmoothingEnabled=false;
-const riverX=y=>Math.round(24+3.9*Math.sin(y*.19+.6)+2*Math.sin(y*.07));const riverY=x=>Math.round(23+2.1*Math.sin(x*.21+.9));
-function isWater(x,y){return Math.abs(x-riverX(y))<=1|| (y>=18&&Math.abs(y-riverY(x))<=0&&x<22)|| (y>=19&&Math.abs(y-riverY(x))<=0&&x>28)}
-function tileTerrain(x,y){if(isWater(x,y))return 'water';let mountain=(x<8&&Math.abs(y-(4+2*Math.sin(x*.4)))<2.3)||(x>35&&Math.abs(y-(8+3*Math.sin(x*.28)))<3)||(x>30&&y>25&&Math.abs(x-(34+4*Math.sin(y*.33)))<3)||(x<11&&y>25&&Math.abs(y-(27+2*Math.sin(x*.7)))<2);if(mountain&&hash(x,y,19)>.15)return 'mountain';let forestNoise=(Math.sin(x*.43+y*.11)+Math.cos(y*.49-x*.24)+Math.sin(x*.17-y*.67))/3;if(forestNoise>.29&&hash(x,y,4)>.29)return 'forest';return 'grass'}
-function px(x,y,w,h,color){a.fillStyle=color;a.fillRect(Math.round(x),Math.round(y),w,h)}
-function drawWater(x,y,s){px(x,y,s,s,'#5698b7');px(x+3,y+2,s-5,s-4,'#498eac');if(hash(x,y,43)>.35){px(x+5,y+8,12,2,'#89bdcc');px(x+10,y+10,14,2,'#6baac3')}if(hash(x,y,12)>.65)px(x+2,y+25,5,2,'#aac6b9')}
-function tree(x,y,scale=1){a.fillStyle='#4b4b32';a.fillRect(x-2,y+6,5,10);a.fillStyle='#284c30';a.fillRect(x-9,y-8,20,16);a.fillStyle='#387a3b';a.fillRect(x-8,y-12,16,16);a.fillStyle='#57984d';a.fillRect(x-5,y-14,12,7);px(x-6,y-11,4,3,'#8eb75b');px(x+4,y-3,3,4,'#2b5b37')}
-function mountain(x,y){a.fillStyle='#415452';a.beginPath();a.moveTo(x-16,y+12);a.lineTo(x-1,y-17);a.lineTo(x+15,y+12);a.closePath();a.fill();a.fillStyle='#78817b';a.beginPath();a.moveTo(x-1,y-17);a.lineTo(x+15,y+12);a.lineTo(x+2,y+10);a.closePath();a.fill();a.fillStyle='#d3d6c5';a.beginPath();a.moveTo(x-1,y-17);a.lineTo(x+4,y-7);a.lineTo(x-2,y-9);a.lineTo(x-6,y-7);a.closePath();a.fill();px(x-13,y+10,27,4,'#485744')}
-function drawRoads(){a.lineJoin='round';a.lineCap='round';for(let r=0;r<ROWS;r++){for(let c=0;c<COLS;c++){let x=(c*PER+4)*TILE,y=(r*PER+4)*TILE;for(const dir of [[1,0],[0,1]]){let nc=c+dir[0],nr=r+dir[1];if(nc>=COLS||nr>=ROWS)continue;let ex=(nc*PER+4)*TILE,ey=(nr*PER+4)*TILE;a.beginPath();a.moveTo(x,y);if(dir[0]){a.bezierCurveTo(x+85,y-13,x+160,ey+11,ex,ey)}else{a.bezierCurveTo(x+13,y+79,ex-16,ey-77,ex,ey)}a.strokeStyle='#bcb18a';a.lineWidth=17;a.stroke();a.strokeStyle='#e6d8af';a.lineWidth=12;a.stroke()}}}}
-function drawBridge(x,y,vertical){a.fillStyle='#735a37';a.fillRect(x-(vertical?12:26),y-(vertical?26:12),vertical?24:52,vertical?52:24);a.fillStyle='#ccb080';a.fillRect(x-(vertical?10:23),y-(vertical?24:10),vertical?20:46,vertical?48:20);for(let i=-20;i<21;i+=8){if(vertical){px(x-10,y+i,20,2,'#9b7b50')}else{px(x+i,y-10,2,20,'#9b7b50')}}}
-function house(x,y,variant=0){px(x-10,y-2,22,17,'#a8a088');px(x-12,y-7,26,7,variant?'#784a3c':'#69513f');px(x-8,y-5,18,3,'#a16a4f');px(x-1,y+7,5,8,'#514237');px(x+6,y+2,4,4,'#c4d2c4');px(x-12,y+15,25,2,'#6b694a')}
-function fort(x,y,owner,capital){let col=OWNERS[owner]?.color||'#c0ae86';px(x-22,y+10,47,7,'#676a63');px(x-18,y-8,37,24,'#aaa893');px(x-15,y-13,30,7,'#69564f');px(x-22,y-3,12,20,'#8c8e82');px(x+12,y-3,13,20,'#8c8e82');px(x-23,y-9,13,8,'#555f5c');px(x+11,y-9,15,8,'#555f5c');px(x-5,y+4,12,12,'#473f39');px(x-3,y+7,8,9,'#625142');if(capital){px(x-6,y-22,15,12,'#bb9f72');px(x-10,y-24,21,5,'#715144');px(x-2,y-30,6,8,'#bf9d5d')}px(x+20,y-29,3,26,'#3c3831');px(x+23,y-27,16,11,col);px(x+23,y-27,16,2,'#f4dcb1')}
-function drawArt(){for(let y=0;y<ROWS*PER;y++)for(let x=0;x<COLS*PER;x++){let xx=x*TILE,yy=y*TILE,r=hash(x,y,27);px(xx,yy,TILE,TILE,r>.6?'#91b875':r>.27?'#9bc27a':'#8aaf6d');for(let n=0;n<8;n++){let dx=Math.floor(hash(x,y,n+15)*29),dy=Math.floor(hash(x,y,n+33)*29);px(xx+dx,yy+dy,2,2,n%2?'#a7cb82':'#79aa64')}}drawRoads();for(let y=0;y<ROWS*PER;y++)for(let x=0;x<COLS*PER;x++){if(isWater(x,y)){const xx=x*TILE,yy=y*TILE;px(xx-2,yy-2,TILE+4,TILE+4,'#d2cc97');drawWater(xx,yy,TILE)}}
-// Bridges across the north-south river and eastern tributaries.
-for(let r=0;r<ROWS;r++){let y=(r*PER+4)*TILE,x=riverX(r*PER+4)*TILE+TILE/2;drawBridge(x,y,false)}for(let c=0;c<COLS;c++){let x=(c*PER+4)*TILE,y=riverY(c*PER+4)*TILE+TILE/2;if(c<3||c>3)drawBridge(x,y,true)}
-for(let y=0;y<ROWS*PER;y++)for(let x=0;x<COLS*PER;x++){let t=tileTerrain(x,y);if(t==='mountain')mountain(x*TILE+16,y*TILE+20);if(t==='forest'){tree(x*TILE+11,y*TILE+15);if(hash(x,y,27)>.4)tree(x*TILE+24,y*TILE+22)}}
-for(const t of state.lands){let r=Math.floor(t.id/COLS),c=t.id%COLS;let x=(c*PER+4)*TILE,y=(r*PER+4)*TILE;px(x-27,y+22,57,7,'#6a7755');if(hash(t.id,20)>.55)house(x-40,y+5,1);if(hash(t.id,31)>.52)house(x+43,y+12,0)} }
-drawArt();
+function pick(id){state.selected=id;state.tab='overview';state.attackSource=sourcesFor(id)[0]?.id??12;render();save();}
+
+// Seoul district boundaries. Offline polygons are embedded; the source GeoJSON replaces them when accessible.
+const CENTERS={"강남구":[807.5,587.6],"강동구":[1057.5,493.4],"강북구":[732.5,256.7],"강서구":[317.5,469.2],"관악구":[567.5,703.2],"광진구":[900.0,523.0],"구로구":[405.0,646.7],"금천구":[437.5,751.6],"노원구":[842.5,224.4],"도봉구":[770.0,168.0],"동대문구":[817.5,428.9],"동작구":[562.5,601.0],"마포구":[442.5,455.8],"서대문구":[537.5,418.1],"서초구":[720.0,673.6],"성동구":[792.5,501.5],"성북구":[737.5,358.9],"송파구":[975.0,627.9],"양천구":[355.0,574.1],"영등포구":[450.0,576.8],"용산구":[627.5,547.2],"은평구":[505.0,315.9],"종로구":[645.0,407.3],"중구":[682.5,477.3],"중랑구":[920.0,361.6]};
+const FALLBACK={"강남구":[[891.0,608.7],[841.2,537.4],[722.4,558.1],[718.6,562.3],[714.6,580.5],[861.8,730.3],[891.0,608.7]],"강동구":[[1113.2,620.1],[1142.5,541.8],[1180.0,498.8],[1160.0,431.6],[1110.0,380.4],[1046.4,367.4],[967.7,449.5],[985.0,541.5],[1113.2,620.1]],"강북구":[[806.2,304.3],[783.2,225.9],[580.7,140.3],[620.3,292.2],[653.9,311.8],[806.2,304.3]],"강서구":[[366.7,338.0],[300.8,257.4],[262.5,289.0],[167.5,297.1],[92.5,356.2],[112.5,420.8],[95.0,523.0],[152.5,547.2],[183.1,576.4],[384.5,504.4],[366.7,338.0]],"관악구":[[636.0,648.6],[493.0,655.6],[484.7,679.5],[518.5,770.4],[567.5,775.8],[637.5,829.6],[669.3,819.8],[636.0,648.6]],"광진구":[[891.0,608.7],[985.0,541.5],[967.7,449.5],[898.7,440.9],[852.4,481.5],[841.2,537.4],[891.0,608.7]],"구로구":[[492.4,653.5],[401.9,595.3],[263.0,690.9],[335.7,725.7],[484.7,679.5],[492.4,653.5]],"금천구":[[484.7,679.5],[335.7,725.7],[345.0,730.1],[390.0,794.7],[457.5,805.4],[495.0,767.8],[518.5,770.4],[484.7,679.5]],"노원구":[[948.7,254.9],[935.0,229.8],[850.1,139.9],[783.2,225.9],[806.2,304.3],[829.3,322.3],[948.7,254.9]],"도봉구":[[580.7,140.3],[783.2,225.9],[850.1,139.9],[810.0,95.3],[735.0,124.9],[612.5,100.7],[567.4,116.3],[580.7,140.3]],"동대문구":[[852.4,481.5],[898.7,440.9],[829.1,334.9],[742.9,433.4],[747.2,445.3],[852.4,481.5]],"동작구":[[643.4,632.6],[542.4,510.6],[522.5,513.3],[493.0,655.6],[636.0,648.6],[643.4,632.6]],"마포구":[[519.7,511.7],[468.9,383.7],[366.7,338.0],[384.5,504.4],[404.1,518.9],[519.7,511.7]],"서대문구":[[597.2,472.4],[584.6,346.8],[468.9,383.7],[519.7,511.7],[542.4,510.6],[597.2,472.4]],"서초구":[[861.8,730.3],[714.6,580.5],[643.4,632.6],[636.0,648.6],[669.3,819.8],[707.5,808.1],[797.5,805.4],[877.0,815.2],[861.8,730.3]],"성동구":[[722.4,558.1],[841.2,537.4],[852.4,481.5],[747.2,445.3],[722.4,558.1]],"성북구":[[829.1,334.9],[829.3,322.3],[806.2,304.3],[653.9,311.8],[709.4,417.8],[742.9,433.4],[829.1,334.9]],"송파구":[[985.0,541.5],[891.0,608.7],[861.8,730.3],[877.0,815.2],[907.5,818.9],[920.0,746.2],[990.0,687.1],[1082.5,673.6],[1113.2,620.1],[985.0,541.5]],"양천구":[[384.5,504.4],[183.1,576.4],[240.0,630.6],[255.0,687.1],[263.0,690.9],[401.9,595.3],[404.1,518.9],[384.5,504.4]],"영등포구":[[522.5,513.3],[404.1,518.9],[401.9,595.3],[492.4,653.5],[522.5,513.3]],"용산구":[[718.6,562.3],[605.7,473.4],[597.2,472.4],[542.4,510.6],[643.4,632.6],[714.6,580.5],[718.6,562.3]],"은평구":[[620.3,292.2],[580.7,140.3],[567.4,116.3],[487.5,143.8],[447.5,227.1],[337.5,227.1],[300.8,257.4],[366.7,338.0],[468.9,383.7],[584.6,346.8],[620.3,292.2]],"종로구":[[653.9,311.8],[620.3,292.2],[584.6,346.8],[597.2,472.4],[605.7,473.4],[709.4,417.8],[653.9,311.8]],"중구":[[742.9,433.4],[709.4,417.8],[605.7,473.4],[718.6,562.3],[722.4,558.1],[747.2,445.3],[742.9,433.4]],"중랑구":[[829.3,322.3],[829.1,334.9],[898.7,440.9],[967.7,449.5],[1046.4,367.4],[1005.0,358.9],[948.7,254.9],[829.3,322.3]]};
+const GEO_URL='https://raw.githubusercontent.com/southkorea/seoul-maps/master/kostat/2013/json/seoul_municipalities_geo_simple.json';
+let districtPolys=Object.fromEntries(NAMES.map(n=>[n,[FALLBACK[n]]]));
+let mapSource='서울 지도 · 기본 경계';
+function geoProject(ll){return [90+(ll[0]-126.76)/(127.20-126.76)*1100,55+(37.715-ll[1])/(37.715-37.425)*780]}
+function polygonsPath(c,polys){c.beginPath();for(const ring of polys){if(ring.length<3)continue;c.moveTo(ring[0][0],ring[0][1]);for(let i=1;i<ring.length;i++)c.lineTo(ring[i][0],ring[i][1]);c.closePath()}}
+function inRing(x,y,ring){let b=false;for(let i=0,j=ring.length-1;i<ring.length;j=i++){let xi=ring[i][0],yi=ring[i][1],xj=ring[j][0],yj=ring[j][1];if((yi>y)!=(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)b=!b}return b}
+function findDistrict(x,y){for(const t of state.lands){let paths=districtPolys[t.name]||[];if(paths.some(p=>inRing(x,y,p)))return t.id}return null}
+function districtCenter(name){return CENTERS[name]||[W/2,H/2]}
 const frame=$('#mapFrame'),canvas=$('#world'),ctx=canvas.getContext('2d');let zoom=1,panX=0,panY=0,initialized=false,drag=null;ctx.imageSmoothingEnabled=false;
+function hash2(x,y,z=0){return hash(Math.floor(x),Math.floor(y),z)}
+const art=document.createElement('canvas');art.width=W;art.height=H;const a=art.getContext('2d');a.imageSmoothingEnabled=false;
+function road(points,width,color){a.beginPath();a.moveTo(...points[0]);for(let i=1;i<points.length;i++)a.lineTo(...points[i]);a.strokeStyle=color;a.lineWidth=width;a.lineJoin='round';a.lineCap='round';a.stroke()}
+function drawBaseArt(){a.fillStyle='#bdc9ae';a.fillRect(0,0,W,H);
+  // Subtle park/forest texture, kept beneath the district shapes.
+  for(let y=0;y<H;y+=18)for(let x=0;x<W;x+=18){let h=hash2(x/18,y/18,8);a.fillStyle=h>.62?'#b6cda0':'#c8d2b6';a.fillRect(x,y,18,18);if(h>.79){a.fillStyle='#7b9e73';a.fillRect(x+5,y+5,5,8);a.fillStyle='#5c895a';a.fillRect(x+8,y+2,7,9)}}
+  // Parcels and city streets: a muted map background similar to old pixel terrain.
+  for(let y=25;y<H;y+=28){road([[0,y],[W,y+((y/28)%3-1)*8]],4,'#e2ddc0')}
+  for(let x=22;x<W;x+=31){road([[x,0],[x+((x/31)%4-2)*5,H]],4,'#e2ddc0')}
+  // Western and northern hills; small textured pixel sprites.
+  for(let i=0;i<140;i++){let x=hash2(i,12,9)*W,y=hash2(i,64,12)*H;if((y<245||y>670)&&hash2(i,3,8)>.30){a.fillStyle='#748a70';a.beginPath();a.moveTo(x,y+9);a.lineTo(x+10,y-9);a.lineTo(x+18,y+9);a.fill();a.fillStyle='#a3ae93';a.fillRect(x+8,y-6,4,3)}}
+  // Seoul Han River, runs broadly west -> east. A wide blue-green band and light banks.
+  const river=[[0,490],[145,482],[270,485],[370,500],[470,516],[565,525],[650,520],[745,510],[845,491],[930,488],[1020,483],[1150,480],[1280,477]];
+  road(river,39,'#d6dec7');road(river,32,'#5a9fb8');road(river,22,'#78b9cc');
+  // Bridges at approximate Seoul crossing points.
+  for(let x of [335,493,620,751,920]){let i=Math.min(river.length-2,Math.floor(x/(W/12)));let y=river[i][1];road([[x-3,y-37],[x+3,y+37]],9,'#ae9e82');road([[x-3,y-37],[x+3,y+37]],5,'#e9dfbd')}
+  // Pale map border frame.
+  a.strokeStyle='#dbe2d0';a.lineWidth=5;a.strokeRect(3,3,W-6,H-6);
+}
+drawBaseArt();
+function fortOnCanvas(c,x,y,owner,cap){let scale=cap?1:0.74;c.save();c.translate(x,y);c.scale(scale,scale);c.fillStyle='#1c352c66';c.fillRect(-19,7,43,10);c.fillStyle='#7b7d6f';c.fillRect(-15,-8,32,24);c.fillStyle='#494d49';c.fillRect(-20,-11,12,29);c.fillRect(11,-11,12,29);c.fillStyle='#d4c8a0';c.fillRect(-17,-10,10,17);c.fillRect(12,-10,9,17);c.fillStyle='#64503e';c.fillRect(-5,3,10,15);c.fillStyle='#5d453c';c.fillRect(-21,-16,46,6);if(cap){c.fillStyle='#c1a477';c.fillRect(-8,-29,17,15);c.fillStyle='#785544';c.fillRect(-12,-30,25,5)}c.fillStyle='#3b473b';c.fillRect(19,-32,3,28);c.fillStyle=OWNERS[owner].color;c.fillRect(21,-31,18,11);c.fillStyle='#fff6d8';c.fillRect(21,-31,18,2);c.restore()}
 function fit(){let rw=frame.clientWidth,rh=frame.clientHeight;if(!rw||!rh)return;zoom=Math.min(rw/W,rh/H)*.95;panX=(rw-W*zoom)/2;panY=(rh-H*zoom)/2;initialized=true;draw()}
 function resize(){let dpr=Math.min(2,devicePixelRatio||1),w=frame.clientWidth,h=frame.clientHeight;canvas.width=Math.max(1,Math.floor(w*dpr));canvas.height=Math.max(1,Math.floor(h*dpr));canvas.style.width=w+'px';canvas.style.height=h+'px';ctx.setTransform(dpr,0,0,dpr,0,0);ctx.imageSmoothingEnabled=false;if(!initialized)fit();draw()}
 function colorTint(t){return OWNERS[t.owner]||OWNERS.neutral}
-function draw(){let dpr=Math.min(2,devicePixelRatio||1),w=frame.clientWidth,h=frame.clientHeight;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);ctx.fillStyle='#607c64';ctx.fillRect(0,0,w,h);ctx.save();ctx.translate(panX,panY);ctx.scale(zoom,zoom);ctx.imageSmoothingEnabled=false;ctx.drawImage(art,0,0);
-// Province translucent boundaries, flags and names.
-for(const t of state.lands){let c=t.id%COLS,r=Math.floor(t.id/COLS),x=c*PER*TILE,y=r*PER*TILE,size=PER*TILE;let group=colorTint(t);ctx.fillStyle=group.fill;ctx.fillRect(x,y,size,size);ctx.strokeStyle=t.id===state.selected?'#fff2c1':group.color;ctx.lineWidth=t.id===state.selected?6:3;ctx.setLineDash(t.id===state.selected?[]:[13,8]);ctx.strokeRect(x+3,y+3,size-6,size-6);ctx.setLineDash([]);
-let cx=x+4*TILE,cy=y+4*TILE;if(t.id===state.selected){ctx.beginPath();ctx.arc(cx,cy,38,0,Math.PI*2);ctx.fillStyle='#ffe9a944';ctx.fill()}
-fortOnCanvas(ctx,cx,cy,t.owner,t.id===14);ctx.textAlign='center';ctx.font='bold 16px "Malgun Gothic",sans-serif';let name=t.name;let tw=ctx.measureText(name).width;ctx.fillStyle='#182a2bcf';ctx.fillRect(cx-tw/2-12,cy+27,tw+24,25);ctx.strokeStyle='#e0c18b';ctx.lineWidth=1;ctx.strokeRect(cx-tw/2-12,cy+27,tw+24,25);ctx.fillStyle='#fff5d5';ctx.fillText(name,cx,cy+45);
-if(state.pending?.target===t.id||state.raid?.target===t.id){ctx.font='bold 33px sans-serif';ctx.fillStyle='#fbe8b7';ctx.fillText('⚔',cx+42,cy-23)}if(t.protectUntil>now()){ctx.fillStyle='#cceff8';ctx.font='bold 20px sans-serif';ctx.fillText('✦',cx-39,cy-32)}}
-ctx.restore()}
-function fortOnCanvas(c,x,y,owner,cap){c.fillStyle='#17271f77';c.fillRect(x-24,y+9,52,13);c.fillStyle='#918c7b';c.fillRect(x-19,y-7,38,25);c.fillStyle='#555c55';c.fillRect(x-22,y-11,16,30);c.fillRect(x+10,y-11,16,30);c.fillStyle='#b2ae9b';c.fillRect(x-19,y-8,13,17);c.fillRect(x+12,y-8,12,17);c.fillStyle='#594b3e';c.fillRect(x-7,y+3,14,16);c.fillStyle='#776249';c.fillRect(x-3,y+7,6,12);c.fillStyle='#7a5542';c.fillRect(x-22,y-15,48,6);if(cap){c.fillStyle='#b59a71';c.fillRect(x-10,y-29,20,16);c.fillStyle='#76513f';c.fillRect(x-15,y-29,30,6)}c.fillStyle='#413b2e';c.fillRect(x+20,y-33,3,28);c.fillStyle=colorTint({owner}).color;c.fillRect(x+23,y-32,20,12);c.fillStyle='#f8e6ba';c.fillRect(x+23,y-31,20,2)}
-function zoomAt(f,x=frame.clientWidth/2,y=frame.clientHeight/2){let next=Math.max(.32,Math.min(2.3,zoom*f));panX=x-(x-panX)*next/zoom;panY=y-(y-panY)*next/zoom;zoom=next;draw()}
+function draw(){let dpr=Math.min(2,devicePixelRatio||1),w=frame.clientWidth,h=frame.clientHeight;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);ctx.fillStyle='#c2cdb7';ctx.fillRect(0,0,w,h);ctx.save();ctx.translate(panX,panY);ctx.scale(zoom,zoom);ctx.imageSmoothingEnabled=false;ctx.drawImage(art,0,0);
+  // Outside land remains softly faded; inside each district a tinted polygon is drawn.
+  for(const t of state.lands){let rings=districtPolys[t.name]||[];if(!rings.length)continue;let group=colorTint(t);polygonsPath(ctx,rings);ctx.fillStyle=group.fill;ctx.fill('evenodd');ctx.lineWidth=t.id===state.selected?5:1.8;ctx.strokeStyle=t.id===state.selected?'#fff5d6':'#648674';ctx.setLineDash(t.id===state.selected?[]:[5,3]);ctx.stroke();ctx.setLineDash([])}
+  for(const t of state.lands){let [cx,cy]=districtCenter(t.name),selected=t.id===state.selected; if(selected){ctx.beginPath();ctx.arc(cx,cy,27,0,Math.PI*2);ctx.fillStyle='#fff4bf66';ctx.fill()}
+    fortOnCanvas(ctx,cx,cy-12,t.owner,t.name==='마포구');ctx.font='bold 15px "Malgun Gothic",Arial,sans-serif';ctx.textAlign='center';let tw=ctx.measureText(t.name).width;ctx.fillStyle='#fffdf3ee';ctx.fillRect(cx-tw/2-7,cy+12,tw+14,21);ctx.strokeStyle=selected?'#e7a932':'#b8bca9';ctx.lineWidth=selected?2:1;ctx.strokeRect(cx-tw/2-7,cy+12,tw+14,21);ctx.fillStyle=selected?'#155e34':'#243b30';ctx.fillText(t.name,cx,cy+28);
+    if(state.pending?.target===t.id||state.raid?.target===t.id){ctx.font='bold 28px sans-serif';ctx.fillStyle='#a83521';ctx.fillText('⚔',cx+30,cy-27)}
+    if(t.protectUntil>now()){ctx.fillStyle='#276e8c';ctx.font='bold 18px sans-serif';ctx.fillText('✦',cx-27,cy-25)}
+  }
+  ctx.restore()}
+function zoomAt(f,x=frame.clientWidth/2,y=frame.clientHeight/2){let next=Math.max(.25,Math.min(3,zoom*f));panX=x-(x-panX)*next/zoom;panY=y-(y-panY)*next/zoom;zoom=next;draw()}
 canvas.addEventListener('wheel',e=>{e.preventDefault();let rect=canvas.getBoundingClientRect();zoomAt(e.deltaY<0?1.13:.885,e.clientX-rect.left,e.clientY-rect.top)},{passive:false});
 canvas.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,px:panX,py:panY,moved:false};canvas.setPointerCapture(e.pointerId)});
 canvas.addEventListener('pointermove',e=>{if(!drag)return;let dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>6)drag.moved=true;if(drag.moved){canvas.classList.add('drag');panX=drag.px+dx;panY=drag.py+dy;draw()}});
-canvas.addEventListener('pointerup',e=>{if(!drag)return;let moved=drag.moved;drag=null;canvas.classList.remove('drag');if(!moved){let r=canvas.getBoundingClientRect(),x=(e.clientX-r.left-panX)/zoom,y=(e.clientY-r.top-panY)/zoom,c=Math.floor(x/(PER*TILE)),row=Math.floor(y/(PER*TILE));if(c>=0&&c<COLS&&row>=0&&row<ROWS)pick(row*COLS+c)}});
+canvas.addEventListener('pointerup',e=>{if(!drag)return;let moved=drag.moved;drag=null;canvas.classList.remove('drag');if(!moved){let r=canvas.getBoundingClientRect(),x=(e.clientX-r.left-panX)/zoom,y=(e.clientY-r.top-panY)/zoom,id=findDistrict(x,y);if(id!==null)pick(id)}});
 canvas.addEventListener('pointercancel',()=>{drag=null;canvas.classList.remove('drag')});$('#zoomIn').onclick=()=>zoomAt(1.24);$('#zoomOut').onclick=()=>zoomAt(.81);$('#centerMap').onclick=fit;
+// Replace fallback boundaries with actual Seoul 25-gu GeoJSON where browser can fetch it.
+fetch(GEO_URL).then(r=>{if(!r.ok)throw Error('geo fetch '+r.status);return r.json()}).then(geo=>{
+ if(!geo||!Array.isArray(geo.features))return;
+ let updated={};for(const f of geo.features){let name=f.properties?.name,g=f.geometry;if(!NAMES.includes(name)||!g)continue;let polys=g.type==='Polygon'?[g.coordinates]:g.type==='MultiPolygon'?g.coordinates:[];
+ let outer=polys.map(poly=>poly[0]?.map(geoProject)).filter(poly=>poly&&poly.length>=3);if(outer.length)updated[name]=outer;
+ }
+ if(Object.keys(updated).length!==25)return;
+ districtPolys=updated;mapSource='실제 서울 자치구 경계 (2013)';draw();
+}).catch(()=>{/* Offline fallback is always playable. */});
 function updateHeader(){let owned=state.lands.filter(t=>t.owner==='player');$('#topFaction').textContent=state.name==='PLAYER'?'내 세력':state.name+' 세력';$('#topPoints').textContent=fmt(state.points)+' P';$('#topGrain').textContent=fmt(state.grain);$('#bottomStatus').textContent=`내 영토 ${owned.length}개 · ${state.pending?'출정 중':'출정 대기'} · ${state.raid?'방어 테스트 중':'자동 방어 준비'}`;
 let t=selected(),owner=t.owner==='player'?(state.name==='PLAYER'?'내 세력':state.name+' 세력'):colorTint(t).name;$('#summary').innerHTML=`
 <div class="sheet-data-row sheet-banner"><span class="sheet-rownum">1</span><span class="sheet-banner-cell">${t.owner==='player'?'나의 영토':t.owner==='neutral'?'중립 영토':'상대 영토'} · ${String(t.id+1).padStart(2,'0')}</span></div>
