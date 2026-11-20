@@ -3041,7 +3041,7 @@ function renderHoldemReadout(own,board,isPlayer){
  return new Set(best.cards);
 }
 
-function underOverRpc(action='list',room=null,choice=null,amount=null){return callRpc('renju_uo_rpc',{p_action:action,p_client:CLIENT_ID,p_token:memberToken||null,p_room:room,p_choice:choice,p_amount:amount});}
+function underOverRpc(action='list',room=null,choice=null,amount=null){return callRpc('renju_uo_live_rpc',{p_action:action,p_client:CLIENT_ID,p_token:memberToken||null,p_room:room,p_choice:choice,p_amount:amount});}
 function holdemRpc(action='list',room=null,amount=null){
  return callRpc('renju_holdem_rpc',{p_action:action,p_client:CLIENT_ID,p_token:memberToken||null,p_room:room,p_amount:amount});
 }
