@@ -964,7 +964,7 @@ $('gift-form').addEventListener('submit',async e=>{
  }finally{giftSubmitting=false;$('gift-send').disabled=false;$('gift-close').disabled=false;}
 });
 
-function saveMemberToken(token){memberToken=token||'';if(!memberToken){memberGomokuStreak=null;gomokuRewardData=null;gomokuRewardSyncAt=0;memberArcadeStreaks={tetris:null,mine_battle:null};arcadeRewardData=null;arcadeRewardSyncAt=0;}try{if(memberToken)localStorage.setItem(MEMBER_TOKEN_KEY,memberToken);else localStorage.removeItem(MEMBER_TOKEN_KEY);}catch(_){}}
+function saveMemberToken(token){memberToken=token||'';if(!memberToken){memberGomokuStreak=null;gomokuRewardData=null;gomokuRewardSyncAt=0;memberArcadeStreaks={tetris:null,mine_battle:null};arcadeRewardData=null;arcadeRewardSyncAt=0;}try{if(memberToken)localStorage.setItem(MEMBER_TOKEN_KEY,memberToken);else localStorage.removeItem(MEMBER_TOKEN_KEY);}catch(_){}try{deliverUnderOverAuth();}catch(_){}}
 // Rank progression is a display calculation; account points and game rewards are untouched.
 // Lv.1 at 0P, Lv.50 exactly at 10,000P. Higher levels continue at the same slope.
 function pointsForLevel(lvl){return Math.ceil(Math.max(0,Number(lvl)-1)*10000/49);}
@@ -1841,6 +1841,7 @@ function switchView(id){
   $('underover-view').hidden=false;
   const frame=$('underover-frame');const src='./underover.html?room='+encodeURIComponent(id);
   if(!frame.getAttribute('src')||!frame.getAttribute('src').endsWith(encodeURIComponent(id)))frame.src=src;
+  setTimeout(deliverUnderOverAuth,0);
   $('cell-address').textContent='A1';$('formula-value').textContent='=언더오버(1:1)';
   updateSheetTabs();changeUrl(id);return;
  }
@@ -1986,7 +1987,16 @@ async function copyShare(){const link=shareLink();try{await navigator.clipboard.
  else if(activeRoom)notify(link);else lobbyNotify(link);}}
 $('copy-link-btn').addEventListener('click',copyShare);$('room-copy').addEventListener('click',copyShare);
 $('room-lobby').addEventListener('click',()=>switchView(null));
-window.addEventListener('message',event=>{if(event.origin!==location.origin)return;
+function deliverUnderOverAuth(){
+ const frame=$('underover-frame');
+ if(!frame?.contentWindow||!frame.getAttribute('src'))return;
+ // Target only our same-origin game frame. Do not use '*' or URL credentials.
+ frame.contentWindow.postMessage({type:'UO_AUTH',client:CLIENT_ID,token:memberToken||''},location.origin);
+}
+$('underover-frame').addEventListener('load',deliverUnderOverAuth);
+window.addEventListener('message',event=>{
+ if(event.origin!==location.origin||event.source!==$('underover-frame').contentWindow)return;
+ if(event.data?.type==='UO_AUTH_REQUEST'){deliverUnderOverAuth();return;}
  if(event.data?.type==='UO_CLOSE' && activeRoom?.startsWith('u-'))switchView(null);
 });
 $('create-room-btn').addEventListener('click',createRoom);$('add-sheet-btn').addEventListener('click',createRoom);

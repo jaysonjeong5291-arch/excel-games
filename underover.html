@@ -20,7 +20,32 @@ const fmt=n=>Number(n||0).toLocaleString('ko-KR'),esc=x=>String(x??'').replace(/
 const faces=['','⚀','⚁','⚂','⚃','⚄','⚅'];
 let room=new URLSearchParams(location.search).get('room')||'',data=null,lobby=[],busy=false,polling=false;
 let chosenDie=0,errorMessage='',wallet=10000,timeout=0;
-const client=()=>{try{return sessionStorage.getItem('renju-multi-client-v1')||''}catch{return ''}},token=()=>{try{return localStorage.getItem('excel-games-member-session-v1')||''}catch{return ''}};
+// Same-origin iframe can have partitioned storage on mobile browsers.
+// Trust the exact parent frame and origin; never send credentials in the URL.
+let parentClient='',parentToken='',parentAuthSeen=false;
+const embedded=window.parent!==window;
+const client=()=>{if(embedded)return parentClient;try{return sessionStorage.getItem('renju-multi-client-v1')||''}catch{return ''}};
+const token=()=>{if(embedded)return parentToken;try{return localStorage.getItem('excel-games-member-session-v1')||''}catch{return ''}};
+function isParentAuthMessage(e){return embedded&&e.source===window.parent&&e.origin===location.origin&&e.data?.type==='UO_AUTH'}
+window.addEventListener('message',e=>{
+ if(!isParentAuthMessage(e))return;
+ parentAuthSeen=true;
+ parentClient=typeof e.data.client==='string'?e.data.client:'';
+ parentToken=typeof e.data.token==='string'?e.data.token:'';
+});
+function requestParentAuth(){if(embedded)window.parent.postMessage({type:'UO_AUTH_REQUEST'},location.origin)}
+function ensureCredentials(){
+ if(!embedded)return Promise.resolve(client().length>=5&&token().length>=12);
+ if(parentAuthSeen)return Promise.resolve(client().length>=5&&token().length>=12);
+ return new Promise(resolve=>{
+  let timeoutId;
+  function receive(e){if(!isParentAuthMessage(e))return;clearTimeout(timeoutId);window.removeEventListener('message',receive);resolve(client().length>=5&&token().length>=12)}
+  window.addEventListener('message',receive);
+  timeoutId=setTimeout(()=>{window.removeEventListener('message',receive);resolve(false)},4500);
+  requestParentAuth();
+ });
+}
+
 function feedback(t,bad=false){$('feedback').textContent=t||'';$('feedback').style.color=bad?'#a9433c':'#667e6b';}
 async function rpc(action,choice=null,amount=null,roomOverride=null){
  const signal=AbortSignal.timeout(12000);
@@ -90,14 +115,14 @@ function renderRoom(){const d=data,me=d.my_seat,players=d.players||[];
 }
 function urlRoom(id){room=id;const u=new URL(location.href);u.searchParams.set('room',id);history.replaceState(null,'',u.pathname+u.search);}
 async function join(id){if(!/^u-[0-9a-f]{12}$/.test(id))return feedback('올바른 언더오버 방 코드를 입력해 주세요.',true);urlRoom(id);await act('join')}
-async function act(action,choice=null,amount=null){if(busy)return;if(!client()||!token())return feedback('기존 Sheet1에서 회원 로그인을 먼저 해주세요.',true);busy=true;
- try{const next=await rpc(action,choice,amount);if(action==='create'){urlRoom(next.created_room);}if(action==='reset_wallet'){wallet=next.my_balance;if(data){data.my_balance=next.my_balance;const mine=data.players?.find(p=>p.seat===data.my_seat);if(mine)mine.balance=next.my_balance;}feedback('테스트 포인트 10,000P 초기화 완료');render();return;}if(action==='leave'){room='';data=null;history.replaceState(null,'',location.pathname);feedback('방에서 나왔습니다.');await refresh();return;}
+async function act(action,choice=null,amount=null){if(busy)return;busy=true;
+ try{if(!(await ensureCredentials())){feedback('회원 정보를 불러오지 못했습니다. Sheet1에서 로그인 상태를 확인한 뒤 다시 열어 주세요.',true);return;}const next=await rpc(action,choice,amount);if(action==='create'){urlRoom(next.created_room);}if(action==='reset_wallet'){wallet=next.my_balance;if(data){data.my_balance=next.my_balance;const mine=data.players?.find(p=>p.seat===data.my_seat);if(mine)mine.balance=next.my_balance;}feedback('테스트 포인트 10,000P 초기화 완료');render();return;}if(action==='leave'){room='';data=null;history.replaceState(null,'',location.pathname);feedback('방에서 나왔습니다.');await refresh();return;}
  data=next;wallet=next.my_balance??wallet;chosenDie=0;feedback('서버 처리 완료 · '+humanPhase(next.phase));render();}
  catch(e){feedback('요청 실패: '+e.message,true);if(action==='join'){room='';data=null;history.replaceState(null,'',location.pathname);render();}}
  finally{busy=false;}
 }
 async function refresh(){if(busy||polling)return;polling=true;try{
- if(room){let d=await rpc('sync');if(!data||Number(d.revision)>Number(data.revision)){data=d;wallet=d.my_balance??wallet;render();}else updateClock();}
+ if(room){if(!(await ensureCredentials())){feedback('회원 로그인 정보가 없습니다. Sheet1에서 로그인한 후 다시 열어 주세요.',true);return;}let d=await rpc('sync');if(!data||Number(d.revision)>Number(data.revision)){data=d;wallet=d.my_balance??wallet;render();}else updateClock();}
  else{const response=await rpc('list');lobby=response.rooms||[];render();}}
  catch(e){feedback('동기화 실패: '+e.message,true);if(!room)renderLobby();}finally{polling=false;}}
 if(room&&!/^u-[0-9a-f]{12}$/.test(room))room='';
