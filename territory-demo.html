@@ -98,39 +98,84 @@ body{background:var(--bg);color:var(--text);font-family:Arial,'Malgun Gothic','A
  .sidecontent{overflow:visible}
  .bottom{flex-wrap:wrap}
 }
+
+/* v0.3: white Excel worksheet-style territory sidebar only. Map art & map widgets unchanged. */
+.sidebar{background:#fff;border-left:1px solid #cdd8d0;box-shadow:none;color:#243b2b}
+.sheet-column-headers{display:grid;grid-template-columns:28px minmax(0,42%) minmax(0,1fr);background:#f0f3f0;border-bottom:1px solid #cbd5cc;flex:none;color:#607365;font:11px/23px Consolas,Arial,sans-serif;text-align:center}
+.sheet-column-headers>span{height:23px;border-right:1px solid #d5dfd6}.sheet-column-headers>span:last-child{border-right:0}
+.sheet-col-corner{background:#e8eee9}
+.side-header{padding:0;background:#fff;border-bottom:2px solid #a6bcac;flex:none}
+.sheet-data-row{display:grid;grid-template-columns:28px minmax(0,42%) minmax(0,1fr);min-height:30px;align-items:stretch;border-bottom:1px solid #e0e7e1;color:#304635;font-size:11px}
+.sheet-data-row:last-child{border-bottom:0}
+.sheet-rownum{background:#f1f3f1;border-right:1px solid #d7dfd8;display:flex;align-items:center;justify-content:center;font:10px Consolas,monospace;color:#809184}
+.sheet-key,.sheet-value,.sheet-banner-cell{padding:7px 9px;min-width:0;display:flex;align-items:center;overflow-wrap:anywhere}
+.sheet-key{background:#f9fbfa;color:#63796a;border-right:1px solid #e0e7e1}
+.sheet-value{background:#fff;color:#1c5533;font-weight:600}
+.sheet-value.sheet-place{font-size:16px;gap:6px;font-weight:800}
+.sheet-banner{min-height:31px}
+.sheet-banner-cell{grid-column:2/4;background:#e8f3eb;color:#1c683c;font-weight:800;font-size:12px}
+.tabs{background:#f4f6f4;border-bottom:1px solid #cddbd0;padding:0;flex:none}
+.tabs button{font-weight:600;border-right:1px solid #e2e9e3;border-bottom:3px solid transparent;background:#f4f6f4;color:#586d5e;padding:11px 0 8px;white-space:nowrap}
+.tabs button:last-child{border-right:0}
+.tabs button.selected{color:#0e6c3a;background:#fff;border-bottom-color:#168048}
+.sidecontent{background:#fff;padding:12px 12px 24px;scrollbar-color:#c5d5ca transparent}
+.section-title{color:#256444;font-size:12px;font-weight:800;margin:4px 0 8px;padding:7px 8px;border-left:3px solid #107c41;background:#f5f9f6}
+.box{background:#fff;border:1px solid #d9e2da;border-radius:0;padding:0;margin-bottom:11px;box-shadow:none}
+.box .line{display:grid;grid-template-columns:minmax(0,48%) minmax(0,52%);align-items:stretch;gap:0;margin:0;min-height:30px;border-bottom:1px solid #e4eae5;font-size:11px}
+.box .line:last-child{border-bottom:0}
+.box .line>span{display:flex;align-items:center;background:#f8faf8;color:#657b6b;border-right:1px solid #e1e8e2;padding:7px 8px;overflow-wrap:anywhere}
+.box .line>strong{display:flex;align-items:center;justify-content:flex-end;background:#fff;color:#22593a;font-weight:700;padding:7px 8px;min-width:0;text-align:right;overflow-wrap:anywhere}
+.callout{background:#f7faf7;border:1px solid #d8e5db;color:#5b7260;border-radius:0;padding:10px 11px}
+.unit{background:#fff;border-bottom:1px solid #dee8e0;padding:8px 0}
+.field{border-radius:0;background:#fff;border-color:#c4d4c8;color:#254534}
+.btn,.selector button{border-radius:2px}
+.log-item{background:#fff;border:1px solid #e0e8e1;border-left-width:3px;border-radius:0}
+.divider{border-top-color:#e5ebe6}
+.progress{border-radius:0}
+@media(max-width:700px){.sidebar{border-top:1px solid #cdd8d0}.sidecontent{padding:11px 10px 24px}}
 </style>
 </head>
 <body>
 <div class="game">
 <header class="top">
-  <div class="brand"><div class="seal">⚔</div><div><div class="brand-title">영토전</div><div class="subtitle">전략 영토 시뮬레이션 · TEST v0.2</div></div></div>
+  <div class="brand"><div class="seal">⚔</div><div><div class="brand-title">영토전</div><div class="subtitle">한국 지역 영토전 · TEST v0.3</div></div></div>
   <div class="top-stats"><div class="statpill">세력 <strong id="topFaction">PLAYER군</strong></div><div class="statpill">포인트 <strong id="topPoints">15,000 P</strong></div><div class="statpill">군량 <strong id="topGrain">6,000</strong></div><button class="btn" id="recruitBtn">＋ 병력 모집</button><button class="btn ghost" id="resetBtn" title="모든 테스트 데이터 초기화">↺ 초기화</button><button class="btn ghost" id="exitBtn">↩ Sheet1</button></div>
 </header>
 <div class="sheetline" aria-hidden="true"><span>영토전</span></div>
 <div class="main">
   <section class="mapwrap" id="mapFrame" aria-label="영토전 영토 지도"><canvas id="world" aria-label="클릭 가능한 24개 영토 지도"></canvas>
-    <div class="map-label"><div class="title">천하전도 · 九州全圖</div><small>성 또는 땅을 클릭하면 정보가 나와요. 드래그로 이동 · 휠로 확대</small></div>
+    <div class="map-label"><div class="title">전국 영토 지도</div><small>성 또는 땅을 클릭하면 정보가 나와요. 드래그로 이동 · 휠로 확대</small></div>
     <div class="map-controls"><button class="btn" id="zoomIn" aria-label="확대">＋</button><button class="btn" id="zoomOut" aria-label="축소">－</button><button class="btn" id="centerMap">⌖ 전체</button></div>
     <div class="map-legend"><span><i class="dot" style="background:#5099cb"></i>내 영토</span><span><i class="dot" style="background:#d16d62"></i>적국</span><span><i class="dot" style="background:#d2c9a8"></i>중립</span></div>
   </section>
-  <aside class="sidebar"><div class="side-header" id="summary"></div><div class="tabs" id="tabs"><button data-tab="overview" class="selected">영토 정보</button><button data-tab="garrison">병력 배치</button><button data-tab="defense">자동 방어</button><button data-tab="logs">전투 기록</button></div><div class="sidecontent" id="panel"></div></aside>
+  <aside class="sidebar"><div class="sheet-column-headers" aria-hidden="true"><span class="sheet-col-corner"></span><span>A</span><span>B</span></div><div class="side-header" id="summary"></div><div class="tabs" id="tabs"><button data-tab="overview" class="selected">영토 정보</button><button data-tab="garrison">병력 배치</button><button data-tab="defense">자동 방어</button><button data-tab="logs">전투 기록</button></div><div class="sidecontent" id="panel"></div></aside>
 </div>
 <div class="bottom"><span><b>테스트 모드</b> · 브라우저에만 저장 · 실제 공용 포인트 차감 없음</span><span id="bottomStatus">영토를 클릭해 선택하세요.</span></div>
 </div><div class="toast" id="toast"></div>
 <script>
 (()=>{'use strict';
-const KEY='cheonha_prototype_v01'; const COLS=6,ROWS=4,PER=8,TILE=32,W=COLS*PER*TILE,H=ROWS*PER*TILE;
-const NAMES=['서량','천수','안정','장안','상당','업','한중','무도','낙양','진류','평원','북해','성도','양양','허창','수춘','하비','광릉','영안','강릉','장사','무릉','건업','회계'];
-const OWNERS={player:{name:'PLAYER군',color:'#5c9ed0',fill:'rgba(63,151,214,.17)'},wei:{name:'위군',color:'#d57668',fill:'rgba(222,102,88,.16)'},shu:{name:'촉군',color:'#72ad7c',fill:'rgba(99,170,113,.17)'},wu:{name:'오군',color:'#b49cdd',fill:'rgba(168,143,224,.15)'},neutral:{name:'중립',color:'#d2bc91',fill:'rgba(223,189,136,.035)'}};
-const GENERALS=['조운','장료','서황','관우','황충','태사자'];
+const KEY='territory_prototype_v03', LEGACY_KEY='cheonha_prototype_v01'; const COLS=6,ROWS=4,PER=8,TILE=32,W=COLS*PER*TILE,H=ROWS*PER*TILE;
+const NAMES=['파주','고양','서울','의정부','춘천','강릉','인천','부천','수원','용인','원주','동해','평택','천안','대전','청주','충주','안동','군산','전주','광주','대구','울산','부산'];
+const OWNERS={player:{name:'내 세력',color:'#5c9ed0',fill:'rgba(63,151,214,.17)'},wei:{name:'서부 연합',color:'#d57668',fill:'rgba(222,102,88,.16)'},shu:{name:'북부 연합',color:'#72ad7c',fill:'rgba(99,170,113,.17)'},wu:{name:'남부 연합',color:'#b49cdd',fill:'rgba(168,143,224,.15)'},neutral:{name:'중립',color:'#d2bc91',fill:'rgba(223,189,136,.035)'}};
+const GENERALS=['김유신','강감찬','권율','이순신','계백','을지문덕'];
 const UNIT_META=[['inf','보병','🛡',300],['arch','궁병','🏹',400],['cav','기병','🐎',600]];
 const TACTICS={balanced:{name:'균형 수비',value:1,desc:'안정적인 수비. 공격·방어에 별도 보정 없음.'},hold:{name:'철벽 수비',value:1.16,desc:'방어 전투력 +16%. 함락 시 손실 증가.'},preserve:{name:'병력 보존',value:.88,desc:'방어력 -12%. 패배하면 생존 병력 우선 보존.'}};
 const ATTACK_TACTICS={charge:{name:'전면 돌격',value:1.16},siege:{name:'포위 공격',value:1.1},safe:{name:'신중한 진격',value:.95}};
 const $=s=>document.querySelector(s);const fmt=n=>Math.round(n).toLocaleString('ko-KR'); const now=()=>Date.now();
 function hash(x,y,z=0){let n=(Math.imul(x+17,374761393)+Math.imul(y+41,668265263)+Math.imul(z+7,1274126177))|0;n=Math.imul(n^(n>>>13),1274126177);return ((n^(n>>>16))>>>0)/4294967295}
 function emptyTroops(){return {inf:0,arch:0,cav:0}}function troopCount(a){return (a?.inf||0)+(a?.arch||0)+(a?.cav||0)}function copyTroops(a){return {inf:a.inf||0,arch:a.arch||0,cav:a.cav||0}}
-function baseState(){let lands=NAMES.map((name,id)=>{let r=Math.floor(id/COLS),c=id%COLS;let owner=([13,14].includes(id)?'player':[9,10,15].includes(id)?'wei':[3,4].includes(id)?'shu':[22,23].includes(id)?'wu':'neutral');let level=id===14?3:owner==='player'?2:owner==='neutral'?1:2;let troops=owner==='player'? (id===14?{inf:420,arch:220,cav:120}:{inf:260,arch:130,cav:80}):{inf:80+Math.floor(hash(id,1)*95),arch:20+Math.floor(hash(id,2)*60),cav:Math.floor(hash(id,3)*35)};return {id,name,owner,level,troops,defense:'balanced',general:id===14?'조운':id===13?'장료':owner==='neutral'?'지역수비대':'수비대장',protectUntil:0,terrain:hash(c,r,21)>.64?'숲':hash(c,r,22)>.8?'산악':'평야'}});return {version:1,name:'PLAYER',points:15000,grain:6000,reserve:{inf:450,arch:300,cav:170},generalPool:['서황','관우'],lands,pending:null,attackReadyAt:0,logs:[{time:now(),type:'system',text:'영토전 테스트 세계가 열렸습니다. 허창과 양양에서 시작합니다.'}],lastSeen:now(),lastRegen:now(),selected:14,tab:'overview',recruitType:'inf',recruitQty:100,attackSource:13,attackPercent:75,attackTactic:'charge',raid:null}}
-function safeLoad(){try{const saved=JSON.parse(localStorage.getItem(KEY));if(saved&&saved.version===1&&Array.isArray(saved.lands)&&saved.lands.length===24&&saved.reserve)return saved}catch(e){}return baseState()}
+function baseState(){let lands=NAMES.map((name,id)=>{let r=Math.floor(id/COLS),c=id%COLS;let owner=([13,14].includes(id)?'player':[9,10,15].includes(id)?'wei':[3,4].includes(id)?'shu':[22,23].includes(id)?'wu':'neutral');let level=id===14?3:owner==='player'?2:owner==='neutral'?1:2;let troops=owner==='player'? (id===14?{inf:420,arch:220,cav:120}:{inf:260,arch:130,cav:80}):{inf:80+Math.floor(hash(id,1)*95),arch:20+Math.floor(hash(id,2)*60),cav:Math.floor(hash(id,3)*35)};return {id,name,owner,level,troops,defense:'balanced',general:id===14?'김유신':id===13?'강감찬':owner==='neutral'?'지역수비대':'수비대장',protectUntil:0,terrain:hash(c,r,21)>.64?'숲':hash(c,r,22)>.8?'산악':'평야'}});return {version:1,localeVersion:3,name:'PLAYER',points:15000,grain:6000,reserve:{inf:450,arch:300,cav:170},generalPool:['권율','이순신'],lands,pending:null,attackReadyAt:0,logs:[{time:now(),type:'system',text:'한국 영토전 테스트가 시작됐습니다. 대전과 천안에서 출발합니다.'}],lastSeen:now(),lastRegen:now(),selected:14,tab:'overview',recruitType:'inf',recruitQty:100,attackSource:13,attackPercent:75,attackTactic:'charge',raid:null}}
+const HISTORIC_NAMES={"서량":"파주","천수":"고양","안정":"서울","장안":"의정부","상당":"춘천","업":"강릉","한중":"인천","무도":"부천","낙양":"수원","진류":"용인","평원":"원주","북해":"동해","성도":"평택","양양":"천안","허창":"대전","수춘":"청주","하비":"충주","광릉":"안동","영안":"군산","강릉":"전주","장사":"광주","무릉":"대구","건업":"울산","회계":"부산","조운":"김유신","장료":"강감찬","서황":"권율","관우":"이순신","황충":"계백","태사자":"을지문덕","위군":"서부 연합","촉군":"북부 연합","오군":"남부 연합","PLAYER군":"내 세력"};
+function upgradeSave(s){
+ if(s.localeVersion===3)return s;
+ // Only visible terms change. Existing owners, troop counts, general assignments and cooldowns stay intact.
+ s.lands.forEach((t,i)=>{t.name=NAMES[i];t.general=HISTORIC_NAMES[t.general]||t.general});
+ s.generalPool=(s.generalPool||[]).map(n=>HISTORIC_NAMES[n]||n);
+ if(Array.isArray(s.logs))s.logs.forEach(l=>{if(typeof l.text==='string'){l.text=l.text.replaceAll('장안으로','의정부로');for(const [oldName,newName] of Object.entries(HISTORIC_NAMES)){if(oldName==='업'){l.text=l.text.replaceAll('업 →','고양 →').replaceAll('→ 업','→ 고양').replaceAll('업 공격','고양 공격').replaceAll('업에서','고양에서')}else l.text=l.text.replaceAll(oldName,newName)}}});
+ s.localeVersion=3;
+ return s;
+}
+function safeLoad(){try{const raw=localStorage.getItem(KEY)||localStorage.getItem(LEGACY_KEY);const saved=raw&&JSON.parse(raw);if(saved&&saved.version===1&&Array.isArray(saved.lands)&&saved.lands.length===24&&saved.reserve)return upgradeSave(saved)}catch(e){console.warn('Saved data migration failed',e)}return baseState()}
 let state=safeLoad();let toastTimer=null;function save(){state.lastSeen=now();try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){console.warn('Local save unavailable',e)}}
 function toast(s){$('#toast').textContent=s;$('#toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),3400)}
 function log(msg,type='event'){state.logs.unshift({text:msg,type,time:now()});state.logs=state.logs.slice(0,45)}
@@ -178,8 +223,15 @@ canvas.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,px:panX,
 canvas.addEventListener('pointermove',e=>{if(!drag)return;let dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>6)drag.moved=true;if(drag.moved){canvas.classList.add('drag');panX=drag.px+dx;panY=drag.py+dy;draw()}});
 canvas.addEventListener('pointerup',e=>{if(!drag)return;let moved=drag.moved;drag=null;canvas.classList.remove('drag');if(!moved){let r=canvas.getBoundingClientRect(),x=(e.clientX-r.left-panX)/zoom,y=(e.clientY-r.top-panY)/zoom,c=Math.floor(x/(PER*TILE)),row=Math.floor(y/(PER*TILE));if(c>=0&&c<COLS&&row>=0&&row<ROWS)pick(row*COLS+c)}});
 canvas.addEventListener('pointercancel',()=>{drag=null;canvas.classList.remove('drag')});$('#zoomIn').onclick=()=>zoomAt(1.24);$('#zoomOut').onclick=()=>zoomAt(.81);$('#centerMap').onclick=fit;
-function updateHeader(){let owned=state.lands.filter(t=>t.owner==='player');$('#topFaction').textContent=state.name+'군';$('#topPoints').textContent=fmt(state.points)+' P';$('#topGrain').textContent=fmt(state.grain);$('#bottomStatus').textContent=`내 영토 ${owned.length}개 · ${state.pending?'출정 중':'출정 대기'} · ${state.raid?'방어 테스트 중':'자동 방어 준비'}`;
-let t=selected(),owner=t.owner==='player'?state.name+'군':colorTint(t).name;$('#summary').innerHTML=`<div class="eyebrow">${t.owner==='player'?'■ 나의 영토':t.owner==='neutral'?'◇ 무주지 / 중립 지역':'◆ 적 세력 영토'} · #${String(t.id+1).padStart(2,'0')}</div><div class="territory-name">${t.name} <span style="font-size:14px;color:${colorTint(t).color}">⚑</span></div><div class="ownership">소유: ${owner} · ${t.terrain} · 성벽 Lv.${t.level}</div><div class="metrics"><div class="metric"><small>주둔 병력</small><strong>${fmt(troopCount(t.troops))}</strong></div><div class="metric"><small>주둔 장수</small><strong style="font-size:13px">${t.general||'미배치'}</strong></div><div class="metric"><small>보호 상태</small><strong id="protCountdown" style="font-size:13px">${t.protectUntil>now()?Math.ceil((t.protectUntil-now())/1000)+'초':'없음'}</strong></div></div>`;
+function updateHeader(){let owned=state.lands.filter(t=>t.owner==='player');$('#topFaction').textContent=state.name==='PLAYER'?'내 세력':state.name+' 세력';$('#topPoints').textContent=fmt(state.points)+' P';$('#topGrain').textContent=fmt(state.grain);$('#bottomStatus').textContent=`내 영토 ${owned.length}개 · ${state.pending?'출정 중':'출정 대기'} · ${state.raid?'방어 테스트 중':'자동 방어 준비'}`;
+let t=selected(),owner=t.owner==='player'?(state.name==='PLAYER'?'내 세력':state.name+' 세력'):colorTint(t).name;$('#summary').innerHTML=`
+<div class="sheet-data-row sheet-banner"><span class="sheet-rownum">1</span><span class="sheet-banner-cell">${t.owner==='player'?'나의 영토':t.owner==='neutral'?'중립 영토':'상대 영토'} · ${String(t.id+1).padStart(2,'0')}</span></div>
+<div class="sheet-data-row"><span class="sheet-rownum">2</span><span class="sheet-key">지역명</span><strong class="sheet-value sheet-place">${t.name} <span style="color:${colorTint(t).color}">⚑</span></strong></div>
+<div class="sheet-data-row"><span class="sheet-rownum">3</span><span class="sheet-key">소유 세력</span><strong class="sheet-value">${owner}</strong></div>
+<div class="sheet-data-row"><span class="sheet-rownum">4</span><span class="sheet-key">지형 / 성벽</span><span class="sheet-value">${t.terrain} / Lv.${t.level}</span></div>
+<div class="sheet-data-row"><span class="sheet-rownum">5</span><span class="sheet-key">주둔 병력</span><strong class="sheet-value">${fmt(troopCount(t.troops))}명</strong></div>
+<div class="sheet-data-row"><span class="sheet-rownum">6</span><span class="sheet-key">담당 장수</span><strong class="sheet-value">${t.general||'미배치'}</strong></div>
+<div class="sheet-data-row"><span class="sheet-rownum">7</span><span class="sheet-key">보호 상태</span><span class="sheet-value" id="protCountdown">${t.protectUntil>now()?Math.ceil((t.protectUntil-now())/1000)+'초':'없음'}</span></div>`;
 $('#tabs').querySelectorAll('button').forEach(b=>b.classList.toggle('selected',b.dataset.tab===state.tab))}
 function line(key,val){return `<div class="line"><span>${key}</span><strong>${val}</strong></div>`}
 function renderOverview(t){let isMine=t.owner==='player',avail=sourcesFor(t.id),valid=avail.length>0;let html=`<div class="section-title">${isMine?'영지 상황':'정찰 보고'}</div><div class="box">${line('영토명',t.name)}${line('지형',t.terrain)}${line('성벽',`Lv.${t.level}`)}${line('주둔 장수',t.general||'없음')}${line('보병 / 궁병 / 기병',`${fmt(t.troops.inf)} / ${fmt(t.troops.arch)} / ${fmt(t.troops.cav)}`)}${line('수비 전술',TACTICS[t.defense]?.name||'균형 수비')}${line('보호시간',t.protectUntil>now()?Math.ceil((t.protectUntil-now())/1000)+'초 남음':'없음')}</div>`;
