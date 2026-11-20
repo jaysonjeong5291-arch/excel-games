@@ -183,13 +183,43 @@ body{background:var(--bg);color:var(--text);font-family:Arial,'Malgun Gothic','A
 .progress{background:#edf3ee;border:1px solid #cce0d2;height:8px}
 .progress>div{background:#107c41}
 @media(max-width:1100px){.main{grid-template-columns:minmax(0,1fr) 265px}}
-@media(max-width:700px){.game{height:auto;min-height:100dvh}.main{display:flex;flex-direction:column}.map-sheet{height:50vh;min-height:330px;flex:none}.map-sheet .mapwrap{height:100%;min-height:0}.sidebar{border:0;border-top:1px solid #cad9cc}.map-label small{max-width:230px}.sidecontent{padding:8px 11px 24px}.top{min-height:51px}}
+@media(max-width:700px){.game{height:auto;min-height:100dvh}.main{display:flex;flex-direction:column}.map-sheet{height:60vh;min-height:365px;flex:none}.map-sheet .mapwrap{height:100%;min-height:0}.sidebar{border:0;border-top:1px solid #cad9cc}.map-label small{max-width:230px}.sidecontent{padding:8px 11px 24px}.top{min-height:51px}}
+
+/* v0.6: enlarged Seoul map, responsive map-first mode, fixed-size collision-aware labels. */
+:root{--territory-side-width:240px}
+.main{grid-template-columns:minmax(0,1fr) var(--territory-side-width)!important}
+.top{min-height:46px;padding:5px 10px}
+.brand .seal{width:27px;height:27px;font-size:16px}
+.top .brand-title{font-size:15px}
+.top .subtitle{font-size:9px}
+.top-stats{gap:4px}.top .statpill{font-size:10px;padding:4px 6px}
+.top .btn{font-size:10px;padding:5px 7px}
+.bottom{min-height:29px;padding:5px 10px;font-size:10px}
+.map-sheet-cols{height:20px}.map-sheet-body{min-height:0}
+.map-controls{display:flex;flex-wrap:wrap;max-width:94%;z-index:4}
+.map-controls .btn{padding:7px 10px!important;font-size:11px}
+.map-focus .main{grid-template-columns:minmax(0,1fr)!important}
+.map-focus .sidebar{display:none!important}
+.map-focus .map-sheet{border-right:0}
+.map-focus .mapwrap{height:100%}
+.map-label .title{font-size:11px;padding:4px 7px}
+.map-label small{font-size:9px}
+@media(min-width:701px) and (max-width:1100px){:root{--territory-side-width:225px}}
+@media(max-width:700px){
+ .main{display:flex!important;flex-direction:column!important}
+ .map-sheet{height:max(490px,72dvh)!important;min-height:470px!important;flex:0 0 auto}
+ .map-focus .map-sheet{height:calc(100dvh - 104px)!important;min-height:520px!important}
+ .map-focus .sidebar{display:none!important}
+ .top{padding:5px 7px}.map-label small{font-size:8px}
+ .map-legend{font-size:8px!important}
+ .map-controls .btn{padding:7px 8px!important}
+}
 </style>
 </head>
 <body>
 <div class="game">
 <header class="top">
-  <div class="brand"><div class="seal">⚔</div><div><div class="brand-title">영토전</div><div class="subtitle">서울 25개 구 · 거점 점령형 TEST v0.5</div></div></div>
+  <div class="brand"><div class="seal">⚔</div><div><div class="brand-title">영토전</div><div class="subtitle">서울 25개 구 · 거점 점령형 TEST v0.6</div></div></div>
   <div class="top-stats"><div class="statpill">세력 <strong id="topFaction">PLAYER군</strong></div><div class="statpill">포인트 <strong id="topPoints">15,000 P</strong></div><div class="statpill">군량 <strong id="topGrain">6,000</strong></div><button class="btn" id="recruitBtn">＋ 조직원 모집</button><button class="btn ghost" id="resetBtn" title="모든 테스트 데이터 초기화">↺ 초기화</button><button class="btn ghost" id="exitBtn">↩ Sheet1</button></div>
 </header>
 <div class="sheetline" aria-hidden="true"><span>영토전</span></div>
@@ -198,8 +228,8 @@ body{background:var(--bg);color:var(--text);font-family:Arial,'Malgun Gothic','A
     <div class="map-sheet-cols" aria-hidden="true"><span class="map-corner"></span><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span></div>
     <div class="map-sheet-body"><div class="map-sheet-rows" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span><span>26</span></div>
       <section class="mapwrap" id="mapFrame" aria-label="서울 25개 구와 거점 지도"><canvas id="world" aria-label="클릭 가능한 서울 25개 구와 거점 지도"></canvas>
-        <div class="map-label"><div class="title">업무현황_영토전_VER.2026</div><small>서울 25개 구 · 77개 랜드마크 쟁탈전 · 클릭 선택 / 드래그 이동 / 휠 확대</small></div>
-        <div class="map-controls"><button class="btn" id="zoomIn" aria-label="확대">＋</button><button class="btn" id="zoomOut" aria-label="축소">－</button><button class="btn" id="centerMap">⌖ 전체</button></div>
+        <div class="map-label"><div class="title">업무현황_영토전_VER.2026</div><small>서울 25개 구 · 지도를 드래그해 이동 / 전체 버튼으로 모두 보기</small></div>
+        <div class="map-controls"><button class="btn" id="zoomIn" aria-label="확대">＋</button><button class="btn" id="zoomOut" aria-label="축소">－</button><button class="btn" id="centerMap">⌖ 전체</button><button class="btn" id="focusMap" title="지도를 화면 가득 넓혀 보기">⛶ 지도 확대</button></div>
         <div class="map-legend"><span><i class="dot" style="background:#5099cb"></i>내 거점</span><span><i class="dot" style="background:#d16d62"></i>상대</span><span><i class="dot" style="background:#d2c9a8"></i>중립</span></div>
       </section>
     </div>
@@ -253,7 +283,7 @@ function normalizeTroops(t){const out=numTroops();for(const k of UNIT_KEYS)out[k
 const placeDefs=[];for(const district of DISTRICTS){const districtId=DISTRICTS.indexOf(district);for(const [name,kind] of LANDMARK_DATA[district])placeDefs.push({id:placeDefs.length,districtId,district,name,kind})}
 function baseState(){const landmarks=placeDefs.map(p=>{let owner=['마포구','영등포구'].includes(p.district)?'player':['강남구','서초구','송파구','강동구'].includes(p.district)?'wei':['노원구','도봉구','강북구'].includes(p.district)?'shu':['구로구','금천구'].includes(p.district)?'wu':'neutral';let v=p.id;return {owner,level:owner==='player'?2:1,troops:owner==='player'?{inf:155,arch:75,cav:35,blade:20,tank:35}:{inf:30+Math.floor(hash(v,1)*60),arch:10+Math.floor(hash(v,2)*25),cav:Math.floor(hash(v,3)*16),blade:Math.floor(hash(v,4)*10),tank:12+Math.floor(hash(v,5)*17)},defense:'balanced',general:owner==='player'?'현장반장':'거점관리자',protectUntil:0}});
 return {version:5,name:'PLAYER',points:15000,grain:6500,reserve:{inf:450,arch:280,cav:160,blade:95,tank:180},landmarks,pending:null,raid:null,attackReadyAt:0,logs:[{time:Date.now(),type:'system',text:`서울 ${DISTRICTS.length}개 구 · ${placeDefs.length}개 거점 영토전 시작! 각 구의 거점 전부를 장악하면 구를 점령합니다.`}],lastSeen:now(),lastRegen:now(),selectedDistrict:12,selectedPlace:placeDefs.find(p=>p.name==='서울월드컵경기장').id,tab:'overview',recruitType:'inf',recruitQty:100,attackSource:null,attackPercent:75,attackTactic:'charge'} }
-function readState(){try{const v=JSON.parse(localStorage.getItem(KEY)||'null');if(v?.version===5&&v.landmarks?.length===placeDefs.length){v.reserve=normalizeTroops(v.reserve);for(const p of v.landmarks)p.troops=normalizeTroops(p.troops);return v}const old=JSON.parse(localStorage.getItem(OLD_KEY)||localStorage.getItem(LEGACY_KEY)||'null');if(old?.lands?.length===25&&old.reserve){let s=baseState();s.points=old.points??s.points;s.grain=old.grain??s.grain;s.name=old.name||s.name;s.reserve=normalizeTroops({...old.reserve,blade:s.reserve.blade,tank:s.reserve.tank});for(const land of old.lands){const ids=placeDefs.filter(p=>p.district===land.name);for(let i=0;i<ids.length;i++){const p=s.landmarks[ids[i].id];p.owner=land.owner||'neutral';p.level=Math.max(1,land.level||1);p.defense=land.defense||'balanced';p.general=land.owner==='player'?'현장반장':'거점관리자';for(const k of UNIT_KEYS)p.troops[k]=Math.floor((land.troops?.[k]||0)/ids.length)+(i===0?(land.troops?.[k]||0)%ids.length:0)}}s.logs=[{time:now(),type:'system',text:'기존 v0.4 지역 소유권과 병력을 각 구의 새 거점으로 분할해 이전했습니다.'},...(old.logs||[]).slice(0,8)];return s}}
+function readState(){try{const v=JSON.parse(localStorage.getItem(KEY)||'null');if(v?.version===5&&v.landmarks?.length===placeDefs.length){v.reserve=normalizeTroops(v.reserve);for(const p of v.landmarks)p.troops=normalizeTroops(p.troops);return v}const old=JSON.parse(localStorage.getItem(OLD_KEY)||localStorage.getItem(LEGACY_KEY)||'null');if(old?.lands?.length===25&&old.reserve){let s=baseState();s.points=old.points??s.points;s.grain=old.grain??s.grain;s.name=old.name||s.name;s.reserve=normalizeTroops({...old.reserve,blade:s.reserve.blade,tank:s.reserve.tank});for(const land of old.lands){const ids=placeDefs.filter(p=>p.district===land.name);for(let i=0;i<ids.length;i++){const p=s.landmarks[ids[i].id];p.owner=land.owner||'neutral';p.level=Math.max(1,land.level||1);p.defense=land.defense||'balanced';p.general=land.general||'거점관리자';for(const k of UNIT_KEYS)p.troops[k]=Math.floor((land.troops?.[k]||0)/ids.length)+(i===0?(land.troops?.[k]||0)%ids.length:0)}}s.logs=[{time:now(),type:'system',text:'기존 v0.4 지역 소유권과 병력을 각 구의 새 거점으로 분할해 이전했습니다.'},...(old.logs||[]).slice(0,8)];return s}}
 catch(e){console.warn('v0.5 saved data recovery',e)}return baseState()}
 let state=readState(),toastTimer=null;
 function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){console.warn('Save failed',e)}}
@@ -296,11 +326,39 @@ function geoProject(ll){return [90+(ll[0]-126.76)/.44*1100,55+(37.715-ll[1])/.29
 function inRing(x,y,ring){let inside=false;for(let i=0,j=ring.length-1;i<ring.length;j=i++){const [xi,yi]=ring[i],[xj,yj]=ring[j];if((yi>y)!=(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)inside=!inside}return inside}
 function inDistrict(x,y,name){return (districtPolys[name]||[]).some(r=>inRing(x,y,r))}
 function districtPath(c,rings){c.beginPath();for(const ring of rings){if(!ring||ring.length<3)continue;c.moveTo(...ring[0]);for(let i=1;i<ring.length;i++)c.lineTo(...ring[i]);c.closePath()}}
+const RIVER=[[0,470],[90,472],[170,469],[245,479],[345,491],[455,510],[545,524],[640,521],[710,511],[795,498],[875,485],[970,484],[1050,482],[1160,474],[1280,475]];
+function riverY(x){for(let i=0;i<RIVER.length-1;i++){const v=RIVER[i],q=RIVER[i+1];if(x>=v[0]&&x<=q[0])return v[1]+(q[1]-v[1])*(x-v[0])/(q[0]-v[0])}return 480}
+function isRiverArea(x,y,pad=67){return Math.abs(y-riverY(x))<pad}
 let positions=[];
-function buildPositions(){positions=Array(placeDefs.length).fill(null);for(let d=0;d<DISTRICTS.length;d++){const name=DISTRICTS[d],ring=districtPolys[name]?.[0];if(!ring)continue;const box={minX:Math.min(...ring.map(q=>q[0])),maxX:Math.max(...ring.map(q=>q[0])),minY:Math.min(...ring.map(q=>q[1])),maxY:Math.max(...ring.map(q=>q[1]))};let candidates=[];
-for(let y=box.minY+8;y<=box.maxY-8;y+=11)for(let x=box.minX+8;x<=box.maxX-8;x+=11){if(inDistrict(x,y,name))candidates.push([x,y])}
-if(!candidates.length)candidates=[CENTERS[name]];
-const center=CENTERS[name],chosen=[];for(const p of districtPlaces(d)){let best=candidates[0],bestScore=-1e20;for(const c of candidates){const dc=Math.hypot(c[0]-center[0],c[1]-center[1]);let score=chosen.length?Math.min(...chosen.map(v=>Math.hypot(c[0]-v[0],c[1]-v[1])))-dc*.23:-dc;if(score>bestScore){bestScore=score;best=c}}chosen.push(best);positions[p.id]=best}}
+function buildPositions(){
+ positions=Array(placeDefs.length).fill(null);
+ for(let d=0;d<DISTRICTS.length;d++){
+  const name=DISTRICTS[d],ring=districtPolys[name]?.[0];if(!ring)continue;
+  const box={minX:Math.min(...ring.map(q=>q[0])),maxX:Math.max(...ring.map(q=>q[0])),minY:Math.min(...ring.map(q=>q[1])),maxY:Math.max(...ring.map(q=>q[1]))};
+  let candidates=[];
+  // Landmarks require dry ground and a buffer from the Han River's shore.
+  for(let y=box.minY+6;y<=box.maxY-6;y+=8)for(let x=box.minX+6;x<=box.maxX-6;x+=8){
+   if(inDistrict(x,y,name)&&!isRiverArea(x,y,76))candidates.push([x,y]);
+  }
+  // Tiny districts near the river can use land close to the shore, but never the water.
+  if(candidates.length<4)for(let y=box.minY+4;y<=box.maxY-4;y+=6)for(let x=box.minX+4;x<=box.maxX-4;x+=6){
+   if(inDistrict(x,y,name)&&!isRiverArea(x,y,58))candidates.push([x,y]);
+  }
+  const center=CENTERS[name],chosen=[];
+  for(const p of districtPlaces(d)){
+   let best=null,bestScore=-1e30;
+   for(const c of candidates){
+    const dc=Math.hypot(c[0]-center[0],c[1]-center[1]);
+    const sep=chosen.length?Math.min(...chosen.map(v=>Math.hypot(c[0]-v[0],c[1]-v[1]))):75;
+    const edge=Math.min(c[0]-box.minX,box.maxX-c[0],c[1]-box.minY,box.maxY-c[1]);
+    const score=(chosen.length?Math.min(sep,90)*1.8:0)-dc*.19+Math.min(15,edge)*.22+Math.min(40,Math.abs(c[1]-riverY(c[0]))-58)*.03;
+    if(score>bestScore){bestScore=score;best=c;}
+   }
+   // Emergency positioning is still on land and outside the river.
+   if(!best){const safeX=center[0];const safeY=riverY(safeX)+(center[1]<riverY(safeX)?-80:80);best=[safeX,safeY]}
+   chosen.push(best);positions[p.id]=best;
+  }
+ }
 }
 buildPositions();
 const frame=$('#mapFrame'),canvas=$('#world'),ctx=canvas.getContext('2d',{alpha:false});
@@ -325,8 +383,6 @@ for(let i=0;i<120;i++){let x=50+hash(i,22)*1180,y=20+hash(i,25)*850;if(hash(i,37
 for(const [x,y] of [[443,410],[310,544],[760,380],[920,655],[625,650],[475,310],[970,330],[350,430],[520,765],[1040,570]]){
 a.fillStyle='#b7d19c';a.beginPath();a.ellipse(x,y,52,25,-.13,0,7);a.fill();for(let j=0;j<7;j++)pixelTree(a,x-42+hash(j,x)*80,y-19+hash(j,y)*37,.55)}
 }
-const RIVER=[[0,470],[90,472],[170,469],[245,479],[345,491],[455,510],[545,524],[640,521],[710,511],[795,498],[875,485],[970,484],[1050,482],[1160,474],[1280,475]];
-function riverY(x){for(let i=0;i<RIVER.length-1;i++){const v=RIVER[i],q=RIVER[i+1];if(x>=v[0]&&x<=q[0])return v[1]+(q[1]-v[1])*(x-v[0])/(q[0]-v[0])}return 480}
 function drawWater(){stroke(water,RIVER,83,'#b2cfc3');stroke(water,RIVER,72,'#82b8b7');stroke(water,RIVER,62,'#4d9aa9');stroke(water,RIVER,45,'#78bec8');stroke(water,RIVER,25,'#62acbd');
 for(let i=0;i<150;i++){const x=hash(i,71)*W,y=riverY(x)+(hash(i,72)-.5)*40;stroke(water,[[x,y],[x+4+hash(i,73)*15,y]],1.2,'#d3eaDDb0')}
 // Islands and riverside park patches.
@@ -354,26 +410,103 @@ case 'market':{c.fillStyle='#e8d0aa';c.fillRect(-14,-5,28,19);c.fillStyle='#a44e
 default:building(c,0,0,.8)}
 c.fillStyle=col;c.fillRect(-19,-21,15,5);c.fillStyle='#fff8e7';c.fillRect(-18,-20,12,1);if(selected){c.strokeStyle='#fdf1b2';c.lineWidth=2;c.strokeRect(-22,-23,44,47)}c.restore()}
 function districtCenter(name){return CENTERS[name]||[650,450]}
-function fit(){const w=frame.clientWidth,h=frame.clientHeight;if(!w||!h)return;zoom=Math.min(w/W,h/H)*(w<600?1.30:.99);panX=(w-W*zoom)/2;panY=(h-H*zoom)/2;initialized=true;draw()}
-function resize(){let d=Math.min(2,devicePixelRatio||1),w=Math.max(1,frame.clientWidth),h=Math.max(1,frame.clientHeight);canvas.width=Math.round(w*d);canvas.height=Math.round(h*d);canvas.style.width=w+'px';canvas.style.height=h+'px';ctx.setTransform(d,0,0,d,0,0);draw();if(!initialized)fit()}
-function draw(){const d=Math.min(2,devicePixelRatio||1),w=frame.clientWidth,h=frame.clientHeight;ctx.setTransform(d,0,0,d,0,0);ctx.fillStyle='#ced8bb';ctx.fillRect(0,0,w,h);ctx.save();ctx.translate(panX,panY);ctx.scale(zoom,zoom);ctx.imageSmoothingEnabled=false;ctx.drawImage(art,0,0);
-for(let i=0;i<DISTRICTS.length;i++){const name=DISTRICTS[i],pr=districtProgress(i),polys=districtPolys[name];if(!polys)continue;districtPath(ctx,polys);ctx.fillStyle=OWNERS[pr.owner].fill;ctx.fill('evenodd');ctx.lineWidth=state.selectedDistrict===i?3.1:1.15;ctx.strokeStyle=state.selectedDistrict===i?'#cf8d45':'#729283ba';ctx.setLineDash(state.selectedDistrict===i?[]:[6,3]);ctx.stroke();ctx.setLineDash([])}
-ctx.drawImage(waterways,0,0);
-for(const p of placeDefs){let xy=positions[p.id];if(!xy)continue;const on=p.id===state.selectedPlace;const related=p.districtId===state.selectedDistrict;const isHot=hover===p.id;
-sprite(ctx,p,xy[0],xy[1],on?1.18:related?1.03:.88,on);
-if(on||isHot||zoom>.91){let text=p.name;ctx.font='bold 12px "Malgun Gothic",Arial';const wid=Math.min(210,ctx.measureText(text).width+15);let y=xy[1]+23;ctx.fillStyle='#fffdf2f1';ctx.fillRect(xy[0]-wid/2,y,wid,19);ctx.strokeStyle=on?'#c08339':'#9aaa93';ctx.lineWidth=on?2:1;ctx.strokeRect(xy[0]-wid/2,y,wid,19);ctx.fillStyle='#244536';ctx.textAlign='center';ctx.fillText(text,xy[0],y+13)}
-if(state.pending?.target===p.id){ctx.fillStyle='#c04b33';ctx.font='bold 23px Arial';ctx.fillText('⚔',xy[0]+22,xy[1]-21)}
+function fitAll(){const w=frame.clientWidth,h=frame.clientHeight;if(!w||!h)return;zoom=Math.min(w/W,h/H)*1.015;panX=(w-W*zoom)/2;panY=(h-H*zoom)/2;initialized=true;draw()}
+function fit(){
+ const w=frame.clientWidth,h=frame.clientHeight;if(!w||!h)return;
+ if(w<700){
+  // A 25-district atlas is unreadable if shrunk to phone width: start near Mapo.
+  zoom=Math.max(.52,Math.min(.90,h/H*.86));
+  const [cx,cy]=districtCenter('마포구');panX=w*.50-cx*zoom;panY=h*.52-cy*zoom;
+  initialized=true;draw();return;
+ }
+ fitAll();
 }
-for(let i=0;i<DISTRICTS.length;i++){let name=DISTRICTS[i],c=districtCenter(name),pr=districtProgress(i);ctx.font='bold 14px "Malgun Gothic",Arial';let text=`${name} ${pr.mine}/${pr.total}`;let sw=ctx.measureText(text).width+14;const y=c[1]-25;ctx.fillStyle=state.selectedDistrict===i?'#fff9e6e8':'#f7faf0de';ctx.fillRect(c[0]-sw/2,y-1,sw,20);ctx.strokeStyle=state.selectedDistrict===i?'#c78a49':'#bccab2';ctx.lineWidth=state.selectedDistrict===i?2:1;ctx.strokeRect(c[0]-sw/2,y-1,sw,20);ctx.fillStyle=pr.owner==='player'?'#126a9a':pr.owner==='mixed'?'#8b6740':'#3b5a45';ctx.textAlign='center';ctx.fillText(text,c[0],y+13)}
-ctx.restore()}
+function resize(){let d=Math.min(2,devicePixelRatio||1),w=Math.max(1,frame.clientWidth),h=Math.max(1,frame.clientHeight);canvas.width=Math.round(w*d);canvas.height=Math.round(h*d);canvas.style.width=w+'px';canvas.style.height=h+'px';ctx.setTransform(d,0,0,d,0,0);draw();if(!initialized)fit()}
+function mapToScreen(x,y){return [panX+x*zoom,panY+y*zoom]}
+function overlapRects(a,b,margin=4){return a.x<b.x+b.w+margin&&a.x+a.w+margin>b.x&&a.y<b.y+b.h+margin&&a.y+a.h+margin>b.y}
+function mapLabel(text,x,y,kind,priority,ownerName=''){
+ return {text,x,y,kind,priority,ownerName};
+}
+function drawSmartLabels(w,h){
+ const labels=[],placed=[];
+ // Keep legend, toolbar and title free of label clutter.
+ placed.push({x:0,y:0,w:300,h:73},{x:0,y:h-60,w:285,h:60},{x:w-255,y:h-48,w:255,h:48});
+ const sel=placeDefs[state.selectedPlace],selectedDistrict=state.selectedDistrict;
+ for(let i=0;i<DISTRICTS.length;i++){
+  const districtName=DISTRICTS[i];
+  const marks=districtPlaces(i).map(p=>positions[p.id]).filter(Boolean);
+  let [wx,wy]=marks.length?[marks.reduce((v,q)=>v+q[0],0)/marks.length,marks.reduce((v,q)=>v+q[1],0)/marks.length]:districtCenter(districtName);
+  // Even district nameplates must remain on the mainland, not on the Han River.
+  if(isRiverArea(wx,wy,72))wy=riverY(wx)+(SOUTH.has(districtName)?77:-77);
+  const [x,y]=mapToScreen(wx,wy);
+  if(x<-80||x>w+80||y<-40||y>h+40)continue;
+  if(zoom>=.62 || i===selectedDistrict){
+   const prog=districtProgress(i),isSelected=i===selectedDistrict;
+   labels.push(mapLabel(`${DISTRICTS[i]} ${prog.mine}/${prog.total}`,x,y-24,'district',isSelected?89:zoom>.85?30:12,prog.owner));
+  }
+ }
+ for(const p of placeDefs){
+  const pt=positions[p.id];if(!pt)continue;const [x,y]=mapToScreen(pt[0],pt[1]);
+  if(x<-90||x>w+90||y<-40||y>h+40)continue;
+  const on=p.id===state.selectedPlace,hot=p.id===hover,related=p.districtId===selectedDistrict;
+  // Far-away labels stay hidden at overview zoom; the tile itself remains clickable.
+  if(!on&&!hot&&(!related&&zoom<1.22))continue;
+  if(!on&&!hot&&related&&zoom<.67)continue;
+  labels.push(mapLabel(p.name,x,y+21,'place',on?110:hot?100:related?60:10,owner(p)));
+ }
+ labels.sort((a,b)=>b.priority-a.priority);
+ ctx.save();ctx.setTransform(Math.min(2,devicePixelRatio||1),0,0,Math.min(2,devicePixelRatio||1),0,0);
+ const maxLabels= zoom<.7?15:zoom<1?28:zoom<1.4?38:62;
+ let rendered=0;
+ for(const v of labels){
+  if(rendered>=maxLabels&&v.priority<100)continue;
+  const district=v.kind==='district',font=district?'700 11px "Malgun Gothic",Arial,sans-serif':'600 11px "Malgun Gothic",Arial,sans-serif';
+  ctx.font=font;const bw=Math.min(190,Math.ceil(ctx.measureText(v.text).width)+13),bh=district?19:18;
+  const variants=district?[{x:v.x-bw/2,y:v.y-bh/2},{x:v.x-bw/2,y:v.y-bh-12},{x:v.x-bw/2,y:v.y+14}]:[
+   {x:v.x-bw/2,y:v.y},{x:v.x-bw/2,y:v.y-bh-52},{x:v.x+19,y:v.y-31},{x:v.x-bw-19,y:v.y-31}
+  ];
+  const bounds=variants.map(q=>({...q,w:bw,h:bh}));
+  let box=bounds.find(q=>q.x>=5&&q.x+q.w<=w-5&&q.y>=4&&q.y+q.h<=h-4&&!placed.some(prev=>overlapRects(q,prev,4)));
+  if(!box&&v.priority>=100)box=bounds.find(q=>q.x>=3&&q.x+q.w<w-3&&q.y>=0&&q.y+q.h<h)||bounds[0];
+  if(!box)continue;
+  placed.push(box);rendered++;
+  ctx.fillStyle=v.priority>=100?'#fff5d9f4':district?'#f8fbf1ef':'#ffffffed';ctx.fillRect(box.x,box.y,box.w,box.h);
+  ctx.lineWidth=v.priority>=89?1.5:.8;ctx.strokeStyle=v.priority>=89?'#a37932':district?'#9dac9b':'#b4c8b6';ctx.strokeRect(box.x+.5,box.y+.5,box.w-1,box.h-1);
+  ctx.fillStyle=v.ownerName==='player'?'#176e9d':'#234b39';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(v.text,box.x+bw/2,box.y+bh/2+1);
+ }
+ ctx.restore();
+}
+function draw(){
+ const d=Math.min(2,devicePixelRatio||1),w=frame.clientWidth,h=frame.clientHeight;
+ ctx.setTransform(d,0,0,d,0,0);ctx.fillStyle='#ced8bb';ctx.fillRect(0,0,w,h);
+ ctx.save();ctx.translate(panX,panY);ctx.scale(zoom,zoom);ctx.imageSmoothingEnabled=false;ctx.drawImage(art,0,0);
+ for(let i=0;i<DISTRICTS.length;i++){
+  const name=DISTRICTS[i],pr=districtProgress(i),polys=districtPolys[name];if(!polys)continue;
+  districtPath(ctx,polys);ctx.fillStyle=OWNERS[pr.owner].fill;ctx.fill('evenodd');ctx.lineWidth=state.selectedDistrict===i?3.1:1.15;
+  ctx.strokeStyle=state.selectedDistrict===i?'#cf8d45':'#729283ba';ctx.setLineDash(state.selectedDistrict===i?[]:[6,3]);ctx.stroke();ctx.setLineDash([]);
+ }
+ ctx.drawImage(waterways,0,0);
+ for(const p of placeDefs){
+  const xy=positions[p.id];if(!xy)continue;
+  // Icon size stays readable but does not balloon with map zoom.
+  const on=p.id===state.selectedPlace,related=p.districtId===state.selectedDistrict;
+  const ideal=on?34:related?27:24;
+  const spriteScale=Math.min(1.35,Math.max(.28,ideal/(38*zoom)));
+  sprite(ctx,p,xy[0],xy[1],spriteScale,on);
+  if(state.pending?.target===p.id){ctx.fillStyle='#c04b33';ctx.font='bold 19px Arial';ctx.fillText('!',xy[0]+18,xy[1]-16)}
+ }
+ ctx.restore();
+ drawSmartLabels(w,h);
+}
 function zoomAt(f,x=frame.clientWidth/2,y=frame.clientHeight/2){let next=Math.max(.38,Math.min(3.2,zoom*f));panX=x-(x-panX)*next/zoom;panY=y-(y-panY)*next/zoom;zoom=next;draw()}
-function chooseAt(x,y){const wx=(x-panX)/zoom,wy=(y-panY)/zoom;let best=-1,dist=Infinity;for(const p of placeDefs){const pt=positions[p.id];if(!pt)continue;let d=Math.hypot(pt[0]-wx,pt[1]-wy);if(d<dist){best=p.id;dist=d}}if(best!==-1&&dist<Math.max(22,16/zoom)){pickPlace(best);return}for(let i=0;i<DISTRICTS.length;i++)if(inDistrict(wx,wy,DISTRICTS[i])){pickDistrict(i);return}}
+function chooseAt(x,y){const wx=(x-panX)/zoom,wy=(y-panY)/zoom;let best=-1,dist=Infinity;for(const p of placeDefs){const pt=positions[p.id];if(!pt)continue;let d=Math.hypot(pt[0]-wx,pt[1]-wy);if(d<dist){best=p.id;dist=d}}if(best!==-1&&dist<Math.max(18,23/zoom)){pickPlace(best);return}for(let i=0;i<DISTRICTS.length;i++)if(inDistrict(wx,wy,DISTRICTS[i])){pickDistrict(i);return}}
 canvas.addEventListener('wheel',e=>{e.preventDefault();let r=canvas.getBoundingClientRect();zoomAt(e.deltaY<0?1.14:.87,e.clientX-r.left,e.clientY-r.top)},{passive:false});
 canvas.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,px:panX,py:panY,moved:false};canvas.setPointerCapture(e.pointerId)});
-canvas.addEventListener('pointermove',e=>{if(drag){let dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>5)drag.moved=true;if(drag.moved){canvas.classList.add('drag');panX=drag.px+dx;panY=drag.py+dy;draw()}return}let r=canvas.getBoundingClientRect(),wx=(e.clientX-r.left-panX)/zoom,wy=(e.clientY-r.top-panY)/zoom;let best=-1,dist=30;for(const p of placeDefs){let pos=positions[p.id],d=Math.hypot(wx-pos[0],wy-pos[1]);if(d<dist){dist=d;best=p.id}}if(best!==hover){hover=best;draw()}});
+canvas.addEventListener('pointermove',e=>{if(drag){let dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>5)drag.moved=true;if(drag.moved){canvas.classList.add('drag');panX=drag.px+dx;panY=drag.py+dy;draw()}return}let r=canvas.getBoundingClientRect(),wx=(e.clientX-r.left-panX)/zoom,wy=(e.clientY-r.top-panY)/zoom;let best=-1,dist=25/zoom;for(const p of placeDefs){let pos=positions[p.id],d=Math.hypot(wx-pos[0],wy-pos[1]);if(d<dist){dist=d;best=p.id}}if(best!==hover){hover=best;draw()}});
 canvas.addEventListener('pointerup',e=>{if(!drag)return;let moved=drag.moved;drag=null;canvas.classList.remove('drag');if(!moved){let r=canvas.getBoundingClientRect();chooseAt(e.clientX-r.left,e.clientY-r.top)}});
 canvas.addEventListener('pointercancel',()=>{drag=null;canvas.classList.remove('drag')});
-$('#zoomIn').onclick=()=>zoomAt(1.25);$('#zoomOut').onclick=()=>zoomAt(.8);$('#centerMap').onclick=fit;
+$('#zoomIn').onclick=()=>zoomAt(1.25);$('#zoomOut').onclick=()=>zoomAt(.8);$('#centerMap').onclick=fitAll;
+$('#focusMap').onclick=()=>{let isFocus=document.querySelector('.game').classList.toggle('map-focus');$('#focusMap').textContent=isFocus?'▣ 정보창 보기':'⛶ 지도 확대';requestAnimationFrame(()=>{initialized=false;resize();fit()})};
 fetch(GEO_URL).then(r=>{if(!r.ok)throw Error('fetch');return r.json()}).then(g=>{if(!Array.isArray(g.features))return;let out={};for(const f of g.features){let n=f.properties?.name,geo=f.geometry;if(!DISTRICTS.includes(n))continue;let polygons=geo.type==='Polygon'?[geo.coordinates]:geo.type==='MultiPolygon'?geo.coordinates:[];let rings=polygons.map(poly=>poly[0].map(geoProject)).filter(r=>r.length>=3);if(rings.length)out[n]=rings}if(Object.keys(out).length===25){districtPolys=out;buildPositions();draw()}}).catch(()=>{});
 function line(label,value){return `<div class="line"><span>${label}</span><strong>${value}</strong></div>`}
 function progressList(d){return `<div class="lm-list">${districtPlaces(d).map(p=>{const l=state.landmarks[p.id],isSelected=p.id===state.selectedPlace;return `<button class="lm-row ${isSelected?'lm-active':''}" data-action="select-place" data-val="${p.id}"><span class="lm-indicator" style="background:${OWNERS[l.owner].color}"></span><span class="lm-row-name">${p.name}</span><span class="lm-row-owner">${l.owner==='player'?'내 조직':l.owner==='neutral'?'중립':OWNERS[l.owner].name}</span></button>`}).join('')}</div>`}

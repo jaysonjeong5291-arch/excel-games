@@ -496,6 +496,11 @@
 #territory-sheet-tab.active{border-bottom-color:#107c41;background:#fff;color:#0d713b}
 #territory-sheet-tab .tab-close{font-size:13px}
 @media(max-width:700px){.territory-sheet-view{height:calc(100dvh - 203px);min-height:350px}.lobby-actions #open-territory-btn{grid-column:1/-1;grid-row:3;min-height:32px}}
+
+/* v0.6: Show more of the in-workbook map; keep the worksheet tabs and footer. */
+body.territory-active .ribbon{display:none!important}
+body.territory-active .territory-sheet-view{height:calc(100dvh - 142px);min-height:490px}
+@media(max-width:700px){body.territory-active .territory-sheet-view{height:calc(100dvh - 142px);min-height:500px;overflow-y:auto}}
 </style></head>
 <body>
 <div class="titlebar"><span class="app-icon" aria-hidden="true">▦</span><span class="doc-name">업무현황_2026.xlsx</span><span class="title-space"></span><span id="member-top-level" class="member-level-tag" hidden>Lv.1</span><span id="connection-label" class="connection">연결 중</span><button id="copy-link-btn" type="button" class="share-btn">주소 복사</button></div>
@@ -1740,6 +1745,7 @@ function updateSheetTabs(){const nav=$('sheet-nav');nav.querySelectorAll('[data-
  const lobby=nav.querySelector('[data-sheet="lobby"]');lobby.classList.toggle('active',activeRoom===null&&!activeTerritory);}
 function changeUrl(id){const url=new URL(location.href);if(id)url.searchParams.set('room',id);else url.searchParams.delete('room');try{history.replaceState(null,'',url.pathname+url.search+url.hash);}catch(_){}}
 function switchView(id){
+ document.body.classList.toggle('territory-active',id==='__territory__');
  if(id==='__territory__'){
   territorySheetOpen=true;activeTerritory=true;activeRoom=null;
   $('lobby-view').hidden=true;$('room-view').hidden=true;
