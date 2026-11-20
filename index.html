@@ -1880,7 +1880,7 @@ function switchView(id){
   $('territory-view').hidden=true;$('lobby-view').hidden=true;$('room-view').hidden=true;
   $('holdem-view').hidden=true;$('oddeven-view').hidden=true;$('chat').hidden=true;
   $('underover-view').hidden=false;
-  const frame=$('underover-frame');const src='./underover.html?room='+encodeURIComponent(id);
+  const frame=$('underover-frame');const src='./underover.html?build=uo06&room='+encodeURIComponent(id);
   if(!frame.getAttribute('src')||!frame.getAttribute('src').endsWith(encodeURIComponent(id)))frame.src=src;
   setTimeout(deliverUnderOverAuth,0);
   $('cell-address').textContent='A1';$('formula-value').textContent='=언더오버(1:1)';
