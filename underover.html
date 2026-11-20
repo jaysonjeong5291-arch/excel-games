@@ -102,7 +102,7 @@
 @media(max-width:650px){.uo-snapshot{font-size:10px}.uo-snapshot th,.uo-snapshot td{padding:6px 5px}.uo-snapshot .uo-num{width:24px}.uo-target-rule{font-size:10px}}
 </style></head><body>
 <div class="shell">
-  <header class="title"><div><strong>▦ 업무현황 · 언더오버 1:1</strong><div><small>목표 11~17 · 4개 주사위 합계 예측 · 1차 비공개 / 2차 공개</small></div></div><div class="toolbar"><span class="pill" id="wallet">내 포인트 확인 중</span><button class="button" id="back">Sheet1</button></div></header>
+  <header class="title"><div><strong>▦ 업무현황 · 언더오버 1:1</strong><div><small>v1.0 · 목표는 1차 베팅 종료 후 공개 · 1차 주사위 비공개 / 2차 공개</small></div></div><div class="toolbar"><span class="pill" id="wallet">내 포인트 확인 중</span><button class="button" id="back">Sheet1</button></div></header>
   <div class="uo-xls-columns" aria-hidden="true"><span class="corner"></span><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span></div>
   <div id="stage" class="stages"></div>
   <div class="uo-room-flex"><div id="root" class="pane"><p class="load">서버와 연결 중…</p></div>
@@ -155,8 +155,8 @@ function ensureCredentials(){
 function feedback(t,bad=false){$('feedback').textContent=t||'';$('feedback').style.color=bad?'#a9433c':'#667e6b';}
 async function rpc(action,choice=null,amount=null,roomOverride=null){
  const signal=AbortSignal.timeout(12000);
- const reply=await fetch(API+'/rest/v1/rpc/renju_uo_live_rpc',{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify({p_action:action,p_client:client(),p_token:token(),p_room:roomOverride===null?room:roomOverride,p_choice:choice,p_amount:amount}),signal,cache:'no-store'});
- const payload=await reply.json().catch(()=>null);if(!reply.ok||!payload?.ok)throw new Error(payload?.message||payload?.error||'서버 오류 '+reply.status+(reply.status===404?' · SQL 설치 여부 확인':''));return payload;
+ const reply=await fetch(API+'/rest/v1/rpc/renju_uo_safe_rpc',{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify({p_action:action,p_client:client(),p_token:token(),p_room:roomOverride===null?room:roomOverride,p_choice:choice,p_amount:amount}),signal,cache:'no-store'});
+ const payload=await reply.json().catch(()=>null);if(!reply.ok||!payload?.ok)throw new Error(payload?.message||payload?.error||'서버 오류 '+reply.status+(reply.status===404?' · v1.0 SQL 설치 여부 확인':''));if(payload.phase&&!['choose2','bet2','showdown','finished'].includes(payload.phase))payload.target=null;return payload;
 }
 async function socialRpc(action,message=null){
  const reply=await fetch(API+'/rest/v1/rpc/renju_uo_live_social_rpc',{
@@ -229,10 +229,13 @@ function renderLobby(){let html='<div class="heading">언더오버 1:1 · 온라
 function seatOf(n){return data?.players?.find(p=>p.seat===n)||{};}
 function dieHtml(n,hide=false){return `<div class="die ${(!n||hide)?'unknown':''}">${(!n||hide)?'?':faces[n]}</div>`}
 function sideText(v){return v==='under'?'언더':v==='over'?'오버':v==='target'?'타겟':'비공개'}
+const GOAL_REVEAL_PHASES=new Set(['choose2','bet2','showdown','finished']);
+function visibleGoal(d){return d&&GOAL_REVEAL_PHASES.has(d.phase)&&Number.isInteger(Number(d.target))&&Number(d.target)>=11&&Number(d.target)<=17?Number(d.target):null}
 function renderRoom(){
  const d=data,me=d.my_seat,players=d.players||[],r=d.result||{};
  let html=`<div class="flex" style="justify-content:space-between;margin-bottom:10px"><div><b>${esc(d.room)}</b> · 제${d.hand}판 · ${humanPhase(d.phase)} · <span id="uo-clock"></span> ${me===0?'<span class="uo-watch-pill">관전 중</span>':''}</div><div class="flex">${me===0&&d.phase==='waiting'&&players.some(p=>!p.name)?'<button class="button primary" id="takeSeat">빈자리 참가</button>':''}<button class="button" id="invite">🔗 초대 링크 복사</button><button class="button danger" id="leave">${me===0?'관전 종료':d.phase==='waiting'||d.phase==='finished'?'방 나가기':'기권하고 나가기'}</button></div></div>`;
- html+=`<div class="uo-goal-strip"><span class="uo-row-cell">2</span><div class="uo-goal-key">목표 숫자 <small>11 ~ 17 · 1차 베팅 완료 후 공개</small></div><div class="uo-goal-value ${d.target==null?'is-pending':''}"><strong>${d.target!=null&&Number(d.target)>=11&&Number(d.target)<=17?d.target:(d.phase==='waiting'?'게임 대기':'? 비공개')}</strong><small>${d.target==null?(d.phase==='waiting'?'게임 시작 후에도 1차 베팅 전까지 숨김':'1차 베팅 종료 후 공개'):'4개 주사위의 합계와 비교합니다'}</small></div></div>`;
+ const goal=visibleGoal(d);
+ html+=`<div class="uo-goal-strip"><span class="uo-row-cell">2</span><div class="uo-goal-key">목표 숫자 <small>11 ~ 17 · 1차 베팅 완료 후 공개</small></div><div class="uo-goal-value ${goal===null?'is-pending':''}"><strong>${goal!==null?goal:(d.phase==='waiting'?'게임 대기':'🔒 비공개')}</strong><small>${goal===null?'1차 베팅이 완료되면 자동 공개':'4개 주사위의 합계와 비교합니다'}</small></div></div>`;
  html+=`<div class="bets"><div><small>진행 단계</small><strong>${esc(humanPhase(d.phase))}</strong></div><div><small>총 판돈</small><strong>${fmt(d.pot)}P</strong>${d.carry_count?`<small>이월 ${d.carry_count}회 · 다음 예치 ${fmt(d.next_ante)}P/인</small>`:''}</div><div><small>현재 베팅</small><strong>${fmt(d.current_bet)}P</strong></div><div><small>내 포인트</small><strong>${fmt(d.my_balance)}P</strong></div></div>`;
  html+='<div class="cards">';
  for(const p of players){
@@ -302,7 +305,7 @@ function renderRoom(){
    html+=`<div>총 판돈 ${fmt(r.pot||d.pot)}P</div></div>${isCarry?`<div class="notice"><b>묻고 더블!</b> ${fmt(d.pot)}P는 그대로 이월됩니다. 다음 판 각자 시작 예치금 <b>${fmt(d.next_ante)}P</b>. 두 사람이 다시 준비하면 이어서 진행합니다. 대결을 끝내면 각각 실제로 걸었던 원금을 돌려받습니다.</div>`:'<div class="note">재대결하려면 양쪽 모두 다시 준비해 주세요.</div>'}<div class="flex">${me?`<button data-act="ready" class="button">${p.ready?'준비 취소':'재대결 준비'}</button>`:''}${me===1?`<button data-act="start" class="button primary" ${!(players[0].ready&&players[1].ready)?'disabled':''}>${isCarry?'묻고 더블 시작':'재대결 시작'}</button>`:''}${isCarry&&me?'<button data-act="cancel_rollover" class="button danger">대결 종료 · 원금 반환</button>':''}</div>`;
  }
  html+='</div>';
- html+=`<div class="uo-rules-grid"><b>베팅 정산표 · 목표 숫자 ${d.target??'11~17'}</b><div>혼자 언더·오버 적중 <strong>총 팟 100%</strong></div><div>혼자 타겟 적중 <strong>내 베팅금 10배</strong></div><div>둘 다 언더·오버 적중 <strong>각 팟 50%</strong></div><div>둘 다 타겟 적중 <strong>각자 베팅금 2배</strong></div><small>베팅금은 기본 예치금을 포함한 누적 금액이며, 지급 배수는 원금을 포함합니다. 둘 다 실패하면 판돈 이월 + 다음 판 시작 예치금 2배. 진행 단계별 30초 제한.</small></div>`;
+ html+=`<div class="uo-rules-grid"><b>베팅 정산표 · 목표 숫자 ${goal??'11~17 (비공개)'}</b><div>혼자 언더·오버 적중 <strong>총 팟 100%</strong></div><div>혼자 타겟 적중 <strong>내 베팅금 10배</strong></div><div>둘 다 언더·오버 적중 <strong>각 팟 50%</strong></div><div>둘 다 타겟 적중 <strong>각자 베팅금 2배</strong></div><small>베팅금은 기본 예치금을 포함한 누적 금액이며, 지급 배수는 원금을 포함합니다. 둘 다 실패하면 판돈 이월 + 다음 판 시작 예치금 2배. 진행 단계별 30초 제한.</small></div>`;
  if(!me)html+='<div class="notice">관전 중 · 첫 번째 주사위는 정산 전까지 비공개입니다. 두 번째 주사위와 진영 예측은 2차 베팅 시작 시 공개됩니다. 베팅에는 참가할 수 없지만 채팅은 가능해요.</div>';
  $('root').innerHTML=html;
  $('invite').onclick=()=>{const parentUrl=new URL(location.origin+location.pathname.replace(/underover\.html$/,'index.html'));parentUrl.searchParams.set('room',d.room);navigator.clipboard?.writeText(parentUrl.href).then(()=>feedback('초대 링크 복사 완료')).catch(()=>feedback('링크: '+parentUrl.href));};

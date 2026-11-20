@@ -1880,7 +1880,7 @@ function switchView(id){
   $('territory-view').hidden=true;$('lobby-view').hidden=true;$('room-view').hidden=true;
   $('holdem-view').hidden=true;$('oddeven-view').hidden=true;$('chat').hidden=true;
   $('underover-view').hidden=false;
-  const frame=$('underover-frame');const src='./underover.html?build=uo09&room='+encodeURIComponent(id);
+  const frame=$('underover-frame');const src='./underover.html?build=uo10&room='+encodeURIComponent(id);
   if(!frame.getAttribute('src')||!frame.getAttribute('src').endsWith(encodeURIComponent(id)))frame.src=src;
   setTimeout(deliverUnderOverAuth,0);
   $('cell-address').textContent='A1';$('formula-value').textContent='=언더오버(1:1)';
@@ -3082,7 +3082,7 @@ function renderHoldemReadout(own,board,isPlayer){
  return new Set(best.cards);
 }
 
-function underOverRpc(action='list',room=null,choice=null,amount=null){return callRpc('renju_uo_live_rpc',{p_action:action,p_client:CLIENT_ID,p_token:memberToken||null,p_room:room,p_choice:choice,p_amount:amount});}
+function underOverRpc(action='list',room=null,choice=null,amount=null){return callRpc('renju_uo_safe_rpc',{p_action:action,p_client:CLIENT_ID,p_token:memberToken||null,p_room:room,p_choice:choice,p_amount:amount});}
 function holdemRpc(action='list',room=null,amount=null){
  return callRpc('renju_holdem_rpc',{p_action:action,p_client:CLIENT_ID,p_token:memberToken||null,p_room:room,p_amount:amount});
 }
