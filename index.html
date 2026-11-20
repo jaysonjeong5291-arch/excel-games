@@ -1794,7 +1794,7 @@ function renderLobby(){const list=$('lobby-cells');const rows=[];let n=1;
   const tr=row(n++,[room.sheet,'',room.title,'',room.black?nicknameFor(room.black):'-',room.white?nicknameFor(room.white):'-',room.waiting,room.count,room.moves,''],['sheet-link','','','','','','','','','']);tr.className='room-row';tr.dataset.room=room.id;if(room.black)nameWithRank(tr.children[5],room.black);if(room.white)nameWithRank(tr.children[6],room.white);
   const gameLabel=document.createElement('span');gameLabel.className='game-type-pill'+(room.game==='tetris'?' tetris':'');gameLabel.textContent=room.game==='tetris'?'테트리스':room.game==='mine_battle'?'지뢰탐색게임':room.game==='holdem'?'홀덤':room.game==='oddeven'?'홀짝':room.game==='underover'?'언더오버':'오목';tr.children[2].append(gameLabel);
   const statusTd=tr.children[4],pill=document.createElement('span');pill.className='status-pill '+(room.status==='playing'?'':room.status);pill.textContent=status;statusTd.append(pill);
-  const joinBtn=document.createElement('button');joinBtn.type='button';joinBtn.className='room-open';joinBtn.textContent='열기';joinBtn.setAttribute('aria-label',room.sheet+' 열기');tr.lastElementChild.append(joinBtn);
+  const joinBtn=document.createElement('button');joinBtn.type='button';joinBtn.className='room-open';joinBtn.textContent=room.game==='underover'&&Number(room.count||0)>=2?'관전':'열기';joinBtn.setAttribute('aria-label',room.sheet+(joinBtn.textContent==='관전'?' 관전':' 열기'));tr.lastElementChild.append(joinBtn);
   rows.push(tr);
  }
  if(roomList.length>display.length)rows.push(row(n++,['표시 제한: '+(roomList.length-display.length)+'개 방은 목록에 표시되지 않습니다. 방 코드로 입장하세요.','','','','','','','','',''],['muted']));
