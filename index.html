@@ -501,6 +501,23 @@
 body.territory-active .ribbon{display:none!important}
 body.territory-active .territory-sheet-view{height:calc(100dvh - 142px);min-height:490px}
 @media(max-width:700px){body.territory-active .territory-sheet-view{height:calc(100dvh - 142px);min-height:500px;overflow-y:auto}}
+
+/* v3.5.1: Odd/Even waiting list, spectator presence and room-only chat. */
+.oe-social-section{display:grid;grid-template-columns:minmax(190px,.82fr) minmax(0,1.6fr);border-top:1px solid #d6e4d9;min-height:245px;background:#fff}
+.oe-waiting-panel{border-right:1px solid #d6e4d9;min-width:0;background:#fbfdfb}
+.oe-social-title{display:flex;justify-content:space-between;align-items:center;padding:10px 13px;border-bottom:1px solid #dce8df;background:#f0f7f1;color:#2b6845;font-size:12px;font-weight:800}
+.oe-social-title small{font-size:10px;font-weight:500;color:#718676}
+.oe-waiting-list{list-style:none;margin:0;padding:7px 9px;min-height:96px;max-height:233px;overflow:auto}
+.oe-waiting-list li{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px;padding:8px 6px;border-bottom:1px solid #e4eee6;color:#385c42;overflow-wrap:anywhere}
+.oe-waiting-list li span:last-child{flex:none;color:#879c8c;font-size:10px}
+.oe-waiting-list li.empty{color:#87978b;font-weight:400}
+.oe-social-chat{min-width:0;display:flex;flex-direction:column}
+.oe-social-chat .holdem-chat-messages{height:170px;min-height:125px;flex:1}
+.oe-social-chat .holdem-chat-form{margin-top:auto}
+.oe-social-chat .holdem-chat-feedback{line-height:1.5;padding:6px 12px}
+.oe-social-chat .holdem-chat-feedback[hidden]{display:none}
+@media(max-width:620px){.oe-social-section{grid-template-columns:1fr}.oe-waiting-panel{border-right:0;border-bottom:1px solid #d6e4d9}.oe-waiting-list{max-height:130px;min-height:40px}.oe-social-chat .holdem-chat-messages{height:170px}}
+
 </style></head>
 <body>
 <div class="titlebar"><span class="app-icon" aria-hidden="true">▦</span><span class="doc-name">업무현황_2026.xlsx</span><span class="title-space"></span><span id="member-top-level" class="member-level-tag" hidden>Lv.1</span><span id="connection-label" class="connection">연결 중</span><button id="copy-link-btn" type="button" class="share-btn">주소 복사</button></div>
@@ -645,13 +662,23 @@ body.territory-active .territory-sheet-view{height:calc(100dvh - 142px);min-heig
  <div class="oe-actions"><button type="button" class="role-switch-btn" id="oe-role-switch" hidden>참가/관전 전환</button><button type="button" id="oe-join" hidden>참가</button><button type="button" id="oe-ready">준비</button><button type="button" class="primary" id="oe-start">게임 시작</button><span id="oe-notice" role="status" aria-live="polite">홀 또는 짝을 고르고 준비하세요.</span></div>
  <div id="oe-feedback" class="oe-feedback" role="alert"></div>
  <div class="oe-grid-scroll"><table class="oe-grid" aria-label="홀짝 참가자와 라운드 결과"><thead><tr><th>좌석</th><th>참가자</th><th>선택</th><th>준비</th><th>보유 포인트</th><th>최근 정산</th></tr></thead><tbody id="oe-players"></tbody></table></div>
+ <div class="oe-social-section" aria-label="홀짝방 대기자 및 채팅">
+  <section class="oe-waiting-panel"><div class="oe-social-title">대기자 명단 <small id="oe-waiting-count">0명</small></div>
+   <ul class="oe-waiting-list" id="oe-waiting-list"><li class="empty">참가자 현황을 불러오는 중…</li></ul>
+  </section>
+  <section class="oe-social-chat"><div class="oe-social-title">방 채팅 <small id="oe-chat-count">0개 메시지 · 이 방에서만 표시</small></div>
+   <div id="oe-chat-messages" class="holdem-chat-messages" role="log" aria-live="polite"><div class="holdem-chat-empty">채팅을 불러오는 중…</div></div>
+   <form id="oe-chat-form" class="holdem-chat-form" autocomplete="off"><input id="oe-chat-input" placeholder="이 홀짝방에서 대화하기" aria-label="홀짝방 메시지" maxlength="280" required><button id="oe-chat-send" type="submit">보내기</button></form>
+   <div id="oe-chat-feedback" class="holdem-chat-feedback" role="status" hidden></div>
+  </section>
+ </div>
  <div class="oe-footnote">적중 시 베팅금의 2배를 지급합니다(원금 포함, 순이익 +판돈). 실패 시 판돈만 차감됩니다. 방장도 선택과 준비가 필요하며, 1명만 있어도 시작할 수 있습니다. 게임 포인트만 사용하며 현금 환전은 지원하지 않습니다.</div>
 </section>
 <div id="chat" class="chat" hidden><button type="button" id="chat-title-button" class="chat-title" aria-expanded="true" aria-controls="chat-body" title="메모 접기/펼치기"><span>메모 <span id="chat-count"></span></span><span class="chat-toggle" id="chat-toggle-glyph">−</span></button><div class="chat-body" id="chat-body"><div id="chat-messages" class="chat-messages"><div class="chat-empty">내용 없음</div></div><div id="admin-chat-feedback" class="admin-chat-feedback" role="status" hidden></div><form class="chat-form" id="chat-form"><input id="chat-input" class="chat-input" placeholder="메시지 입력" maxlength="280" autocomplete="off" aria-label="채팅 메시지"><button type="submit" class="chat-send">보내기</button></form></div></div>
 <section id="territory-view" class="territory-sheet-view" aria-label="영토전 게임 시트" hidden>
   <iframe id="territory-frame" title="업무현황_영토전_VER.2026" data-src="./territory-demo.html" referrerpolicy="same-origin"></iframe>
 </section>
-<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="territory-sheet-tab" class="sheet-tab" type="button" data-sheet="territory" hidden>🏯 영토전 <span class="tab-close" data-close-territory title="영토전 시트 닫기">×</span></button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="레벨 등급 v3.0">100% · v3.5.0 포인트 선물</span></footer>
+<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="territory-sheet-tab" class="sheet-tab" type="button" data-sheet="territory" hidden>🏯 영토전 <span class="tab-close" data-close-territory title="영토전 시트 닫기">×</span></button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="레벨 등급 v3.0">100% · v3.5.1 홀짝 대기/채팅</span></footer>
 <script>
 'use strict';
 const SIZE = 15;
@@ -1508,8 +1535,37 @@ let lastLegacyLobbyPayload=null;
 // v3.5.1: A slow Supabase response is not evidence that online rooms disappeared.
 // Preserve the last CONFIRMED room list briefly across page reloads; label it as unverified.
 const OE_LOBBY_CACHE_KEY='excel-games-oe-last-good-v351:'+SUPABASE_URL;
-const OE_LOBBY_CACHE_MAX_AGE=15*60*1000;
+const OE_LOBBY_CACHE_MAX_AGE=75*1000;
 let oeLastSuccessAt=0,oeListPending=null,oeLobbyLastRefreshAt=0;
+// Server-confirmed room presence; an empty or departed room is not a Sheet1 row.
+let oePresenceSeenAt=0, oePresenceByRoom=new Map(), oePresenceRequest=null;
+function visibleOddEvenRooms(rooms){
+ if(!Array.isArray(rooms))return [];
+ const validPresence=oePresenceSeenAt>0&&Date.now()-oePresenceSeenAt<45000;
+ return rooms.filter(r=>{
+  if(!r||typeof r.id!=='string'||!/^e-[0-9a-f]{12}$/i.test(r.id))return false;
+  const extra=validPresence?oePresenceByRoom.get(r.id):null;
+  if(extra){return Number(extra.active||0)>0;}
+  return Number(r.count??r.participants?.length??0)>0;
+ }).map(r=>{
+  const extra=validPresence?oePresenceByRoom.get(r.id):null;
+  if(!extra)return r;
+  return {...r,count:Number(extra.active||0),spectators:Number(extra.spectators||0),waiting:Math.max(0,6-Number(r.count||0))};
+ });
+}
+async function pollOddEvenPresenceSummary(force=false){
+ if(oePresenceRequest||(!force&&Date.now()-oePresenceSeenAt<6500))return oePresenceRequest;
+ const task=(async()=>{
+  const data=await callRpc('renju_oddeven_room_social',{p_action:'summary',p_client:null,p_token:null,p_room:null,p_text:null},false,7500);
+  if(!Array.isArray(data?.rooms))return;
+  oePresenceByRoom=new Map(data.rooms.map(x=>[x.id,x]));oePresenceSeenAt=Date.now();
+  // Preserve raw lobby data in the cache but filter its visible representation.
+  refreshCombinedLobby();
+ })();
+ oePresenceRequest=task;
+ try{await task;}catch(_){/* If social SQL is not installed, rely on confirmed occupied-seat count. */}
+ finally{if(oePresenceRequest===task)oePresenceRequest=null;}
+}
 function rememberOddEvenLobby(rooms){
  if(!Array.isArray(rooms))return;
  oeLastSuccessAt=Date.now();
@@ -1521,7 +1577,7 @@ function restoreOddEvenLobby(){
   const saved=raw&&JSON.parse(raw);
   if(!saved||!Number.isFinite(saved.at)||Date.now()-saved.at>OE_LOBBY_CACHE_MAX_AGE||
       !Array.isArray(saved.rooms))return;
-  const rooms=saved.rooms.filter(r=>r&&typeof r.id==='string'&&/^e-[0-9a-f]{12}$/i.test(r.id)&&r.game==='oddeven').slice(0,100);
+  const rooms=saved.rooms.filter(r=>r&&typeof r.id==='string'&&/^e-[0-9a-f]{12}$/i.test(r.id)&&r.game==='oddeven'&&Number(r.count||0)>0).slice(0,100);
   if(!rooms.length)return;
   oddEvenLobbyRooms=rooms;
   oeLastSuccessAt=saved.at;
@@ -1533,16 +1589,16 @@ function restoreOddEvenLobby(){
 function applyOddEvenLobbyReport(report){
  if(!report||!Array.isArray(report.rooms))return;
  oddEvenLobbyRooms=report.rooms;
- if(!report.stale)rememberOddEvenLobby(report.rooms);
+ if(!report.stale)rememberOddEvenLobby(visibleOddEvenRooms(report.rooms));
  refreshCombinedLobby();
  showOddEvenLobbyStatus(report);
 }
 function mergedRoomList(){
- const incoming=[...oddEvenLobbyRooms,...holdemLobbyRooms,...(lastLegacyLobbyPayload?.rooms||[])];
+ const incoming=[...visibleOddEvenRooms(oddEvenLobbyRooms),...holdemLobbyRooms,...(lastLegacyLobbyPayload?.rooms||[])];
  const seen=new Set();
  return incoming.filter(r=>{
   if(!r||typeof r.id!=='string'||seen.has(r.id))return false;
-  seen.add(r.id);return true;
+  seen.add(r.id);return !(r.id.startsWith('e-')&&!visibleOddEvenRooms([r]).length);
  });
 }
 function refreshCombinedLobby(){
@@ -1597,11 +1653,11 @@ function showOddEvenLobbyStatus(report){
  if(!label||activeRoom!==null)return;
  if(report.stale){
   const minutes=Math.max(1,Math.round((Date.now()-(report.cacheAt||oeLastSuccessAt))/60000));
-  label.textContent='홀짝방 '+report.rooms.length+'개 임시 표시 · '+minutes+'분 전 목록입니다 (현재 접속 가능 여부 미확인). 서버 응답 지연 중 · 목록 새로고침 또는 방 코드 입장 가능.';
+  label.textContent='홀짝방 '+visibleOddEvenRooms(report.rooms).length+'개 임시 표시 · '+minutes+'분 전 목록입니다 (현재 접속 가능 여부 미확인). 서버 응답 지연 중 · 목록 새로고침 또는 방 코드 입장 가능.';
   return;
  }
- label.textContent='온라인 홀짝방 '+report.rooms.length+'개 · '+report.source+' 최신 조회'+report.note+
-  (report.rooms.length===0?' · DB에 저장된 홀짝방이 없습니다.':' · 방 목록에서 열기를 누르세요.');
+ label.textContent='온라인 홀짝방 '+visibleOddEvenRooms(report.rooms).length+'개 · '+report.source+' 최신 조회'+report.note+
+  (visibleOddEvenRooms(report.rooms).length===0?' · 현재 이용 중인 홀짝방이 없습니다.':' · 방 목록에서 열기를 누르세요.');
 }
 function pollLobbyInBackground(){
  if(lobbyPollInFlight||stopped||document.hidden)return;
@@ -1634,6 +1690,7 @@ function pollLobbyInBackground(){
   const holdemTask=holdemRpc('list').then(h=>{
    if(Array.isArray(h.rooms)){holdemLobbyRooms=h.rooms;refreshCombinedLobby();}
   }).catch(()=>{});
+  const presenceTask=pollOddEvenPresenceSummary();
   const evenTask=fetchOddEvenLobby().then(report=>{
    applyOddEvenLobbyReport(report);
    maybeOpenInitialRoom();
@@ -1644,7 +1701,7 @@ function pollLobbyInBackground(){
   const gateTask=callRpc('renju_match_gate_lobby_status',{}).then(s=>{
    if(Array.isArray(s)){matchGateLobbyStatuses=new Map(s.map(z=>[z.room_id,z]));if(lastLegacyLobbyPayload)refreshCombinedLobby();}
   }).catch(()=>{});
-  await Promise.allSettled([legacyTask,holdemTask,evenTask,gateTask]);
+  await Promise.allSettled([legacyTask,holdemTask,evenTask,gateTask,presenceTask]);
   await syncNicknames().catch(()=>{});
   maybeOpenInitialRoom();
  })().finally(()=>{lobbyPollInFlight=false;});
@@ -1762,7 +1819,7 @@ function switchView(id){
  $('chat-title-button').firstElementChild.firstChild.textContent='메모 ';
  showOperatorMessage('');if(!id){sheet1LastPaint='';paintSheet1Chat();setTimeout(()=>syncSheet1Chat(true),0);}
  if(id&&!poker&&!parity){gomokuRewardRoom=null;gomokuRewardData=null;gomokuRewardSyncAt=0;arcadeRewardRoom=null;arcadeRewardData=null;arcadeRewardSyncAt=0;setTimeout(()=>{syncGomokuRewards(true);syncArcadeRewards(true);},350);const item=roomList.find(r=>r.id===id);$('room-name').textContent=(item?.sheet||'Sheet')+'  '+(item?.game==='mine_battle'?'지뢰탐색게임':(item?.title||''));$('room-info').textContent='  '+id;activateCache();setTimeout(resizeCanvas,30);}else{$('cell-address').textContent='A1';$('formula-value').textContent='=COUNTIF(방현황,"접속중")';}
- updateSheetTabs();changeUrl(id);if(parity){renderOddEven();}else if(poker){$('holdem-admin-guide').hidden=!(myNickname==='운영자'&&adminToken&&memberProfile);renderHoldem();holdemChatState(id).signature=null;holdemChatFeedback('');holdemChatRender(id);holdemChatSync(id,true);}else{renderTetrisRoom();renderMineRoom();renderMatchGate();}}
+ updateSheetTabs();changeUrl(id);if(parity){renderOddEven();oddEvenSocialState(id).signature=null;oddEvenSocialSync(id,true);}else if(poker){$('holdem-admin-guide').hidden=!(myNickname==='운영자'&&adminToken&&memberProfile);renderHoldem();holdemChatState(id).signature=null;holdemChatFeedback('');holdemChatRender(id);holdemChatSync(id,true);}else{renderTetrisRoom();renderMineRoom();renderMatchGate();}}
 function isKickedError(error){return /강퇴되었습니다/.test(String(error?.message||error||''));}
 const kickedRooms=new Set();
 function returnKickedToLobby(id){
@@ -1857,7 +1914,13 @@ async function closeRoom(id){
  if(!openRooms.includes(id))return;
  openRooms=openRooms.filter(x=>x!==id);roomCache.delete(id);tetrisDataByRoom.delete(id);tetrisLocalByRoom.delete(id);mineDataByRoom.delete(id);matchGateByRoom.delete(id);matchGateRestarting.delete(id);
  if(activeRoom===id)switchView(null);else updateSheetTabs();
- if(id.startsWith('e-')){oddEvenDataByRoom.delete(id);oddEvenRevealUntil.delete(id);oddEvenRpc('leave',id).catch(()=>{});return;}
+ if(id.startsWith('e-')){
+  oddEvenDataByRoom.delete(id);oddEvenRevealUntil.delete(id);oddEvenSocialByRoom.delete(id);
+  Promise.allSettled([oddEvenSocialRpc('leave',id),oddEvenRpc('leave',id)]).then(()=>{
+    oeLobbyLastRefreshAt=0;return fetchOddEvenLobby();
+  }).then(report=>applyOddEvenLobbyReport(report)).catch(()=>{});
+  return;
+ }
  if(id.startsWith('h-')){const v=holdemVisualByRoom.get(id);if(v){clearTimeout(v.flipTimer);clearTimeout(v.showTimer);}holdemVisualByRoom.delete(id);holdemChatByRoom.delete(id);holdemDataByRoom.delete(id);holdemRpc('leave',id).catch(()=>{});return;}
  try{
    await roomRpc(id,'leave');
@@ -3208,6 +3271,73 @@ setInterval(()=>{
 
 
 
+// Dedicated per-room Odd/Even waiting list and authenticated chat (v3.5.1).
+const oddEvenSocialByRoom=new Map();
+function oddEvenSocialState(id){
+ if(!oddEvenSocialByRoom.has(id))oddEvenSocialByRoom.set(id,{messages:[],waiting:[],busy:false,sending:false,last:0,signature:'',error:''});
+ return oddEvenSocialByRoom.get(id);
+}
+function oddEvenSocialRpc(action,room,text=null){
+ return callRpc('renju_oddeven_room_social',{p_action:action,p_client:CLIENT_ID,p_token:memberToken||null,p_room:room,p_text:text},false,12000);
+}
+async function oddEvenSocialSync(id,force=false){
+ if(!id?.startsWith('e-')||!memberToken||document.hidden)return;
+ const s=oddEvenSocialState(id);
+ if(s.busy||s.sending||(!force&&Date.now()-s.last<3000))return;
+ s.busy=true;
+ try{
+  const data=await oddEvenSocialRpc('list',id);
+  s.messages=Array.isArray(data.messages)?data.messages:[];
+  s.waiting=Array.isArray(data.waiting)?data.waiting:[];
+  s.error='';s.last=Date.now();
+  if(activeRoom===id)oddEvenSocialRender(id);
+ }catch(err){
+  s.error='방 채팅 연결 실패: '+String(err?.message||err)+' · Supabase 전용 SQL 적용을 확인하세요.';
+  if(activeRoom===id)oddEvenSocialRender(id);
+ }finally{s.busy=false;}
+}
+function oddEvenSocialRender(id){
+ if(activeRoom!==id)return;
+ const s=oddEvenSocialState(id),d=oddEvenDataByRoom.get(id),participants=d?.participants||[];
+ const waiting=[...participants.filter(p=>!p.ready).map(p=>({nickname:p.nickname||'참가자',status:'준비 대기',key:'seat-'+p.seat})),
+   ...s.waiting.map((p,i)=>({nickname:p.nickname||'관전자',status:'관전 / 대기',key:'wait-'+i}))];
+ const list=oeEl('oe-waiting-list');oeEl('oe-waiting-count').textContent=waiting.length+'명';
+ list.replaceChildren();
+ if(!waiting.length){const li=document.createElement('li');li.className='empty';li.textContent='현재 대기자가 없습니다.';list.append(li);}
+ for(const p of waiting){const li=document.createElement('li'),name=document.createElement('span'),role=document.createElement('span');name.textContent=p.nickname;role.textContent=p.status;li.append(name,role);list.append(li);}
+ const root=oeEl('oe-chat-messages');oeEl('oe-chat-count').textContent=s.messages.length+'개 메시지 · 이 방 전용';
+ const signature=s.messages.map(m=>[m.id,m.nickname,m.text].join('|')).join('~');
+ if(s.signature!==signature){
+  const atBottom=root.scrollHeight-root.scrollTop-root.clientHeight<65;s.signature=signature;root.replaceChildren();
+  if(!s.messages.length){const none=document.createElement('div');none.className='holdem-chat-empty';none.textContent='이 방에서 첫 메시지를 보내보세요.';root.append(none);}
+  for(const m of s.messages){
+   const item=document.createElement('div');item.className='holdem-chat-message'+(m.nickname===memberProfile?.nickname?' me':'');
+   const nick=document.createElement('span');nick.className='nick';nick.textContent=m.nickname||'참가자';
+   const text=document.createElement('span');text.className='text';text.textContent=m.text||'';
+   const clock=document.createElement('span');clock.className='clock';let date=new Date(m.created_at);clock.textContent=isNaN(date.valueOf())?'':date.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',hour12:false});
+   item.append(nick,text,clock);root.append(item);
+  }
+  if(atBottom||s.messages.length<=3)root.scrollTop=root.scrollHeight;
+ }
+ const feedback=oeEl('oe-chat-feedback');feedback.textContent=s.error;feedback.hidden=!s.error;
+}
+oeEl('oe-chat-form').addEventListener('submit',async event=>{
+ event.preventDefault();if(!isOddEvenRoom()||!memberToken)return;
+ const id=activeRoom,s=oddEvenSocialState(id),input=oeEl('oe-chat-input'),value=input.value.trim();
+ if(s.sending||!value)return;
+ if([...value].length>280){s.error='채팅은 280자까지 보낼 수 있습니다.';oddEvenSocialRender(id);return;}
+ s.sending=true;oeEl('oe-chat-send').disabled=true;
+ try{
+  const data=await oddEvenSocialRpc('send',id,value);
+  if(Array.isArray(data.messages))s.messages=data.messages;
+  if(Array.isArray(data.waiting))s.waiting=data.waiting;
+  s.error='';s.last=Date.now();s.signature='';
+  if(activeRoom===id){input.value='';oddEvenSocialRender(id);}
+ }catch(err){s.error='전송 실패: '+String(err?.message||err);if(activeRoom===id)oddEvenSocialRender(id);}
+ finally{s.sending=false;oeEl('oe-chat-send').disabled=false;}
+});
+setInterval(()=>{if(isOddEvenRoom())oddEvenSocialSync(activeRoom);},3500);
+
 // =============== Odd/Even (1-6 players, authoritative Supabase RPC) ===============
 const oddEvenDataByRoom=new Map(),oddEvenRevealUntil=new Map();
 let oddEvenActionPending=false,oddEvenInfo='';
@@ -3259,7 +3389,7 @@ function renderOddEven(){
   const fields=[seat,p?.nickname||(seat===1?'빈 자리':'—'),p?.guess==='odd'?'홀':p?.guess==='even'?'짝':'—',p?(p.ready?'✓ 준비':'대기'):'—',p?oddEvenFmt(p.points):'—',animating||p?.net===null||p?.net===undefined?'—':(p.net>0?'+':'')+oddEvenFmt(p.net)];
   fields.forEach((v,i)=>{const td=document.createElement('td');td.textContent=v;if(i===5&&p?.net>0)td.className='hit';else if(i===5&&p?.net<0)td.className='miss';tr.append(td);});rows.push(tr);
  }
- tbody.replaceChildren(...rows);
+ tbody.replaceChildren(...rows);oddEvenSocialRender(activeRoom);
 }
 async function oddEvenAct(action,stake=null,guess=null){
  if(!isOddEvenRoom()||oddEvenActionPending)return;
@@ -3272,7 +3402,7 @@ async function oddEvenAct(action,stake=null,guess=null){
  }catch(e){oddEvenInfo='요청 실패: '+e.message;renderOddEven();}
  finally{oddEvenActionPending=false;if(activeRoom===id)renderOddEven();}
 }
-const oeEl=id=>document.getElementById(id);
+function oeEl(id){return document.getElementById(id);}
 oeEl('oe-share').addEventListener('click',copyShare);
 oeEl('oe-exit').addEventListener('click',()=>{if(activeRoom)closeRoom(activeRoom)});
 oeEl('oe-set-stake').addEventListener('click',()=>{
