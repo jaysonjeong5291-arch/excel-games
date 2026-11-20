@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-<title>천하쟁패 | 플레이 가능한 테스트</title>
+<title>영토전 | 플레이 가능한 테스트</title>
 <style>
 :root{color-scheme:dark;--bg:#101922;--panel:#1a2831;--panel2:#22323c;--line:#3c535a;--text:#f0eddf;--muted:#aebcbb;--accent:#e3b86f;--green:#84b79c;--red:#ec968a;--blue:#89afd9}
 *{box-sizing:border-box}body{margin:0;font-family:'Pretendard','Malgun Gothic','Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-width:315px}
@@ -32,17 +32,83 @@ button,input,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.
 .toast{position:fixed;left:50%;bottom:65px;transform:translateX(-50%);z-index:20;background:#f4dfad;color:#2c312d;padding:10px 18px;border-radius:8px;box-shadow:0 5px 35px #0008;font-weight:800;font-size:12px;max-width:min(92vw,600px);text-align:center;opacity:0;pointer-events:none;transition:opacity .18s}.toast.show{opacity:1}
 @media(max-width:950px){.main{grid-template-columns:minmax(0,1fr) 290px}.sidebar{font-size:12px}.top{gap:8px;padding:8px}.brand-title{font-size:19px}.statpill{padding:5px 6px}.top-stats{gap:4px}}
 @media(max-width:700px){.game{height:auto;min-height:100dvh;overflow:visible}.top{min-height:58px;flex-wrap:wrap}.top-stats{width:100%;justify-content:space-between}.statpill{flex:1;text-align:center}.top .btn{font-size:11px;padding:7px 9px}.sheetline{height:26px}.main{display:flex;flex-direction:column;min-height:0}.mapwrap{height:46vh;min-height:300px;flex-shrink:0}.map-label{left:8px;top:8px}.map-label .title{font-size:12px;padding:5px}.map-label small{font-size:9px;max-width:210px}.sidebar{min-height:460px;max-height:none;border-left:0;border-top:2px solid #475850}.sidecontent{overflow:visible}.map-legend{right:7px;bottom:8px;gap:5px;font-size:9px}.map-controls{bottom:9px;left:8px}.bottom{flex-wrap:wrap}}
+
+/* v0.2: Excel-like outer interface; pixel-art map is deliberately unchanged. */
+:root{color-scheme:light;--bg:#f4f6f5;--panel:#fff;--panel2:#f3f7f4;--line:#d5e1d8;--text:#263c2d;--muted:#697d70;--accent:#176b3d;--green:#137c45;--red:#b74337;--blue:#376c9c}
+body{background:var(--bg);color:var(--text);font-family:Arial,'Malgun Gothic','Apple SD Gothic Neo',sans-serif}
+.game{min-height:0;height:100dvh}
+.top{background:#f8fbf8;border-bottom:1px solid #cfdad2;min-height:60px;padding:8px 15px;gap:10px;box-shadow:0 1px 2px #1536200d}
+.brand .seal{width:32px;height:32px;background:#107c41;border:1px solid #0d6535;border-radius:3px;color:#fff;box-shadow:none;font-size:19px}
+.brand-title{font:800 17px/1.3 Arial,'Malgun Gothic',sans-serif;letter-spacing:0;color:#20583a}
+.subtitle{color:#728679;font-size:10px}
+.top-stats{gap:7px}
+.statpill{border:1px solid #d5e2d8;border-radius:3px;background:white;color:#54735e;padding:6px 9px;font-size:11px}
+.statpill strong{color:#13683c}
+.btn{background:#f7faf7;border:1px solid #bad0c0;border-radius:3px;color:#205d3b;box-shadow:none;font-size:11px;padding:7px 10px}
+.btn:hover:not(:disabled){background:#e7f4ea}
+.btn.gold{background:#107c41;border-color:#0d6939;color:#fff}
+.btn.gold:hover:not(:disabled){background:#0c6335}
+.btn.red{background:#fcf3f2;color:#a44135;border-color:#e8c8c4}
+.btn.ghost{background:white;border-color:#cfdfd3;color:#496954}
+.btn.active{background:#d9eee0;border-color:#9ac6a8;color:#155f38}
+.sheetline{display:none}
+.main{background:#f7f9f7;grid-template-columns:minmax(0,1fr) 318px}
+.sidebar{background:#fff;border-left:1px solid #d1ded5;box-shadow:none}
+.side-header{background:#f4f8f5;border-bottom:1px solid #dce6de;padding:14px 14px 11px}
+.eyebrow{color:#50735b;letter-spacing:0}
+.territory-name{color:#254632;font-size:20px;margin:5px 0 4px}
+.ownership{color:#6a8070}
+.metrics{gap:5px;margin-top:10px}
+.metric{background:#fff;border:1px solid #dbe5dd;border-radius:3px;padding:8px 5px}
+.metric small{color:#748a79}.metric strong{color:#176b40}
+.tabs{background:#f7faf8;padding:0 5px;border-bottom:1px solid #d6e1d9}
+.tabs button{padding:10px 2px 8px;color:#6f8275;font-size:11px}
+.tabs button.selected{background:#fff;color:#106a3a;border-bottom-color:#107c41}
+.sidecontent{padding:13px 13px 22px}
+.section-title{color:#246340}
+.box{background:#fbfdfb;border:1px solid #d6e3d8;border-radius:4px;padding:11px;margin-bottom:11px}
+.line strong{color:#24633d}.line em{color:#688776}
+.divider{border-top-color:#e0e9e2}
+.caption{color:#6c8173}.text-muted{color:#63796b}
+.field{background:#fff;border:1px solid #bfd2c4;border-radius:3px;color:#2c4834;outline-color:#107c41}
+.field:focus{border-color:#107c41}
+.field-label{color:#486953}
+.unit{border-bottom-color:#e0e9e2}
+.unit-name small{color:#75897a}
+.unit-count{color:#176b40}
+.selector button{background:#fff;color:#54755e;border:1px solid #ccdcd0;border-radius:3px}
+.selector button.chosen{background:#e3f2e6;color:#14663b;border-color:#94bda1}
+.progress{background:#e5ede6}.progress>div{background:#107c41}
+.log-item{border-left-color:#5d9c75;background:#f1f7f2}
+.log-item small{color:#708775}
+.callout{background:#eff7f0;border-color:#c4dfca;color:#3c6047}
+.bottom{background:#f7f9f7;border-top:1px solid #d4e2d7;color:#647f6b;min-height:34px;padding:7px 13px}
+.bottom span b{color:#176b40}
+.toast{background:#eff9f0;color:#265939;border:1px solid #a8d1b3;border-radius:4px;box-shadow:0 4px 18px #162f1a30}
+/* Map canvas, existing terrain art, roads, icons, borders and in-map overlays remain unchanged. */
+@media(max-width:950px){.main{grid-template-columns:minmax(0,1fr) 285px}.top{gap:6px;padding:7px 9px}}
+@media(max-width:700px){
+ .game{height:auto;min-height:100dvh;overflow:visible}
+ .top{min-height:54px;flex-wrap:wrap}
+ .top-stats{gap:5px}.brand-title{font-size:16px}
+ .statpill{flex:1;min-width:86px;padding:5px 4px}
+ .main{display:flex;flex-direction:column}
+ .mapwrap{height:44vh;min-height:260px}
+ .sidebar{border-left:0;border-top:1px solid #d1ded5;min-height:440px}
+ .sidecontent{overflow:visible}
+ .bottom{flex-wrap:wrap}
+}
 </style>
 </head>
 <body>
 <div class="game">
 <header class="top">
-  <div class="brand"><div class="seal">⚔</div><div><div class="brand-title">천하쟁패</div><div class="subtitle">天下爭霸 · 전략 영토전 TEST v0.1</div></div></div>
-  <div class="top-stats"><div class="statpill">세력 <strong id="topFaction">PLAYER군</strong></div><div class="statpill">포인트 <strong id="topPoints">15,000 P</strong></div><div class="statpill">군량 <strong id="topGrain">6,000</strong></div><button class="btn" id="recruitBtn">＋ 병력 모집</button><button class="btn ghost" id="resetBtn" title="모든 테스트 데이터 초기화">↺ 초기화</button><button class="btn ghost" id="exitBtn">✕ 닫기</button></div>
+  <div class="brand"><div class="seal">⚔</div><div><div class="brand-title">영토전</div><div class="subtitle">전략 영토 시뮬레이션 · TEST v0.2</div></div></div>
+  <div class="top-stats"><div class="statpill">세력 <strong id="topFaction">PLAYER군</strong></div><div class="statpill">포인트 <strong id="topPoints">15,000 P</strong></div><div class="statpill">군량 <strong id="topGrain">6,000</strong></div><button class="btn" id="recruitBtn">＋ 병력 모집</button><button class="btn ghost" id="resetBtn" title="모든 테스트 데이터 초기화">↺ 초기화</button><button class="btn ghost" id="exitBtn">↩ Sheet1</button></div>
 </header>
-<div class="sheetline"><span>Sheet1</span><span class="current">영토전 (테스트)</span><span>총세력 4</span></div>
+<div class="sheetline" aria-hidden="true"><span>영토전</span></div>
 <div class="main">
-  <section class="mapwrap" id="mapFrame" aria-label="천하쟁패 영토 지도"><canvas id="world" aria-label="클릭 가능한 24개 영토 지도"></canvas>
+  <section class="mapwrap" id="mapFrame" aria-label="영토전 영토 지도"><canvas id="world" aria-label="클릭 가능한 24개 영토 지도"></canvas>
     <div class="map-label"><div class="title">천하전도 · 九州全圖</div><small>성 또는 땅을 클릭하면 정보가 나와요. 드래그로 이동 · 휠로 확대</small></div>
     <div class="map-controls"><button class="btn" id="zoomIn" aria-label="확대">＋</button><button class="btn" id="zoomOut" aria-label="축소">－</button><button class="btn" id="centerMap">⌖ 전체</button></div>
     <div class="map-legend"><span><i class="dot" style="background:#5099cb"></i>내 영토</span><span><i class="dot" style="background:#d16d62"></i>적국</span><span><i class="dot" style="background:#d2c9a8"></i>중립</span></div>
@@ -63,7 +129,7 @@ const ATTACK_TACTICS={charge:{name:'전면 돌격',value:1.16},siege:{name:'포�
 const $=s=>document.querySelector(s);const fmt=n=>Math.round(n).toLocaleString('ko-KR'); const now=()=>Date.now();
 function hash(x,y,z=0){let n=(Math.imul(x+17,374761393)+Math.imul(y+41,668265263)+Math.imul(z+7,1274126177))|0;n=Math.imul(n^(n>>>13),1274126177);return ((n^(n>>>16))>>>0)/4294967295}
 function emptyTroops(){return {inf:0,arch:0,cav:0}}function troopCount(a){return (a?.inf||0)+(a?.arch||0)+(a?.cav||0)}function copyTroops(a){return {inf:a.inf||0,arch:a.arch||0,cav:a.cav||0}}
-function baseState(){let lands=NAMES.map((name,id)=>{let r=Math.floor(id/COLS),c=id%COLS;let owner=([13,14].includes(id)?'player':[9,10,15].includes(id)?'wei':[3,4].includes(id)?'shu':[22,23].includes(id)?'wu':'neutral');let level=id===14?3:owner==='player'?2:owner==='neutral'?1:2;let troops=owner==='player'? (id===14?{inf:420,arch:220,cav:120}:{inf:260,arch:130,cav:80}):{inf:80+Math.floor(hash(id,1)*95),arch:20+Math.floor(hash(id,2)*60),cav:Math.floor(hash(id,3)*35)};return {id,name,owner,level,troops,defense:'balanced',general:id===14?'조운':id===13?'장료':owner==='neutral'?'지역수비대':'수비대장',protectUntil:0,terrain:hash(c,r,21)>.64?'숲':hash(c,r,22)>.8?'산악':'평야'}});return {version:1,name:'PLAYER',points:15000,grain:6000,reserve:{inf:450,arch:300,cav:170},generalPool:['서황','관우'],lands,pending:null,attackReadyAt:0,logs:[{time:now(),type:'system',text:'천하쟁패 테스트 세계가 열렸습니다. 허창과 양양에서 시작합니다.'}],lastSeen:now(),lastRegen:now(),selected:14,tab:'overview',recruitType:'inf',recruitQty:100,attackSource:13,attackPercent:75,attackTactic:'charge',raid:null}}
+function baseState(){let lands=NAMES.map((name,id)=>{let r=Math.floor(id/COLS),c=id%COLS;let owner=([13,14].includes(id)?'player':[9,10,15].includes(id)?'wei':[3,4].includes(id)?'shu':[22,23].includes(id)?'wu':'neutral');let level=id===14?3:owner==='player'?2:owner==='neutral'?1:2;let troops=owner==='player'? (id===14?{inf:420,arch:220,cav:120}:{inf:260,arch:130,cav:80}):{inf:80+Math.floor(hash(id,1)*95),arch:20+Math.floor(hash(id,2)*60),cav:Math.floor(hash(id,3)*35)};return {id,name,owner,level,troops,defense:'balanced',general:id===14?'조운':id===13?'장료':owner==='neutral'?'지역수비대':'수비대장',protectUntil:0,terrain:hash(c,r,21)>.64?'숲':hash(c,r,22)>.8?'산악':'평야'}});return {version:1,name:'PLAYER',points:15000,grain:6000,reserve:{inf:450,arch:300,cav:170},generalPool:['서황','관우'],lands,pending:null,attackReadyAt:0,logs:[{time:now(),type:'system',text:'영토전 테스트 세계가 열렸습니다. 허창과 양양에서 시작합니다.'}],lastSeen:now(),lastRegen:now(),selected:14,tab:'overview',recruitType:'inf',recruitQty:100,attackSource:13,attackPercent:75,attackTactic:'charge',raid:null}}
 function safeLoad(){try{const saved=JSON.parse(localStorage.getItem(KEY));if(saved&&saved.version===1&&Array.isArray(saved.lands)&&saved.lands.length===24&&saved.reserve)return saved}catch(e){}return baseState()}
 let state=safeLoad();let toastTimer=null;function save(){state.lastSeen=now();try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){console.warn('Local save unavailable',e)}}
 function toast(s){$('#toast').textContent=s;$('#toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),3400)}
