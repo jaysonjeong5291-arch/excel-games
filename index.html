@@ -518,7 +518,13 @@ body.territory-active .territory-sheet-view{height:calc(100dvh - 142px);min-heig
 .oe-social-chat .holdem-chat-feedback[hidden]{display:none}
 @media(max-width:620px){.oe-social-section{grid-template-columns:1fr}.oe-waiting-panel{border-right:0;border-bottom:1px solid #d6e4d9}.oe-waiting-list{max-height:130px;min-height:40px}.oe-social-chat .holdem-chat-messages{height:170px}}
 
-</style></head>
+/* Under/Over: worksheet panel embedded between the sheet tabs. */
+#underover-view[hidden]{display:none!important}
+body:has(#underover-view:not([hidden])) .ribbon{display:none}
+body:has(#underover-view:not([hidden])) #underover-frame{height:calc(100dvh - 177px)!important;min-height:550px}
+@media(max-width:700px){body:has(#underover-view:not([hidden])) #underover-frame{height:calc(100dvh - 145px)!important;min-height:560px}}
+</style>
+</head>
 <body>
 <div class="titlebar"><span class="app-icon" aria-hidden="true">▦</span><span class="doc-name">업무현황_2026.xlsx</span><span class="title-space"></span><span id="member-top-level" class="member-level-tag" hidden>Lv.1</span><span id="connection-label" class="connection">연결 중</span><button id="copy-link-btn" type="button" class="share-btn">주소 복사</button></div>
 <div class="tabs"><span class="tab file-tab">파일</span><span class="tab active">홈</span><span class="tab">삽입</span><span class="tab">페이지 레이아웃</span><span class="tab">수식</span><span class="tab">데이터</span><span class="tab">검토</span><span class="tab">보기</span></div>
@@ -612,7 +618,7 @@ body.territory-active .territory-sheet-view{height:calc(100dvh - 142px);min-heig
 
 <div id="create-modal" class="game-chooser" hidden role="dialog" aria-modal="true" aria-labelledby="chooser-title">
  <div class="chooser-panel"><div class="chooser-top"><span id="chooser-title">새 시트 만들기</span><button type="button" class="chooser-close" id="chooser-close" aria-label="닫기">×</button></div>
-  <div class="chooser-grid"><button type="button" class="game-choice" data-choice="gomoku"><span class="choice-symbol">▣ ▤</span><span>오목</span></button><button type="button" class="game-choice" data-choice="tetris"><span class="choice-symbol">▦</span><span>테트리스</span></button><button type="button" class="game-choice mine-choice" data-choice="mine_battle"><span class="choice-symbol">▥</span><span>지뢰탐색게임</span></button><button type="button" class="game-choice" data-choice="holdem"><span class="choice-symbol">♠</span><span>홀덤 (2~6명)</span></button><button type="button" class="game-choice" data-choice="oddeven"><span class="choice-symbol">⚀ ⚄</span><span>홀짝 (1~6명)</span></button></div><p class="chooser-note">선택하면 새 시트가 생성됩니다.</p>
+  <div class="chooser-grid"><button type="button" class="game-choice" data-choice="gomoku"><span class="choice-symbol">▣ ▤</span><span>오목</span></button><button type="button" class="game-choice" data-choice="tetris"><span class="choice-symbol">▦</span><span>테트리스</span></button><button type="button" class="game-choice mine-choice" data-choice="mine_battle"><span class="choice-symbol">▥</span><span>지뢰탐색게임</span></button><button type="button" class="game-choice" data-choice="holdem"><span class="choice-symbol">♠</span><span>홀덤 (2~6명)</span></button><button type="button" class="game-choice" data-choice="oddeven"><span class="choice-symbol">⚀ ⚄</span><span>홀짝 (1~6명)</span></button><button type="button" class="game-choice" data-choice="underover"><span class="choice-symbol">⚁ ?</span><span>언더오버 (1:1)</span></button></div><p class="chooser-note">선택하면 새 시트가 생성됩니다.</p>
  </div>
 </div>
 <section id="holdem-view" hidden aria-label="텍사스 홀덤 시트">
@@ -652,6 +658,9 @@ body.territory-active .territory-sheet-view{height:calc(100dvh - 142px);min-heig
  </div>
 </section>
 
+<section id="underover-view" hidden aria-label="언더오버 1:1 시트" style="min-height:calc(100dvh - 230px);background:#f5f8f6">
+ <iframe id="underover-frame" title="언더오버 1대1 게임" style="border:0;width:100%;height:calc(100dvh - 230px);min-height:590px;display:block;background:#f5f8f6" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+</section>
 <section id="oddeven-view" hidden aria-label="온라인 홀짝 게임 시트">
  <div class="oe-header"><div><strong id="oe-sheet">홀짝</strong> <span> · ODD / EVEN · 1~6인 온라인</span><code class="oe-online-code" id="oe-room-code"></code></div><div><button type="button" id="oe-share">친구 초대 링크 복사</button> <button type="button" id="oe-exit">Sheet1</button></div></div>
 <div class="oe-multiplayer-note">같은 방에 최대 6명 참가합니다. 친구에게 위 방 코드 또는 초대 링크를 보내세요. 각각 다른 회원 계정으로 로그인해야 별도의 참가 좌석을 사용할 수 있습니다.</div>
@@ -678,7 +687,7 @@ body.territory-active .territory-sheet-view{height:calc(100dvh - 142px);min-heig
 <section id="territory-view" class="territory-sheet-view" aria-label="영토전 게임 시트" hidden>
   <iframe id="territory-frame" title="업무현황_영토전_VER.2026" data-src="./territory-demo.html" referrerpolicy="same-origin"></iframe>
 </section>
-<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="territory-sheet-tab" class="sheet-tab" type="button" data-sheet="territory" hidden>🏯 영토전 <span class="tab-close" data-close-territory title="영토전 시트 닫기">×</span></button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="레벨 등급 v3.0">100% · v3.5.1 홀짝 대기/채팅</span></footer>
+<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="territory-sheet-tab" class="sheet-tab" type="button" data-sheet="territory" hidden>🏯 영토전 <span class="tab-close" data-close-territory title="영토전 시트 닫기">×</span></button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="레벨 등급 v3.0">100% · v3.6 언더오버 1:1</span></footer>
 <script>
 'use strict';
 const SIZE = 15;
@@ -1178,6 +1187,11 @@ function maybeOpenInitialRoom(){
     .finally(()=>{onlineDeepLinkPending=false;});
   return;
  }
+ if(/^u-[a-f0-9]{12}$/.test(id)){
+  if(!memberToken){lobbyNotify('언더오버 초대 링크입니다. 로그인 후 자동 입장합니다.');return;}
+  if(!hasSavedNickname())return;
+  initialDeepLink=null;openRoom(id);return;
+ }
  if(!hasSavedNickname())return;
  initialDeepLink=null;
  if(ROOM_REGEX.test(id)&&roomList.some(r=>r.id===id))openRoom(id);
@@ -1197,14 +1211,14 @@ const SUPABASE_PUBLISHABLE_KEY='sb_publishable_dWxi5S2-WH8Rn2sE0ADHJQ_JvbBjGBu';
 function makeUuid(){if(globalThis.crypto&&typeof crypto.randomUUID==='function')return crypto.randomUUID();const a=new Uint8Array(16);crypto.getRandomValues(a);a[6]=(a[6]&15)|64;a[8]=(a[8]&63)|128;const h=[...a].map(x=>x.toString(16).padStart(2,'0')).join('');return h.slice(0,8)+'-'+h.slice(8,12)+'-'+h.slice(12,16)+'-'+h.slice(16,20)+'-'+h.slice(20);}
 function makeClientId(){try{const value=sessionStorage.getItem('renju-multi-client-v1');if(value && /^[a-f0-9-]{36}$/.test(value))return value;const id=crypto.randomUUID();sessionStorage.setItem('renju-multi-client-v1',id);return id;}catch(_){return makeUuid();}}
 const CLIENT_ID=makeClientId();
-const ROOM_REGEX=/^(?:r-[0-9a-f]{10}|h-[0-9a-f]{12}|e-[0-9a-f]{12})$/;
+const ROOM_REGEX=/^(?:r-[0-9a-f]{10}|h-[0-9a-f]{12}|e-[0-9a-f]{12}|u-[0-9a-f]{12})$/;
 let geometry={size:600,header:31,step:37.93},hover=null;
 let state=null,myNumber=null,mySeat='waiting',connected=false;
 let activeRoom=null,openRooms=[],roomCache=new Map(),roomList=[],waitingList=[]; let activeTerritory=false,territorySheetOpen=false;
 let chatLastSeen='',movePending=false,pendingMovePoint=null,chatPending=false,revision=-1;
 let tick=0,polling=false,stopped=false,pollTimer=null,initialDeepLink=new URLSearchParams(location.search).get('room');
 let lobbyHealthy=false,lobbyReady=false,creating=false,lobbySignature="";
-let hunterLobbyStatuses=new Map(),matchGateLobbyStatuses=new Map(),holdemLobbyRooms=[],oddEvenLobbyRooms=[];
+let hunterLobbyStatuses=new Map(),matchGateLobbyStatuses=new Map(),holdemLobbyRooms=[],oddEvenLobbyRooms=[],underOverLobbyRooms=[];
 let matchGateByRoom=new Map(),matchGateActionPending=false,matchGateRestarting=new Map();
 // Rematch UX: keep the small ready/start gate fresh independently of the heavier room/game poll.
 // Only poll quickly while waiting for Ready/Start or after a completed round.
@@ -1251,7 +1265,7 @@ setInterval(paintGomokuClock,150);
 
 async function pollMatchGateQuick(){
  const id=activeRoom;
- if(!id||isHoldemRoom()||isOddEvenRoom()||stopped||matchGateQuickBusy||matchGateActionPending||document.hidden)return;
+ if(!id||id.startsWith('u-')||isHoldemRoom()||isOddEvenRoom()||stopped||matchGateQuickBusy||matchGateActionPending||document.hidden)return;
  const gate=gateState(id);
  if(gate?.started&&!currentGameFinished())return;
  matchGateQuickBusy=true;
@@ -1594,7 +1608,7 @@ function applyOddEvenLobbyReport(report){
  showOddEvenLobbyStatus(report);
 }
 function mergedRoomList(){
- const incoming=[...visibleOddEvenRooms(oddEvenLobbyRooms),...holdemLobbyRooms,...(lastLegacyLobbyPayload?.rooms||[])];
+ const incoming=[...underOverLobbyRooms,...visibleOddEvenRooms(oddEvenLobbyRooms),...holdemLobbyRooms,...(lastLegacyLobbyPayload?.rooms||[])];
  const seen=new Set();
  return incoming.filter(r=>{
   if(!r||typeof r.id!=='string'||seen.has(r.id))return false;
@@ -1687,6 +1701,9 @@ function pollLobbyInBackground(){
     }
    }
   });
+  const uoTask=underOverRpc('list').then(h=>{
+   if(Array.isArray(h.rooms)){underOverLobbyRooms=h.rooms.map(r=>({...r,game:'underover',status:r.status==='waiting'?'waiting':'playing',waiting:Math.max(0,2-Number(r.count||0)),moves:r.hand||0,black:null,white:null,title:(r.p1||'방장')+' / '+(r.p2||'대기 중')}));refreshCombinedLobby();}
+  }).catch(()=>{});
   const holdemTask=holdemRpc('list').then(h=>{
    if(Array.isArray(h.rooms)){holdemLobbyRooms=h.rooms;refreshCombinedLobby();}
   }).catch(()=>{});
@@ -1701,7 +1718,7 @@ function pollLobbyInBackground(){
   const gateTask=callRpc('renju_match_gate_lobby_status',{}).then(s=>{
    if(Array.isArray(s)){matchGateLobbyStatuses=new Map(s.map(z=>[z.room_id,z]));if(lastLegacyLobbyPayload)refreshCombinedLobby();}
   }).catch(()=>{});
-  await Promise.allSettled([legacyTask,holdemTask,evenTask,gateTask,presenceTask]);
+  await Promise.allSettled([legacyTask,holdemTask,uoTask,evenTask,gateTask,presenceTask]);
   await syncNicknames().catch(()=>{});
   maybeOpenInitialRoom();
  })().finally(()=>{lobbyPollInFlight=false;});
@@ -1714,7 +1731,7 @@ function pollCleanupInBackground(){
 function pollOtherRoomsInBackground(){
  if(stopped)return;
  for(const id of openRooms){
-  if(id===activeRoom||id.startsWith('h-')||id.startsWith('e-')||roomPollInFlight.has(id))continue;
+  if(id===activeRoom||id.startsWith('h-')||id.startsWith('e-')||id.startsWith('u-')||roomPollInFlight.has(id))continue;
   roomPollInFlight.add(id);
   roomRpc(id).then(data=>applyRoom(id,data)).catch(e=>{if(isKickedError(e))returnKickedToLobby(id);}).finally(()=>roomPollInFlight.delete(id));
  }
@@ -1728,7 +1745,8 @@ async function refresh(){
   // Avoid making result detection wait behind the room and permission heartbeats.
   if(id){
    try{
-    if(id.startsWith('h-')){applyHoldemData(id,await holdemRpc('sync',id));}
+    if(id.startsWith('u-')){/* 언더오버는 독립 프레임에서 1.5초 간격으로 안전하게 동기화합니다. */}
+    else if(id.startsWith('h-')){applyHoldemData(id,await holdemRpc('sync',id));}
     else if(id.startsWith('e-')){applyOddEvenData(id,await oddEvenRpc('sync',id));}
     else {
     let gamePolled=false;
@@ -1774,7 +1792,7 @@ function renderLobby(){const list=$('lobby-cells');const rows=[];let n=1;
  const display=roomList.slice(0,100);
  for(const room of display){const status=room.status==='placing'?'설치 중':room.status==='playing'?'진행 중':room.status==='ready'?'준비 완료':room.status==='finished'?'완료':room.status==='done'?'완료':'대기 중';
   const tr=row(n++,[room.sheet,'',room.title,'',room.black?nicknameFor(room.black):'-',room.white?nicknameFor(room.white):'-',room.waiting,room.count,room.moves,''],['sheet-link','','','','','','','','','']);tr.className='room-row';tr.dataset.room=room.id;if(room.black)nameWithRank(tr.children[5],room.black);if(room.white)nameWithRank(tr.children[6],room.white);
-  const gameLabel=document.createElement('span');gameLabel.className='game-type-pill'+(room.game==='tetris'?' tetris':'');gameLabel.textContent=room.game==='tetris'?'테트리스':room.game==='mine_battle'?'지뢰탐색게임':room.game==='holdem'?'홀덤':room.game==='oddeven'?'홀짝':'오목';tr.children[2].append(gameLabel);
+  const gameLabel=document.createElement('span');gameLabel.className='game-type-pill'+(room.game==='tetris'?' tetris':'');gameLabel.textContent=room.game==='tetris'?'테트리스':room.game==='mine_battle'?'지뢰탐색게임':room.game==='holdem'?'홀덤':room.game==='oddeven'?'홀짝':room.game==='underover'?'언더오버':'오목';tr.children[2].append(gameLabel);
   const statusTd=tr.children[4],pill=document.createElement('span');pill.className='status-pill '+(room.status==='playing'?'':room.status);pill.textContent=status;statusTd.append(pill);
   const joinBtn=document.createElement('button');joinBtn.type='button';joinBtn.className='room-open';joinBtn.textContent='열기';joinBtn.setAttribute('aria-label',room.sheet+' 열기');tr.lastElementChild.append(joinBtn);
   rows.push(tr);
@@ -1793,9 +1811,9 @@ function renderLobby(){const list=$('lobby-cells');const rows=[];let n=1;
  if(!activeRoom){$('cell-address').textContent='A1';$('formula-value').textContent='=COUNTIF(방현황,"접속중")';}
 }
 function formatTime(input){if(!input)return '-';const d=new Date(input);if(Number.isNaN(d.valueOf()))return '-';return new Intl.DateTimeFormat('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false}).format(d);}
-function roomLabel(id){return roomList.find(r=>r.id===id)?.sheet||'Room';}
+function roomLabel(id){return roomList.find(r=>r.id===id)?.sheet||(id.startsWith('u-')?'언더오버':'Room');}
 function updateSheetTabs(){const nav=$('sheet-nav');nav.querySelectorAll('[data-room-tab]').forEach(e=>e.remove());
- for(const id of openRooms){const tab=document.createElement('button');tab.type='button';tab.className='sheet-tab'+(id===activeRoom?' active':'');tab.dataset.roomTab=id;tab.title='시트 열기';tab.textContent=roomLabel(id)+(roomList.find(r=>r.id===id)?.game==='tetris'?' · T':roomList.find(r=>r.id===id)?.game==='mine_battle'?' · M':id.startsWith('h-')?' · H':id.startsWith('e-')?' · O':'');
+ for(const id of openRooms){const tab=document.createElement('button');tab.type='button';tab.className='sheet-tab'+(id===activeRoom?' active':'');tab.dataset.roomTab=id;tab.title='시트 열기';tab.textContent=roomLabel(id)+(roomList.find(r=>r.id===id)?.game==='tetris'?' · T':roomList.find(r=>r.id===id)?.game==='mine_battle'?' · M':id.startsWith('h-')?' · H':id.startsWith('e-')?' · O':id.startsWith('u-')?' · U':'');
   const close=document.createElement('span');close.className='tab-close';close.textContent='×';close.title='시트 닫기';close.dataset.closeRoom=id;tab.append(close);nav.insertBefore(tab,$('add-sheet-btn'));}
  const territoryTab=$('territory-sheet-tab');territoryTab.hidden=!territorySheetOpen;
  territoryTab.classList.toggle('active',activeTerritory);
@@ -1806,7 +1824,7 @@ function switchView(id){
  if(id==='__territory__'){
   territorySheetOpen=true;activeTerritory=true;activeRoom=null;
   $('lobby-view').hidden=true;$('room-view').hidden=true;
-  $('holdem-view').hidden=true;$('oddeven-view').hidden=true;
+  $('holdem-view').hidden=true;$('oddeven-view').hidden=true;$('underover-view').hidden=true;
   $('chat').hidden=true;$('territory-view').hidden=false;
   const frame=$('territory-frame');
   if(!frame.getAttribute('src'))frame.src=frame.dataset.src;
@@ -1814,6 +1832,19 @@ function switchView(id){
   updateSheetTabs();changeUrl(null);
   return;
  }
+ if(id&&id.startsWith('u-')){
+  if(!memberToken){lobbyNotify('언더오버는 회원 로그인 후 이용할 수 있습니다.',true);openMemberPanel('login');return;}
+  if(!requireNickname())return;
+  activeTerritory=false;activeRoom=id;
+  $('territory-view').hidden=true;$('lobby-view').hidden=true;$('room-view').hidden=true;
+  $('holdem-view').hidden=true;$('oddeven-view').hidden=true;$('chat').hidden=true;
+  $('underover-view').hidden=false;
+  const frame=$('underover-frame');const src='./underover.html?room='+encodeURIComponent(id);
+  if(!frame.getAttribute('src')||!frame.getAttribute('src').endsWith(encodeURIComponent(id)))frame.src=src;
+  $('cell-address').textContent='A1';$('formula-value').textContent='=언더오버(1:1)';
+  updateSheetTabs();changeUrl(id);return;
+ }
+ $('underover-view').hidden=true;
  if(id && !requireNickname())return;
  activeTerritory=false;$('territory-view').hidden=true;const f=$('match-role-feedback');if(f){f.hidden=true;f.textContent='';f.classList.remove('error');}activeRoom=id;const poker=Boolean(id&&id.startsWith('h-')),parity=Boolean(id&&id.startsWith('e-'));$('lobby-view').hidden=!!id;$('room-view').hidden=!id||poker||parity;$('holdem-view').hidden=!poker;$('oddeven-view').hidden=!parity;$('chat').hidden=!id||poker||parity;chatLastSeen='';hover=null;
  $('chat-title-button').firstElementChild.firstChild.textContent='메모 ';
@@ -1880,7 +1911,13 @@ $('oe-online-refresh').addEventListener('click',async()=>{
  }catch(error){label.textContent='조회 실패: '+String(error?.message||error);}
  finally{btn.disabled=false;}
 });
-async function openRoom(id){if(id?.startsWith('e-')){await joinOddEvenOnline(id);return;}if(!requireNickname())return;
+async function openRoom(id){if(id?.startsWith('u-')){
+ if(!memberToken){initialDeepLink=id;openMemberPanel('login');return;}
+ if(!requireNickname())return;
+ if(!openRooms.includes(id)){if(openRooms.length>=8){lobbyNotify('동시에 열 수 있는 시트는 최대 8개입니다.',true);return;}openRooms.push(id);}
+ if(!roomList.some(r=>r.id===id)){roomList.push({id,game:'underover',title:'언더오버 1:1',sheet:'언더오버',status:'waiting',count:1,waiting:1,moves:0});}
+ switchView(id);return;
+}if(id?.startsWith('e-')){await joinOddEvenOnline(id);return;}if(!requireNickname())return;
  if(kickedRooms.has(id)){lobbyNotify('해당 방에서는 강퇴되어 다시 입장할 수 없습니다.',true);return;}if(!ROOM_REGEX.test(id)){lobbyNotify('잘못된 방 주소입니다.',true);return;}
  if(!roomList.some(r=>r.id===id)){lobbyNotify('현재 목록에 없는 시트입니다.',true);return;}
  if(!openRooms.includes(id)){if(openRooms.length>=8){lobbyNotify('동시에 열 수 있는 시트는 8개입니다.',true);return;}openRooms.push(id);}
@@ -1889,7 +1926,13 @@ async function openRoom(id){if(id?.startsWith('e-')){await joinOddEvenOnline(id)
 function createRoom(){if(!requireNickname())return;$('create-modal').hidden=false;}
 function closeCreateModal(){$('create-modal').hidden=true;}
 async function doCreateRoom(game){if(!requireNickname())return;if(creating)return;closeCreateModal();creating=true;$('create-room-btn').disabled=true;$('add-sheet-btn').disabled=true;lobbyNotify('새 시트 생성 중...');
- try{if(game==='oddeven'){
+ try{if(game==='underover'){
+  if(!memberToken){openMemberPanel('login');throw new Error('언더오버는 회원 로그인 후 이용할 수 있습니다.');}
+  const data=await underOverRpc('create');if(!data.created_room)throw new Error('언더오버 방 생성에 실패했습니다.');
+  const item={id:data.created_room,sheet:'언더오버',title:'언더오버 1:1',game:'underover',status:'waiting',count:1,waiting:1,moves:0};
+  underOverLobbyRooms=[item,...underOverLobbyRooms];roomList=[...roomList.filter(r=>r.id!==item.id),item];
+  renderLobby();await openRoom(data.created_room);lobbyNotify('언더오버 온라인방 생성 완료');
+ }else if(game==='oddeven'){
    if(!memberToken){openMemberPanel('login');throw new Error('홀짝은 회원 로그인 후 이용할 수 있습니다.');}
    const data=await oddEvenRpc('create');if(!data.created_room)throw new Error('홀짝 방 생성에 실패했습니다.');
    oddEvenLobbyRooms=[{id:data.created_room,sheet:data.sheet,title:data.stake+'P 홀짝',game:'oddeven',status:'waiting',count:1,waiting:5,moves:0},...oddEvenLobbyRooms];
@@ -1914,6 +1957,7 @@ async function closeRoom(id){
  if(!openRooms.includes(id))return;
  openRooms=openRooms.filter(x=>x!==id);roomCache.delete(id);tetrisDataByRoom.delete(id);tetrisLocalByRoom.delete(id);mineDataByRoom.delete(id);matchGateByRoom.delete(id);matchGateRestarting.delete(id);
  if(activeRoom===id)switchView(null);else updateSheetTabs();
+ if(id.startsWith('u-')){underOverRpc('leave',id).catch(()=>{});return;}
  if(id.startsWith('e-')){
   oddEvenDataByRoom.delete(id);oddEvenRevealUntil.delete(id);oddEvenSocialByRoom.delete(id);
   Promise.allSettled([oddEvenSocialRpc('leave',id),oddEvenRpc('leave',id)]).then(()=>{
@@ -1942,6 +1986,9 @@ async function copyShare(){const link=shareLink();try{await navigator.clipboard.
  else if(activeRoom)notify(link);else lobbyNotify(link);}}
 $('copy-link-btn').addEventListener('click',copyShare);$('room-copy').addEventListener('click',copyShare);
 $('room-lobby').addEventListener('click',()=>switchView(null));
+window.addEventListener('message',event=>{if(event.origin!==location.origin)return;
+ if(event.data?.type==='UO_CLOSE' && activeRoom?.startsWith('u-'))switchView(null);
+});
 $('create-room-btn').addEventListener('click',createRoom);$('add-sheet-btn').addEventListener('click',createRoom);
 updateNicknameInput();refreshNicknameAccess();
 $('member-open').addEventListener('click',()=>openMemberPanel());
@@ -2984,6 +3031,7 @@ function renderHoldemReadout(own,board,isPlayer){
  return new Set(best.cards);
 }
 
+function underOverRpc(action='list',room=null,choice=null,amount=null){return callRpc('renju_uo_rpc',{p_action:action,p_client:CLIENT_ID,p_token:memberToken||null,p_room:room,p_choice:choice,p_amount:amount});}
 function holdemRpc(action='list',room=null,amount=null){
  return callRpc('renju_holdem_rpc',{p_action:action,p_client:CLIENT_ID,p_token:memberToken||null,p_room:room,p_amount:amount});
 }
