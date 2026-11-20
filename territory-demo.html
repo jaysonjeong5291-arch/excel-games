@@ -150,163 +150,301 @@ body{background:var(--bg);color:var(--text);font-family:Arial,'Malgun Gothic','A
 .map-sheet .map-legend{background:#fffefcf4;color:#34543d;border:1px solid #bfcfc2;box-shadow:0 1px 2px #0002;border-radius:0}
 .map-sheet .map-controls .btn{background:#fffefcf0;border-radius:0;color:#256442;border:1px solid #a6c7b0}
 @media(max-width:700px){.main{display:flex;flex-direction:column}.map-sheet{height:50vh;min-height:300px;flex:0 0 auto}.map-sheet .mapwrap{height:100%;min-height:0}.map-sheet-rows,.map-sheet-cols{font-size:9px}.map-sheet-body{grid-template-columns:26px minmax(0,1fr)}.map-sheet-cols{grid-template-columns:26px repeat(12,minmax(0,1fr));height:21px}.map-label{top:5px;left:5px}.map-label .title{font-size:10px;padding:5px 7px}.map-label small{font-size:8px;max-width:240px}.map-legend{font-size:8px}.sidebar{flex:none}}
+
+/* v0.5: extended map and district / landmark capture UI */
+.game{height:100dvh;min-height:0}
+.main{grid-template-columns:minmax(0,1fr) 288px}
+.top{min-height:53px;padding:7px 12px}
+.map-sheet{min-width:0;background:#fff}
+.map-sheet .mapwrap{background:#cad5be}
+#world{image-rendering:auto}
+.sidebar{border-left:1px solid #cad9cc}
+.side-header{background:#fff}
+.map-label{top:6px;left:7px}
+.map-label .title{font-size:12px;padding:5px 7px;background:#ffffffee}
+.map-label small{font-size:9px;padding:3px 6px}
+.map-legend{gap:7px!important;font-size:10px!important;padding:5px 7px!important}
+.map-controls{bottom:7px!important;left:7px!important}
+.map-controls .btn{padding:5px 9px}
+.sidecontent{padding:8px 10px 18px}
+.section-title{margin-top:6px}
+.lm-list{border:1px solid #d1ded4;margin:8px 0 12px;background:#fff}
+.lm-row{width:100%;display:flex;align-items:center;gap:7px;padding:8px 7px;border:0;border-bottom:1px solid #e7eee8;background:#fff;color:#364f3c;text-align:left;font-size:11px;cursor:pointer}
+.lm-row:last-child{border-bottom:0}
+.lm-row:hover{background:#eef7f0}
+.lm-row.lm-active{background:#e5f3e8;box-shadow:inset 3px 0 #107c41}
+.lm-indicator{width:9px;height:9px;flex:none;border:1px solid #fff;box-shadow:0 0 0 1px #bdccc0;border-radius:2px}
+.lm-row-name{font-weight:700;flex:1;min-width:0;white-space:normal}
+.lm-row-owner{color:#778579;font-size:10px;flex:none}
+.unit-name{min-width:85px}.unit .control .btn{padding:4px 5px;min-width:28px}
+.unit-count{min-width:30px;font-size:11px}
+.selector button{min-width:66px;flex:1 1 30%;padding:7px 5px}
+.brand-title{font-size:16px}.top .subtitle{font-size:9px}
+.progress{background:#edf3ee;border:1px solid #cce0d2;height:8px}
+.progress>div{background:#107c41}
+@media(max-width:1100px){.main{grid-template-columns:minmax(0,1fr) 265px}}
+@media(max-width:700px){.game{height:auto;min-height:100dvh}.main{display:flex;flex-direction:column}.map-sheet{height:50vh;min-height:330px;flex:none}.map-sheet .mapwrap{height:100%;min-height:0}.sidebar{border:0;border-top:1px solid #cad9cc}.map-label small{max-width:230px}.sidecontent{padding:8px 11px 24px}.top{min-height:51px}}
 </style>
 </head>
 <body>
 <div class="game">
 <header class="top">
-  <div class="brand"><div class="seal">⚔</div><div><div class="brand-title">영토전</div><div class="subtitle">서울 25개 구 · TEST v0.4</div></div></div>
-  <div class="top-stats"><div class="statpill">세력 <strong id="topFaction">PLAYER군</strong></div><div class="statpill">포인트 <strong id="topPoints">15,000 P</strong></div><div class="statpill">군량 <strong id="topGrain">6,000</strong></div><button class="btn" id="recruitBtn">＋ 병력 모집</button><button class="btn ghost" id="resetBtn" title="모든 테스트 데이터 초기화">↺ 초기화</button><button class="btn ghost" id="exitBtn">↩ Sheet1</button></div>
+  <div class="brand"><div class="seal">⚔</div><div><div class="brand-title">영토전</div><div class="subtitle">서울 25개 구 · 거점 점령형 TEST v0.5</div></div></div>
+  <div class="top-stats"><div class="statpill">세력 <strong id="topFaction">PLAYER군</strong></div><div class="statpill">포인트 <strong id="topPoints">15,000 P</strong></div><div class="statpill">군량 <strong id="topGrain">6,000</strong></div><button class="btn" id="recruitBtn">＋ 조직원 모집</button><button class="btn ghost" id="resetBtn" title="모든 테스트 데이터 초기화">↺ 초기화</button><button class="btn ghost" id="exitBtn">↩ Sheet1</button></div>
 </header>
 <div class="sheetline" aria-hidden="true"><span>영토전</span></div>
 <div class="main">
   <section class="map-sheet" aria-label="서울 영토전 엑셀 지도 시트">
     <div class="map-sheet-cols" aria-hidden="true"><span class="map-corner"></span><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span><span>K</span><span>L</span></div>
     <div class="map-sheet-body"><div class="map-sheet-rows" aria-hidden="true"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span><span>26</span></div>
-      <section class="mapwrap" id="mapFrame" aria-label="서울 25개 자치구 지도"><canvas id="world" aria-label="클릭 가능한 서울 25개 자치구 지도"></canvas>
-        <div class="map-label"><div class="title">업무현황_영토전_VER.2026</div><small>서울 25개 구 · 클릭하여 영토 선택 · 드래그 이동 · 휠 확대</small></div>
+      <section class="mapwrap" id="mapFrame" aria-label="서울 25개 구와 거점 지도"><canvas id="world" aria-label="클릭 가능한 서울 25개 구와 거점 지도"></canvas>
+        <div class="map-label"><div class="title">업무현황_영토전_VER.2026</div><small>서울 25개 구 · 77개 랜드마크 쟁탈전 · 클릭 선택 / 드래그 이동 / 휠 확대</small></div>
         <div class="map-controls"><button class="btn" id="zoomIn" aria-label="확대">＋</button><button class="btn" id="zoomOut" aria-label="축소">－</button><button class="btn" id="centerMap">⌖ 전체</button></div>
-        <div class="map-legend"><span><i class="dot" style="background:#5099cb"></i>내 영토</span><span><i class="dot" style="background:#d16d62"></i>상대</span><span><i class="dot" style="background:#d2c9a8"></i>중립</span></div>
+        <div class="map-legend"><span><i class="dot" style="background:#5099cb"></i>내 거점</span><span><i class="dot" style="background:#d16d62"></i>상대</span><span><i class="dot" style="background:#d2c9a8"></i>중립</span></div>
       </section>
     </div>
   </section>
-  <aside class="sidebar"><div class="sheet-column-headers" aria-hidden="true"><span class="sheet-col-corner"></span><span>A</span><span>B</span></div><div class="side-header" id="summary"></div><div class="tabs" id="tabs"><button data-tab="overview" class="selected">영토 정보</button><button data-tab="garrison">병력 배치</button><button data-tab="defense">자동 방어</button><button data-tab="logs">전투 기록</button></div><div class="sidecontent" id="panel"></div></aside>
+  <aside class="sidebar"><div class="sheet-column-headers" aria-hidden="true"><span class="sheet-col-corner"></span><span>A</span><span>B</span></div><div class="side-header" id="summary"></div><div class="tabs" id="tabs"><button data-tab="overview" class="selected">거점 현황</button><button data-tab="garrison">인원 배치</button><button data-tab="defense">자동 방어</button><button data-tab="logs">전투 기록</button></div><div class="sidecontent" id="panel"></div></aside>
 </div>
-<div class="bottom"><span><b>테스트 모드</b> · 브라우저에만 저장 · 실제 공용 포인트 차감 없음</span><span id="bottomStatus">영토를 클릭해 선택하세요.</span></div>
+<div class="bottom"><span><b>테스트 모드</b> · 서울 25개 구 / 77개 랜드마크 · 브라우저 테스트 / 실 포인트 미연동</span><span id="bottomStatus">영토를 클릭해 선택하세요.</span></div>
 </div><div class="toast" id="toast"></div>
 <script>
 (()=>{'use strict';
-const KEY='territory_prototype_v04', LEGACY_KEY='territory_prototype_v03', OLDER_KEY='cheonha_prototype_v01'; const W=1280,H=900;
-const NAMES=["강남구","강동구","강북구","강서구","관악구","광진구","구로구","금천구","노원구","도봉구","동대문구","동작구","마포구","서대문구","서초구","성동구","성북구","송파구","양천구","영등포구","용산구","은평구","종로구","중구","중랑구"];
-const OWNERS={player:{name:'내 세력',color:'#5c9ed0',fill:'rgba(63,151,214,.17)'},wei:{name:'서부 연합',color:'#d57668',fill:'rgba(222,102,88,.16)'},shu:{name:'북부 연합',color:'#72ad7c',fill:'rgba(99,170,113,.17)'},wu:{name:'남부 연합',color:'#b49cdd',fill:'rgba(168,143,224,.15)'},neutral:{name:'중립',color:'#d2bc91',fill:'rgba(223,189,136,.035)'}};
-const GENERALS=['김유신','강감찬','권율','이순신','계백','을지문덕'];
-const UNIT_META=[['inf','보병','🛡',300],['arch','궁병','🏹',400],['cav','기병','🐎',600]];
-const TACTICS={balanced:{name:'균형 수비',value:1,desc:'안정적인 수비. 공격·방어에 별도 보정 없음.'},hold:{name:'철벽 수비',value:1.16,desc:'방어 전투력 +16%. 함락 시 손실 증가.'},preserve:{name:'병력 보존',value:.88,desc:'방어력 -12%. 패배하면 생존 병력 우선 보존.'}};
-const ATTACK_TACTICS={charge:{name:'전면 돌격',value:1.16},siege:{name:'포위 공격',value:1.1},safe:{name:'신중한 진격',value:.95}};
-const $=s=>document.querySelector(s);const fmt=n=>Math.round(n).toLocaleString('ko-KR'); const now=()=>Date.now();
-function hash(x,y,z=0){let n=(Math.imul(x+17,374761393)+Math.imul(y+41,668265263)+Math.imul(z+7,1274126177))|0;n=Math.imul(n^(n>>>13),1274126177);return ((n^(n>>>16))>>>0)/4294967295}
-function emptyTroops(){return {inf:0,arch:0,cav:0}}function troopCount(a){return (a?.inf||0)+(a?.arch||0)+(a?.cav||0)}function copyTroops(a){return {inf:a.inf||0,arch:a.arch||0,cav:a.cav||0}}
-function baseState(){let lands=NAMES.map((name,id)=>{let owner=(['마포구','영등포구'].includes(name)?'player':['강남구','서초구','송파구','강동구'].includes(name)?'wei':['노원구','도봉구','강북구'].includes(name)?'shu':['구로구','금천구'].includes(name)?'wu':'neutral');let level= name==='마포구'?3:owner==='player'?2:owner==='neutral'?1:2;let troops=owner==='player'?(name==='마포구'?{inf:420,arch:220,cav:120}:{inf:260,arch:130,cav:80}):{inf:80+Math.floor(hash(id,1)*95),arch:20+Math.floor(hash(id,2)*60),cav:Math.floor(hash(id,3)*35)};return {id,name,owner,level,troops,defense:'balanced',general:name==='마포구'?'김유신':name==='영등포구'?'강감찬':owner==='neutral'?'지역수비대':'수비대장',protectUntil:0,terrain:['노원구','도봉구','강북구','은평구','관악구','서초구'].includes(name)?'산악':['마포구','강서구','종로구','성북구','중랑구'].includes(name)?'숲':'평야'}});return {version:2,localeVersion:4,name:'PLAYER',points:15000,grain:6000,reserve:{inf:450,arch:300,cav:170},generalPool:['권율','이순신'],lands,pending:null,attackReadyAt:0,logs:[{time:now(),type:'system',text:'서울 25개 구 영토전이 열렸습니다. 마포구와 영등포구에서 시작합니다.'}],lastSeen:now(),lastRegen:now(),selected:12,tab:'overview',recruitType:'inf',recruitQty:100,attackSource:19,attackPercent:75,attackTactic:'charge',raid:null}}
-function safeLoad(){try{const current=localStorage.getItem(KEY);if(current){const saved=JSON.parse(current);if(saved?.version===2&&saved.lands?.length===25)return saved;}const prev=localStorage.getItem(LEGACY_KEY)||localStorage.getItem(OLDER_KEY);if(prev){const old=JSON.parse(prev);if(old?.lands?.length===24&&old.reserve){let s=baseState();s.points=old.points??s.points;s.grain=old.grain??s.grain;s.reserve={...s.reserve,...old.reserve};s.generalPool=Array.isArray(old.generalPool)?old.generalPool:s.generalPool;s.name=old.name||s.name;const prevOwned=old.lands.filter(t=>t.owner==='player');const nextOwned=['마포구','영등포구','서대문구','용산구','양천구','은평구','동작구'];for(let i=0;i<Math.min(prevOwned.length,nextOwned.length);i++){const t=s.lands[NAMES.indexOf(nextOwned[i])],o=prevOwned[i];t.owner='player';t.troops={...o.troops};t.level=o.level;t.defense=o.defense;t.general=o.general;}s.pending=null;s.raid=null;s.attackReadyAt=0;s.logs=[{time:now(),type:'system',text:'서울 25개 구 지도로 변경되었습니다. 기존 테스트 포인트, 예비병, 보유 영토의 병력 정보를 옮겼습니다. 진행 중인 출정은 취소되었습니다.'},...(old.logs||[]).slice(0,12)];return s;}}}catch(e){console.warn('Saved data migration failed',e)}return baseState()}
-let state=safeLoad();let toastTimer=null;function save(){state.lastSeen=now();try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){console.warn('Local save unavailable',e)}}
-function toast(s){$('#toast').textContent=s;$('#toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('show'),3400)}
-function log(msg,type='event'){state.logs.unshift({text:msg,type,time:now()});state.logs=state.logs.slice(0,45)}
-const EDGE_PAIRS=[[0,14],[0,15],[0,17],[1,5],[1,17],[2,8],[2,9],[2,16],[2,22],[3,12],[3,18],[4,6],[4,7],[4,11],[4,14],[5,10],[5,15],[5,17],[5,24],[6,7],[6,18],[6,19],[8,9],[8,16],[8,24],[10,15],[10,16],[10,22],[10,24],[11,14],[11,19],[11,20],[12,13],[12,19],[12,20],[12,21],[13,21],[13,22],[13,23],[14,17],[15,20],[15,23],[16,22],[16,24],[18,19],[20,23],[21,22],[22,23]];const CONNECTIONS=new Set(EDGE_PAIRS.map(([a,b])=>[a,b].sort((x,y)=>x-y).join(':')));
-function selected(){return state.lands[state.selected]}function owns(id){return state.lands[id]?.owner==='player'}function adjacent(a,b){return CONNECTIONS.has([a,b].sort((x,y)=>x-y).join(':'))}function sourcesFor(id){return state.lands.filter(t=>owns(t.id)&&adjacent(t.id,id)&&troopCount(t.troops)>0)}
-function terrainBonus(t){return t.terrain==='산악'?.17:t.terrain==='숲'?.10:0}function unitPower(t){return t.inf+t.arch*1.2+t.cav*1.45}
-function battle(attacker,defender,atype,territory,seed){let A=unitPower(attacker)*(ATTACK_TACTICS[atype]?.value||1)*1.1;let D=unitPower(defender)*(1+(territory.level||1)*.09+terrainBonus(territory))*(TACTICS[territory.defense]?.value||1);let f=.94+hash(Math.floor(seed/1000),territory.id,54)*.12;let win=A*f>D;let aLoss=win?.20:.38;let dLoss=win?.63:.25;if(atype==='safe')aLoss*=.65;if(atype==='charge')aLoss*=1.16;if(territory.defense==='hold')dLoss*=win?1.12:1;if(territory.defense==='preserve')dLoss*=win?.7:.85;let surv={};for(const [key] of UNIT_META)surv[key]=Math.max(0,Math.floor(attacker[key]*(1-aLoss)));return {win,attack:Math.round(A*f),defense:Math.round(D),surv,attackerLoss:troopCount(attacker)-troopCount(surv),defenderLoss:Math.floor(troopCount(defender)*dLoss)}}
-function regen(){let elapsed=Math.floor((now()-(state.lastRegen||now()))/60000);if(elapsed>0){let gain=Math.min(elapsed,720)*state.lands.filter(t=>t.owner==='player').length*5;state.grain=Math.min(50000,state.grain+gain);state.lastRegen=now()}}
-function updatePending(){regen();let n=now(),dirty=false;if(state.pending&&state.pending.dueAt<=n){const p=state.pending,target=state.lands[p.target],source=state.lands[p.source],result=battle(p.troops,target.troops,p.tactic,target,p.createdAt);if(result.win){target.owner='player';target.troops=result.surv;target.general='점령군 지휘관';target.defense='balanced';target.protectUntil=n+20000;target.level=Math.max(1,target.level-1);state.points+=150;log(`⚔ ${target.name} 점령 성공! 아군 ${fmt(result.attackerLoss)}명 손실 · 보상 150P`,'win');toast(`${target.name} 점령 성공! +150P`)}else{if(source)for(let k of ['inf','arch','cav'])source.troops[k]+=result.surv[k];target.protectUntil=n+12000;log(`⚔ ${target.name} 공격 실패 · 귀환 병력 ${fmt(troopCount(result.surv))}명`,'lose');toast(`${target.name} 공격 실패. 잔여 병력 귀환`)}state.pending=null;state.selected=p.target;dirty=true}
-if(state.raid&&state.raid.dueAt<=n){let r=state.raid,t=state.lands[r.target];let result=battle(r.troops,t.troops,'charge',t,r.createdAt);log(`🛡 ${t.name} 자동 방어 시험: ${result.win?'방어 실패':'방어 성공'} (공격 ${fmt(result.attack)} / 수비 ${fmt(result.defense)})`,'defense');toast(`${t.name} 모의 침공: ${result.win?'방어 실패':'방어 성공'} (실제 병력·영토는 그대로)`);state.raid=null;dirty=true}if(dirty)save();return dirty}
-function pick(id){state.selected=id;state.tab='overview';state.attackSource=sourcesFor(id)[0]?.id??12;render();save();}
+const KEY='territory_prototype_v05', OLD_KEY='territory_prototype_v04', LEGACY_KEY='territory_prototype_v03';
+const W=1280,H=900,$=s=>document.querySelector(s),now=()=>Date.now(),fmt=n=>Math.round(n||0).toLocaleString('ko-KR');
+const DISTRICTS=['강남구','강동구','강북구','강서구','관악구','광진구','구로구','금천구','노원구','도봉구','동대문구','동작구','마포구','서대문구','서초구','성동구','성북구','송파구','양천구','영등포구','용산구','은평구','종로구','중구','중랑구'];
+const LANDMARK_DATA={
+'강남구':[['코엑스','tower'],['봉은사','temple'],['선정릉','park']],
+'강동구':[['암사동 선사유적지','museum'],['길동생태공원','park'],['강동아트센터','gallery']],
+'강북구':[['국립4·19민주묘지','monument'],['북서울꿈의숲','park'],['우이동','forest']],
+'강서구':[['김포공항','airport'],['서울식물원','park'],['겸재정선미술관','gallery']],
+'관악구':[['서울대학교','university'],['낙성대','palace'],['관악산','mountain']],
+'광진구':[['어린이대공원','park'],['건국대학교','university'],['뚝섬한강공원','park']],
+'구로구':[['고척스카이돔','stadium'],['구로디지털단지','tower'],['푸른수목원','park']],
+'금천구':[['가산디지털단지','tower'],['금천구청','hall'],['호암산','mountain']],
+'노원구':[['서울과학기술대학교','university'],['화랑대철도공원','train'],['불암산','mountain']],
+'도봉구':[['도봉산','mountain'],['서울창포원','park'],['평화문화진지','monument']],
+'동대문구':[['서울약령시','market'],['경동시장','market'],['청량리역','train']],
+'동작구':[['국립서울현충원','monument'],['노량진수산시장','market'],['보라매공원','park']],
+'마포구':[['서울월드컵경기장','stadium'],['홍대거리','market'],['하늘공원','park']],
+'서대문구':[['서대문형무소역사관','museum'],['연세대학교','university'],['독립문','monument']],
+'서초구':[['예술의전당','gallery'],['국립중앙도서관','museum'],['매헌시민의숲','park']],
+'성동구':[['서울숲','park'],['성수동 카페거리','market'],['응봉산','mountain']],
+'성북구':[['고려대학교','university'],['길상사','temple'],['정릉','park']],
+'송파구':[['잠실종합운동장','stadium'],['롯데월드타워','tower'],['올림픽공원','park'],['석촌호수','lake']],
+'양천구':[['목동운동장','stadium'],['목동 중심상권','market'],['서서울호수공원','lake']],
+'영등포구':[['국회의사당','hall'],['여의도공원','park'],['63스퀘어','tower']],
+'용산구':[['국립중앙박물관','museum'],['N서울타워','tower'],['이태원거리','market']],
+'은평구':[['진관사','temple'],['은평한옥마을','palace'],['불광천','lake']],
+'종로구':[['경복궁','palace'],['창덕궁','palace'],['광화문광장','monument']],
+'중구':[['한국은행','finance'],['남대문시장','market'],['동대문디자인플라자','gallery'],['서울광장','hall']],
+'중랑구':[['중랑천 장미정원','park'],['용마폭포공원','lake'],['망우역사문화공원','monument']]
+};
+const UNIT_META=[['inf','행동대','👊',250,1.00,1.00],['arch','짱돌부대','🪨',320,1.18,.83],['cav','쇠파이프부대','🔧',420,1.33,1.05],['blade','칼잡이','⚔',570,1.58,.72],['tank','몸빵조','🛡',390,.74,1.55]];
+const UNIT_KEYS=UNIT_META.map(x=>x[0]);
+const OWNERS={player:{name:'내 조직',color:'#2c8dcc',fill:'rgba(50,155,211,.14)'},wei:{name:'동부 조직',color:'#d56c57',fill:'rgba(211,99,81,.13)'},shu:{name:'북부 조직',color:'#7eac77',fill:'rgba(103,160,98,.14)'},wu:{name:'남부 조직',color:'#aa83ca',fill:'rgba(163,121,203,.13)'},neutral:{name:'중립',color:'#ab9980',fill:'rgba(178,167,134,.04)'},mixed:{name:'경합 중',color:'#ba934f',fill:'rgba(222,182,93,.055)'}};
+const TACTICS={balanced:{name:'균형 방어',value:1,desc:'공격과 방어 능력을 균형 있게 유지합니다.'},hold:{name:'결사 항전',value:1.17,desc:'방어 +17%, 피해 위험도 증가합니다.'},preserve:{name:'몸 사리기',value:.89,desc:'방어력 감소, 공격에 실패하면 생존 인원 보호.'}};
+const ATTACK_TACTICS={charge:{name:'정면 돌파',value:1.16},siege:{name:'포위 압박',value:1.10},safe:{name:'신중한 진입',value:.95}};
+const SOUTH=new Set(['강남구','강동구','강서구','관악구','구로구','금천구','동작구','서초구','송파구','양천구','영등포구']);
+function hash(x,y,z=0){let n=(Math.imul(Math.trunc(x)+17,374761393)+Math.imul(Math.trunc(y)+41,668265263)+Math.imul(z+7,1274126177))|0;n=Math.imul(n^(n>>>13),1274126177);return ((n^(n>>>16))>>>0)/4294967295}
+const numTroops=()=>Object.fromEntries(UNIT_KEYS.map(k=>[k,0]));
+function troopCount(t){return UNIT_KEYS.reduce((s,k)=>s+(Number(t?.[k])||0),0)}
+function normalizeTroops(t){const out=numTroops();for(const k of UNIT_KEYS)out[k]=Math.max(0,Number(t?.[k])||0);return out}
+const placeDefs=[];for(const district of DISTRICTS){const districtId=DISTRICTS.indexOf(district);for(const [name,kind] of LANDMARK_DATA[district])placeDefs.push({id:placeDefs.length,districtId,district,name,kind})}
+function baseState(){const landmarks=placeDefs.map(p=>{let owner=['마포구','영등포구'].includes(p.district)?'player':['강남구','서초구','송파구','강동구'].includes(p.district)?'wei':['노원구','도봉구','강북구'].includes(p.district)?'shu':['구로구','금천구'].includes(p.district)?'wu':'neutral';let v=p.id;return {owner,level:owner==='player'?2:1,troops:owner==='player'?{inf:155,arch:75,cav:35,blade:20,tank:35}:{inf:30+Math.floor(hash(v,1)*60),arch:10+Math.floor(hash(v,2)*25),cav:Math.floor(hash(v,3)*16),blade:Math.floor(hash(v,4)*10),tank:12+Math.floor(hash(v,5)*17)},defense:'balanced',general:owner==='player'?'현장반장':'거점관리자',protectUntil:0}});
+return {version:5,name:'PLAYER',points:15000,grain:6500,reserve:{inf:450,arch:280,cav:160,blade:95,tank:180},landmarks,pending:null,raid:null,attackReadyAt:0,logs:[{time:Date.now(),type:'system',text:`서울 ${DISTRICTS.length}개 구 · ${placeDefs.length}개 거점 영토전 시작! 각 구의 거점 전부를 장악하면 구를 점령합니다.`}],lastSeen:now(),lastRegen:now(),selectedDistrict:12,selectedPlace:placeDefs.find(p=>p.name==='서울월드컵경기장').id,tab:'overview',recruitType:'inf',recruitQty:100,attackSource:null,attackPercent:75,attackTactic:'charge'} }
+function readState(){try{const v=JSON.parse(localStorage.getItem(KEY)||'null');if(v?.version===5&&v.landmarks?.length===placeDefs.length){v.reserve=normalizeTroops(v.reserve);for(const p of v.landmarks)p.troops=normalizeTroops(p.troops);return v}const old=JSON.parse(localStorage.getItem(OLD_KEY)||localStorage.getItem(LEGACY_KEY)||'null');if(old?.lands?.length===25&&old.reserve){let s=baseState();s.points=old.points??s.points;s.grain=old.grain??s.grain;s.name=old.name||s.name;s.reserve=normalizeTroops({...old.reserve,blade:s.reserve.blade,tank:s.reserve.tank});for(const land of old.lands){const ids=placeDefs.filter(p=>p.district===land.name);for(let i=0;i<ids.length;i++){const p=s.landmarks[ids[i].id];p.owner=land.owner||'neutral';p.level=Math.max(1,land.level||1);p.defense=land.defense||'balanced';p.general=land.owner==='player'?'현장반장':'거점관리자';for(const k of UNIT_KEYS)p.troops[k]=Math.floor((land.troops?.[k]||0)/ids.length)+(i===0?(land.troops?.[k]||0)%ids.length:0)}}s.logs=[{time:now(),type:'system',text:'기존 v0.4 지역 소유권과 병력을 각 구의 새 거점으로 분할해 이전했습니다.'},...(old.logs||[]).slice(0,8)];return s}}
+catch(e){console.warn('v0.5 saved data recovery',e)}return baseState()}
+let state=readState(),toastTimer=null;
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){console.warn('Save failed',e)}}
+function toast(msg){let e=$('#toast');e.textContent=msg;e.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.classList.remove('show'),3400)}
+function log(msg,type='event'){state.logs.unshift({text:msg,type,time:now()});state.logs=state.logs.slice(0,50)}
+function getPlace(id){return {...placeDefs[id],...state.landmarks[id]}}
+function place(){return getPlace(state.selectedPlace)}
+function owner(p){return state.landmarks[p.id].owner}
+function isMine(id){return state.landmarks[id]?.owner==='player'}
+function districtPlaces(d){return placeDefs.filter(p=>p.districtId===d)}
+function districtProgress(d){let list=districtPlaces(d),owners=list.map(p=>owner(p)),unique=[...new Set(owners)];return {total:list.length,mine:owners.filter(o=>o==='player').length,owner:unique.length===1?unique[0]:'mixed'}}
+function districtCaptured(d){return districtProgress(d).owner==='player'}
 
-// Seoul district boundaries. Offline polygons are embedded; the source GeoJSON replaces them when accessible.
+const EDGE_PAIRS=[[0,14],[0,15],[0,17],[1,5],[1,17],[2,8],[2,9],[2,16],[2,22],[3,12],[3,18],[4,6],[4,7],[4,11],[4,14],[5,10],[5,15],[5,17],[5,24],[6,7],[6,18],[6,19],[8,9],[8,16],[8,24],[10,15],[10,16],[10,22],[10,24],[11,14],[11,19],[11,20],[12,13],[12,19],[12,20],[12,21],[13,21],[13,22],[13,23],[14,17],[15,20],[15,23],[16,22],[16,24],[18,19],[20,23],[21,22],[22,23]];
 const CENTERS={"강남구":[807.5,587.6],"강동구":[1057.5,493.4],"강북구":[732.5,256.7],"강서구":[317.5,469.2],"관악구":[567.5,703.2],"광진구":[900.0,523.0],"구로구":[405.0,646.7],"금천구":[437.5,751.6],"노원구":[842.5,224.4],"도봉구":[770.0,168.0],"동대문구":[817.5,428.9],"동작구":[562.5,601.0],"마포구":[442.5,455.8],"서대문구":[537.5,418.1],"서초구":[720.0,673.6],"성동구":[792.5,501.5],"성북구":[737.5,358.9],"송파구":[975.0,627.9],"양천구":[355.0,574.1],"영등포구":[450.0,576.8],"용산구":[627.5,547.2],"은평구":[505.0,315.9],"종로구":[645.0,407.3],"중구":[682.5,477.3],"중랑구":[920.0,361.6]};
 const FALLBACK={"강남구":[[891.0,608.7],[841.2,537.4],[722.4,558.1],[718.6,562.3],[714.6,580.5],[861.8,730.3],[891.0,608.7]],"강동구":[[1113.2,620.1],[1142.5,541.8],[1180.0,498.8],[1160.0,431.6],[1110.0,380.4],[1046.4,367.4],[967.7,449.5],[985.0,541.5],[1113.2,620.1]],"강북구":[[806.2,304.3],[783.2,225.9],[580.7,140.3],[620.3,292.2],[653.9,311.8],[806.2,304.3]],"강서구":[[366.7,338.0],[300.8,257.4],[262.5,289.0],[167.5,297.1],[92.5,356.2],[112.5,420.8],[95.0,523.0],[152.5,547.2],[183.1,576.4],[384.5,504.4],[366.7,338.0]],"관악구":[[636.0,648.6],[493.0,655.6],[484.7,679.5],[518.5,770.4],[567.5,775.8],[637.5,829.6],[669.3,819.8],[636.0,648.6]],"광진구":[[891.0,608.7],[985.0,541.5],[967.7,449.5],[898.7,440.9],[852.4,481.5],[841.2,537.4],[891.0,608.7]],"구로구":[[492.4,653.5],[401.9,595.3],[263.0,690.9],[335.7,725.7],[484.7,679.5],[492.4,653.5]],"금천구":[[484.7,679.5],[335.7,725.7],[345.0,730.1],[390.0,794.7],[457.5,805.4],[495.0,767.8],[518.5,770.4],[484.7,679.5]],"노원구":[[948.7,254.9],[935.0,229.8],[850.1,139.9],[783.2,225.9],[806.2,304.3],[829.3,322.3],[948.7,254.9]],"도봉구":[[580.7,140.3],[783.2,225.9],[850.1,139.9],[810.0,95.3],[735.0,124.9],[612.5,100.7],[567.4,116.3],[580.7,140.3]],"동대문구":[[852.4,481.5],[898.7,440.9],[829.1,334.9],[742.9,433.4],[747.2,445.3],[852.4,481.5]],"동작구":[[643.4,632.6],[542.4,510.6],[522.5,513.3],[493.0,655.6],[636.0,648.6],[643.4,632.6]],"마포구":[[519.7,511.7],[468.9,383.7],[366.7,338.0],[384.5,504.4],[404.1,518.9],[519.7,511.7]],"서대문구":[[597.2,472.4],[584.6,346.8],[468.9,383.7],[519.7,511.7],[542.4,510.6],[597.2,472.4]],"서초구":[[861.8,730.3],[714.6,580.5],[643.4,632.6],[636.0,648.6],[669.3,819.8],[707.5,808.1],[797.5,805.4],[877.0,815.2],[861.8,730.3]],"성동구":[[722.4,558.1],[841.2,537.4],[852.4,481.5],[747.2,445.3],[722.4,558.1]],"성북구":[[829.1,334.9],[829.3,322.3],[806.2,304.3],[653.9,311.8],[709.4,417.8],[742.9,433.4],[829.1,334.9]],"송파구":[[985.0,541.5],[891.0,608.7],[861.8,730.3],[877.0,815.2],[907.5,818.9],[920.0,746.2],[990.0,687.1],[1082.5,673.6],[1113.2,620.1],[985.0,541.5]],"양천구":[[384.5,504.4],[183.1,576.4],[240.0,630.6],[255.0,687.1],[263.0,690.9],[401.9,595.3],[404.1,518.9],[384.5,504.4]],"영등포구":[[522.5,513.3],[404.1,518.9],[401.9,595.3],[492.4,653.5],[522.5,513.3]],"용산구":[[718.6,562.3],[605.7,473.4],[597.2,472.4],[542.4,510.6],[643.4,632.6],[714.6,580.5],[718.6,562.3]],"은평구":[[620.3,292.2],[580.7,140.3],[567.4,116.3],[487.5,143.8],[447.5,227.1],[337.5,227.1],[300.8,257.4],[366.7,338.0],[468.9,383.7],[584.6,346.8],[620.3,292.2]],"종로구":[[653.9,311.8],[620.3,292.2],[584.6,346.8],[597.2,472.4],[605.7,473.4],[709.4,417.8],[653.9,311.8]],"중구":[[742.9,433.4],[709.4,417.8],[605.7,473.4],[718.6,562.3],[722.4,558.1],[747.2,445.3],[742.9,433.4]],"중랑구":[[829.3,322.3],[829.1,334.9],[898.7,440.9],[967.7,449.5],[1046.4,367.4],[1005.0,358.9],[948.7,254.9],[829.3,322.3]]};
+const CONNECTIONS=new Set(EDGE_PAIRS.map(pair=>pair.slice().sort((a,b)=>a-b).join(':')));
+function nearby(a,b){return a.districtId===b.districtId || CONNECTIONS.has([a.districtId,b.districtId].sort((x,y)=>x-y).join(':'))}
+function crossRiver(a,b){return SOUTH.has(a.district)!==SOUTH.has(b.district)}
+function sourcesFor(target){return placeDefs.filter(p=>isMine(p.id)&&p.id!==target.id&&nearby(p,target)&&troopCount(state.landmarks[p.id].troops)>=20)}
+function unitPower(t,defense=false){return UNIT_META.reduce((s,[key,n,icon,c,atk,def])=>s+(t[key]||0)*(defense?def:atk),0)}
+function battle(a,b,atype,target,seed){let rand=.95+hash(Math.floor(seed/1000),target.id,7)*.10;let atk=unitPower(a)*(ATTACK_TACTICS[atype]?.value||1)*1.07*rand;let def=unitPower(b,true)*(TACTICS[target.defense]?.value||1)*(1+.075*target.level);if(crossRiver(placeDefs[state.pending?.source??target.id],target))atk*=.92;
+let win=atk>def, lossA=(win?.19:.40)*(atype==='safe'?.67:atype==='charge'?1.12:1),lossB=win?.56:.22;
+if(target.defense==='hold')lossB*=win?1.15:1.05;if(target.defense==='preserve')lossB*=.75;
+const surv=numTroops(),remaining=numTroops();for(const key of UNIT_KEYS){surv[key]=Math.floor((a[key]||0)*(1-lossA));remaining[key]=Math.floor((b[key]||0)*(1-lossB))}
+return {win,attack:Math.round(atk),defense:Math.round(def),surv,remaining,loss:troopCount(a)-troopCount(surv)}}
+function regen(){const mins=Math.floor((now()-(state.lastRegen||now()))/60000);if(mins>0){state.grain=Math.min(60000,state.grain+Math.min(720,mins)*Math.max(1,state.landmarks.filter(p=>p.owner==='player').length)*2);state.lastRegen=now()}}
+function updatePending(){regen();let dirty=false,n=now();if(state.pending?.dueAt<=n){const p=state.pending,target=placeDefs[p.target],tl=state.landmarks[p.target],src=state.landmarks[p.source];let wasDistrict=districtCaptured(target.districtId);const result=battle(p.troops,tl.troops,p.tactic,{...target,...tl},p.createdAt);
+if(result.win){tl.owner='player';tl.troops=result.surv;tl.general='점령 담당';tl.defense='balanced';tl.level=Math.max(1,tl.level-1);tl.protectUntil=n+17000;state.points+=60;log(`${target.district} · ${target.name} 거점 장악! 인원 손실 ${fmt(result.loss)}명 · +60P`,'win');toast(`${target.name} 장악 성공!`);
+if(!wasDistrict&&districtCaptured(target.districtId)){state.points+=300;state.grain+=500;log(`${target.district} 전체 점령! 모든 거점 확보 · +300P / 보급품 +500`,'win');toast(`🏆 ${target.district} 전체 점령! +300P`)}
+}else{for(const k of UNIT_KEYS)src.troops[k]+=result.surv[k];tl.troops=result.remaining;tl.protectUntil=n+13000;log(`${target.name} 공격 실패 · 귀환 인원 ${fmt(troopCount(result.surv))}명`,'lose');toast(`${target.name} 공격 실패`)}
+state.pending=null;state.selectedDistrict=target.districtId;state.selectedPlace=target.id;dirty=true}
+if(state.raid?.dueAt<=n){const r=state.raid,p=getPlace(r.target),result=battle(r.troops,p.troops,'charge',p,r.createdAt);log(`${p.name} 자동 방어 시뮬레이션: ${result.win?'방어 실패':'방어 성공'} (공격 ${fmt(result.attack)} / 수비 ${fmt(result.defense)})`,'defense');toast(`${p.name}: ${result.win?'방어 실패':'방어 성공'} (피해 없음)`);state.raid=null;dirty=true}if(dirty)save();return dirty}
+function pickDistrict(d){const ps=districtPlaces(d);state.selectedDistrict=d;if(!ps.some(p=>p.id===state.selectedPlace))state.selectedPlace=ps[0].id;state.tab='overview';render();save()}
+function pickPlace(id){state.selectedPlace=id;state.selectedDistrict=placeDefs[id].districtId;state.tab='overview';render();save()}
+// GeoJSON can refine the district borders. All gameplay, sprites and hit testing also work offline.
 const GEO_URL='https://raw.githubusercontent.com/southkorea/seoul-maps/master/kostat/2013/json/seoul_municipalities_geo_simple.json';
-let districtPolys=Object.fromEntries(NAMES.map(n=>[n,[FALLBACK[n]]]));
-let mapSource='서울 지도 · 기본 경계';
-function geoProject(ll){return [90+(ll[0]-126.76)/(127.20-126.76)*1100,55+(37.715-ll[1])/(37.715-37.425)*780]}
-function polygonsPath(c,polys){c.beginPath();for(const ring of polys){if(ring.length<3)continue;c.moveTo(ring[0][0],ring[0][1]);for(let i=1;i<ring.length;i++)c.lineTo(ring[i][0],ring[i][1]);c.closePath()}}
-function inRing(x,y,ring){let b=false;for(let i=0,j=ring.length-1;i<ring.length;j=i++){let xi=ring[i][0],yi=ring[i][1],xj=ring[j][0],yj=ring[j][1];if((yi>y)!=(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)b=!b}return b}
-function findDistrict(x,y){for(const t of state.lands){let paths=districtPolys[t.name]||[];if(paths.some(p=>inRing(x,y,p)))return t.id}return null}
-function districtCenter(name){return CENTERS[name]||[W/2,H/2]}
-const frame=$('#mapFrame'),canvas=$('#world'),ctx=canvas.getContext('2d');let zoom=1,panX=0,panY=0,initialized=false,drag=null;ctx.imageSmoothingEnabled=false;
-function hash2(x,y,z=0){return hash(Math.floor(x),Math.floor(y),z)}
-const art=document.createElement('canvas');art.width=W;art.height=H;const a=art.getContext('2d');a.imageSmoothingEnabled=false;
-function road(points,width,color){a.beginPath();a.moveTo(...points[0]);for(let i=1;i<points.length;i++)a.lineTo(...points[i]);a.strokeStyle=color;a.lineWidth=width;a.lineJoin='round';a.lineCap='round';a.stroke()}
-function drawBaseArt(){a.fillStyle='#bdc9ae';a.fillRect(0,0,W,H);
-  // Subtle park/forest texture, kept beneath the district shapes.
-  for(let y=0;y<H;y+=18)for(let x=0;x<W;x+=18){let h=hash2(x/18,y/18,8);a.fillStyle=h>.62?'#b6cda0':'#c8d2b6';a.fillRect(x,y,18,18);if(h>.79){a.fillStyle='#7b9e73';a.fillRect(x+5,y+5,5,8);a.fillStyle='#5c895a';a.fillRect(x+8,y+2,7,9)}}
-  // Parcels and city streets: a muted map background similar to old pixel terrain.
-  for(let y=25;y<H;y+=28){road([[0,y],[W,y+((y/28)%3-1)*8]],4,'#e2ddc0')}
-  for(let x=22;x<W;x+=31){road([[x,0],[x+((x/31)%4-2)*5,H]],4,'#e2ddc0')}
-  // Western and northern hills; small textured pixel sprites.
-  for(let i=0;i<140;i++){let x=hash2(i,12,9)*W,y=hash2(i,64,12)*H;if((y<245||y>670)&&hash2(i,3,8)>.30){a.fillStyle='#748a70';a.beginPath();a.moveTo(x,y+9);a.lineTo(x+10,y-9);a.lineTo(x+18,y+9);a.fill();a.fillStyle='#a3ae93';a.fillRect(x+8,y-6,4,3)}}
-  // Seoul Han River, runs broadly west -> east. A wide blue-green band and light banks.
-  const river=[[0,490],[145,482],[270,485],[370,500],[470,516],[565,525],[650,520],[745,510],[845,491],[930,488],[1020,483],[1150,480],[1280,477]];
-  road(river,39,'#d6dec7');road(river,32,'#5a9fb8');road(river,22,'#78b9cc');
-  // Bridges at approximate Seoul crossing points.
-  for(let x of [335,493,620,751,920]){let i=Math.min(river.length-2,Math.floor(x/(W/12)));let y=river[i][1];road([[x-3,y-37],[x+3,y+37]],9,'#ae9e82');road([[x-3,y-37],[x+3,y+37]],5,'#e9dfbd')}
-  // Pale map border frame.
-  a.strokeStyle='#dbe2d0';a.lineWidth=5;a.strokeRect(3,3,W-6,H-6);
+let districtPolys=Object.fromEntries(DISTRICTS.map(n=>[n,[FALLBACK[n]]]));
+function geoProject(ll){return [90+(ll[0]-126.76)/.44*1100,55+(37.715-ll[1])/.290*780]}
+function inRing(x,y,ring){let inside=false;for(let i=0,j=ring.length-1;i<ring.length;j=i++){const [xi,yi]=ring[i],[xj,yj]=ring[j];if((yi>y)!=(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)inside=!inside}return inside}
+function inDistrict(x,y,name){return (districtPolys[name]||[]).some(r=>inRing(x,y,r))}
+function districtPath(c,rings){c.beginPath();for(const ring of rings){if(!ring||ring.length<3)continue;c.moveTo(...ring[0]);for(let i=1;i<ring.length;i++)c.lineTo(...ring[i]);c.closePath()}}
+let positions=[];
+function buildPositions(){positions=Array(placeDefs.length).fill(null);for(let d=0;d<DISTRICTS.length;d++){const name=DISTRICTS[d],ring=districtPolys[name]?.[0];if(!ring)continue;const box={minX:Math.min(...ring.map(q=>q[0])),maxX:Math.max(...ring.map(q=>q[0])),minY:Math.min(...ring.map(q=>q[1])),maxY:Math.max(...ring.map(q=>q[1]))};let candidates=[];
+for(let y=box.minY+8;y<=box.maxY-8;y+=11)for(let x=box.minX+8;x<=box.maxX-8;x+=11){if(inDistrict(x,y,name))candidates.push([x,y])}
+if(!candidates.length)candidates=[CENTERS[name]];
+const center=CENTERS[name],chosen=[];for(const p of districtPlaces(d)){let best=candidates[0],bestScore=-1e20;for(const c of candidates){const dc=Math.hypot(c[0]-center[0],c[1]-center[1]);let score=chosen.length?Math.min(...chosen.map(v=>Math.hypot(c[0]-v[0],c[1]-v[1])))-dc*.23:-dc;if(score>bestScore){bestScore=score;best=c}}chosen.push(best);positions[p.id]=best}}
 }
-drawBaseArt();
-function fortOnCanvas(c,x,y,owner,cap){let scale=cap?1:0.74;c.save();c.translate(x,y);c.scale(scale,scale);c.fillStyle='#1c352c66';c.fillRect(-19,7,43,10);c.fillStyle='#7b7d6f';c.fillRect(-15,-8,32,24);c.fillStyle='#494d49';c.fillRect(-20,-11,12,29);c.fillRect(11,-11,12,29);c.fillStyle='#d4c8a0';c.fillRect(-17,-10,10,17);c.fillRect(12,-10,9,17);c.fillStyle='#64503e';c.fillRect(-5,3,10,15);c.fillStyle='#5d453c';c.fillRect(-21,-16,46,6);if(cap){c.fillStyle='#c1a477';c.fillRect(-8,-29,17,15);c.fillStyle='#785544';c.fillRect(-12,-30,25,5)}c.fillStyle='#3b473b';c.fillRect(19,-32,3,28);c.fillStyle=OWNERS[owner].color;c.fillRect(21,-31,18,11);c.fillStyle='#fff6d8';c.fillRect(21,-31,18,2);c.restore()}
-function fit(){let rw=frame.clientWidth,rh=frame.clientHeight;if(!rw||!rh)return;zoom=Math.min(rw/W,rh/H)*.95;panX=(rw-W*zoom)/2;panY=(rh-H*zoom)/2;initialized=true;draw()}
-function resize(){let dpr=Math.min(2,devicePixelRatio||1),w=frame.clientWidth,h=frame.clientHeight;canvas.width=Math.max(1,Math.floor(w*dpr));canvas.height=Math.max(1,Math.floor(h*dpr));canvas.style.width=w+'px';canvas.style.height=h+'px';ctx.setTransform(dpr,0,0,dpr,0,0);ctx.imageSmoothingEnabled=false;if(!initialized)fit();draw()}
-function colorTint(t){return OWNERS[t.owner]||OWNERS.neutral}
-function draw(){let dpr=Math.min(2,devicePixelRatio||1),w=frame.clientWidth,h=frame.clientHeight;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);ctx.fillStyle='#c2cdb7';ctx.fillRect(0,0,w,h);ctx.save();ctx.translate(panX,panY);ctx.scale(zoom,zoom);ctx.imageSmoothingEnabled=false;ctx.drawImage(art,0,0);
-  // Outside land remains softly faded; inside each district a tinted polygon is drawn.
-  for(const t of state.lands){let rings=districtPolys[t.name]||[];if(!rings.length)continue;let group=colorTint(t);polygonsPath(ctx,rings);ctx.fillStyle=group.fill;ctx.fill('evenodd');ctx.lineWidth=t.id===state.selected?5:1.8;ctx.strokeStyle=t.id===state.selected?'#fff5d6':'#648674';ctx.setLineDash(t.id===state.selected?[]:[5,3]);ctx.stroke();ctx.setLineDash([])}
-  for(const t of state.lands){let [cx,cy]=districtCenter(t.name),selected=t.id===state.selected; if(selected){ctx.beginPath();ctx.arc(cx,cy,27,0,Math.PI*2);ctx.fillStyle='#fff4bf66';ctx.fill()}
-    fortOnCanvas(ctx,cx,cy-12,t.owner,t.name==='마포구');ctx.font='bold 15px "Malgun Gothic",Arial,sans-serif';ctx.textAlign='center';let tw=ctx.measureText(t.name).width;ctx.fillStyle='#fffdf3ee';ctx.fillRect(cx-tw/2-7,cy+12,tw+14,21);ctx.strokeStyle=selected?'#e7a932':'#b8bca9';ctx.lineWidth=selected?2:1;ctx.strokeRect(cx-tw/2-7,cy+12,tw+14,21);ctx.fillStyle=selected?'#155e34':'#243b30';ctx.fillText(t.name,cx,cy+28);
-    if(state.pending?.target===t.id||state.raid?.target===t.id){ctx.font='bold 28px sans-serif';ctx.fillStyle='#a83521';ctx.fillText('⚔',cx+30,cy-27)}
-    if(t.protectUntil>now()){ctx.fillStyle='#276e8c';ctx.font='bold 18px sans-serif';ctx.fillText('✦',cx-27,cy-25)}
-  }
-  ctx.restore()}
-function zoomAt(f,x=frame.clientWidth/2,y=frame.clientHeight/2){let next=Math.max(.25,Math.min(3,zoom*f));panX=x-(x-panX)*next/zoom;panY=y-(y-panY)*next/zoom;zoom=next;draw()}
-canvas.addEventListener('wheel',e=>{e.preventDefault();let rect=canvas.getBoundingClientRect();zoomAt(e.deltaY<0?1.13:.885,e.clientX-rect.left,e.clientY-rect.top)},{passive:false});
+buildPositions();
+const frame=$('#mapFrame'),canvas=$('#world'),ctx=canvas.getContext('2d',{alpha:false});
+let zoom=1,panX=0,panY=0,initialized=false,drag=null,hover=-1;
+const art=document.createElement('canvas');art.width=W;art.height=H;const a=art.getContext('2d');
+const waterways=document.createElement('canvas');waterways.width=W;waterways.height=H;const water=waterways.getContext('2d');
+function stroke(c,pts,width,color){c.beginPath();c.moveTo(...pts[0]);for(let i=1;i<pts.length;i++)c.lineTo(...pts[i]);c.strokeStyle=color;c.lineWidth=width;c.lineCap='round';c.lineJoin='round';c.stroke()}
+function pixelTree(c,x,y,s=1,seed=0){c.save();c.translate(Math.round(x),Math.round(y));c.scale(s,s);c.fillStyle='#30493d40';c.beginPath();c.ellipse(3,9,13,5,0,0,Math.PI*2);c.fill();c.fillStyle='#695b42';c.fillRect(-2,0,4,9);
+for(const [dx,dy,r,clr] of [[-6,-2,8,'#426c53'],[5,-5,9,'#3c7658'],[0,-11,10,'#568d61'],[-4,-12,5,'#78a471']]){c.fillStyle=clr;c.beginPath();c.arc(dx,dy,r,0,Math.PI*2);c.fill()}c.fillStyle='#b4c492';c.fillRect(-3,-16,4,3);c.restore()}
+function pixelHill(c,x,y,s=1){c.save();c.translate(x,y);c.scale(s,s);c.fillStyle='#344a4540';c.beginPath();c.ellipse(2,12,24,7,0,0,7);c.fill();c.fillStyle='#596b64';c.beginPath();c.moveTo(-26,14);c.lineTo(-3,-17);c.lineTo(22,14);c.fill();c.fillStyle='#85978b';c.beginPath();c.moveTo(-3,-17);c.lineTo(22,14);c.lineTo(2,14);c.fill();c.fillStyle='#dee6ce';c.beginPath();c.moveTo(-3,-17);c.lineTo(6,-6);c.lineTo(0,-8);c.lineTo(-4,-3);c.lineTo(-11,-8);c.fill();c.fillStyle='#637565';c.fillRect(-18,10,6,4);c.restore()}
+function building(c,x,y,scale=1){c.save();c.translate(x,y);c.scale(scale,scale);c.fillStyle='#445d5633';c.fillRect(-8,3,19,9);c.fillStyle='#a59b86';c.fillRect(-10,-6,18,15);c.fillStyle='#d4c8aa';c.fillRect(-10,-9,18,7);c.fillStyle='#6d8176';c.fillRect(-12,-11,21,4);c.fillStyle='#637d7c';c.fillRect(-6,-2,4,4);c.fillRect(1,-2,4,4);c.fillStyle='#e6d7ac';c.fillRect(-4,6,5,3);c.restore()}
+function drawLand(){a.fillStyle='#d5d9bc';a.fillRect(0,0,W,H);
+for(let y=0;y<H;y+=20)for(let x=0;x<W;x+=20){const n=hash(x/20,y/20,11);a.fillStyle=n>.80?'#ced8b3':n>.44?'#d9dfc3':'#c8d4b1';a.fillRect(x,y,20,20);a.fillStyle='#e7e4ce';if(n>.67)a.fillRect(x+3,y+4,3,3)}
+// Layered city blocks, footpaths, avenues and parks.
+for(let i=0;i<33;i++){let x=35+i*40+Math.floor(hash(i,10)*12);stroke(a,[[x,0],[x+5,H]],hash(i,17)>.72?8:3,hash(i,17)>.72?'#e8dfc4':'#ebebd6')}
+for(let i=0;i<28;i++){let y=15+i*37+Math.floor(hash(i,20)*9);stroke(a,[[0,y],[W,y+5]],hash(i,29)>.77?8:3,'#e6dfc6')}
+for(let i=0;i<1100;i++){let x=20+hash(i,3,1)*(W-40),y=18+hash(i,4,1)*(H-40);if(Math.hypot(x-720,y-200)<175||Math.hypot(x-560,y-750)<120)continue;if(hash(i,6)>.43)building(a,x,y,.6+hash(i,7)*.35)}
+// Forested ridge lines across the north and southwest mountains.
+for(let i=0;i<290;i++){let x=35+hash(i,12)*1200,y=30+hash(i,15)*840;const outer=y<240||y>710||x<165||x>1120;if(!outer||hash(i,8)<.27)continue;if(hash(i,12,9)>.70)pixelHill(a,x,y,.55+hash(i,2)*.55);else pixelTree(a,x,y,.45+hash(i,1)*.35)}
+for(let i=0;i<120;i++){let x=50+hash(i,22)*1180,y=20+hash(i,25)*850;if(hash(i,37)<.28)pixelTree(a,x,y,.45)}
+// Accent parks with tiny ponds and tree clusters.
+for(const [x,y] of [[443,410],[310,544],[760,380],[920,655],[625,650],[475,310],[970,330],[350,430],[520,765],[1040,570]]){
+a.fillStyle='#b7d19c';a.beginPath();a.ellipse(x,y,52,25,-.13,0,7);a.fill();for(let j=0;j<7;j++)pixelTree(a,x-42+hash(j,x)*80,y-19+hash(j,y)*37,.55)}
+}
+const RIVER=[[0,470],[90,472],[170,469],[245,479],[345,491],[455,510],[545,524],[640,521],[710,511],[795,498],[875,485],[970,484],[1050,482],[1160,474],[1280,475]];
+function riverY(x){for(let i=0;i<RIVER.length-1;i++){const v=RIVER[i],q=RIVER[i+1];if(x>=v[0]&&x<=q[0])return v[1]+(q[1]-v[1])*(x-v[0])/(q[0]-v[0])}return 480}
+function drawWater(){stroke(water,RIVER,83,'#b2cfc3');stroke(water,RIVER,72,'#82b8b7');stroke(water,RIVER,62,'#4d9aa9');stroke(water,RIVER,45,'#78bec8');stroke(water,RIVER,25,'#62acbd');
+for(let i=0;i<150;i++){const x=hash(i,71)*W,y=riverY(x)+(hash(i,72)-.5)*40;stroke(water,[[x,y],[x+4+hash(i,73)*15,y]],1.2,'#d3eaDDb0')}
+// Islands and riverside park patches.
+water.fillStyle='#bfd5a0';water.beginPath();water.ellipse(455,riverY(455)+3,33,12,-.05,0,7);water.fill();
+for(const x of [247,360,470,555,645,760,885,998,1110]){let y=riverY(x);stroke(water,[[x-6,y-55],[x+7,y+56]],13,'#82918b');stroke(water,[[x-6,y-55],[x+7,y+56]],9,'#e6dbc6');stroke(water,[[x-4,y-48],[x+7,y+51]],2,'#fff2d7');for(let k=-1;k<=1;k++){water.fillStyle='#7c8a79';water.fillRect(x+k*3-2,y+k*17-2,3,6)}}
+water.font='bold 28px "Malgun Gothic",Arial';water.textAlign='center';water.fillStyle='#edf8f1c0';water.fillText('한  강',710,503);
+}
+drawLand();drawWater();
+const iconBg={tower:'#8eb3c4',stadium:'#a7c98f',temple:'#bb8a72',museum:'#cab3a4',gallery:'#b6c2cd',airport:'#c3cbd1',park:'#93c894',forest:'#75ab79',monument:'#d6c8a4',university:'#b9a890',mountain:'#90a9a0',train:'#a7b4c0',market:'#d2b39a',hall:'#c8b8a7',palace:'#d2ae92',lake:'#8cbfcd',finance:'#dcc4a3'};
+function sprite(c,p,x,y,size=1,selected=false){const t=state.landmarks[p.id],col=OWNERS[t.owner].color;
+c.save();c.translate(x,y);c.scale(size,size);c.shadowColor='#1f403c55';c.shadowBlur=3;c.shadowOffsetY=4;c.fillStyle='#eef1d8';c.beginPath();c.roundRect(-19,-18,38,36,5);c.fill();c.shadowBlur=0;c.shadowOffsetY=0;c.fillStyle=iconBg[p.kind]||'#b2bca2';c.beginPath();c.roundRect(-17,-16,34,32,4);c.fill();c.strokeStyle=selected?'#f2e39b':col;c.lineWidth=selected?4:3;c.beginPath();c.roundRect(-18.5,-17.5,37,35,5);c.stroke();
+// Sprites are drawn using original pixel/low-poly shapes; no remote image dependencies.
+switch(p.kind){
+case 'stadium':c.fillStyle='#dcd8be';c.beginPath();c.ellipse(0,1,14,10,0,0,7);c.fill();c.fillStyle='#687b82';c.beginPath();c.ellipse(0,0,11,7,0,0,7);c.fill();c.fillStyle='#4b9869';c.beginPath();c.ellipse(0,0,7,4,0,0,7);c.fill();c.strokeStyle='#f5eed8';c.lineWidth=1;c.beginPath();c.ellipse(0,0,5,3,0,0,7);c.stroke();break;
+case 'finance':case 'museum':case 'hall':case 'university':{c.fillStyle='#d7cfb7';c.fillRect(-13,-4,26,17);c.fillStyle='#6a7d85';c.beginPath();c.moveTo(-15,-5);c.lineTo(0,-13);c.lineTo(15,-5);c.fill();for(let k=0;k<4;k++){c.fillStyle='#f4e9d0';c.fillRect(-10+k*7,-3,4,13)}c.fillStyle='#9d906f';c.fillRect(-15,13,30,3);if(p.kind==='finance'){c.fillStyle='#ba8e46';c.beginPath();c.arc(0,0,6,0,7);c.fill();c.fillStyle='#fff5d6';c.font='bold 9px Arial';c.textAlign='center';c.fillText('₩',0,3)}if(p.kind==='university'){c.fillStyle='#f4dfbd';c.fillRect(-2,-8,4,5)}break;}
+case 'tower':case 'gallery':{c.fillStyle='#657b8c';c.fillRect(-11,-7,11,20);c.fillStyle='#b8d4d5';c.fillRect(-1,-13,12,26);for(let i=-10;i<11;i+=6)for(let j=-10;j<13;j+=6){c.fillStyle=(i+j)%4?'#e5f4e8':'#5e8d9e';c.fillRect(i,j,3,4)}c.fillStyle='#6f756d';c.fillRect(-14,12,28,3);if(p.kind==='tower'){c.fillStyle='#ebefe7';c.fillRect(2,-16,2,4)}break;}
+case 'palace':case 'temple':{c.fillStyle='#ba8461';c.fillRect(-12,-3,24,17);c.fillStyle='#e8c6a3';c.fillRect(-7,2,14,12);c.fillStyle='#6c5047';c.beginPath();c.moveTo(-16,-4);c.lineTo(0,-13);c.lineTo(16,-4);c.lineTo(12,-2);c.lineTo(-12,-2);c.fill();c.fillStyle='#b2533b';c.fillRect(-3,3,6,11);c.fillStyle='#f0d18b';c.fillRect(-15,-6,30,2);break;}
+case 'airport':{c.fillStyle='#7d9098';c.fillRect(-14,3,28,8);c.fillStyle='#f4f5ea';c.beginPath();c.moveTo(-2,-14);c.lineTo(3,-4);c.lineTo(15,0);c.lineTo(15,3);c.lineTo(3,2);c.lineTo(3,13);c.lineTo(-3,13);c.lineTo(-3,2);c.lineTo(-15,3);c.lineTo(-15,0);c.lineTo(-3,-4);c.fill();break;}
+case 'park':case 'forest':{pixelTree(c,-7,1,.62);pixelTree(c,7,-4,.73);c.fillStyle='#dcc4a0';c.fillRect(-3,11,7,3);break;}
+case 'mountain':{pixelHill(c,0,4,.65);break;}
+case 'lake':{c.fillStyle='#4194ab';c.beginPath();c.ellipse(0,5,14,8,0,0,7);c.fill();c.fillStyle='#9dd7d1';c.fillRect(-7,1,9,2);pixelTree(c,10,-5,.44);break;}
+case 'monument':{c.fillStyle='#ddd6c2';c.fillRect(-8,-3,16,16);c.fillStyle='#88919a';c.beginPath();c.moveTo(-6,-4);c.lineTo(0,-13);c.lineTo(6,-4);c.fill();c.fillStyle='#f7edcd';c.fillRect(-2,-2,4,10);break;}
+case 'train':{c.fillStyle='#d4dedf';c.fillRect(-11,-10,22,20);c.fillStyle='#5c7681';c.fillRect(-8,-7,16,8);c.fillStyle='#e8d08e';c.fillRect(-9,6,5,4);c.fillRect(4,6,5,4);c.fillStyle='#6c6960';c.fillRect(-13,11,26,3);break;}
+case 'market':{c.fillStyle='#e8d0aa';c.fillRect(-14,-5,28,19);c.fillStyle='#a44e4a';c.fillRect(-15,-8,10,7);c.fillStyle='#eee0b7';c.fillRect(-5,-8,10,7);c.fillStyle='#a44e4a';c.fillRect(5,-8,10,7);c.fillStyle='#7c6153';c.fillRect(-10,5,6,8);c.fillRect(4,5,6,8);break;}
+default:building(c,0,0,.8)}
+c.fillStyle=col;c.fillRect(-19,-21,15,5);c.fillStyle='#fff8e7';c.fillRect(-18,-20,12,1);if(selected){c.strokeStyle='#fdf1b2';c.lineWidth=2;c.strokeRect(-22,-23,44,47)}c.restore()}
+function districtCenter(name){return CENTERS[name]||[650,450]}
+function fit(){const w=frame.clientWidth,h=frame.clientHeight;if(!w||!h)return;zoom=Math.min(w/W,h/H)*(w<600?1.30:.99);panX=(w-W*zoom)/2;panY=(h-H*zoom)/2;initialized=true;draw()}
+function resize(){let d=Math.min(2,devicePixelRatio||1),w=Math.max(1,frame.clientWidth),h=Math.max(1,frame.clientHeight);canvas.width=Math.round(w*d);canvas.height=Math.round(h*d);canvas.style.width=w+'px';canvas.style.height=h+'px';ctx.setTransform(d,0,0,d,0,0);draw();if(!initialized)fit()}
+function draw(){const d=Math.min(2,devicePixelRatio||1),w=frame.clientWidth,h=frame.clientHeight;ctx.setTransform(d,0,0,d,0,0);ctx.fillStyle='#ced8bb';ctx.fillRect(0,0,w,h);ctx.save();ctx.translate(panX,panY);ctx.scale(zoom,zoom);ctx.imageSmoothingEnabled=false;ctx.drawImage(art,0,0);
+for(let i=0;i<DISTRICTS.length;i++){const name=DISTRICTS[i],pr=districtProgress(i),polys=districtPolys[name];if(!polys)continue;districtPath(ctx,polys);ctx.fillStyle=OWNERS[pr.owner].fill;ctx.fill('evenodd');ctx.lineWidth=state.selectedDistrict===i?3.1:1.15;ctx.strokeStyle=state.selectedDistrict===i?'#cf8d45':'#729283ba';ctx.setLineDash(state.selectedDistrict===i?[]:[6,3]);ctx.stroke();ctx.setLineDash([])}
+ctx.drawImage(waterways,0,0);
+for(const p of placeDefs){let xy=positions[p.id];if(!xy)continue;const on=p.id===state.selectedPlace;const related=p.districtId===state.selectedDistrict;const isHot=hover===p.id;
+sprite(ctx,p,xy[0],xy[1],on?1.18:related?1.03:.88,on);
+if(on||isHot||zoom>.91){let text=p.name;ctx.font='bold 12px "Malgun Gothic",Arial';const wid=Math.min(210,ctx.measureText(text).width+15);let y=xy[1]+23;ctx.fillStyle='#fffdf2f1';ctx.fillRect(xy[0]-wid/2,y,wid,19);ctx.strokeStyle=on?'#c08339':'#9aaa93';ctx.lineWidth=on?2:1;ctx.strokeRect(xy[0]-wid/2,y,wid,19);ctx.fillStyle='#244536';ctx.textAlign='center';ctx.fillText(text,xy[0],y+13)}
+if(state.pending?.target===p.id){ctx.fillStyle='#c04b33';ctx.font='bold 23px Arial';ctx.fillText('⚔',xy[0]+22,xy[1]-21)}
+}
+for(let i=0;i<DISTRICTS.length;i++){let name=DISTRICTS[i],c=districtCenter(name),pr=districtProgress(i);ctx.font='bold 14px "Malgun Gothic",Arial';let text=`${name} ${pr.mine}/${pr.total}`;let sw=ctx.measureText(text).width+14;const y=c[1]-25;ctx.fillStyle=state.selectedDistrict===i?'#fff9e6e8':'#f7faf0de';ctx.fillRect(c[0]-sw/2,y-1,sw,20);ctx.strokeStyle=state.selectedDistrict===i?'#c78a49':'#bccab2';ctx.lineWidth=state.selectedDistrict===i?2:1;ctx.strokeRect(c[0]-sw/2,y-1,sw,20);ctx.fillStyle=pr.owner==='player'?'#126a9a':pr.owner==='mixed'?'#8b6740':'#3b5a45';ctx.textAlign='center';ctx.fillText(text,c[0],y+13)}
+ctx.restore()}
+function zoomAt(f,x=frame.clientWidth/2,y=frame.clientHeight/2){let next=Math.max(.38,Math.min(3.2,zoom*f));panX=x-(x-panX)*next/zoom;panY=y-(y-panY)*next/zoom;zoom=next;draw()}
+function chooseAt(x,y){const wx=(x-panX)/zoom,wy=(y-panY)/zoom;let best=-1,dist=Infinity;for(const p of placeDefs){const pt=positions[p.id];if(!pt)continue;let d=Math.hypot(pt[0]-wx,pt[1]-wy);if(d<dist){best=p.id;dist=d}}if(best!==-1&&dist<Math.max(22,16/zoom)){pickPlace(best);return}for(let i=0;i<DISTRICTS.length;i++)if(inDistrict(wx,wy,DISTRICTS[i])){pickDistrict(i);return}}
+canvas.addEventListener('wheel',e=>{e.preventDefault();let r=canvas.getBoundingClientRect();zoomAt(e.deltaY<0?1.14:.87,e.clientX-r.left,e.clientY-r.top)},{passive:false});
 canvas.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,px:panX,py:panY,moved:false};canvas.setPointerCapture(e.pointerId)});
-canvas.addEventListener('pointermove',e=>{if(!drag)return;let dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>6)drag.moved=true;if(drag.moved){canvas.classList.add('drag');panX=drag.px+dx;panY=drag.py+dy;draw()}});
-canvas.addEventListener('pointerup',e=>{if(!drag)return;let moved=drag.moved;drag=null;canvas.classList.remove('drag');if(!moved){let r=canvas.getBoundingClientRect(),x=(e.clientX-r.left-panX)/zoom,y=(e.clientY-r.top-panY)/zoom,id=findDistrict(x,y);if(id!==null)pick(id)}});
-canvas.addEventListener('pointercancel',()=>{drag=null;canvas.classList.remove('drag')});$('#zoomIn').onclick=()=>zoomAt(1.24);$('#zoomOut').onclick=()=>zoomAt(.81);$('#centerMap').onclick=fit;
-// Replace fallback boundaries with actual Seoul 25-gu GeoJSON where browser can fetch it.
-fetch(GEO_URL).then(r=>{if(!r.ok)throw Error('geo fetch '+r.status);return r.json()}).then(geo=>{
- if(!geo||!Array.isArray(geo.features))return;
- let updated={};for(const f of geo.features){let name=f.properties?.name,g=f.geometry;if(!NAMES.includes(name)||!g)continue;let polys=g.type==='Polygon'?[g.coordinates]:g.type==='MultiPolygon'?g.coordinates:[];
- let outer=polys.map(poly=>poly[0]?.map(geoProject)).filter(poly=>poly&&poly.length>=3);if(outer.length)updated[name]=outer;
- }
- if(Object.keys(updated).length!==25)return;
- districtPolys=updated;mapSource='실제 서울 자치구 경계 (2013)';draw();
-}).catch(()=>{/* Offline fallback is always playable. */});
-function updateHeader(){let owned=state.lands.filter(t=>t.owner==='player');$('#topFaction').textContent=state.name==='PLAYER'?'내 세력':state.name+' 세력';$('#topPoints').textContent=fmt(state.points)+' P';$('#topGrain').textContent=fmt(state.grain);$('#bottomStatus').textContent=`내 영토 ${owned.length}개 · ${state.pending?'출정 중':'출정 대기'} · ${state.raid?'방어 테스트 중':'자동 방어 준비'}`;
-let t=selected(),owner=t.owner==='player'?(state.name==='PLAYER'?'내 세력':state.name+' 세력'):colorTint(t).name;$('#summary').innerHTML=`
-<div class="sheet-data-row sheet-banner"><span class="sheet-rownum">1</span><span class="sheet-banner-cell">${t.owner==='player'?'나의 영토':t.owner==='neutral'?'중립 영토':'상대 영토'} · ${String(t.id+1).padStart(2,'0')}</span></div>
-<div class="sheet-data-row"><span class="sheet-rownum">2</span><span class="sheet-key">지역명</span><strong class="sheet-value sheet-place">${t.name} <span style="color:${colorTint(t).color}">⚑</span></strong></div>
-<div class="sheet-data-row"><span class="sheet-rownum">3</span><span class="sheet-key">소유 세력</span><strong class="sheet-value">${owner}</strong></div>
-<div class="sheet-data-row"><span class="sheet-rownum">4</span><span class="sheet-key">지형 / 성벽</span><span class="sheet-value">${t.terrain} / Lv.${t.level}</span></div>
-<div class="sheet-data-row"><span class="sheet-rownum">5</span><span class="sheet-key">주둔 병력</span><strong class="sheet-value">${fmt(troopCount(t.troops))}명</strong></div>
-<div class="sheet-data-row"><span class="sheet-rownum">6</span><span class="sheet-key">담당 장수</span><strong class="sheet-value">${t.general||'미배치'}</strong></div>
-<div class="sheet-data-row"><span class="sheet-rownum">7</span><span class="sheet-key">보호 상태</span><span class="sheet-value" id="protCountdown">${t.protectUntil>now()?Math.ceil((t.protectUntil-now())/1000)+'초':'없음'}</span></div>`;
+canvas.addEventListener('pointermove',e=>{if(drag){let dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>5)drag.moved=true;if(drag.moved){canvas.classList.add('drag');panX=drag.px+dx;panY=drag.py+dy;draw()}return}let r=canvas.getBoundingClientRect(),wx=(e.clientX-r.left-panX)/zoom,wy=(e.clientY-r.top-panY)/zoom;let best=-1,dist=30;for(const p of placeDefs){let pos=positions[p.id],d=Math.hypot(wx-pos[0],wy-pos[1]);if(d<dist){dist=d;best=p.id}}if(best!==hover){hover=best;draw()}});
+canvas.addEventListener('pointerup',e=>{if(!drag)return;let moved=drag.moved;drag=null;canvas.classList.remove('drag');if(!moved){let r=canvas.getBoundingClientRect();chooseAt(e.clientX-r.left,e.clientY-r.top)}});
+canvas.addEventListener('pointercancel',()=>{drag=null;canvas.classList.remove('drag')});
+$('#zoomIn').onclick=()=>zoomAt(1.25);$('#zoomOut').onclick=()=>zoomAt(.8);$('#centerMap').onclick=fit;
+fetch(GEO_URL).then(r=>{if(!r.ok)throw Error('fetch');return r.json()}).then(g=>{if(!Array.isArray(g.features))return;let out={};for(const f of g.features){let n=f.properties?.name,geo=f.geometry;if(!DISTRICTS.includes(n))continue;let polygons=geo.type==='Polygon'?[geo.coordinates]:geo.type==='MultiPolygon'?geo.coordinates:[];let rings=polygons.map(poly=>poly[0].map(geoProject)).filter(r=>r.length>=3);if(rings.length)out[n]=rings}if(Object.keys(out).length===25){districtPolys=out;buildPositions();draw()}}).catch(()=>{});
+function line(label,value){return `<div class="line"><span>${label}</span><strong>${value}</strong></div>`}
+function progressList(d){return `<div class="lm-list">${districtPlaces(d).map(p=>{const l=state.landmarks[p.id],isSelected=p.id===state.selectedPlace;return `<button class="lm-row ${isSelected?'lm-active':''}" data-action="select-place" data-val="${p.id}"><span class="lm-indicator" style="background:${OWNERS[l.owner].color}"></span><span class="lm-row-name">${p.name}</span><span class="lm-row-owner">${l.owner==='player'?'내 조직':l.owner==='neutral'?'중립':OWNERS[l.owner].name}</span></button>`}).join('')}</div>`}
+function updateHeader(){const current=place(),d=districtProgress(current.districtId),all=state.landmarks.filter(p=>p.owner==='player').length,held=DISTRICTS.filter((_,i)=>districtCaptured(i)).length;
+$('#topFaction').textContent=state.name==='PLAYER'?'내 조직':state.name;
+$('#topPoints').textContent=fmt(state.points)+' P';$('#topGrain').textContent=fmt(state.grain);
+$('#bottomStatus').textContent=`보유 거점 ${all}/${placeDefs.length}개 · 완전 점령 ${held}/${DISTRICTS.length}개 구 · ${state.pending?'출정 중':'출정 대기'}`;
+$('#summary').innerHTML=`<div class="sheet-data-row sheet-banner"><span class="sheet-rownum">1</span><span class="sheet-banner-cell">${current.district} · ${d.mine}/${d.total} 거점 확보</span></div>
+<div class="sheet-data-row"><span class="sheet-rownum">2</span><span class="sheet-key">선택한 거점</span><strong class="sheet-value sheet-place">${current.name}</strong></div>
+<div class="sheet-data-row"><span class="sheet-rownum">3</span><span class="sheet-key">거점 소유</span><strong class="sheet-value">${current.owner==='player'?'내 조직':OWNERS[current.owner].name}</strong></div>
+<div class="sheet-data-row"><span class="sheet-rownum">4</span><span class="sheet-key">구 소유권</span><span class="sheet-value">${d.owner==='player'?'내 조직':d.owner==='mixed'?'경합 중':OWNERS[d.owner].name}</span></div>
+<div class="sheet-data-row"><span class="sheet-rownum">5</span><span class="sheet-key">거점 인원</span><strong class="sheet-value">${fmt(troopCount(current.troops))}명</strong></div>
+<div class="sheet-data-row"><span class="sheet-rownum">6</span><span class="sheet-key">방어 담당</span><strong class="sheet-value">${current.general||'없음'}</strong></div>
+<div class="sheet-data-row"><span class="sheet-rownum">7</span><span class="sheet-key">보호 상태</span><span class="sheet-value" id="protCountdown">${current.protectUntil>now()?Math.ceil((current.protectUntil-now())/1000)+'초':'없음'}</span></div>`;
 $('#tabs').querySelectorAll('button').forEach(b=>b.classList.toggle('selected',b.dataset.tab===state.tab))}
-function line(key,val){return `<div class="line"><span>${key}</span><strong>${val}</strong></div>`}
-function renderOverview(t){let isMine=t.owner==='player',avail=sourcesFor(t.id),valid=avail.length>0;let html=`<div class="section-title">${isMine?'영지 상황':'정찰 보고'}</div><div class="box">${line('영토명',t.name)}${line('지형',t.terrain)}${line('성벽',`Lv.${t.level}`)}${line('주둔 장수',t.general||'없음')}${line('보병 / 궁병 / 기병',`${fmt(t.troops.inf)} / ${fmt(t.troops.arch)} / ${fmt(t.troops.cav)}`)}${line('수비 전술',TACTICS[t.defense]?.name||'균형 수비')}${line('보호시간',t.protectUntil>now()?Math.ceil((t.protectUntil-now())/1000)+'초 남음':'없음')}</div>`;
-if(isMine){html+=`<div class="callout">병력은 각 영토에 실제로 배치됩니다. 출정한 병력은 해당 영토의 자동 방어에 참여하지 않습니다.</div><div class="row"><button class="btn gold" data-action="tab" data-val="garrison">병력 배치</button><button class="btn" data-action="tab" data-val="defense">자동 방어</button></div><div class="divider"></div><button class="btn" style="width:100%" data-action="raid" ${state.raid?'disabled':''}>⚔ AI 모의 침공 (자동 방어 시험)</button><p class="caption">12초 뒤 서버 전투 공식과 같은 규칙으로 방어 판정. 테스트이므로 실제 병력·소유권은 감소하지 않아요.</p>`}
-else{html+=`<div class="callout">${valid?'인접한 내 영토에서 출정할 수 있습니다.':'현재 인접한 내 영토가 없습니다. 주변 영토를 먼저 확보하세요.'}</div><button class="btn gold" style="width:100%" data-action="tab" data-val="attack" ${!valid||!!state.pending?'disabled':''}>⚔ 공격 명령</button>`}
-if(state.pending){let p=state.pending;html+=`<div class="divider"></div><div class="section-title">진행 중인 출정</div><div class="box">${line('공격 목표',state.lands[p.target].name)}${line('출전 병력',fmt(troopCount(p.troops))+'명')}${line('전투까지',`<span id="eta">${Math.max(0,Math.ceil((p.dueAt-now())/1000))}초</span>`)}<div class="progress"><div id="attackProgress" style="width:${Math.min(100,(now()-p.createdAt)/(p.dueAt-p.createdAt)*100)}%"></div></div></div>`}
-return html}
-function renderGarrison(t){if(t.owner!=='player')return '<div class="callout">내 영토를 선택해야 병력을 배치할 수 있어요.</div>';let h=`<div class="section-title">주둔군 편성</div><div class="box">${line('선택 영토',t.name)}${line('현재 주둔',fmt(troopCount(t.troops))+'명')}${line('예비군 보유',fmt(troopCount(state.reserve))+'명')}</div><div class="field-label">방어 장수 (영토당 1명)</div><select class="field" id="generalSelect">${[t.general,...state.generalPool].filter((s,i,arr)=>arr.indexOf(s)===i).map(g=>`<option value="${g}">${g}</option>`).join('')}</select><p class="caption">장수는 다른 영토와 중복 배치할 수 없어요.</p><div class="divider"></div><div class="section-title">병력 배치 / 회수</div>`;
-for(let [key,name,icon] of UNIT_META)h+=`<div class="unit"><div class="unit-name">${icon} ${name}<small>예비 ${fmt(state.reserve[key])}명</small></div><div class="control"><button class="btn" data-action="troop" data-key="${key}" data-amount="-50" ${t.troops[key]<50?'disabled':''}>−50</button><div class="unit-count">${fmt(t.troops[key])}</div><button class="btn" data-action="troop" data-key="${key}" data-amount="50" ${state.reserve[key]<50?'disabled':''}>+50</button></div></div>`;
-h+=`<p class="caption" style="margin-top:11px">※ 테스트 버전은 예비군 배치를 즉시 처리합니다. 정식 멀티플레이에서는 영토 간 이동시간을 적용할 예정입니다.</p>`;return h}
-function renderDefense(t){if(t.owner!=='player')return '<div class="callout">내 영토를 선택해야 자동 방어 전술을 변경할 수 있어요.</div>';let html=`<div class="section-title">자동 방어 정책</div><div class="callout">게임을 종료해도 이 영토의 주둔군과 장수, 수비 전술을 저장합니다. 공격이 들어오면 이 설정으로 자동 판정합니다.</div>`;for(const [key,v] of Object.entries(TACTICS)){html+=`<button class="btn ${t.defense===key?'active':''}" style="width:100%;text-align:left;white-space:normal;margin:3px 0;padding:12px" data-action="defense" data-val="${key}"><b>${t.defense===key?'◉':'○'} ${v.name}</b><div class="caption" style="margin-top:5px">${v.desc}</div></button>`}
-html+=`<div class="divider"></div><div class="box">${line('수비 장수',t.general||'미배치')}${line('병력',fmt(troopCount(t.troops))+'명')}${line('지형 방어',`+${Math.round(terrainBonus(t)*100)}%`)}${line('성벽 방어',`+${t.level*9}%`)}${line('전술 보정',`${TACTICS[t.defense].value>=1?'+':''}${Math.round((TACTICS[t.defense].value-1)*100)}%`)}</div><button class="btn" data-action="raid" ${state.raid?'disabled':''} style="width:100%">🛡 이 설정으로 방어 모의시험</button>`;return html}
-function renderLogs(){let h=`<div class="section-title">최근 전투 · 사건 기록</div><p class="caption">저장된 로그 ${state.logs.length}개. 외부 이용자에게 공유되지 않는 테스트 기록이에요.</p>`;for(const l of state.logs){let date=new Date(l.time);h+=`<div class="log-item" style="border-left-color:${l.type==='lose'?'#ce786a':l.type==='win'?'#85bba0':'#c5ab73'}">${l.text}<small>${date.toLocaleDateString('ko-KR')} ${date.toLocaleTimeString('ko-KR')}</small></div>`}return h}
-function renderAttack(t){if(t.owner==='player')return '<div class="callout">적 또는 중립 영토를 선택하세요.</div>';let avail=sourcesFor(t.id);if(!avail.length)return '<div class="callout">공격할 수 있는 인접 아군 영토가 없습니다.</div>';if(!avail.some(a=>a.id===state.attackSource))state.attackSource=avail[0].id;let source=state.lands[state.attackSource];let percent=Number(state.attackPercent)||75;let troop={};for(let [key] of UNIT_META)troop[key]=Math.floor(source.troops[key]*percent/100);let cost=Math.max(30,Math.round(troopCount(troop)*.25));let left=Math.max(0,Math.ceil((state.attackReadyAt-now())/1000));let prot=Math.max(0,Math.ceil((t.protectUntil-now())/1000));let unavailable=!!state.pending||left>0||prot>0||state.grain<cost||troopCount(troop)<30;
-let h=`<div class="section-title">⚔ ${t.name} 공격 명령</div><div class="box">${line('방어측',OWNERS[t.owner].name)}${line('적 주둔 병력',fmt(troopCount(t.troops))+'명')}${line('성벽 / 지형',`Lv.${t.level} / ${t.terrain}`)}</div><label class="field-label" for="sourceSelect">출정 거점</label><select class="field" id="sourceSelect">${avail.map(s=>`<option value="${s.id}" ${s.id===source.id?'selected':''}>${s.name} · ${fmt(troopCount(s.troops))}명</option>`).join('')}</select><label class="field-label" for="percentInput">출전 병력: 주둔군의 ${percent}% (${fmt(troopCount(troop))}명)</label><input id="percentInput" style="width:100%;accent-color:#c59a59" type="range" min="25" max="100" step="25" value="${percent}"/>`;
-for(const [key,name] of UNIT_META)h+=line(name,fmt(troop[key])+'명');h+=`<label class="field-label" for="tacticSelect">공격 전술</label><select class="field" id="tacticSelect">${Object.entries(ATTACK_TACTICS).map(([key,val])=>`<option value="${key}" ${key===state.attackTactic?'selected':''}>${val.name}</option>`).join('')}</select><div class="divider"></div><div class="box">${line('진군 (테스트)', '12초')}${line('필요 군량',`${fmt(cost)} / ${fmt(state.grain)}`)}${line('출정 쿨타임',left?`${left}초 남음`:'준비 완료')}${line('상대 보호시간',prot?`${prot}초 남음`:'없음')}</div><button class="btn gold" style="width:100%" data-action="attack" ${unavailable?'disabled':''}>⚔ 출정 명령 확정</button><p class="caption">출정 즉시 내 거점의 주둔 병력이 감소합니다. 12초 뒤 전투를 정산하며, 새로고침 후에도 진행 상태가 유지됩니다.</p>`;return h}
-function renderRecruit(){let cost=UNIT_META.find(x=>x[0]===state.recruitType)?.[3]||300;let qty=Number(state.recruitQty)||100,allCost=qty/100*cost;let h=`<div class="section-title">병력 모집소</div><div class="callout">병력은 기존 공용 포인트가 아닌 <b>테스트용 15,000P</b>로 모집합니다. 모든 모집 병력은 본성 예비군으로 들어갑니다.</div><label class="field-label">모집 병종</label><div class="selector">`;for(const [key,name,icon] of UNIT_META)h+=`<button class="${state.recruitType===key?'chosen':''}" data-action="recruit-type" data-val="${key}">${icon} ${name}</button>`;h+=`</div><label class="field-label">모집 인원</label><div class="selector">`;for(const count of [100,200,500])h+=`<button class="${qty===count?'chosen':''}" data-action="recruit-qty" data-val="${count}">${count}명</button>`;h+=`</div><div class="box">${line('보유 포인트',fmt(state.points)+'P')}${line('예상 비용',fmt(allCost)+'P')}${line('모집 후 잔액',fmt(state.points-allCost)+'P')}</div><button class="btn gold" style="width:100%" data-action="recruit" ${state.points<allCost?'disabled':''}>병력 모집 확정</button><div class="divider"></div><button class="btn" style="width:100%" data-action="tab" data-val="garrison">영토 배치로 돌아가기</button>`;return h}
-function render(){updateHeader();let t=selected(),panel=$('#panel');panel.innerHTML=state.tab==='overview'?renderOverview(t):state.tab==='garrison'?renderGarrison(t):state.tab==='defense'?renderDefense(t):state.tab==='logs'?renderLogs():state.tab==='attack'?renderAttack(t):renderRecruit();draw()}
-$('#tabs').addEventListener('click',e=>{let b=e.target.closest('[data-tab]');if(!b)return;state.tab=b.dataset.tab;render();save()});
-$('#panel').addEventListener('click',e=>{let b=e.target.closest('[data-action]');if(!b)return;let action=b.dataset.action,t=selected();
+function overview(p){const pr=districtProgress(p.districtId),mine=p.owner==='player',avail=sourcesFor(p);let h=`<div class="section-title">📍 ${p.district} 거점 현황</div>
+<div class="box">${line('구 전체 점령률',`${pr.mine} / ${pr.total} 거점`)}${line('현재 소유권',pr.owner==='mixed'?'경합 중':OWNERS[pr.owner].name)}${line('전체 점령 보상','300P + 보급품 500')}</div>
+<div class="progress"><div style="width:${pr.mine/pr.total*100}%"></div></div>
+${progressList(p.districtId)}
+<div class="section-title">선택 거점: ${p.name}</div>
+<div class="box">${line('소속 구',p.district)}${line('현재 주둔',fmt(troopCount(p.troops))+'명')}${line('거점 방어 수준','Lv.'+p.level)}${line('방어 정책',TACTICS[p.defense].name)}${line('상태',p.protectUntil>now()?'점령 보호 중':'교전 가능')}</div>`;
+if(mine){h+=`<div class="row"><button class="btn gold" data-action="tab" data-val="garrison">인원 배치</button><button class="btn" data-action="tab" data-val="defense">자동 방어</button></div><div class="divider"></div><button class="btn" style="width:100%" data-action="raid" ${state.raid?'disabled':''}>모의 습격으로 방어 시험</button>`}
+else h+=`<div class="callout">${avail.length?'내 조직이 확보한 인접 거점에서 이 랜드마크로 출동할 수 있습니다.':'인접한 내 거점을 먼저 확보해야 공격할 수 있습니다.'}</div><button class="btn gold" style="width:100%" data-action="tab" data-val="attack" ${!avail.length||state.pending?'disabled':''}>이 거점 공격하기</button>`;
+if(state.pending){const pending=state.pending;h+=`<div class="section-title">진행 중인 출동</div><div class="box">${line('목표',placeDefs[pending.target].name)}${line('출동 인원',fmt(troopCount(pending.troops))+'명')}${line('도착까지',`<span id="eta">${Math.max(0,Math.ceil((pending.dueAt-now())/1000))}초</span>`)}</div>`}return h}
+function garrison(p){if(p.owner!=='player')return '<div class="callout">내 조직 거점을 선택해야 인원을 배치할 수 있습니다.</div>';
+let h=`<div class="section-title">${p.name} · 인원 배치</div><div class="box">${line('현장 인원',fmt(troopCount(p.troops))+'명')}${line('대기 조직원',fmt(troopCount(state.reserve))+'명')}</div><div class="field-label">현장 책임자</div><input class="field" value="${p.general==='현장반장'?'현장반장':p.general||'현장반장'}" disabled title="현장 책임자는 다음 개발에서 영입 가능"/><p class="caption">각 거점의 인원은 독립적으로 배치됩니다. 출동한 인원은 수비에 참여하지 않습니다.</p><div class="divider"></div>`;
+for(const [key,name,icon] of UNIT_META){let qty=p.troops[key]||0;h+=`<div class="unit"><div class="unit-name">${icon} ${name}<small>대기 ${fmt(state.reserve[key])}명</small></div><div class="control"><button class="btn" data-action="troop" data-key="${key}" data-amount="-25" ${qty<25?'disabled':''}>-25</button><div class="unit-count">${fmt(qty)}</div><button class="btn" data-action="troop" data-key="${key}" data-amount="25" ${state.reserve[key]<25?'disabled':''}>+25</button></div></div>`}
+h+=`<div class="divider"></div><button class="btn gold" style="width:100%" data-action="tab" data-val="recruit">＋ 조직원 모집</button>`;return h}
+function defense(p){if(p.owner!=='player')return '<div class="callout">내 거점을 선택해 방어를 설정하세요.</div>';
+let h=`<div class="section-title">${p.name} · 자동 방어</div><div class="callout">비접속 중에도 설정한 방어 방식으로 수비합니다. 이 테스트에서는 PC 모의 습격으로 결과를 확인할 수 있습니다.</div>`;
+for(const [key,v] of Object.entries(TACTICS))h+=`<button class="btn ${p.defense===key?'active':''}" style="width:100%;white-space:normal;text-align:left;margin:3px 0;padding:11px" data-action="defense" data-val="${key}"><strong>${p.defense===key?'◉':'○'} ${v.name}</strong><div class="caption">${v.desc}</div></button>`;
+h+=`<div class="box" style="margin-top:12px">${line('주둔 조직원',fmt(troopCount(p.troops))+'명')}${line('수비 기본 전투력',fmt(unitPower(p.troops,true)))}${line('거점 방어 보정',Math.round(p.level*7.5)+'%')}${line('전술 보정',Math.round((TACTICS[p.defense].value-1)*100)+'%')}</div><button class="btn gold" style="width:100%" data-action="raid" ${state.raid?'disabled':''}>🛡 PC 모의 습격 시작</button>`;return h}
+function recruitment(){let m=UNIT_META.find(x=>x[0]===state.recruitType)||UNIT_META[0],q=state.recruitQty||100,cost=q*m[3]/100;let h=`<div class="section-title">조직원 모집</div><div class="callout">공용 포인트가 아닌 테스트 전용 포인트로 모집합니다. 실제 보유 포인트는 변하지 않아요.</div><div class="field-label">조직원 유형</div><div class="selector">`;
+for(const [key,name,icon] of UNIT_META)h+=`<button class="${state.recruitType===key?'chosen':''}" data-action="recruit-type" data-val="${key}">${icon} ${name}</button>`;
+h+=`</div><div class="field-label">모집 규모</div><div class="selector">`;for(const q of [25,100,200])h+=`<button class="${state.recruitQty===q?'chosen':''}" data-action="recruit-qty" data-val="${q}">${q}명</button>`;
+h+=`</div><div class="box">${line('보유 테스트 포인트',fmt(state.points)+' P')}${line('모집 비용',fmt(cost)+' P')}${line('잔여 포인트',fmt(state.points-cost)+' P')}</div><button class="btn gold" style="width:100%" data-action="recruit" ${state.points<cost?'disabled':''}>모집 확정</button><div class="divider"></div><button class="btn" style="width:100%" data-action="tab" data-val="garrison">거점 관리로 돌아가기</button>`;return h}
+function attackPanel(p){if(p.owner==='player')return '<div class="callout">다른 조직의 랜드마크 또는 중립 랜드마크를 선택하세요.</div>';
+const avail=sourcesFor(p);if(!avail.length)return '<div class="callout">인접한 내 거점이 없습니다. 지도에서 가까운 중립 거점부터 확보하세요.</div>';
+if(!avail.some(q=>q.id===state.attackSource))state.attackSource=avail[0].id;const src=getPlace(state.attackSource),percent=state.attackPercent||75,troops=numTroops();for(const k of UNIT_KEYS)troops[k]=Math.floor(src.troops[k]*percent/100);
+const crossing=crossRiver(src,p),cost=Math.max(25,Math.round(troopCount(troops)*.19*(crossing?1.3:1))),cool=Math.ceil(Math.max(0,state.attackReadyAt-now())/1000),protect=Math.ceil(Math.max(0,p.protectUntil-now())/1000),disabled=state.pending||cool||protect||cost>state.grain||troopCount(troops)<20;
+let h=`<div class="section-title">${p.name} · 공격 명령</div><div class="box">${line('소속 구',p.district)}${line('경비 인원',fmt(troopCount(p.troops))+'명')}${line('방어 수준',`Lv.${p.level}`)}</div><label class="field-label">출발 거점</label><select class="field" id="sourceSelect">${avail.map(q=>`<option value="${q.id}" ${q.id===src.id?'selected':''}>${q.name} · ${fmt(troopCount(state.landmarks[q.id].troops))}명</option>`).join('')}</select>
+<label class="field-label">출동 규모 ${percent}% (${fmt(troopCount(troops))}명)</label><input id="percentInput" type="range" min="25" max="100" step="25" value="${percent}" style="width:100%;accent-color:#107c41"/>`;
+for(const [key,name] of UNIT_META)h+=line(name,fmt(troops[key])+'명');
+h+=`<label class="field-label">진입 방식</label><select class="field" id="tacticSelect">${Object.entries(ATTACK_TACTICS).map(([k,v])=>`<option value="${k}" ${k===state.attackTactic?'selected':''}>${v.name}</option>`).join('')}</select>
+<div class="box" style="margin-top:10px">${line('진군 (테스트)','12초')}${line('강 건너 진입',crossing?'한강 도하 · 보급 +30% / 공격력 -8%':'해당 없음')}${line('보급품 소비',fmt(cost)+' / '+fmt(state.grain))}${line('쿨타임',cool?cool+'초':'준비 완료')}${line('거점 보호',protect?protect+'초':'없음')}</div><button class="btn gold" style="width:100%" data-action="attack" ${disabled?'disabled':''}>⚔ 공격 확정</button><p class="caption">전투에 승리하면 해당 랜드마크만 점령하며, 구 안의 모든 거점을 확보하면 구 점령이 확정됩니다.</p>`;return h}
+function logs(){let h=`<div class="section-title">전투 및 점령 기록</div><p class="caption">테스트 브라우저 내부 기록입니다.</p>`;for(const l of state.logs)h+=`<div class="log-item">${l.text}<small>${new Date(l.time).toLocaleString('ko-KR')}</small></div>`;return h}
+function render(){if(state.selectedPlace==null||!placeDefs[state.selectedPlace])state.selectedPlace=placeDefs[0].id;updateHeader();const t=place();$('#panel').innerHTML=state.tab==='overview'?overview(t):state.tab==='garrison'?garrison(t):state.tab==='defense'?defense(t):state.tab==='logs'?logs():state.tab==='attack'?attackPanel(t):recruitment();draw()}
+$('#tabs').addEventListener('click',e=>{let b=e.target.closest('[data-tab]');if(b){state.tab=b.dataset.tab;render();save()}});
+$('#panel').addEventListener('click',e=>{let b=e.target.closest('[data-action]');if(!b)return;let action=b.dataset.action,p=place(),real=state.landmarks[p.id];
+if(action==='select-place'){pickPlace(Number(b.dataset.val));return}
 if(action==='tab'){state.tab=b.dataset.val;render();save();return}
-if(action==='troop'){if(t.owner!=='player'||(state.pending?.source===t.id)||(state.raid?.target===t.id)){toast('전투가 진행 중인 영토는 병력을 수정할 수 없어요.');return}let k=b.dataset.key,d=Number(b.dataset.amount);if(!['inf','arch','cav'].includes(k))return;if(d>0&&state.reserve[k]<d)return;if(d<0&&t.troops[k]<-d)return;t.troops[k]+=d;state.reserve[k]-=d;render();save();return}
-if(action==='defense'){if(t.owner!=='player'||state.raid?.target===t.id)return;if(TACTICS[b.dataset.val]){t.defense=b.dataset.val;toast(`${t.name}: ${TACTICS[t.defense].name} 설정 완료`);render();save()}return}
-if(action==='raid'){if(t.owner!=='player'||state.raid)return;let size=Math.max(100,Math.round(troopCount(t.troops)*1.13));state.raid={target:t.id,troops:{inf:Math.round(size*.53),arch:Math.round(size*.29),cav:Math.round(size*.18)},createdAt:now(),dueAt:now()+12000};log(`🛡 ${t.name} 모의 침공 시작! 12초 뒤 자동 방어 결과가 나옵니다.`);toast('AI 모의 침공 시작! 실제 병력 손실 없음');render();save();return}
-if(action==='recruit-type'){state.recruitType=b.dataset.val;render();save();return}
+if(action==='troop'){if(p.owner!=='player'||state.pending?.source===p.id||state.raid?.target===p.id){toast('출동 또는 수비 중인 거점에서는 인원을 변경할 수 없습니다.');return}let key=b.dataset.key,delta=Number(b.dataset.amount);if(!UNIT_KEYS.includes(key))return;if(delta>0&&state.reserve[key]<delta||delta<0&&real.troops[key]<-delta)return;real.troops[key]+=delta;state.reserve[key]-=delta;render();save();return}
+if(action==='defense'){if(p.owner!=='player'||state.raid?.target===p.id)return;if(TACTICS[b.dataset.val]){real.defense=b.dataset.val;toast('자동 방어 설정을 변경했어요.');render();save()}return}
+if(action==='raid'){if(p.owner!=='player'||state.raid)return;let n=Math.max(80,Math.round(troopCount(p.troops)*1.13));state.raid={target:p.id,troops:{inf:Math.round(n*.37),arch:Math.round(n*.12),cav:Math.round(n*.16),blade:Math.round(n*.10),tank:Math.round(n*.25)},dueAt:now()+12000,createdAt:now()};toast('모의 습격 시작! 12초 뒤 결과가 나옵니다.');log(`${p.name} 모의 습격 시작 · 실제 피해 없음`);render();save();return}
+if(action==='recruit-type'){if(UNIT_KEYS.includes(b.dataset.val))state.recruitType=b.dataset.val;render();save();return}
 if(action==='recruit-qty'){state.recruitQty=Number(b.dataset.val);render();save();return}
-if(action==='recruit'){let item=UNIT_META.find(x=>x[0]===state.recruitType),qty=state.recruitQty,cost=item[3]*qty/100;if(state.points<cost)return;state.points-=cost;state.reserve[item[0]]+=qty;log(`${item[1]} ${qty}명 모집 · ${fmt(cost)}P 차감`);toast(`${item[1]} ${qty}명 모집 완료`);render();save();return}
+if(action==='recruit'){let m=UNIT_META.find(x=>x[0]===state.recruitType),qty=state.recruitQty,cost=m[3]*qty/100;if(!m||state.points<cost)return;state.points-=cost;state.reserve[m[0]]+=qty;log(`${m[1]} ${qty}명 영입 · ${fmt(cost)}P 차감`);toast(`${m[1]} ${qty}명 모집 완료`);render();save();return}
 if(action==='attack'){attack();return}
 });
-$('#panel').addEventListener('change',e=>{let el=e.target,t=selected();if(el.id==='generalSelect'){if(t.owner!=='player')return;let old=t.general,name=el.value;if(name===old)return;if(!state.generalPool.includes(name))return;state.generalPool=state.generalPool.filter(x=>x!==name);state.generalPool.push(old);t.general=name;toast(`${t.name} 수비 장수: ${name}`);render();save()}
-if(el.id==='sourceSelect'){state.attackSource=Number(el.value);render();save()}if(el.id==='percentInput'){state.attackPercent=Number(el.value);render();save()}if(el.id==='tacticSelect'){state.attackTactic=el.value;render();save()}});
-function attack(){let t=selected(),src=state.lands[state.attackSource];if(t.owner==='player'||!src||src.owner!=='player'||!adjacent(t.id,src.id)){toast('인접 아군 영토에서만 출정할 수 있어요.');return}if(state.pending){toast('이미 출정 중인 군단이 있어요.');return}if(now()<state.attackReadyAt||now()<t.protectUntil){toast('출정 쿨타임 또는 영토 보호시간이 남았어요.');return}let pct=Number(state.attackPercent)||75;let troops={};for(const [k] of UNIT_META)troops[k]=Math.floor(src.troops[k]*pct/100);let count=troopCount(troops),cost=Math.max(30,Math.round(count*.25));if(count<30){toast('병력이 부족합니다.');return}if(state.grain<cost){toast('군량이 부족합니다.');return}if(state.raid?.target===src.id){toast('모의 침공 중에는 출정할 수 없습니다.');return}if(!confirm(`${src.name}에서 ${t.name}(으)로 ${fmt(count)}명 출정할까요?\n군량 ${fmt(cost)} 소모 · 테스트 진군 12초`))return;for(const [k] of UNIT_META)src.troops[k]-=troops[k];state.grain-=cost;state.pending={source:src.id,target:t.id,troops,tactic:state.attackTactic,createdAt:now(),dueAt:now()+12000};state.attackReadyAt=now()+20000;log(`⚔ ${src.name} → ${t.name}: ${fmt(count)}명 출정, 군량 ${fmt(cost)} 소비`);toast(`${t.name} 공격군 출정! 12초 후 전투 결과`);state.tab='overview';render();save()}
+$('#panel').addEventListener('change',e=>{const el=e.target;if(el.id==='sourceSelect')state.attackSource=Number(el.value);if(el.id==='percentInput')state.attackPercent=Number(el.value);if(el.id==='tacticSelect')state.attackTactic=el.value;render();save()});
+function attack(){const t=place();if(t.owner==='player')return;const srcId=state.attackSource,src=placeDefs[srcId];if(!src||!isMine(srcId)||!nearby(src,t)){toast('출발할 수 있는 인접 거점이 없습니다.');return}if(state.pending){toast('이미 출동 중입니다.');return}if(now()<state.attackReadyAt||now()<t.protectUntil){toast('출동 대기시간 또는 목표 보호시간이 남았어요.');return}
+const pct=Number(state.attackPercent)||75,troops=numTroops();for(const k of UNIT_KEYS)troops[k]=Math.floor((state.landmarks[srcId].troops[k]||0)*pct/100);const count=troopCount(troops),cost=Math.max(25,Math.round(count*.19*(crossRiver(src,t)?1.3:1)));if(count<20||state.grain<cost){toast('인원이나 보급품이 부족합니다.');return}
+if(!confirm(`${src.name}에서 ${t.name} 거점으로 ${fmt(count)}명을 출동시키겠습니까?\n보급품 ${fmt(cost)} 소비 / 12초 이동`))return;
+for(const k of UNIT_KEYS)state.landmarks[srcId].troops[k]-=troops[k];state.grain-=cost;state.pending={source:srcId,target:t.id,troops,tactic:state.attackTactic,createdAt:now(),dueAt:now()+12000};state.attackReadyAt=now()+16000;log(`${src.name} → ${t.name}: ${fmt(count)}명 출동 · 보급품 ${fmt(cost)} 사용`);state.tab='overview';toast(`${t.name} 공격 개시`);render();save()}
 $('#recruitBtn').onclick=()=>{state.tab='recruit';render();save()};
-$('#resetBtn').onclick=()=>{if(!confirm('모든 테스트 진행 데이터가 초기화됩니다.\n실제 공용 포인트에는 영향을 주지 않습니다. 초기화할까요?'))return;state=baseState();save();initialized=false;fit();render();toast('테스트 데이터를 초기화했어요.')};
-$('#exitBtn').onclick=()=>{if(window.parent!==window){window.parent.postMessage({type:'CHEONHA_CLOSE'},'*')}else if(window.history.length>1){window.history.back()}else{toast('이 창은 닫거나 Sheet1로 돌아가면 됩니다.')}};
-// One timer updates elapsed UI; offline elapsed actions are settled on the next visit.
-setInterval(()=>{let resolved=updatePending();if(resolved){render();return}let p=state.pending,r=state.raid;if(p){let el=$('#eta'),bar=$('#attackProgress');if(el)el.textContent=Math.max(0,Math.ceil((p.dueAt-now())/1000))+'초';if(bar)bar.style.width=Math.min(100,(now()-p.createdAt)/(p.dueAt-p.createdAt)*100)+'%'}if((p||r||state.attackReadyAt>now()||selected().protectUntil>now())&&Math.floor(now()/1000)%2===0&&state.tab==='attack')render();let protect=$('#protCountdown');if(protect)protect.textContent=selected().protectUntil>now()?Math.ceil((selected().protectUntil-now())/1000)+'초':'없음';draw()},1000);
-window.addEventListener('resize',resize);document.addEventListener('visibilitychange',()=>{if(!document.hidden){if(updatePending())render();else{render();save()}}});updatePending();resize();render();save();
+$('#resetBtn').onclick=()=>{if(!confirm('이번 브라우저의 영토전 테스트 진행상황을 초기화할까요?\n실제 포인트는 바뀌지 않습니다.'))return;state=baseState();save();initialized=false;fit();render();toast('테스트 진행상황 초기화 완료')};
+$('#exitBtn').onclick=()=>{if(window.parent!==window)window.parent.postMessage({type:'CHEONHA_CLOSE'},'*');else toast('Sheet1로 돌아가려면 영토전 탭을 닫아주세요.')};
+setInterval(()=>{if(updatePending()){render();return}if(state.pending||state.raid||state.attackReadyAt>now()){if(state.tab==='attack'&&Math.floor(now()/1000)%2===0){render();return}const eta=$('#eta');if(eta&&state.pending)eta.textContent=Math.max(0,Math.ceil((state.pending.dueAt-now())/1000))+'초'}const prot=$('#protCountdown');if(prot){const p=place();prot.textContent=p.protectUntil>now()?Math.ceil((p.protectUntil-now())/1000)+'초':'없음'}},1000);
+window.addEventListener('resize',resize);window.addEventListener('visibilitychange',()=>{if(!document.hidden){updatePending();render()}});
+updatePending();resize();render();save();
 })();
+
 </script>
 </body></html>
