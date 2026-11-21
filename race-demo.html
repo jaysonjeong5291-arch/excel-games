@@ -192,7 +192,15 @@ const DRIVER_DATA=Object.fromEntries(DRIVER.map(x=>[x.id,x]));
 const TRACK_DATA=Object.fromEntries(TRACK.map(x=>[x.key,x]));
 const IMG={};let uid='',token='',client='',profile=null,points=0,room=null,seats=[],currentId='',myBet=null,rooms=[],active='race',pending=false,animation=null,autoTimer=null,refreshing=false,photoQueue=[];
 let raceSocialBusy=false,raceChatBusy=false,raceSocialMessages=[],raceSpectators=[],raceSocialRoom='';
+let racePresenceBusy=false;
 let soloData=null,soloBusy=false,soloFetching=false,soloLoaded=false;
+function raceFrameVisible(){
+ if(document.hidden)return false;
+ try{
+  // frameElement has zero layout rectangles if Sheet1 has hidden the race sheet.
+  return !window.frameElement || window.frameElement.getClientRects().length>0;
+ }catch(_){return true;}
+}
 function uuid(){return crypto.randomUUID?crypto.randomUUID():('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx').replace(/[xy]/g,c=>{const n=crypto.getRandomValues(new Uint8Array(1))[0]%16;return(c==='x'?n:((n&3)|8)).toString(16)})}
 function getClient(){let x=sessionStorage.getItem(CLIENT_KEY);if(!x||!/^[a-f0-9-]{36}$/.test(x)){x=uuid();sessionStorage.setItem(CLIENT_KEY,x)}return x}
 function info(s,bad=false){$('status').textContent=s||'';$('status').classList.toggle('err',bad)}
@@ -299,7 +307,7 @@ function renderRaceSocial(){
  if(atBottom)el.scrollTop=el.scrollHeight;
 }
 async function loadRaceSocial(){
- if(raceSocialBusy||!token||!currentId||document.hidden)return;
+ if(raceSocialBusy||!token||!currentId||!raceFrameVisible())return;
  const rid=currentId;raceSocialBusy=true;
  try{
   const d=await rpc('renju_race_social_rpc',{p_client:client,p_token:token,p_room:rid,p_action:'sync',p_message:null},30000);
@@ -455,6 +463,16 @@ $('drivers').addEventListener('click',e=>{const b=e.target.closest('[data-purcha
 $('upgrades').addEventListener('click',e=>{const reset=e.target.closest('[data-reset]');if(reset){const kind=reset.dataset.reset;const object=kind==='car'?sCar(profile.selected_car).name:sDriver(profile.selected_driver).name;if(confirm(object+'의 '+(kind==='car'?'차량 파츠':'드라이버 스킬')+'을 1,000,000P를 지불하고 초기화할까요?\n기존 강화 비용은 환불되지 않습니다.'))action('reset_upgrades',{kind});return;}const b=e.target.closest('[data-upgrade]');if(!b)return;const [kind,key]=b.dataset.upgrade.split(':');action('upgrade',{kind,key})});
 $('share').addEventListener('click',async()=>{const url=new URL('./index.html?room='+encodeURIComponent(currentId),location.href);url.hash='';try{await navigator.clipboard.writeText(url.toString());info('경기방 초대 주소를 복사했습니다.')}catch{prompt('방 주소를 복사해 주세요',url.toString())}});
 $('home').addEventListener('click',()=>{if(window.parent!==window)window.parent.postMessage({type:'RACE_CLOSE'},location.origin);else location.href='./index.html'});
-async function tick(){if(!token||!currentId||document.hidden||refreshing||pending)return;refreshing=true;try{const d=await rpc('renju_race_mixed_rpc',{p_action:'sync',p_client:client,p_token:token,p_room:currentId,p_payload:{}});if(uid&&Array.isArray(d.seats)&&!d.seats.some(s=>s.id===uid)){currentId='';room=null;seats=[];raceSocialMessages=[];raceSpectators=[];history.replaceState(null,'',location.pathname);tab('race');info('이 레이스방에서 나왔습니다. 운영자 강퇴 또는 접속 상태 변경일 수 있습니다.',true);await loadRooms();return}apply(d);render()}catch(e){info(e.message,true)}finally{refreshing=false}};
-init().then(()=>{loadPhotos();autoTimer=setInterval(tick,2200);setInterval(loadRaceSocial,5000);setInterval(()=>{if(active==='solo'&&token&&!document.hidden)void loadSolo()},2400);setInterval(()=>{if(active==='solo'&&soloData?.phase==='running')updateSoloLanes()},900);setInterval(()=>{if(room?.phase==='running')renderTrack(seats.filter(x=>x.role==='entrant'))},900);setInterval(()=>{if(!currentId&&token)loadRooms()},9000)});
+// Lightweight heartbeat: the legacy race `sync` action does not update last_seen.
+// This is needed to keep truly active entrants in the live lobby, even if chat fails.
+async function pingRacePresence(){
+ if(racePresenceBusy||!token||!currentId||!raceFrameVisible())return;
+ racePresenceBusy=true;
+ try{await rpc('renju_race_presence_ping',{
+  p_client:client,p_token:token,p_room:currentId
+ },10000);}catch(_){/* Retry next tick; do not interrupt the current race. */}
+ finally{racePresenceBusy=false;}
+}
+async function tick(){if(!token||!currentId||!raceFrameVisible()||refreshing||pending)return;refreshing=true;try{const d=await rpc('renju_race_mixed_rpc',{p_action:'sync',p_client:client,p_token:token,p_room:currentId,p_payload:{}});if(uid&&Array.isArray(d.seats)&&!d.seats.some(s=>s.id===uid)){currentId='';room=null;seats=[];raceSocialMessages=[];raceSpectators=[];history.replaceState(null,'',location.pathname);tab('race');info('이 레이스방에서 나왔습니다. 운영자 강퇴 또는 접속 상태 변경일 수 있습니다.',true);await loadRooms();return}apply(d);render()}catch(e){info(e.message,true)}finally{refreshing=false}};
+init().then(()=>{loadPhotos();autoTimer=setInterval(tick,2200);setInterval(pingRacePresence,18000);setInterval(loadRaceSocial,5000);setInterval(()=>{if(active==='solo'&&token&&raceFrameVisible())void loadSolo()},4500);setInterval(()=>{if(raceFrameVisible()&&active==='solo'&&soloData?.phase==='running')updateSoloLanes()},1500);setInterval(()=>{if(raceFrameVisible()&&room?.phase==='running')renderTrack(seats.filter(x=>x.role==='entrant'))},1500);setInterval(()=>{if(!currentId&&token&&raceFrameVisible())loadRooms()},18000)});
 </script></body></html>

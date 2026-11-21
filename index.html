@@ -1698,16 +1698,15 @@ let oeLastSuccessAt=0,oeListPending=null,oeLobbyLastRefreshAt=0;
 let oePresenceSeenAt=0, oePresenceByRoom=new Map(), oePresenceRequest=null;
 function visibleOddEvenRooms(rooms){
  if(!Array.isArray(rooms))return [];
+ // A stale seat count is not proof that anybody is online. Only recent heartbeats count.
  const validPresence=oePresenceSeenAt>0&&Date.now()-oePresenceSeenAt<45000;
+ if(!validPresence)return [];
  return rooms.filter(r=>{
   if(!r||typeof r.id!=='string'||!/^e-[0-9a-f]{12}$/i.test(r.id))return false;
-  const extra=validPresence?oePresenceByRoom.get(r.id):null;
-  if(extra){return Number(extra.active||0)>0;}
-  return Number(r.count??r.participants?.length??0)>0;
+  return Number(oePresenceByRoom.get(r.id)?.active||0)>0;
  }).map(r=>{
-  const extra=validPresence?oePresenceByRoom.get(r.id):null;
-  if(!extra)return r;
-  return {...r,count:Number(extra.active||0),spectators:Number(extra.spectators||0),waiting:Math.max(0,6-Number(r.count||0))};
+  const extra=oePresenceByRoom.get(r.id);
+  return {...r,count:Number(extra.active||0),spectators:Number(extra.spectators||0),waiting:Math.max(0,6-Number(extra.active||0))};
  });
 }
 async function pollOddEvenPresenceSummary(force=false){
@@ -1729,32 +1728,24 @@ function rememberOddEvenLobby(rooms){
  try{localStorage.setItem(OE_LOBBY_CACHE_KEY,JSON.stringify({at:oeLastSuccessAt,rooms:rooms.slice(0,100)}));}catch(_){}
 }
 function restoreOddEvenLobby(){
- try{
-  const raw=localStorage.getItem(OE_LOBBY_CACHE_KEY);
-  const saved=raw&&JSON.parse(raw);
-  if(!saved||!Number.isFinite(saved.at)||Date.now()-saved.at>OE_LOBBY_CACHE_MAX_AGE||
-      !Array.isArray(saved.rooms))return;
-  const rooms=saved.rooms.filter(r=>r&&typeof r.id==='string'&&/^e-[0-9a-f]{12}$/i.test(r.id)&&r.game==='oddeven'&&Number(r.count||0)>0).slice(0,100);
-  if(!rooms.length)return;
-  oddEvenLobbyRooms=rooms;
-  oeLastSuccessAt=saved.at;
-  refreshCombinedLobby();
-  const label=$('oe-online-lobby-status');
-  if(label)label.textContent='이전에 확인된 홀짝방 '+rooms.length+'개 임시 표시 · 서버에서 최신 목록 확인 중입니다.';
- }catch(_){}
+ // Do not resurrect empty/offline rooms from a previous browsing session.
+ // Server heartbeats (not localStorage) are the source of truth for Sheet1 occupancy.
+ try{localStorage.removeItem(OE_LOBBY_CACHE_KEY);}catch(_){}
+ oddEvenLobbyRooms=[];
+ oeLastSuccessAt=0;
 }
 function applyOddEvenLobbyReport(report){
  if(!report||!Array.isArray(report.rooms))return;
  oddEvenLobbyRooms=report.rooms;
- if(!report.stale)rememberOddEvenLobby(visibleOddEvenRooms(report.rooms));
+ // Historic room cache intentionally disabled: expired rooms must not reappear.
  refreshCombinedLobby();
  showOddEvenLobbyStatus(report);
 }
 async function refreshRaceOnlineRooms(){
  if(!memberToken||!memberProfile){raceOnlineRooms=[];return;}
- const d=await callRpc('renju_race_mixed_rpc',{
-  p_action:'list',p_client:CLIENT_ID,p_token:memberToken,p_room:null,p_payload:{}
- },false,20000);
+ // Lightweight read-only summary excludes rooms with no heartbeat within 90s.
+ // Avoid the full mixed-race list RPC, which loads each game and retained stale seat.
+ const d=await callRpc('renju_race_live_lobby',{},false,11000);
  if(!Array.isArray(d.rooms))return;
  raceOnlineRooms=d.rooms.map((r,i)=>({
   id:r.id,game:'race',sheet:'Race'+(i+1),
@@ -1766,17 +1757,23 @@ async function refreshRaceOnlineRooms(){
  refreshCombinedLobby();
 }
 function mergedRoomList(){
- const incoming=[...raceOnlineRooms,...underOverLobbyRooms,...visibleOddEvenRooms(oddEvenLobbyRooms),...holdemLobbyRooms,...(lastLegacyLobbyPayload?.rooms||[])];
+ const legacyRooms=(lastLegacyLobbyPayload?.rooms||[]).filter(r=>r?.game!=='race'&&r?.game!=='oddeven'&&r?.game!=='홀짝');
+ const incoming=[...raceOnlineRooms,...underOverLobbyRooms,...visibleOddEvenRooms(oddEvenLobbyRooms),...holdemLobbyRooms,...legacyRooms];
  const seen=new Set();
  return incoming.filter(r=>{
   if(!r||typeof r.id!=='string'||seen.has(r.id))return false;
   seen.add(r.id);return !(r.id.startsWith('e-')&&!visibleOddEvenRooms([r]).length);
  });
 }
+let combinedLobbyPaintTimer=null;
 function refreshCombinedLobby(){
- const base=lastLegacyLobbyPayload||{player_no:myLobbyNumber||null,waiting:waitingList};
- applyLobby({...base,rooms:mergedRoomList()});
- if(!lastLegacyLobbyPayload)setNetwork('온라인 게임방 연결',true);
+ if(combinedLobbyPaintTimer!==null)return;
+ combinedLobbyPaintTimer=setTimeout(()=>{
+  combinedLobbyPaintTimer=null;
+  const base=lastLegacyLobbyPayload||{player_no:myLobbyNumber||null,waiting:waitingList};
+  applyLobby({...base,rooms:mergedRoomList()});
+  if(!lastLegacyLobbyPayload)setNetwork('온라인 게임방 연결',true);
+ },180);
 }
 
 // A room can be created successfully even while one of the lobby RPCs is stale.
@@ -1790,7 +1787,7 @@ async function fetchOddEvenLobby(){
   try{
    // One database query first. Do not run the legacy game RPC simultaneously;
    // doubling requests used to increase load during Supabase slowdowns.
-   const data=await callRpc('renju_oddeven_lobby_v348',{},false,20000);
+   const data=await callRpc('renju_oddeven_lobby_v348',{},false,12000);
    if(!Array.isArray(data.rooms))throw new Error('전용 목록 응답 형식 오류');
    return {rooms:data.rooms,source:'DB',stale:false,note:''};
   }catch(error){dbError=String(error?.message||error);}
@@ -1800,22 +1797,13 @@ async function fetchOddEvenLobby(){
     p_action:'list',p_client:CLIENT_ID,p_token:memberToken||null,p_room:null,p_stake:null,p_guess:null
    },false,12000);
    if(Array.isArray(legacy.rooms)){
-    // Only the direct DB query may authoritatively confirm that every room is gone.
-    if(legacy.rooms.length===0&&oddEvenLobbyRooms.length&&oeLastSuccessAt&&
-       Date.now()-oeLastSuccessAt<OE_LOBBY_CACHE_MAX_AGE){
-      return {rooms:oddEvenLobbyRooms,source:'이전 조회 기록',stale:true,cacheAt:oeLastSuccessAt,
-       note:' · DB 조회 지연, 게임 서버에서는 0개 응답'};
-    }
     return {rooms:legacy.rooms,source:'게임 서버',stale:false,
-     note:' · DB 직접 조회 지연 (최종 DB 확인 전)'};
+     note:' · DB 직접 조회 지연 (접속 기록으로 필터링)'};
    }
   }catch(_){}
-  // Never reinterpret a network timeout as an empty database table.
-  if(oddEvenLobbyRooms.length&&oeLastSuccessAt&&Date.now()-oeLastSuccessAt<OE_LOBBY_CACHE_MAX_AGE){
-   return {rooms:oddEvenLobbyRooms,source:'이전 조회 기록',stale:true,cacheAt:oeLastSuccessAt,
-    note:' · 서버 응답 지연 ('+dbError+')'};
-  }
-  throw new Error('서버 목록 조회 지연: '+dbError+' · 새로고침하거나 방 코드로 직접 입장해 주세요.');
+  // A request failure must never revive rooms without a currently active heartbeat.
+  return {rooms:[],source:'서버 지연',stale:true,cacheAt:Date.now(),
+   note:' · 접속이 확인되지 않은 방은 목록에서 숨김 ('+dbError+')'};
  })();
  oeListPending=task;
  try{return await task;}finally{if(oeListPending===task)oeListPending=null;}
@@ -1834,8 +1822,8 @@ function showOddEvenLobbyStatus(report){
 function pollLobbyInBackground(){
  if(lobbyPollInFlight||stopped||document.hidden)return;
  // Sheet1 used to start 4-6 RPCs every ~1.5 seconds, including TWO odd/even RPCs.
- // Poll at most once per 8 seconds; active-room heartbeats are still independent.
- if(Date.now()-oeLobbyLastRefreshAt<8000)return;
+ // Poll at most once per 15 seconds; active-room heartbeats stay independent.
+ if(Date.now()-oeLobbyLastRefreshAt<15000)return;
  oeLobbyLastRefreshAt=Date.now();
  lobbyPollInFlight=true;
  (async()=>{
