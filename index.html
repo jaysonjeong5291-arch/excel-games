@@ -917,6 +917,21 @@ let memberGomokuStreak=null, gomokuRewardData=null, gomokuRewardPending=false, g
 let memberArcadeStreaks={tetris:null,mine_battle:null},arcadeRewardData=null,arcadeRewardPending=false,arcadeRewardSyncAt=0,arcadeRewardRoom=null;
 let memberAuthPending=false,memberRefreshBusy=false,memberSessionRestoreBusy=false;
 let lastMemberSessionSuccessAt=0;
+let memberRestoreRetryTimer=null,memberRestoreErrors=0;
+function stopMemberRestoreRetry(){
+ if(memberRestoreRetryTimer){clearTimeout(memberRestoreRetryTimer);memberRestoreRetryTimer=null;}
+}
+function retryMemberRestoreSoon(){
+ if(!memberToken||memberProfile||memberAuthPending||memberSessionRestoreBusy||memberRestoreRetryTimer||stopped)return;
+ const delay=Math.min(30000,5000*Math.pow(2,Math.min(memberRestoreErrors,3)));
+ memberRestoreRetryTimer=setTimeout(()=>{
+  memberRestoreRetryTimer=null;
+  if(!document.hidden&&memberToken&&!memberProfile&&!memberAuthPending)loadMemberSession();
+ },delay);
+}
+function coreAuthBusy(){return memberAuthPending||memberSessionRestoreBusy;}
+function optionalSheet1ReadOK(){return !document.hidden&&!stopped&&!coreAuthBusy()&&lobbyReady;}
+
 // Login/session requests get their own time budget. A slow lobby refresh must not silently log users out.
 function memberRpc(action,rest={}){return callRpc('renju_member_auth',{p_client:CLIENT_ID,p_action:action,...rest},false,22000);}
 function isConfirmedMemberExpiry(error){
@@ -1034,7 +1049,7 @@ $('gift-form').addEventListener('submit',async e=>{
  }finally{giftSubmitting=false;$('gift-send').disabled=false;$('gift-close').disabled=false;}
 });
 
-function saveMemberToken(token){memberToken=token||'';if(!memberToken){memberGomokuStreak=null;gomokuRewardData=null;gomokuRewardSyncAt=0;memberArcadeStreaks={tetris:null,mine_battle:null};arcadeRewardData=null;arcadeRewardSyncAt=0;}try{if(memberToken)localStorage.setItem(MEMBER_TOKEN_KEY,memberToken);else localStorage.removeItem(MEMBER_TOKEN_KEY);}catch(_){}try{deliverUnderOverAuth();}catch(_){}}
+function saveMemberToken(token){stopMemberRestoreRetry();memberRestoreErrors=0;memberToken=token||'';if(!memberToken){memberGomokuStreak=null;gomokuRewardData=null;gomokuRewardSyncAt=0;memberArcadeStreaks={tetris:null,mine_battle:null};arcadeRewardData=null;arcadeRewardSyncAt=0;}try{if(memberToken)localStorage.setItem(MEMBER_TOKEN_KEY,memberToken);else localStorage.removeItem(MEMBER_TOKEN_KEY);}catch(_){}try{deliverUnderOverAuth();}catch(_){}}
 // Wealth titles: points are treated as 1P = 1 won; server balance stays authoritative.
 // Static levels 1–14 are tied to monetary milestones, not to old 10,000P = Lv.50 scaling.
 const RANK_TIERS=[
@@ -1204,11 +1219,13 @@ function paintMemberPanel(){
 }
 function useMemberProfile(profile){
  memberProfile=normalizedMemberProfile(profile);
+ if(memberProfile){stopMemberRestoreRetry();memberRestoreErrors=0;}
  if(profile){myNickname=profile.nickname;nicknameLocalPublished=true;nicknameSyncFailed=false;
   try{localStorage.setItem(NICKNAME_STORAGE,myNickname);}catch(_){}
  }
  updateNicknameInput();paintMemberPanel();refreshNicknameAccess();
- syncGomokuRewards(true);syncArcadeRewards(true);
+ // The initial member login and room list take priority over optional streak status.
+ if(lobbyReady)setTimeout(()=>{syncGomokuRewards(true);syncArcadeRewards(true);},3500);
  renderLobby();if(activeRoom){if(isTetrisRoom())tDisplayStatus();else if(isMineRoom())renderMineRoom();else if(state)paintState();}
 }
 async function loadMemberSession(){
@@ -1222,11 +1239,22 @@ async function loadMemberSession(){
   lastMemberSessionSuccessAt=Date.now();
   useMemberProfile(result.profile);maybeOpenInitialRoom();
   if($('lobby-notice')?.textContent?.includes('회원 인증 서버 연결이 지연'))lobbyNotify('회원 로그인 연결이 복구되었습니다.');
- }catch(error){if(memberToken===restoreToken)applyMemberSessionError(error);}
- finally{memberSessionRestoreBusy=false;}
+ }catch(error){
+  if(memberToken===restoreToken){
+   applyMemberSessionError(error);
+   if(memberToken&&!memberProfile)memberRestoreErrors++;
+  }
+ }finally{
+  memberSessionRestoreBusy=false;
+  if(memberToken&&!memberProfile)retryMemberRestoreSoon();
+  pumpLobbyReadQueue();
+ }
 }
 async function refreshMemberStats(){
- if(document.hidden||memberRefreshBusy)return;
+ if(document.hidden||memberRefreshBusy||coreAuthBusy())return;
+ // Retry authentication first. Do not run rankings before lobby and session work.
+ if(memberToken&&!memberProfile){loadMemberSession();return;}
+ if(!lobbyReady)return;
  memberRefreshBusy=true;
  try{
    if(memberToken&&!memberProfile){await loadMemberSession();if(!memberProfile)return;}
@@ -1447,6 +1475,8 @@ function updateNicknameInput(){const input=$('nickname-input');if(document.activ
  input.placeholder=myLobbyNumber?numbered(myLobbyNumber):'Player';}
 async function syncNicknames(force=false){
  const now=Date.now();
+ // Do not publish a stale anonymous nickname while the member token is being restored.
+ if(coreAuthBusy()||(memberToken&&!memberProfile))return;
  if(nicknameSyncPending||(!force&&now-nicknameLastSync<(nicknameSyncFailed?18000:30000)))return;
  nicknameSyncPending=true;nicknameLastSync=now;
  try{
@@ -1878,7 +1908,7 @@ const lobbyStartupAt=Date.now();
 // Reserve first contact for the core lobby: avoid seven simultaneous list calls
 // on a cold, resource-constrained Supabase instance. Optional calls begin after
 // its first reply, or after 2.5 seconds to keep other games usable if it stalls.
-setTimeout(()=>pumpLobbyReadQueue(),2600);
+setTimeout(()=>pumpLobbyReadQueue(),9000);
 function pumpLobbyReadQueue(){
  if(stopped||document.hidden)return;
  while(lobbyActiveReads<LOBBY_MAX_CONCURRENT_READS && lobbyReadQueue.length){
@@ -1886,7 +1916,8 @@ function pumpLobbyReadQueue(){
   // initial connection by occupying both slots.
   let index=lobbyReadQueue.findIndex(j=>j.name==='base');
   if(index<0){
-   if(!lobbyInitialCoreSettled&&Date.now()-lobbyStartupAt<2500)return;
+    if(coreAuthBusy()&&Date.now()-lobbyStartupAt<18000)return;
+    if(!lobbyInitialCoreSettled&&Date.now()-lobbyStartupAt<9000)return;
    // Keep one free slot for critical core refresh while optional calls are slow.
    if(lobbyActiveReads>=1)return;
    index=0;
@@ -1988,7 +2019,7 @@ function pollLobbyInBackground(force=false){
 // Cleanup touches server state. Run infrequently instead of from every short UI tick.
 let lastBackgroundCleanupAt=Date.now(),lastOtherRoomsPollAt=0;
 function pollCleanupInBackground(){
- if(cleanupPollInFlight||stopped||document.hidden||Date.now()-lastBackgroundCleanupAt<45000)return;
+ if(cleanupPollInFlight||stopped||document.hidden||coreAuthBusy()||!lobbyReady||Date.now()-lastBackgroundCleanupAt<45000)return;
  lastBackgroundCleanupAt=Date.now();
  cleanupPollInFlight=true;
  cleanupRpc().catch(()=>{}).finally(()=>{cleanupPollInFlight=false;});
@@ -2184,8 +2215,9 @@ $('refresh-all-lobby').addEventListener('click',()=>{
  if(stopped||document.hidden||Date.now()-lobbyLastManualRefresh<8000)return;
  lobbyLastManualRefresh=Date.now();
  const btn=$('refresh-all-lobby');btn.disabled=true;btn.textContent='조회 요청 중…';
- pollLobbyInBackground(true);
- // The queue continues in the background; only the click cooldown ends here.
+  if(memberToken&&!memberProfile&&!memberSessionRestoreBusy){stopMemberRestoreRetry();loadMemberSession();}
+  pollLobbyInBackground(true);
+  // The queue continues in the background; only the click cooldown ends here.
  setTimeout(()=>{btn.disabled=false;btn.textContent='⟳ 방 새로고침';},8000);
 });
 $('oe-online-refresh').addEventListener('click',async()=>{
@@ -2345,14 +2377,16 @@ $('member-form').addEventListener('submit',async e=>{
  const nickname=$('member-nickname').value.trim().replace(/\s+/g,' ').slice(0,16);
  const password=$('member-password').value;
  if([...nickname].length<1||[...password].length<4){$('member-feedback').textContent='아이디는 1자 이상, 비밀번호는 4자 이상 입력해 주세요.';return;}
- memberAuthPending=true;$('member-submit').disabled=true;
+ memberAuthPending=true;stopMemberRestoreRetry();$('member-submit').disabled=true;$('member-feedback').textContent='로그인 서버 연결 중…';
  try{
   const result=await memberRpc(memberPanelMode,{p_nickname:nickname,p_password:password});
   if(!result.token||!result.profile)throw new Error('계정 인증 결과가 올바르지 않습니다.');
   saveMemberToken(result.token);lastMemberSessionSuccessAt=Date.now();persistAdminToken(result.admin_token||'');
   useMemberProfile(result.profile);closeMemberPanel();
   lobbyNotify(memberPanelMode==='register'?'회원가입 완료! 계정으로 로그인되었습니다.':'로그인 완료!');
-  await syncNicknames(true);await refreshMemberStats();maybeOpenInitialRoom();
+   // Do not hold the login button hostage to two optional follow-up RPCs.
+   setTimeout(()=>{syncNicknames(true).catch(()=>{});refreshMemberStats();},1600);
+   maybeOpenInitialRoom();
  }catch(error){$('member-feedback').textContent=error.message||'가입·로그인 오류입니다.';}
  finally{memberAuthPending=false;$('member-submit').disabled=false;}
 });
@@ -2381,7 +2415,7 @@ $('nickname-form').addEventListener('submit',async e=>{
  const nickname=input.value.trim().replace(/\s+/g,' ').slice(0,16);
  if(nickname==='운영자'){openMemberPanel('login');$('member-nickname').value='운영자';lobbyNotify('운영자 계정은 가입 / 로그인에서 비밀번호로 로그인해 주세요.');return;}
  if(!nickname){lobbyNotify('닉네임을 1자 이상 입력한 뒤 저장해 주세요.',true);input.focus();return;}
- if(!lobbyReady){lobbyNotify('서버 연결 후 저장할 수 있습니다.',true);return;}
+ // Nickname registration is independent of room-list RPC. It should work during lobby delays.
  button.disabled=true;button.textContent='저장 중';
  try{
   let newAdminToken=null;
@@ -2446,7 +2480,7 @@ function showOperatorMessage(message,error=false){
 }
 let announcementRequestInFlight=false;
 async function pollAnnouncement(){
- if(document.hidden||stopped||announcementRequestInFlight)return;
+ if(!optionalSheet1ReadOK()||announcementRequestInFlight)return;
  announcementRequestInFlight=true;
  try{
   const data=await callRpc('renju_admin_notice_sync',{});
@@ -2471,7 +2505,7 @@ setTimeout(pollAnnouncement,2400);
 // Shared Sheet1 notes: separate feed from each room's existing memo.
 let sheet1Messages=[],sheet1LastPaint='',sheet1ChatPending=false,sheet1LastSync=0;
 async function syncSheet1Chat(force=false){
- if(activeRoom!==null||document.hidden||sheet1ChatPending)return;
+ if(activeRoom!==null||!optionalSheet1ReadOK()||sheet1ChatPending)return;
  if(!force&&Date.now()-sheet1LastSync<3500)return;
  sheet1ChatPending=true;
  try{
@@ -2636,7 +2670,7 @@ function paintChat(){const messages=Array.isArray(state?.chat)?state.chat:[];con
  if(nearBottom)panel.scrollTop=panel.scrollHeight;}
 // Read-only streak/settlement query. SQL RPC is the authority: no local point transfers.
 async function syncGomokuRewards(force=false){
- if(!memberToken||document.hidden||gomokuRewardPending)return;
+ if(!memberToken||document.hidden||gomokuRewardPending||coreAuthBusy()||(!lobbyReady&&!activeRoom))return;
  const now=Date.now();if(!force&&now-gomokuRewardSyncAt<20000)return;
  gomokuRewardPending=true;gomokuRewardSyncAt=now;
  const room=activeRoom&&!activeRoom.startsWith('h-')&&currentGameType()==='gomoku'?activeRoom:null;
@@ -2667,7 +2701,7 @@ function paintGomokuRewards(){
 }
 // v2.6: server-only Tetris/Mines payout and independent persistent streak status.
 async function syncArcadeRewards(force=false){
- if(!memberToken||document.hidden||arcadeRewardPending)return;
+ if(!memberToken||document.hidden||arcadeRewardPending||coreAuthBusy()||(!lobbyReady&&!activeRoom))return;
  const now=Date.now();if(!force&&now-arcadeRewardSyncAt<20000)return;
  arcadeRewardPending=true;arcadeRewardSyncAt=now;
  const room=activeRoom&&['tetris','mine_battle'].includes(currentGameType())?activeRoom:null;
@@ -2733,7 +2767,7 @@ window.addEventListener('pageshow',event=>{
  if(event.persisted){stopped=false;polling=false;refresh();pumpLobbyReadQueue();pollLobbyInBackground();}
 });
 document.addEventListener('visibilitychange',()=>{
- if(!document.hidden&&!stopped){pumpLobbyReadQueue();pollLobbyInBackground();syncNicknames().catch(()=>{});}
+  if(!document.hidden&&!stopped){if(memberToken&&!memberProfile&&!memberSessionRestoreBusy){stopMemberRestoreRetry();loadMemberSession();}pumpLobbyReadQueue();pollLobbyInBackground();syncNicknames().catch(()=>{});}
 });
 function resizeCanvas() {
   const bounds = canvas.getBoundingClientRect();
