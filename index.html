@@ -541,6 +541,13 @@ body:has(#underover-view:not([hidden])) #underover-frame{height:calc(100dvh - 17
 .wealth-leader-row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;border-top:1px solid #dde9df;padding-top:7px}
 .wealth-leader-row strong{font-variant-numeric:tabular-nums;color:#175b38}
 .member-level-tag{max-width:230px}
+
+/* v3.9: rank placements are above earned wealth tiers in the same guide. */
+.rank-guide-top-row{background:#fafbf9}
+.rank-guide-top-row:first-of-type{border-top:2px solid #b9c9bf;margin-top:7px}
+.rank-guide-top-row .rank-badge{min-width:98px;justify-content:center;font-weight:800}
+.rank-guide-top-row .rank-guide-levels{font-weight:700;color:#46594b}
+@media(max-width:480px){.rank-guide-top-row .rank-badge{min-width:77px}}
 </style>
 </head>
 <body>
@@ -548,7 +555,7 @@ body:has(#underover-view:not([hidden])) #underover-frame{height:calc(100dvh - 17
 <div class="tabs"><span class="tab file-tab">파일</span><span class="tab active">홈</span><span class="tab">삽입</span><span class="tab">페이지 레이아웃</span><span class="tab">수식</span><span class="tab">데이터</span><span class="tab">검토</span><span class="tab">보기</span></div>
 <div class="ribbon" aria-hidden="true"><div class="ribbon-group"><div class="ribbon-content"><span class="tool-icon green">▤</span><div><div class="tool-small tool-strong">붙여넣기</div><div class="tool-small">복사 · 잘라내기</div></div></div><div class="ribbon-title">클립보드</div></div><div class="ribbon-group"><div class="ribbon-content"><span class="tool-mini wide">맑은 고딕&nbsp; ▾</span><span class="tool-mini">11</span><span class="tool-divider"></span><span class="tool-strong">B</span><em>I</em><u>U</u></div><div class="ribbon-title">글꼴</div></div><div class="ribbon-group"><div class="ribbon-content"><span class="tool-icon">☷</span><span class="tool-icon">☰</span><span class="tool-small">가운데 맞춤</span></div><div class="ribbon-title">맞춤</div></div><div class="ribbon-group"><div class="ribbon-content"><span class="tool-icon green">▦</span><span class="tool-small">표 서식<br>조건부 서식</span></div><div class="ribbon-title">스타일</div></div></div>
 <div class="formula-bar"><div class="name-box"><span id="cell-address">A1</span><span>⌄</span></div><span class="fx">ƒx</span><div class="formula-value" id="formula-value">=COUNTIF(방현황,"접속중")</div></div>
-<div id="rank-guide-overlay" class="rank-guide-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="rank-guide-title"><div class="rank-guide-panel"><div class="rank-guide-heading"><strong id="rank-guide-title">자산등급 · 재계 순위</strong><button type="button" id="rank-guide-close" aria-label="등급 안내 닫기">닫기 ×</button></div><div class="rank-guide-summary" id="rank-guide-summary">1P = 1원 · 0원부터 조만장자까지 · 재계 TOP 3는 보유 포인트 순위</div><div id="rank-guide-list" class="rank-guide-list"></div></div></div>
+<div id="rank-guide-overlay" class="rank-guide-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="rank-guide-title"><div class="rank-guide-panel"><div class="rank-guide-heading"><strong id="rank-guide-title">자산등급 · 재계 순위</strong><button type="button" id="rank-guide-close" aria-label="등급 안내 닫기">닫기 ×</button></div><div class="rank-guide-summary" id="rank-guide-summary">1P = 1원 · 14개 자산등급 + 재계 TOP 3 · 운영자</div><div id="rank-guide-list" class="rank-guide-list"></div></div></div>
 <div id="member-overlay" class="member-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="member-dialog-title"><form id="member-form" class="member-dialog" autocomplete="on"><h2 id="member-dialog-title">계정 로그인</h2><p class="member-desc">처음엔 익명 Player로 접속합니다. 가입하면 승리 기록과 레벨이 저장돼요.</p><div class="member-switch"><button type="button" id="member-login-tab" class="active">로그인</button><button type="button" id="member-register-tab">회원가입</button></div><label for="member-nickname">닉네임 (로그인 아이디)</label><input id="member-nickname" name="username" type="text" maxlength="16" minlength="1" autocomplete="username" required placeholder="1~16자 아이디"><label for="member-password">비밀번호</label><input id="member-password" name="password" type="password" minlength="4" maxlength="72" autocomplete="current-password" required placeholder="4자 이상 비밀번호 (형식 자유)"><div class="member-hint">이메일 없이 닉네임과 비밀번호로 가입합니다. 비밀번호 분실 시 자동 복구는 지원하지 않아요.</div><div id="member-feedback" class="member-feedback" role="alert"></div><div class="member-actions"><button type="button" id="member-cancel">닫기</button><button type="submit" id="member-submit">로그인</button></div></form></div>
 
 <div id="gift-overlay" class="gift-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="gift-title">
@@ -705,7 +712,7 @@ body:has(#underover-view:not([hidden])) #underover-frame{height:calc(100dvh - 17
 <section id="territory-view" class="territory-sheet-view" aria-label="영토전 게임 시트" hidden>
   <iframe id="territory-frame" title="업무현황_영토전_VER.2026" data-src="./territory-demo.html" referrerpolicy="same-origin"></iframe>
 </section>
-<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="territory-sheet-tab" class="sheet-tab" type="button" data-sheet="territory" hidden>🏯 영토전 <span class="tab-close" data-close-territory title="영토전 시트 닫기">×</span></button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="레벨 등급 v3.0">100% · v3.8 자산등급</span></footer>
+<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="territory-sheet-tab" class="sheet-tab" type="button" data-sheet="territory" hidden>🏯 영토전 <span class="tab-close" data-close-territory title="영토전 시트 닫기">×</span></button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="레벨 등급 v3.0">100% · v3.9 칭호개편</span></footer>
 <script>
 'use strict';
 const SIZE = 15;
@@ -1023,15 +1030,15 @@ const RANK_TIERS=[
  {min:2,max:2,minPoints:1,name:'거지',mark:'·'},
  {min:3,max:3,minPoints:1000,name:'학생',mark:'✎'},
  {min:4,max:4,minPoints:10000,name:'아르바이트생',mark:'▣'},
- {min:5,max:5,minPoints:50000,name:'사회초년생',mark:'◇'},
- {min:6,max:6,minPoints:100000,name:'직장인',mark:'▣'},
- {min:7,max:7,minPoints:500000,name:'자영업자',mark:'◆'},
- {min:8,max:8,minPoints:1000000,name:'백만장자',mark:'✦'},
- {min:9,max:9,minPoints:10000000,name:'천만장자',mark:'✦'},
- {min:10,max:10,minPoints:100000000,name:'억만장자',mark:'✶'},
- {min:11,max:11,minPoints:1000000000,name:'십억자산가',mark:'✹'},
- {min:12,max:12,minPoints:10000000000,name:'백억자산가',mark:'✧'},
- {min:13,max:13,minPoints:100000000000,name:'천억자산가',mark:'✴'},
+ {min:5,max:5,minPoints:50000,name:'노예',mark:'◇'},
+ {min:6,max:6,minPoints:100000,name:'월급루팡',mark:'▣'},
+ {min:7,max:7,minPoints:500000,name:'주식 물린 개미',mark:'◆'},
+ {min:8,max:8,minPoints:1000000,name:'직장인',mark:'✦'},
+ {min:9,max:9,minPoints:10000000,name:'중산층',mark:'✦'},
+ {min:10,max:10,minPoints:100000000,name:'영끌 대마왕',mark:'✶'},
+ {min:11,max:11,minPoints:1000000000,name:'아파트 수집가',mark:'✹'},
+ {min:12,max:12,minPoints:10000000000,name:'빌딩 쇼핑러',mark:'✧'},
+ {min:13,max:13,minPoints:100000000000,name:'재벌집 막내아들',mark:'✴'},
  {min:14,max:14,minPoints:1000000000000,name:'조만장자',mark:'∞'}
 ];
 const wealthTopRanks=new Map();
@@ -1093,13 +1100,6 @@ function nameWithRankByServer(el,raw){const text=String(raw||'');const id=/^Play
 }
 function openRankGuide(){
  const node=$('rank-guide-list');node.replaceChildren();
- const leaderboard=document.createElement('div');leaderboard.className='wealth-top3-guide';
- const leadTitle=document.createElement('strong');leadTitle.textContent='재계 TOP 3 · 전체 회원 보유 포인트 순위';leaderboard.append(leadTitle);
- if(!wealthLeaderProfiles.length){const loading=document.createElement('div');loading.textContent='순위 확인 중 · 서버 연동 후 표시';leaderboard.append(loading);}
- else for(const p of wealthLeaderProfiles){const item=document.createElement('div');item.className='wealth-leader-row';
-  const name=document.createElement('span');name.textContent='재계 '+p.rank+'위 · '+p.nickname;
-  const money=document.createElement('strong');money.textContent=Number(p.points).toLocaleString('ko-KR')+' P';item.append(name,money);leaderboard.append(item);}
- node.append(leaderboard);
  const level=memberProfile?levelFromPoints(memberProfile.points):0;
  const current=level?rankInfo(level,memberProfile?.nickname||''):null;
  for(let i=0;i<RANK_TIERS.length;i++){
@@ -1117,6 +1117,24 @@ function openRankGuide(){
   points.textContent=startPoints.toLocaleString('ko-KR')+'P'+(endPoints===null?' 이상':' ~ '+endPoints.toLocaleString('ko-KR')+'P');
   range.append(levels,points);
   line.append(badge,range);node.append(line);
+ }
+ // Live global wealth ranks are displayed after Lv.14, immediately above operator.
+ // These are placement badges (not extra point/level thresholds).
+ for(const rank of [3,2,1]){
+  const leader=wealthLeaderProfiles.find(p=>Number(p.rank)===rank);
+  const isCurrent=Boolean(current?.isTop3 && current?.name==='재계 '+rank+'위');
+  const line=document.createElement('div');
+  line.className='rank-guide-row rank-guide-top-row'+(isCurrent?' current':'');
+  const badge=document.createElement('span');badge.className='rank-badge rank-top-'+rank;
+  const mark=document.createElement('span');mark.className='rank-mark';mark.textContent=['','♛','♜','♟'][rank];
+  const name=document.createElement('span');name.textContent='재계 '+rank+'위';
+  badge.append(mark,name);
+  const range=document.createElement('span');range.className='rank-guide-range';
+  const levelLine=document.createElement('span');levelLine.className='rank-guide-levels';
+  levelLine.textContent=leader?leader.nickname:'전체 회원 포인트 순위';
+  const moneyLine=document.createElement('span');moneyLine.className='rank-guide-points';
+  moneyLine.textContent=leader?Number(leader.points).toLocaleString('ko-KR')+'P':'순위 집계 중';
+  range.append(levelLine,moneyLine);line.append(badge,range);node.append(line);
  }
  // Operator is a separate, non-levelled role above every earned rank.
  const operatorLine=document.createElement('div');
