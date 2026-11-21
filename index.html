@@ -548,7 +548,7 @@ body:has(#underover-view:not([hidden])) #underover-frame{height:calc(100dvh - 17
 .rank-guide-top-row .rank-badge{min-width:98px;justify-content:center;font-weight:800}
 .rank-guide-top-row .rank-guide-levels{font-weight:700;color:#46594b}
 @media(max-width:480px){.rank-guide-top-row .rank-badge{min-width:77px}}
-/* 레이스 TEST : 기존 Excel 시트와 독립된 로컬 프로토타입 */
+/* 레이스 v1.0 : Sheet1에서 온라인 혼합경기 생성·입장 */
 #race-view[hidden]{display:none!important}
 .race-sheet-view{height:calc(100dvh - 193px);min-height:570px;background:#f4f8f5}
 #race-frame{border:0;width:100%;height:100%;display:block;background:#f5f8f6}
@@ -584,7 +584,7 @@ body.race-active .race-sheet-view{height:calc(100dvh - 145px);min-height:550px}
 </div>
 <div class="admin-notice" id="admin-notice" role="alert" hidden><strong class="admin-notice-label">공지</strong><span class="admin-notice-text" id="admin-notice-text"></span><button type="button" id="admin-notice-close" class="admin-notice-close" aria-label="공지 닫기">×</button></div>
 <div id="admin-auth-overlay" class="admin-auth-overlay" role="dialog" aria-modal="true" aria-labelledby="admin-auth-title" hidden><form id="admin-auth-form" class="admin-auth-dialog" autocomplete="off"><h2 id="admin-auth-title">운영자 인증</h2><p>닉네임 ‘운영자’를 사용하려면 운영자 비밀번호를 입력해야 합니다.</p><input id="admin-auth-password" type="password" name="operator_password" autocomplete="off" placeholder="운영자 비밀번호" required aria-label="운영자 비밀번호"><div class="admin-auth-actions"><button type="button" id="admin-auth-cancel">취소</button><button type="submit">확인</button></div></form></div>
-<section class="lobby-shell" id="lobby-view"><div class="lobby-toolbar"><div class="left"><span class="lobby-title">Sheet1 · 업무 진행 현황</span><span id="lobby-count" class="lobby-summary">0개 시트</span></div><div class="lobby-actions"><form id="nickname-form" class="nickname-form" autocomplete="off"><label for="nickname-input">내 닉네임</label><input id="nickname-input" name="nickname" type="text" maxlength="16" placeholder="Player" spellcheck="false" autocomplete="off" aria-label="닉네임 16자 이하"><button type="submit" id="nickname-save">저장</button></form><div class="member-tools"><span id="member-status" class="member-status">익명 Player</span><button id="member-open" type="button">가입 / 로그인</button><button id="member-logout" type="button" hidden>로그아웃</button><button id="gift-open" class="gift-open-btn" type="button" hidden>🎁 포인트 선물</button><button id="relief-claim-btn" class="relief-event-btn" type="button" title="회원 포인트가 0P일 때만 100,000P 지급 · 횟수 제한 없음">[이벤트] 재난지원금 10만P</button><button id="rank-guide-open" class="rank-guide-btn" type="button" title="포인트 자산등급 및 재계 TOP 3 순위">등급표</button></div><button id="open-territory-btn" type="button" class="excel-action territory-open">🏯 영토전 (TEST)</button><button id="open-race-btn" type="button" class="excel-action">🏁 레이스 (ONLINE)</button><button id="create-room-btn" type="button" class="excel-action">＋ 새 방 만들기</button></div></div><div id="nickname-required-note" class="nickname-required-note" role="status" aria-live="polite" hidden>익명 Player로 둘러볼 수 있어요. 방에 들어가려면 닉네임을 저장하거나 <strong>가입 / 로그인</strong>해 주세요. 회원은 게임 결과에 따라 포인트와 레벨이 기록됩니다.</div><div id="lobby-notice" class="lobby-notice" aria-live="polite"></div>
+<section class="lobby-shell" id="lobby-view"><div class="lobby-toolbar"><div class="left"><span class="lobby-title">Sheet1 · 업무 진행 현황</span><span id="lobby-count" class="lobby-summary">0개 시트</span></div><div class="lobby-actions"><form id="nickname-form" class="nickname-form" autocomplete="off"><label for="nickname-input">내 닉네임</label><input id="nickname-input" name="nickname" type="text" maxlength="16" placeholder="Player" spellcheck="false" autocomplete="off" aria-label="닉네임 16자 이하"><button type="submit" id="nickname-save">저장</button></form><div class="member-tools"><span id="member-status" class="member-status">익명 Player</span><button id="member-open" type="button">가입 / 로그인</button><button id="member-logout" type="button" hidden>로그아웃</button><button id="gift-open" class="gift-open-btn" type="button" hidden>🎁 포인트 선물</button><button id="relief-claim-btn" class="relief-event-btn" type="button" title="회원 포인트가 0P일 때만 100,000P 지급 · 횟수 제한 없음">[이벤트] 재난지원금 10만P</button><button id="rank-guide-open" class="rank-guide-btn" type="button" title="포인트 자산등급 및 재계 TOP 3 순위">등급표</button></div><button id="open-territory-btn" type="button" class="excel-action territory-open">🏯 영토전 (TEST)</button><button id="open-race-btn" type="button" class="excel-action">🏁 레이스</button><button id="create-room-btn" type="button" class="excel-action">＋ 새 방 만들기</button></div></div><div id="nickname-required-note" class="nickname-required-note" role="status" aria-live="polite" hidden>익명 Player로 둘러볼 수 있어요. 방에 들어가려면 닉네임을 저장하거나 <strong>가입 / 로그인</strong>해 주세요. 회원은 게임 결과에 따라 포인트와 레벨이 기록됩니다.</div><div id="lobby-notice" class="lobby-notice" aria-live="polite"></div>
 <div class="oe-online-entry" id="oe-online-entry"><strong>🎲 온라인 홀짝방 입장</strong><form id="oe-online-join-form" autocomplete="off"><input id="oe-online-code-input" type="text" placeholder="방 코드 e-... 또는 초대 링크" aria-label="홀짝방 코드 또는 초대 링크" spellcheck="false"><button type="submit" id="oe-online-join-button">참가하기</button></form><button type="button" id="oe-online-refresh" title="홀짝방 목록을 바로 새로 불러옵니다">목록 새로고침</button><small id="oe-online-lobby-status">친구가 보낸 초대 링크나 방 코드를 입력하세요. 1~6명까지 같은 방에서 진행할 수 있습니다.</small></div><div class="grid-scroll"><table class="xl-grid" aria-label="방 현황과 대기자 목록"><colgroup><col class="row-col"><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"><col class="c7"><col class="c8"><col class="c9"><col class="c10"></colgroup><thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th><th>J</th></tr></thead><tbody id="lobby-cells"><tr><th class="row-no">1</th><td class="section" colspan="10">방 목록 불러오는 중...</td></tr></tbody></table></div>
 <div id="sheet1-chat-area" class="sheet1-chat-area" aria-label="Sheet1 공용 채팅">
  <div class="grid-scroll sheet1-chat-grid-scroll"><table class="xl-grid sheet1-chat-grid" aria-label="공용 채팅 기록과 메시지 입력">
@@ -652,7 +652,7 @@ body.race-active .race-sheet-view{height:calc(100dvh - 145px);min-height:550px}
 
 <div id="create-modal" class="game-chooser" hidden role="dialog" aria-modal="true" aria-labelledby="chooser-title">
  <div class="chooser-panel"><div class="chooser-top"><span id="chooser-title">새 시트 만들기</span><button type="button" class="chooser-close" id="chooser-close" aria-label="닫기">×</button></div>
-  <div class="chooser-grid"><button type="button" class="game-choice" data-choice="gomoku"><span class="choice-symbol">▣ ▤</span><span>오목</span></button><button type="button" class="game-choice" data-choice="tetris"><span class="choice-symbol">▦</span><span>테트리스</span></button><button type="button" class="game-choice mine-choice" data-choice="mine_battle"><span class="choice-symbol">▥</span><span>지뢰탐색게임</span></button><button type="button" class="game-choice" data-choice="holdem"><span class="choice-symbol">♠</span><span>홀덤 (2~6명)</span></button><button type="button" class="game-choice" data-choice="oddeven"><span class="choice-symbol">⚀ ⚄</span><span>홀짝 (1~6명)</span></button><button type="button" class="game-choice" data-choice="underover"><span class="choice-symbol">⚁ ?</span><span>언더오버 (1:1)</span></button></div><p class="chooser-note">선택하면 새 시트가 생성됩니다.</p>
+  <div class="chooser-grid"><button type="button" class="game-choice" data-choice="gomoku"><span class="choice-symbol">▣ ▤</span><span>오목</span></button><button type="button" class="game-choice" data-choice="tetris"><span class="choice-symbol">▦</span><span>테트리스</span></button><button type="button" class="game-choice mine-choice" data-choice="mine_battle"><span class="choice-symbol">▥</span><span>지뢰탐색게임</span></button><button type="button" class="game-choice" data-choice="holdem"><span class="choice-symbol">♠</span><span>홀덤 (2~6명)</span></button><button type="button" class="game-choice" data-choice="oddeven"><span class="choice-symbol">⚀ ⚄</span><span>홀짝 (1~6명)</span></button><button type="button" class="game-choice" data-choice="underover"><span class="choice-symbol">⚁ ?</span><span>언더오버 (1:1)</span></button><button type="button" class="game-choice" data-choice="race"><span class="choice-symbol">🏁</span><span>레이스 (사람 + 컴퓨터)</span></button></div><p class="chooser-note">선택하면 새 시트가 생성됩니다.</p>
  </div>
 </div>
 <section id="holdem-view" hidden aria-label="텍사스 홀덤 시트">
@@ -1286,6 +1286,10 @@ let onlineDeepLinkPending=false;
 function maybeOpenInitialRoom(){
  if(!initialDeepLink||!lobbyReady)return;
  const id=initialDeepLink;
+ if(/^rc-[a-f0-9]{12}$/.test(id)){
+   if(!memberToken){lobbyNotify('레이스 초대 링크입니다. 로그인 후 자동으로 입장합니다.');return;}
+   initialDeepLink=null;openRoom(id);return;
+ }
  // 홀짝 초대는 Sheet1 목록 수신 여부와 무관하게 서버에서 직접 확인합니다.
  if(/^e-[a-f0-9]{12}$/.test(id)){
   if(!memberToken){lobbyNotify('홀짝 초대 링크를 받았습니다. 회원 로그인 후 자동으로 해당 방에 입장합니다.');return;}
@@ -1326,7 +1330,7 @@ let activeRoom=null,openRooms=[],roomCache=new Map(),roomList=[],waitingList=[];
 let chatLastSeen='',movePending=false,pendingMovePoint=null,chatPending=false,revision=-1;
 let tick=0,polling=false,stopped=false,pollTimer=null,initialDeepLink=new URLSearchParams(location.search).get('room');
 let lobbyHealthy=false,lobbyReady=false,creating=false,lobbySignature="";
-let hunterLobbyStatuses=new Map(),matchGateLobbyStatuses=new Map(),holdemLobbyRooms=[],oddEvenLobbyRooms=[],underOverLobbyRooms=[];
+let hunterLobbyStatuses=new Map(),matchGateLobbyStatuses=new Map(),holdemLobbyRooms=[],oddEvenLobbyRooms=[],underOverLobbyRooms=[],raceOnlineRooms=[];
 let matchGateByRoom=new Map(),matchGateActionPending=false,matchGateRestarting=new Map();
 // Rematch UX: keep the small ready/start gate fresh independently of the heavier room/game poll.
 // Only poll quickly while waiting for Ready/Start or after a completed round.
@@ -1715,8 +1719,23 @@ function applyOddEvenLobbyReport(report){
  refreshCombinedLobby();
  showOddEvenLobbyStatus(report);
 }
+async function refreshRaceOnlineRooms(){
+ if(!memberToken){raceOnlineRooms=[];return;}
+ const d=await callRpc('renju_race_mixed_rpc',{
+  p_action:'list',p_client:CLIENT_ID,p_token:memberToken,p_room:null,p_payload:{}
+ },false,20000);
+ if(!Array.isArray(d.rooms))return;
+ raceOnlineRooms=d.rooms.map((r,i)=>({
+  id:r.id,game:'race',sheet:'Race'+(i+1),
+  title:String(r.name||'레이스 경기장')+' · 컴 '+Number(r.bots||0)+'대',
+  status:r.phase==='finished'?'finished':r.phase==='running'?'playing':r.phase==='betting'?'ready':'waiting',
+  count:Number(r.entrants||0),waiting:Math.max(0,6-Number(r.entrants||0)),
+  spectators:Number(r.spectators||0),moves:Number(r.race_no||1),black:null,white:null
+ }));
+ refreshCombinedLobby();
+}
 function mergedRoomList(){
- const incoming=[...underOverLobbyRooms,...visibleOddEvenRooms(oddEvenLobbyRooms),...holdemLobbyRooms,...(lastLegacyLobbyPayload?.rooms||[])];
+ const incoming=[...raceOnlineRooms,...underOverLobbyRooms,...visibleOddEvenRooms(oddEvenLobbyRooms),...holdemLobbyRooms,...(lastLegacyLobbyPayload?.rooms||[])];
  const seen=new Set();
  return incoming.filter(r=>{
   if(!r||typeof r.id!=='string'||seen.has(r.id))return false;
@@ -1823,10 +1842,11 @@ function pollLobbyInBackground(){
    const label=$('oe-online-lobby-status');
    if(label&&activeRoom===null)label.textContent='홀짝방 조회 실패: '+String(error?.message||error)+' · 방 코드로 직접 입장할 수 있습니다.';
   });
+  const raceTask=refreshRaceOnlineRooms().catch(()=>{});
   const gateTask=callRpc('renju_match_gate_lobby_status',{}).then(s=>{
    if(Array.isArray(s)){matchGateLobbyStatuses=new Map(s.map(z=>[z.room_id,z]));if(lastLegacyLobbyPayload)refreshCombinedLobby();}
   }).catch(()=>{});
-  await Promise.allSettled([legacyTask,holdemTask,uoTask,evenTask,gateTask,presenceTask]);
+  await Promise.allSettled([legacyTask,holdemTask,uoTask,evenTask,gateTask,presenceTask,raceTask]);
   await syncNicknames().catch(()=>{});
   maybeOpenInitialRoom();
  })().finally(()=>{lobbyPollInFlight=false;});
@@ -1898,11 +1918,11 @@ function renderLobby(){const list=$('lobby-cells');const rows=[];let n=1;
  {const r=row(n++,[`전체 ${roomList.length}개 방`,`접속 ${waitingList.length}명 대기`, '내 닉네임',nicknameFor(myLobbyNumber||0),'','','','','','']);nameWithRank(r.children[4],myLobbyNumber||0,myNickname);rows.push(r);}
  rows.push(headingRow(n++,['시트','종류','작업명','진행','1P/흑','2P/백','대기','접속','착수/줄','입장']));
  const display=roomList.slice(0,100);
- for(const room of display){const status=room.status==='placing'?'설치 중':room.status==='playing'?'진행 중':room.status==='ready'?'준비 완료':room.status==='finished'?'완료':room.status==='done'?'완료':'대기 중';
-  const tr=row(n++,[room.sheet,'',room.title,'',room.black?nicknameFor(room.black):'-',room.white?nicknameFor(room.white):'-',room.waiting,room.count,room.moves,''],['sheet-link','','','','','','','','','']);tr.className='room-row';tr.dataset.room=room.id;if(room.black)nameWithRank(tr.children[5],room.black);if(room.white)nameWithRank(tr.children[6],room.white);
-  const gameLabel=document.createElement('span');gameLabel.className='game-type-pill'+(room.game==='tetris'?' tetris':'');gameLabel.textContent=room.game==='tetris'?'테트리스':room.game==='mine_battle'?'지뢰탐색게임':room.game==='holdem'?'홀덤':room.game==='oddeven'?'홀짝':room.game==='underover'?'언더오버':'오목';tr.children[2].append(gameLabel);
+ for(const room of display){const status=room.status==='placing'?'설치 중':room.game==='race'&&room.status==='ready'?'베팅 접수':room.status==='playing'?'진행 중':room.status==='ready'?'준비 완료':room.status==='finished'?'완료':room.status==='done'?'완료':'대기 중';
+  const tr=row(n++,[room.sheet,'',room.title,'',room.game==='race'?'-':'',room.black?nicknameFor(room.black):'-',room.white?nicknameFor(room.white):'-',room.waiting,room.count,room.moves,''],['sheet-link','','','','','','','','','']);tr.className='room-row';tr.dataset.room=room.id;if(room.black)nameWithRank(tr.children[5],room.black);if(room.white)nameWithRank(tr.children[6],room.white);
+  const gameLabel=document.createElement('span');gameLabel.className='game-type-pill'+(room.game==='tetris'?' tetris':'');gameLabel.textContent=room.game==='tetris'?'테트리스':room.game==='mine_battle'?'지뢰탐색게임':room.game==='holdem'?'홀덤':room.game==='oddeven'?'홀짝':room.game==='underover'?'언더오버':room.game==='race'?'레이스':'오목';tr.children[2].append(gameLabel);
   const statusTd=tr.children[4],pill=document.createElement('span');pill.className='status-pill '+(room.status==='playing'?'':room.status);pill.textContent=status;statusTd.append(pill);
-  const joinBtn=document.createElement('button');joinBtn.type='button';joinBtn.className='room-open';joinBtn.textContent=room.game==='underover'&&Number(room.count||0)>=2?'관전':'열기';joinBtn.setAttribute('aria-label',room.sheet+(joinBtn.textContent==='관전'?' 관전':' 열기'));tr.lastElementChild.append(joinBtn);
+  const joinBtn=document.createElement('button');joinBtn.type='button';joinBtn.className='room-open';joinBtn.textContent=room.game==='underover'&&Number(room.count||0)>=2?'관전':room.game==='race'?'입장':'열기';joinBtn.setAttribute('aria-label',room.sheet+(joinBtn.textContent==='관전'?' 관전':' 열기'));tr.lastElementChild.append(joinBtn);
   rows.push(tr);
  }
  if(roomList.length>display.length)rows.push(row(n++,['표시 제한: '+(roomList.length-display.length)+'개 방은 목록에 표시되지 않습니다. 방 코드로 입장하세요.','','','','','','','','',''],['muted']));
@@ -2032,7 +2052,14 @@ $('oe-online-refresh').addEventListener('click',async()=>{
  }catch(error){label.textContent='조회 실패: '+String(error?.message||error);}
  finally{btn.disabled=false;}
 });
-async function openRoom(id){if(id?.startsWith('u-')){
+function launchRaceRoom(roomId=null,makeNew=false){
+ if(!memberToken){openMemberPanel('login');lobbyNotify('레이스는 로그인 후 이용할 수 있습니다.',true);return;}
+ const frame=$('race-frame');
+ const desired='./race-demo.html'+(roomId?'?room='+encodeURIComponent(roomId):makeNew?'?create=1':'');
+ if((roomId||makeNew||!frame.getAttribute('src'))&&frame.getAttribute('src')!==desired)frame.src=desired;
+ switchView('__race__');
+}
+async function openRoom(id){if(id?.startsWith('rc-')){launchRaceRoom(id);return;}if(id?.startsWith('u-')){
  if(!memberToken){initialDeepLink=id;openMemberPanel('login');return;}
  if(!requireNickname())return;
  if(!openRooms.includes(id)){if(openRooms.length>=8){lobbyNotify('동시에 열 수 있는 시트는 최대 8개입니다.',true);return;}openRooms.push(id);}
@@ -2047,7 +2074,11 @@ async function openRoom(id){if(id?.startsWith('u-')){
 function createRoom(){if(!requireNickname())return;$('create-modal').hidden=false;}
 function closeCreateModal(){$('create-modal').hidden=true;}
 async function doCreateRoom(game){if(!requireNickname())return;if(creating)return;closeCreateModal();creating=true;$('create-room-btn').disabled=true;$('add-sheet-btn').disabled=true;lobbyNotify('새 시트 생성 중...');
- try{if(game==='underover'){
+ try{if(game==='race'){
+   if(!memberToken){openMemberPanel('login');throw new Error('레이스는 회원 로그인이 필요합니다.');}
+   launchRaceRoom(null,true);
+   lobbyNotify('레이스 경기장 생성 중 · 경기장 탭에서 컴퓨터 수와 트랙을 설정하세요.');
+  }else if(game==='underover'){
   if(!memberToken){openMemberPanel('login');throw new Error('언더오버는 회원 로그인 후 이용할 수 있습니다.');}
   const data=await underOverRpc('create');if(!data.created_room)throw new Error('언더오버 방 생성에 실패했습니다.');
   const item={id:data.created_room,sheet:'언더오버',title:'언더오버 1:1',game:'underover',status:'waiting',count:1,waiting:1,moves:0};
@@ -2189,8 +2220,16 @@ $('chooser-close').addEventListener('click',closeCreateModal);
 $('create-modal').addEventListener('click',e=>{if(e.target.id==='create-modal')closeCreateModal();const c=e.target.closest('[data-choice]');if(c)doCreateRoom(c.dataset.choice);});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCreateModal();});
 $('open-territory-btn').addEventListener('click',()=>switchView('__territory__'));
-$('open-race-btn').addEventListener('click',()=>switchView('__race__'));
-window.addEventListener('message',e=>{if(e.origin===location.origin&&e.source===$('race-frame').contentWindow&&e.data?.type==='RACE_CLOSE')switchView(null);});
+$('open-race-btn').addEventListener('click',()=>launchRaceRoom());
+window.addEventListener('message',e=>{
+ if(e.origin!==location.origin||e.source!==$('race-frame').contentWindow)return;
+ if(e.data?.type==='RACE_CLOSE')switchView(null);
+ if(e.data?.type==='RACE_CREATED'&&/^rc-[a-f0-9]{12}$/.test(e.data.id||'')){
+   const id=e.data.id;
+   const frame=$('race-frame');frame.dataset.src='./race-demo.html?room='+encodeURIComponent(id);
+   void refreshRaceOnlineRooms().catch(()=>{});
+ }
+});
 window.addEventListener('message',e=>{const frame=$('territory-frame');if(e.origin===location.origin&&e.source===frame.contentWindow&&e.data?.type==='CHEONHA_CLOSE')switchView(null);});
 $('sheet-nav').addEventListener('click',e=>{
  if(e.target.closest('[data-close-race]')){e.stopPropagation();raceSheetOpen=false;if(activeRace)switchView(null);else updateSheetTabs();return;}
