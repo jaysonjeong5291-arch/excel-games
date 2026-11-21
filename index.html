@@ -530,6 +530,17 @@ body:has(#underover-view:not([hidden])) #underover-frame{height:calc(100dvh - 17
 .member-tools .relief-event-btn:disabled{opacity:.55;cursor:wait}
 .member-tools .relief-event-btn.eligible{background:#fdf0c3;border-color:#d39a27;box-shadow:inset 0 0 0 1px #fff6d9}
 @media(max-width:700px){.member-tools .relief-event-btn{flex:1 1 auto;min-height:32px}}
+
+/* Wealth milestone UI, including global top-three standings. */
+.rank-top-1{--rank-bg:linear-gradient(115deg,#fff0b3,#f5d27a);--rank-ink:#6a470c;--rank-line:#cda444}
+.rank-top-2{--rank-bg:linear-gradient(115deg,#e8eef5,#d1dce8);--rank-ink:#45566c;--rank-line:#acb9c9}
+.rank-top-3{--rank-bg:linear-gradient(115deg,#f2e1d2,#e3b58f);--rank-ink:#754625;--rank-line:#d1a17d}
+.member-level-tag.rank-top-1,.member-level-tag.rank-top-2,.member-level-tag.rank-top-3{background:var(--rank-bg);border-color:var(--rank-line);color:var(--rank-ink)}
+.wealth-top3-guide{border:1px solid #d1dfd5;background:#f7faf8;padding:11px;margin:5px 0 10px;display:grid;gap:7px;font-size:11px;color:#365641}
+.wealth-top3-guide>strong{font-size:12px}
+.wealth-leader-row{display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;border-top:1px solid #dde9df;padding-top:7px}
+.wealth-leader-row strong{font-variant-numeric:tabular-nums;color:#175b38}
+.member-level-tag{max-width:230px}
 </style>
 </head>
 <body>
@@ -537,7 +548,7 @@ body:has(#underover-view:not([hidden])) #underover-frame{height:calc(100dvh - 17
 <div class="tabs"><span class="tab file-tab">파일</span><span class="tab active">홈</span><span class="tab">삽입</span><span class="tab">페이지 레이아웃</span><span class="tab">수식</span><span class="tab">데이터</span><span class="tab">검토</span><span class="tab">보기</span></div>
 <div class="ribbon" aria-hidden="true"><div class="ribbon-group"><div class="ribbon-content"><span class="tool-icon green">▤</span><div><div class="tool-small tool-strong">붙여넣기</div><div class="tool-small">복사 · 잘라내기</div></div></div><div class="ribbon-title">클립보드</div></div><div class="ribbon-group"><div class="ribbon-content"><span class="tool-mini wide">맑은 고딕&nbsp; ▾</span><span class="tool-mini">11</span><span class="tool-divider"></span><span class="tool-strong">B</span><em>I</em><u>U</u></div><div class="ribbon-title">글꼴</div></div><div class="ribbon-group"><div class="ribbon-content"><span class="tool-icon">☷</span><span class="tool-icon">☰</span><span class="tool-small">가운데 맞춤</span></div><div class="ribbon-title">맞춤</div></div><div class="ribbon-group"><div class="ribbon-content"><span class="tool-icon green">▦</span><span class="tool-small">표 서식<br>조건부 서식</span></div><div class="ribbon-title">스타일</div></div></div>
 <div class="formula-bar"><div class="name-box"><span id="cell-address">A1</span><span>⌄</span></div><span class="fx">ƒx</span><div class="formula-value" id="formula-value">=COUNTIF(방현황,"접속중")</div></div>
-<div id="rank-guide-overlay" class="rank-guide-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="rank-guide-title"><div class="rank-guide-panel"><div class="rank-guide-heading"><strong id="rank-guide-title">등급 및 레벨 안내</strong><button type="button" id="rank-guide-close" aria-label="등급 안내 닫기">닫기 ×</button></div><div class="rank-guide-summary" id="rank-guide-summary">등급별 필요 포인트를 확인할 수 있습니다 · Lv.5000 초월 · 운영자 전용 최상위</div><div id="rank-guide-list" class="rank-guide-list"></div></div></div>
+<div id="rank-guide-overlay" class="rank-guide-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="rank-guide-title"><div class="rank-guide-panel"><div class="rank-guide-heading"><strong id="rank-guide-title">자산등급 · 재계 순위</strong><button type="button" id="rank-guide-close" aria-label="등급 안내 닫기">닫기 ×</button></div><div class="rank-guide-summary" id="rank-guide-summary">1P = 1원 · 0원부터 조만장자까지 · 재계 TOP 3는 보유 포인트 순위</div><div id="rank-guide-list" class="rank-guide-list"></div></div></div>
 <div id="member-overlay" class="member-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="member-dialog-title"><form id="member-form" class="member-dialog" autocomplete="on"><h2 id="member-dialog-title">계정 로그인</h2><p class="member-desc">처음엔 익명 Player로 접속합니다. 가입하면 승리 기록과 레벨이 저장돼요.</p><div class="member-switch"><button type="button" id="member-login-tab" class="active">로그인</button><button type="button" id="member-register-tab">회원가입</button></div><label for="member-nickname">닉네임 (로그인 아이디)</label><input id="member-nickname" name="username" type="text" maxlength="16" minlength="1" autocomplete="username" required placeholder="1~16자 아이디"><label for="member-password">비밀번호</label><input id="member-password" name="password" type="password" minlength="4" maxlength="72" autocomplete="current-password" required placeholder="4자 이상 비밀번호 (형식 자유)"><div class="member-hint">이메일 없이 닉네임과 비밀번호로 가입합니다. 비밀번호 분실 시 자동 복구는 지원하지 않아요.</div><div id="member-feedback" class="member-feedback" role="alert"></div><div class="member-actions"><button type="button" id="member-cancel">닫기</button><button type="submit" id="member-submit">로그인</button></div></form></div>
 
 <div id="gift-overlay" class="gift-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="gift-title">
@@ -557,7 +568,7 @@ body:has(#underover-view:not([hidden])) #underover-frame{height:calc(100dvh - 17
 </div>
 <div class="admin-notice" id="admin-notice" role="alert" hidden><strong class="admin-notice-label">공지</strong><span class="admin-notice-text" id="admin-notice-text"></span><button type="button" id="admin-notice-close" class="admin-notice-close" aria-label="공지 닫기">×</button></div>
 <div id="admin-auth-overlay" class="admin-auth-overlay" role="dialog" aria-modal="true" aria-labelledby="admin-auth-title" hidden><form id="admin-auth-form" class="admin-auth-dialog" autocomplete="off"><h2 id="admin-auth-title">운영자 인증</h2><p>닉네임 ‘운영자’를 사용하려면 운영자 비밀번호를 입력해야 합니다.</p><input id="admin-auth-password" type="password" name="operator_password" autocomplete="off" placeholder="운영자 비밀번호" required aria-label="운영자 비밀번호"><div class="admin-auth-actions"><button type="button" id="admin-auth-cancel">취소</button><button type="submit">확인</button></div></form></div>
-<section class="lobby-shell" id="lobby-view"><div class="lobby-toolbar"><div class="left"><span class="lobby-title">Sheet1 · 업무 진행 현황</span><span id="lobby-count" class="lobby-summary">0개 시트</span></div><div class="lobby-actions"><form id="nickname-form" class="nickname-form" autocomplete="off"><label for="nickname-input">내 닉네임</label><input id="nickname-input" name="nickname" type="text" maxlength="16" placeholder="Player" spellcheck="false" autocomplete="off" aria-label="닉네임 16자 이하"><button type="submit" id="nickname-save">저장</button></form><div class="member-tools"><span id="member-status" class="member-status">익명 Player</span><button id="member-open" type="button">가입 / 로그인</button><button id="member-logout" type="button" hidden>로그아웃</button><button id="gift-open" class="gift-open-btn" type="button" hidden>🎁 포인트 선물</button><button id="relief-claim-btn" class="relief-event-btn" type="button" title="회원 포인트가 0P일 때만 100,000P 지급 · 횟수 제한 없음">[이벤트] 재난지원금 10만P</button><button id="rank-guide-open" class="rank-guide-btn" type="button" title="상위 레벨 및 운영자 등급표">등급표</button></div><button id="open-territory-btn" type="button" class="excel-action territory-open">🏯 영토전 (TEST)</button><button id="create-room-btn" type="button" class="excel-action">＋ 새 방 만들기</button></div></div><div id="nickname-required-note" class="nickname-required-note" role="status" aria-live="polite" hidden>익명 Player로 둘러볼 수 있어요. 방에 들어가려면 닉네임을 저장하거나 <strong>가입 / 로그인</strong>해 주세요. 회원은 게임 결과에 따라 포인트와 레벨이 기록됩니다.</div><div id="lobby-notice" class="lobby-notice" aria-live="polite"></div>
+<section class="lobby-shell" id="lobby-view"><div class="lobby-toolbar"><div class="left"><span class="lobby-title">Sheet1 · 업무 진행 현황</span><span id="lobby-count" class="lobby-summary">0개 시트</span></div><div class="lobby-actions"><form id="nickname-form" class="nickname-form" autocomplete="off"><label for="nickname-input">내 닉네임</label><input id="nickname-input" name="nickname" type="text" maxlength="16" placeholder="Player" spellcheck="false" autocomplete="off" aria-label="닉네임 16자 이하"><button type="submit" id="nickname-save">저장</button></form><div class="member-tools"><span id="member-status" class="member-status">익명 Player</span><button id="member-open" type="button">가입 / 로그인</button><button id="member-logout" type="button" hidden>로그아웃</button><button id="gift-open" class="gift-open-btn" type="button" hidden>🎁 포인트 선물</button><button id="relief-claim-btn" class="relief-event-btn" type="button" title="회원 포인트가 0P일 때만 100,000P 지급 · 횟수 제한 없음">[이벤트] 재난지원금 10만P</button><button id="rank-guide-open" class="rank-guide-btn" type="button" title="포인트 자산등급 및 재계 TOP 3 순위">등급표</button></div><button id="open-territory-btn" type="button" class="excel-action territory-open">🏯 영토전 (TEST)</button><button id="create-room-btn" type="button" class="excel-action">＋ 새 방 만들기</button></div></div><div id="nickname-required-note" class="nickname-required-note" role="status" aria-live="polite" hidden>익명 Player로 둘러볼 수 있어요. 방에 들어가려면 닉네임을 저장하거나 <strong>가입 / 로그인</strong>해 주세요. 회원은 게임 결과에 따라 포인트와 레벨이 기록됩니다.</div><div id="lobby-notice" class="lobby-notice" aria-live="polite"></div>
 <div class="oe-online-entry" id="oe-online-entry"><strong>🎲 온라인 홀짝방 입장</strong><form id="oe-online-join-form" autocomplete="off"><input id="oe-online-code-input" type="text" placeholder="방 코드 e-... 또는 초대 링크" aria-label="홀짝방 코드 또는 초대 링크" spellcheck="false"><button type="submit" id="oe-online-join-button">참가하기</button></form><button type="button" id="oe-online-refresh" title="홀짝방 목록을 바로 새로 불러옵니다">목록 새로고침</button><small id="oe-online-lobby-status">친구가 보낸 초대 링크나 방 코드를 입력하세요. 1~6명까지 같은 방에서 진행할 수 있습니다.</small></div><div class="grid-scroll"><table class="xl-grid" aria-label="방 현황과 대기자 목록"><colgroup><col class="row-col"><col class="c1"><col class="c2"><col class="c3"><col class="c4"><col class="c5"><col class="c6"><col class="c7"><col class="c8"><col class="c9"><col class="c10"></colgroup><thead><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th><th>J</th></tr></thead><tbody id="lobby-cells"><tr><th class="row-no">1</th><td class="section" colspan="10">방 목록 불러오는 중...</td></tr></tbody></table></div>
 <div id="sheet1-chat-area" class="sheet1-chat-area" aria-label="Sheet1 공용 채팅">
  <div class="grid-scroll sheet1-chat-grid-scroll"><table class="xl-grid sheet1-chat-grid" aria-label="공용 채팅 기록과 메시지 입력">
@@ -654,7 +665,7 @@ body:has(#underover-view:not([hidden])) #underover-frame{height:calc(100dvh - 17
   <div id="holdem-result" class="holdem-result" hidden></div>
    <section class="holdem-chat" aria-label="홀덤방 채팅">
     <div class="holdem-section-head holdem-chat-title"><span>채팅 / ROOM CHAT</span><span id="holdem-chat-count">0개 메시지</span></div>
-    <div id="holdem-chat-messages" class="holdem-chat-messages" role="log" aria-live="polite" aria-relevant="additions"><div class="holdem-chat-empty">이 홀덤방에서 대화를 시작해 보세요.</div></div><div id="holdem-admin-guide" class="holdem-admin-guide" hidden>★ 운영자 명령: <code>/공지 내용</code> · <code>/강퇴 닉네임</code> · <code>/포인트 닉네임 숫자</code> (공용채팅에 노출되지 않음)</div>
+    <div id="holdem-chat-messages" class="holdem-chat-messages" role="log" aria-live="polite" aria-relevant="additions"><div class="holdem-chat-empty">이 홀덤방에서 대화를 시작해 보세요.</div></div><div id="holdem-admin-guide" class="holdem-admin-guide" hidden>★ 운영자 명령: <code>/공지 내용</code> · <code>/강퇴 닉네임</code> · <code>/포인트 닉네임 숫자</code> · - 입력 시 차감 (공용채팅 비노출)</div>
     <form id="holdem-chat-form" class="holdem-chat-form" autocomplete="off">
      <input id="holdem-chat-input" type="text" maxlength="280" placeholder="같은 홀덤방 참가자와 관전자가 볼 수 있는 메시지" aria-label="홀덤방 메시지">
      <button id="holdem-chat-send" type="submit">보내기</button>
@@ -694,7 +705,7 @@ body:has(#underover-view:not([hidden])) #underover-frame{height:calc(100dvh - 17
 <section id="territory-view" class="territory-sheet-view" aria-label="영토전 게임 시트" hidden>
   <iframe id="territory-frame" title="업무현황_영토전_VER.2026" data-src="./territory-demo.html" referrerpolicy="same-origin"></iframe>
 </section>
-<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="territory-sheet-tab" class="sheet-tab" type="button" data-sheet="territory" hidden>🏯 영토전 <span class="tab-close" data-close-territory title="영토전 시트 닫기">×</span></button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="레벨 등급 v3.0">100% · v3.7 이벤트</span></footer>
+<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="territory-sheet-tab" class="sheet-tab" type="button" data-sheet="territory" hidden>🏯 영토전 <span class="tab-close" data-close-territory title="영토전 시트 닫기">×</span></button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="레벨 등급 v3.0">100% · v3.8 자산등급</span></footer>
 <script>
 'use strict';
 const SIZE = 15;
@@ -1005,33 +1016,36 @@ $('gift-form').addEventListener('submit',async e=>{
 });
 
 function saveMemberToken(token){memberToken=token||'';if(!memberToken){memberGomokuStreak=null;gomokuRewardData=null;gomokuRewardSyncAt=0;memberArcadeStreaks={tetris:null,mine_battle:null};arcadeRewardData=null;arcadeRewardSyncAt=0;}try{if(memberToken)localStorage.setItem(MEMBER_TOKEN_KEY,memberToken);else localStorage.removeItem(MEMBER_TOKEN_KEY);}catch(_){}try{deliverUnderOverAuth();}catch(_){}}
-// Rank progression is a display calculation; account points and game rewards are untouched.
-// Lv.1 at 0P, Lv.50 exactly at 10,000P. Higher levels continue at the same slope.
-function pointsForLevel(lvl){return Math.ceil(Math.max(0,Number(lvl)-1)*10000/49);}
-function levelFromPoints(points){return 1+Math.floor(Math.max(0,Number(points)||0)*49/10000);}
-function normalizedMemberProfile(profile){return profile?{...profile,level:levelFromPoints(profile.points)}:null;}
+// Wealth titles: points are treated as 1P = 1 won; server balance stays authoritative.
+// Static levels 1–14 are tied to monetary milestones, not to old 10,000P = Lv.50 scaling.
 const RANK_TIERS=[
- {min:1,max:9,name:'루키',mark:'•'},
- {min:10,max:19,name:'브론즈',mark:'◆'},
- {min:20,max:29,name:'실버',mark:'◆'},
- {min:30,max:39,name:'골드',mark:'◆'},
- {min:40,max:49,name:'플래티넘',mark:'◇'},
- {min:50,max:59,name:'다이아',mark:'✦'},
- {min:60,max:69,name:'마스터',mark:'✦'},
- {min:70,max:79,name:'그랜드',mark:'✦'},
- {min:80,max:89,name:'레전드',mark:'✶'},
- {min:90,max:99,name:'신화',mark:'✶'},
- {min:100,max:499,name:'불멸',mark:'✹'},
- {min:500,max:999,name:'천상',mark:'✧'},
- {min:1000,max:4999,name:'신',mark:'✴'},
- {min:5000,max:Infinity,name:'초월',mark:'∞'}
+ {min:1,max:1,minPoints:0,name:'무일푼 백수',mark:'○'},
+ {min:2,max:2,minPoints:1,name:'거지',mark:'·'},
+ {min:3,max:3,minPoints:1000,name:'학생',mark:'✎'},
+ {min:4,max:4,minPoints:10000,name:'아르바이트생',mark:'▣'},
+ {min:5,max:5,minPoints:50000,name:'사회초년생',mark:'◇'},
+ {min:6,max:6,minPoints:100000,name:'직장인',mark:'▣'},
+ {min:7,max:7,minPoints:500000,name:'자영업자',mark:'◆'},
+ {min:8,max:8,minPoints:1000000,name:'백만장자',mark:'✦'},
+ {min:9,max:9,minPoints:10000000,name:'천만장자',mark:'✦'},
+ {min:10,max:10,minPoints:100000000,name:'억만장자',mark:'✶'},
+ {min:11,max:11,minPoints:1000000000,name:'십억자산가',mark:'✹'},
+ {min:12,max:12,minPoints:10000000000,name:'백억자산가',mark:'✧'},
+ {min:13,max:13,minPoints:100000000000,name:'천억자산가',mark:'✴'},
+ {min:14,max:14,minPoints:1000000000000,name:'조만장자',mark:'∞'}
 ];
+const wealthTopRanks=new Map();
+let wealthLeaderProfiles=[];
+function pointsForLevel(lvl){const index=Math.max(0,Math.min(RANK_TIERS.length-1,Math.floor(Number(lvl)||1)-1));return RANK_TIERS[index].minPoints;}
+function levelFromPoints(points){const p=Math.max(0,Number(points)||0);for(let i=RANK_TIERS.length-1;i>=0;i--){if(p>=RANK_TIERS[i].minPoints)return i+1;}return 1;}
+function normalizedMemberProfile(profile){return profile?{...profile,level:levelFromPoints(profile.points)}:null;}
 const OPERATOR_RANK={name:'운영자',mark:'★',index:RANK_TIERS.length,isOperator:true,css:'rank-tier-admin',min:null,max:null,level:null};
 function rankInfo(level,nickname=''){
  if(nickname==='운영자')return {...OPERATOR_RANK};
- const lvl=Math.max(1,Math.floor(Number(level)||1));
- let index=RANK_TIERS.findIndex(tier=>lvl>=tier.min&&lvl<=tier.max);
- if(index<0)index=RANK_TIERS.length-1;
+ const placement=wealthTopRanks.get(String(nickname||'').toLocaleLowerCase('ko-KR'));
+ if(placement>=1&&placement<=3){return {name:'재계 '+placement+'위',mark:['','♛','♜','♟'][placement],index:RANK_TIERS.length,isOperator:false,isTop3:true,css:'rank-top-'+placement,level:Math.max(1,Number(level)||1),min:null,max:null};}
+ const lvl=Math.max(1,Math.min(RANK_TIERS.length,Math.floor(Number(level)||1)));
+ const index=lvl-1;
  return {...RANK_TIERS[index],index,level:lvl,css:'rank-tier-'+index,isOperator:false};
 }
 function memberLevelForNumber(number){const n=Number(number);if(!Number.isFinite(n)||n<=0)return null;const pub=Number(memberLevelsByNumber.get(n));if(Number.isFinite(pub)&&pub>0)return pub;if(n===myLobbyNumber&&memberProfile)return Number(memberProfile.level)||1;return null;}
@@ -1042,9 +1056,9 @@ function baseNicknameFor(number,fallback=''){
 function rankBadge(level,nickname=''){
  const rank=rankInfo(level,nickname),badge=document.createElement('span');
  badge.className='rank-badge '+rank.css;
- badge.title=rank.isOperator?'운영자 · 전용 최상위 등급':rank.name+' · 레벨 '+rank.level;
+ badge.title=rank.isOperator?'운영자 · 전용 등급':rank.isTop3?rank.name+' · 전체 회원 보유 포인트 순위':rank.name+' · 레벨 '+rank.level;
  const mark=document.createElement('span');mark.className='rank-mark';mark.textContent=rank.mark;
- const text=document.createElement('span');text.textContent=rank.isOperator?'운영자':rank.name+' Lv.'+rank.level;
+ const text=document.createElement('span');text.textContent=rank.isOperator?'운영자':rank.isTop3?rank.name:rank.name+' Lv.'+rank.level;
  badge.append(mark,text);return badge;
 }
 function nameWithRank(el,number,fallback=''){
@@ -1064,6 +1078,12 @@ function nameWithRankByServer(el,raw){const text=String(raw||'');const id=/^Play
  if(id){nameWithRank(el,Number(id[1]));return;}
  const number=resolveNumberByNickname(text);
  if(number!=null){nameWithRank(el,number,text);return;}
+ if(text!=='운영자'&&wealthTopRanks.has(text.toLocaleLowerCase('ko-KR'))){
+  const placement=wealthLeaderProfiles.find(p=>String(p.nickname).toLocaleLowerCase('ko-KR')===text.toLocaleLowerCase('ko-KR'));
+  const wrap=document.createElement('span');wrap.className='rank-inline rank-top-'+wealthTopRanks.get(text.toLocaleLowerCase('ko-KR'));
+  const name=document.createElement('span');name.className='rank-name';name.textContent=text;
+  wrap.append(name,rankBadge(levelFromPoints(placement?.points??0),text));el.replaceChildren(wrap);return;
+ }
  if(text==='운영자'){
   const wrap=document.createElement('span');wrap.className='rank-inline rank-tier-admin';
   const name=document.createElement('span');name.className='rank-name';name.textContent='운영자';
@@ -1073,6 +1093,13 @@ function nameWithRankByServer(el,raw){const text=String(raw||'');const id=/^Play
 }
 function openRankGuide(){
  const node=$('rank-guide-list');node.replaceChildren();
+ const leaderboard=document.createElement('div');leaderboard.className='wealth-top3-guide';
+ const leadTitle=document.createElement('strong');leadTitle.textContent='재계 TOP 3 · 전체 회원 보유 포인트 순위';leaderboard.append(leadTitle);
+ if(!wealthLeaderProfiles.length){const loading=document.createElement('div');loading.textContent='순위 확인 중 · 서버 연동 후 표시';leaderboard.append(loading);}
+ else for(const p of wealthLeaderProfiles){const item=document.createElement('div');item.className='wealth-leader-row';
+  const name=document.createElement('span');name.textContent='재계 '+p.rank+'위 · '+p.nickname;
+  const money=document.createElement('strong');money.textContent=Number(p.points).toLocaleString('ko-KR')+' P';item.append(name,money);leaderboard.append(item);}
+ node.append(leaderboard);
  const level=memberProfile?levelFromPoints(memberProfile.points):0;
  const current=level?rankInfo(level,memberProfile?.nickname||''):null;
  for(let i=0;i<RANK_TIERS.length;i++){
@@ -1083,10 +1110,10 @@ function openRankGuide(){
   badge.lastChild.textContent=tier.name;
   const range=document.createElement('span');range.className='rank-guide-range';
   const levels=document.createElement('span');levels.className='rank-guide-levels';
-  levels.textContent='Lv.'+tier.min+'~'+(Number.isFinite(tier.max)?tier.max.toLocaleString('ko-KR'):'∞');
+  levels.textContent='Lv.'+tier.min;
   const points=document.createElement('span');points.className='rank-guide-points';
   const startPoints=pointsForLevel(tier.min);
-  const endPoints=Number.isFinite(tier.max)?pointsForLevel(tier.max+1)-1:null;
+  const endPoints=i<RANK_TIERS.length-1?RANK_TIERS[i+1].minPoints-1:null;
   points.textContent=startPoints.toLocaleString('ko-KR')+'P'+(endPoints===null?' 이상':' ~ '+endPoints.toLocaleString('ko-KR')+'P');
   range.append(levels,points);
   line.append(badge,range);node.append(line);
@@ -1099,7 +1126,7 @@ function openRankGuide(){
  operatorRange.textContent='운영자 전용 · 포인트 무관';
  operatorLine.append(operatorBadge,operatorRange);node.append(operatorLine);
  const summary=$('rank-guide-summary');
- summary.textContent=current?.isOperator?'현재 운영자 · 레벨과 무관한 전용 최상위 등급':current?`현재 ${current.name} · Lv.${level} · ${Number(memberProfile.points||0).toLocaleString('ko-KR')}P / 10,000P에 Lv.50 달성`:'10,000P 도달 시 Lv.50 · Lv.100 불멸 · Lv.500 천상 · Lv.1000 신 · Lv.5000 초월';
+ summary.textContent=current?.isOperator?'현재 운영자 · 특별 등급':current?`현재 ${current.name} · ${Number(memberProfile.points||0).toLocaleString('ko-KR')}P · 1P = 1원`:'1P = 1원 · 포인트 보유액으로 등급 결정 · 재계 순위는 전체 회원 기준';
  $('rank-guide-overlay').hidden=false;
 }
 $('rank-guide-open').addEventListener('click',openRankGuide);
@@ -1121,7 +1148,7 @@ function paintMemberPanel(){
    line.append(name,rankBadge(lvl,memberProfile.nickname),point);
    const meter=document.createElement('div');meter.className='member-rank-progress';const progress=document.createElement('span');meter.append(progress);
    const hint=document.createElement('div');hint.className='member-next-tier';
-   const nextTier=!tier.isOperator?RANK_TIERS[tier.index+1]:null;
+   const nextTier=(!tier.isOperator&&!tier.isTop3)?RANK_TIERS[tier.index+1]:null;
    if(nextTier){
     const startPoints=pointsForLevel(tier.min),nextPoints=pointsForLevel(nextTier.min);
     const remaining=Math.max(0,nextPoints-pts);
@@ -1129,14 +1156,14 @@ function paintMemberPanel(){
     hint.textContent='다음 등급 '+nextTier.name+' (Lv.'+nextTier.min+')까지 '+remaining.toLocaleString('ko-KR')+'P';
    }else{
     progress.style.width='100%';
-    hint.textContent=tier.isOperator?'운영자 전용 최상위 등급':'최고 일반 등급 · 누적 포인트 '+pts.toLocaleString('ko-KR')+'P';
+    hint.textContent=tier.isOperator?'운영자 특별 등급':tier.isTop3?'전체 회원 보유 포인트 기준 '+tier.name:'최고 자산 등급 · '+pts.toLocaleString('ko-KR')+'P';
    }
    panel.append(line,meter,hint);
    if(memberGomokuStreak!==null){const streak=document.createElement('div');streak.className='member-arcade-streak';streak.textContent='오목 '+memberGomokuStreak+'연승';panel.append(streak);}
    if(memberArcadeStreaks.tetris!==null||memberArcadeStreaks.mine_battle!==null){const streak=document.createElement('div');streak.className='member-arcade-streak';streak.textContent='테트리스 '+(memberArcadeStreaks.tetris??'—')+'연승 · 지뢰찾기 '+(memberArcadeStreaks.mine_battle??'—')+'연승 (5승 15% · 10승 20%)';panel.append(streak);}
   }
  }
- if(top){top.hidden=!signed;top.replaceChildren();if(signed){const rank=rankInfo(memberProfile.level,memberProfile.nickname);top.className='member-level-tag '+rank.css;top.textContent=rank.isOperator?rank.mark+' 운영자':rank.mark+' '+rank.name+' · Lv.'+rank.level;}else top.className='member-level-tag';}
+ if(top){top.hidden=!signed;top.replaceChildren();if(signed){const rank=rankInfo(memberProfile.level,memberProfile.nickname);top.className='member-level-tag '+rank.css;top.textContent=rank.isOperator?rank.mark+' 운영자':rank.isTop3?rank.mark+' '+rank.name:rank.mark+' '+rank.name+' · Lv.'+rank.level;}else top.className='member-level-tag';}
  if(open)open.hidden=signed;
  if(logout)logout.hidden=!signed;
  const giftButton=$('gift-open');if(giftButton)giftButton.hidden=!signed;
@@ -1167,6 +1194,18 @@ async function refreshMemberStats(){
     if(adminToken!==(data.admin_token||''))persistAdminToken(data.admin_token||'');
     if(!memberProfile||JSON.stringify(normalizedMemberProfile(data.profile))!==JSON.stringify(memberProfile))useMemberProfile(data.profile);
   }
+  try{
+   const wealth=await callRpc('renju_member_wealth_leaders',{});
+   if(Array.isArray(wealth.leaders)){
+    const fresh=wealth.leaders.filter(p=>p&&p.nickname&&p.rank>=1&&p.rank<=3);
+    if(JSON.stringify(fresh)!==JSON.stringify(wealthLeaderProfiles)){
+      wealthLeaderProfiles=fresh;wealthTopRanks.clear();
+      for(const p of fresh)wealthTopRanks.set(String(p.nickname).toLocaleLowerCase('ko-KR'),Number(p.rank));
+      nicknameRevision++;chatLastSeen='';sheet1LastPaint='';paintMemberPanel();
+      renderLobby();if(activeRoom){if(isTetrisRoom())tDisplayStatus();else if(isMineRoom())renderMineRoom();else if(state)paintState();}
+    }
+   }
+  }catch(_){/* Earlier server versions may not have the optional leaderboard RPC yet. */}
   const data=await callRpc('renju_member_public_levels',{});
   if(Array.isArray(data.profiles)){
    const next=new Map(data.profiles.map(p=>[Number(p.number),levelFromPoints(p.points)]));
@@ -1241,7 +1280,7 @@ function maybeOpenInitialRoom(){
 
 function nicknameFor(number,fallback=''){
  const base=baseNicknameFor(number,fallback),level=memberLevelForNumber(number);
- return base==='운영자'?'운영자 · ★ 운영자':level?base+' · '+rankInfo(level).name+' Lv.'+level:base;
+ return base==='운영자'?'운영자 · ★ 운영자':level?base+' · '+rankInfo(level,base).name+' Lv.'+level:base;
 }
 function nicknameFromServer(name){const m=/^Player\s+(\d+)$/.exec(String(name||''));return m?nicknameFor(Number(m[1])):(name||'대기');}
 function nicknameForPlayer(player){return player?.number?nicknameFor(player.number,player.name):nicknameFromServer(player?.name||'대기');}
@@ -2204,7 +2243,7 @@ async function handleChatSubmit(e){
    showOperatorMessage('회원 로그인으로 인증된 운영자만 명령을 사용할 수 있습니다.',true);return;
   }
   let operation=null,params={},notice=false;
-  const pointMatch=text.match(/^\/포인트\s+(.+?)\s+(\d+)\s*$/);
+  const pointMatch=text.match(/^\/포인트\s+(.+?)\s+([+-]?[0-9][0-9,]*)\s*$/);
   const commandMatch=text.match(/^\/(강퇴|공지)\s+([\s\S]+)$/);
   if(/^\/clear(?:\s|$)/i.test(text)){
    const clearMatch=text.match(/^\/clear\s+(chat|room)\s*$/i);
@@ -2226,12 +2265,13 @@ async function handleChatSubmit(e){
    if(!window.confirm('Sheet1 채팅 전체와 사용자가 없는 과거 게임방을 삭제하고 시트 번호를 초기화할까요?\n\n현재 참여자가 있는 게임방이 있으면 아무것도 삭제하지 않습니다.'))return;
    operation='renju_admin_clean';params={p_client:CLIENT_ID,p_token:adminToken};
   }else if(text.startsWith('/포인트')){
-   if(!pointMatch){showOperatorMessage('사용법: /포인트 닉네임 숫자',true);return;}
-   const target=pointMatch[1].trim(),amount=Number(pointMatch[2]);
-   if(!target||target.length>16||!Number.isSafeInteger(amount)||amount<1||amount>100000){
-    showOperatorMessage('지급 포인트는 1~100000 사이의 정수여야 합니다.',true);return;
+   if(!pointMatch){showOperatorMessage('사용법: /포인트 닉네임 금액 (예: 100,000 또는 -50,000)',true);return;}
+   const target=pointMatch[1].trim(),amount=Number(pointMatch[2].replaceAll(',',''));
+   if(!target||target.length>16||!Number.isSafeInteger(amount)||amount===0||Math.abs(amount)>1000000000000){
+    showOperatorMessage('포인트는 -1,000,000,000,000 ~ +1,000,000,000,000 범위이며 0은 사용할 수 없습니다.',true);return;
    }
-   operation='renju_admin_points';params={p_client:CLIENT_ID,p_token:adminToken,p_target_nickname:target,p_amount:amount};
+   if((amount<0||amount>=1000000)&&!window.confirm(`${target} 회원의 포인트를 ${amount>0?'지급':'차감'}할까요?\n금액: ${Math.abs(amount).toLocaleString('ko-KR')}P\n기존 잔액은 서버에서 확인합니다.`))return;
+   operation='renju_admin_points_large';params={p_client:CLIENT_ID,p_token:adminToken,p_target_nickname:target,p_amount:amount};
   }else if(commandMatch){
    const cmd=commandMatch[1],value=commandMatch[2].trim();
    if(!value){showOperatorMessage('명령 뒤에 내용을 입력해 주세요.',true);return;}
@@ -2244,13 +2284,13 @@ async function handleChatSubmit(e){
      p_action:cmd==='강퇴'?'kick':'notice',p_room:activeRoom,
      p_target_nickname:cmd==='강퇴'?value:null,p_message:notice?value:null};
    }
-  }else{showOperatorMessage('사용법: /포인트 닉네임 숫자, /공지 내용, /강퇴 닉네임, /clear chat, /clear room, /clean',true);return;}
+  }else{showOperatorMessage('사용법: /포인트 닉네임 금액 (예: 100,000 또는 -50,000), /공지 내용, /강퇴 닉네임, /clear chat, /clear room, /clean',true);return;}
   chatPending=true;form.querySelector('button').disabled=true;
   try{
    const result=await callRpc(operation,params);
-   showOperatorMessage(result.message||'명령 처리 완료');input.value='';input.focus();
+   showOperatorMessage(operation==='renju_admin_points_large'&&Number.isSafeInteger(Number(result.points))?`${result.nickname} · ${Number(result.added)>0?'+':''}${Number(result.added).toLocaleString('ko-KR')}P / 잔액 ${Number(result.points).toLocaleString('ko-KR')}P`:result.message||'명령 처리 완료');input.value='';input.focus();
    if(notice)await pollAnnouncement();
-   if(operation==='renju_admin_points')await refreshMemberStats();
+   if(operation==='renju_admin_points_large')await refreshMemberStats();
    if(operation==='renju_admin_clear'&&params.p_target==='room'){
     try{const extra=await callRpc('renju_oddeven_admin_clear',{p_client:CLIENT_ID,p_token:adminToken});
       showOperatorMessage((result.message||'방 정리 완료')+' · 홀짝 '+extra.deleted+'개 삭제');}
@@ -3300,13 +3340,14 @@ async function holdemAdminCommand(id,text){
  }
  let rpc='',params={},notice=false;
  if(text.startsWith('/포인트')){
-  const match=text.match(/^\/포인트\s+(.+?)\s+(\d+)\s*$/);
-  if(!match){holdemChatFeedback('사용법: /포인트 닉네임 숫자');return true;}
-  const target=match[1].trim(),amount=Number(match[2]);
-  if(!target||target.length>16||!Number.isSafeInteger(amount)||amount<1||amount>100000){
-   holdemChatFeedback('지급 포인트는 1~100000 사이의 정수여야 합니다.');return true;
+  const match=text.match(/^\/포인트\s+(.+?)\s+([+-]?[0-9][0-9,]*)\s*$/);
+  if(!match){holdemChatFeedback('사용법: /포인트 닉네임 금액 (예: 100,000 또는 -50,000)');return true;}
+  const target=match[1].trim(),amount=Number(match[2].replaceAll(',',''));
+  if(!target||target.length>16||!Number.isSafeInteger(amount)||amount===0||Math.abs(amount)>1000000000000){
+   holdemChatFeedback('포인트는 -1,000,000,000,000 ~ +1,000,000,000,000 범위이며 0은 사용할 수 없습니다.');return true;
   }
-  rpc='renju_admin_points';params={p_client:CLIENT_ID,p_token:adminToken,p_target_nickname:target,p_amount:amount};
+  if((amount<0||amount>=1000000)&&!window.confirm(`${target} 회원의 포인트를 ${amount>0?'지급':'차감'}할까요?\n금액: ${Math.abs(amount).toLocaleString('ko-KR')}P`))return true;
+  rpc='renju_admin_points_large';params={p_client:CLIENT_ID,p_token:adminToken,p_target_nickname:target,p_amount:amount};
  }else if(text.startsWith('/공지')){
   const msg=text.slice(3).trim();
   if(!msg||msg.length>250){holdemChatFeedback('공지 내용은 1~250자여야 합니다.');return true;}
@@ -3315,13 +3356,13 @@ async function holdemAdminCommand(id,text){
   const nick=text.slice(3).trim();
   if(!nick||nick.length>16){holdemChatFeedback('사용법: /강퇴 닉네임');return true;}
   rpc='renju_holdem_admin_command';params={p_client:CLIENT_ID,p_token:adminToken,p_room:id,p_action:'kick',p_target_nickname:nick};
- }else{holdemChatFeedback('사용법: /공지 내용, /강퇴 닉네임, /포인트 닉네임 숫자');return true;}
+ }else{holdemChatFeedback('사용법: /공지 내용, /강퇴 닉네임, /포인트 닉네임 금액');return true;}
  const state=holdemChatState(id),send=$('holdem-chat-send');state.sending=true;send.disabled=true;
  try{
   const result=await callRpc(rpc,params);
-  if(activeRoom===id){$('holdem-chat-input').value='';$('holdem-chat-input').focus();holdemChatFeedback('✓ '+(result.message||'운영자 명령 처리 완료'),false);}
+  if(activeRoom===id){$('holdem-chat-input').value='';$('holdem-chat-input').focus();holdemChatFeedback('✓ '+(rpc==='renju_admin_points_large'&&Number.isSafeInteger(Number(result.points))?`${result.nickname} · ${Number(result.added)>0?'+':''}${Number(result.added).toLocaleString('ko-KR')}P / 잔액 ${Number(result.points).toLocaleString('ko-KR')}P`:result.message||'운영자 명령 처리 완료'),false);}
   if(notice)await pollAnnouncement();
-  if(rpc==='renju_admin_points')await refreshMemberStats();
+  if(rpc==='renju_admin_points_large')await refreshMemberStats();
  }catch(err){if(activeRoom===id)holdemChatFeedback('명령 실패: '+err.message);}
  finally{state.sending=false;send.disabled=false;}
  return true;
