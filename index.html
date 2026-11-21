@@ -722,7 +722,7 @@ body.race-active .race-sheet-view{height:calc(100dvh - 145px);min-height:550px}
 <section id="territory-view" class="territory-sheet-view" aria-label="영토전 게임 시트" hidden>
   <iframe id="territory-frame" title="업무현황_영토전_VER.2026" data-src="./territory-demo.html" referrerpolicy="same-origin"></iframe>
 </section>
-<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="territory-sheet-tab" class="sheet-tab" type="button" data-sheet="territory" hidden>🏯 영토전 <span class="tab-close" data-close-territory title="영토전 시트 닫기">×</span></button><button id="race-sheet-tab" class="sheet-tab" type="button" data-sheet="race" hidden>🏁 레이스 <span class="tab-close" data-close-race title="레이스 시트 닫기">×</span></button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="레벨 등급 v3.0">100% · v3.9 칭호개편</span></footer>
+<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="territory-sheet-tab" class="sheet-tab" type="button" data-sheet="territory" hidden>🏯 영토전 <span class="tab-close" data-close-territory title="영토전 시트 닫기">×</span></button><button id="race-sheet-tab" class="sheet-tab" type="button" data-sheet="race" hidden>🏁 레이스 <span class="tab-close" data-close-race title="레이스 시트 닫기">×</span></button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="레벨 등급 v3.0">100% · v1.0.1 인증 안정화</span></footer>
 <script>
 'use strict';
 const SIZE = 15;
@@ -930,8 +930,24 @@ try{memberToken=localStorage.getItem(MEMBER_TOKEN_KEY)||'';}catch(_){}
 let memberProfile=null,memberLevelsByNumber=new Map(),memberPanelMode='login';
 let memberGomokuStreak=null, gomokuRewardData=null, gomokuRewardPending=false, gomokuRewardSyncAt=0, gomokuRewardRoom=null;
 let memberArcadeStreaks={tetris:null,mine_battle:null},arcadeRewardData=null,arcadeRewardPending=false,arcadeRewardSyncAt=0,arcadeRewardRoom=null;
-let memberAuthPending=false,memberRefreshBusy=false;
-function memberRpc(action,rest={}){return callRpc('renju_member_auth',{p_client:CLIENT_ID,p_action:action,...rest});}
+let memberAuthPending=false,memberRefreshBusy=false,memberSessionRestoreBusy=false;
+// Login/session requests get their own time budget. A slow lobby refresh must not silently log users out.
+function memberRpc(action,rest={}){return callRpc('renju_member_auth',{p_client:CLIENT_ID,p_action:action,...rest},false,22000);}
+function isConfirmedMemberExpiry(error){
+ const message=String(error?.message||error||'');
+ return /로그인 기간이 만료|로그인이 필요합니다|로그인 세션이 유효하지|세션이 만료|토큰이 만료/.test(message)
+     && !/서버 오류 5\d\d|시간 초과|Failed to fetch|NetworkError|aborted/i.test(message);
+}
+function applyMemberSessionError(error){
+ if(isConfirmedMemberExpiry(error)){
+  saveMemberToken('');persistAdminToken('');memberProfile=null;
+  paintMemberPanel();refreshNicknameAccess();
+  lobbyNotify('로그인 기간이 만료되었습니다. 기존 계정으로 다시 로그인해 주세요.',true);
+ }else{
+  // Keep the session token through temporary network/HTTP/RPC problems.
+  lobbyNotify('회원 인증 서버 연결이 지연되고 있습니다. 저장된 로그인으로 자동 재시도합니다. ('+String(error?.message||error||'연결 오류')+')',true);
+ }
+}
 // v3.5.0 — Account-bound gifts. All balances are checked/updated on Supabase.
 let giftSubmitting=false, giftRetry=null;
 const giftMoney=(n)=>Number(n||0).toLocaleString('ko-KR');
@@ -1210,18 +1226,33 @@ function useMemberProfile(profile){
  renderLobby();if(activeRoom){if(isTetrisRoom())tDisplayStatus();else if(isMineRoom())renderMineRoom();else if(state)paintState();}
 }
 async function loadMemberSession(){
- if(!memberToken)return;
- try{const result=await memberRpc('session',{p_token:memberToken});persistAdminToken(result.admin_token||'');useMemberProfile(result.profile);maybeOpenInitialRoom();}
- catch(_){saveMemberToken('');persistAdminToken('');memberProfile=null;paintMemberPanel();}
+ if(!memberToken||memberSessionRestoreBusy)return;
+ memberSessionRestoreBusy=true;
+ const restoreToken=memberToken;
+ try{
+  const result=await memberRpc('session',{p_token:restoreToken});
+  if(memberToken!==restoreToken)return; // user switched accounts while the request was in flight
+  if(Object.prototype.hasOwnProperty.call(result,'admin_token'))persistAdminToken(result.admin_token||'');
+  useMemberProfile(result.profile);maybeOpenInitialRoom();
+  if($('lobby-notice')?.textContent?.includes('회원 인증 서버 연결이 지연'))lobbyNotify('회원 로그인 연결이 복구되었습니다.');
+ }catch(error){if(memberToken===restoreToken)applyMemberSessionError(error);}
+ finally{memberSessionRestoreBusy=false;}
 }
 async function refreshMemberStats(){
  if(document.hidden||memberRefreshBusy)return;
  memberRefreshBusy=true;
  try{
-  if(memberToken){const data=await memberRpc('session',{p_token:memberToken});
-    if(adminToken!==(data.admin_token||''))persistAdminToken(data.admin_token||'');
-    if(!memberProfile||JSON.stringify(normalizedMemberProfile(data.profile))!==JSON.stringify(memberProfile))useMemberProfile(data.profile);
-  }
+   if(memberToken&&!memberProfile)await loadMemberSession();
+   if(memberToken&&memberProfile){
+     const refreshToken=memberToken;
+     try{
+      const data=await memberRpc('session',{p_token:refreshToken});
+      if(memberToken===refreshToken){
+       if(Object.prototype.hasOwnProperty.call(data,'admin_token')&&adminToken!==(data.admin_token||''))persistAdminToken(data.admin_token||'');
+       if(!memberProfile||JSON.stringify(normalizedMemberProfile(data.profile))!==JSON.stringify(memberProfile))useMemberProfile(data.profile);
+      }
+     }catch(error){if(memberToken===refreshToken&&isConfirmedMemberExpiry(error))applyMemberSessionError(error);}
+   }
   try{
    const wealth=await callRpc('renju_member_wealth_leaders',{});
    if(Array.isArray(wealth.leaders)){
@@ -1720,7 +1751,7 @@ function applyOddEvenLobbyReport(report){
  showOddEvenLobbyStatus(report);
 }
 async function refreshRaceOnlineRooms(){
- if(!memberToken){raceOnlineRooms=[];return;}
+ if(!memberToken||!memberProfile){raceOnlineRooms=[];return;}
  const d=await callRpc('renju_race_mixed_rpc',{
   p_action:'list',p_client:CLIENT_ID,p_token:memberToken,p_room:null,p_payload:{}
  },false,20000);
