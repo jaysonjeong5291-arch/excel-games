@@ -1416,12 +1416,12 @@ async function pollMatchGateQuick(){
  const gate=gateState(id);
  if(gate?.started&&!currentGameFinished())return;
  matchGateQuickBusy=true;
- try{const result=await gateRpc(id,'sync');if(id===activeRoom)applyGate(id,result);}
+ try{const result=await gateSyncThrottled(id,1700);if(result&&id===activeRoom)applyGate(id,result);}
  catch(_){/* The normal room loop reports connectivity problems. */}
  finally{matchGateQuickBusy=false;}
 }
-// At most one lightweight status request per interval, with no extra request during active play.
-setInterval(pollMatchGateQuick,650);
+// One coordinated Ready-status request even when the main room poll runs concurrently.
+setInterval(pollMatchGateQuick,1500);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollMatchGateQuick();});
 window.addEventListener('focus',pollMatchGateQuick);
 
@@ -1457,7 +1457,7 @@ function applyNicknameData(data){
 function updateNicknameInput(){const input=$('nickname-input');if(document.activeElement!==input)input.value=myNickname;
  input.placeholder=myLobbyNumber?numbered(myLobbyNumber):'Player';}
 async function syncNicknames(force=false){
- const now=Date.now();if(!force&&now-nicknameLastSync<9000)return;
+ const now=Date.now();if(!force&&now-nicknameLastSync<30000)return;
  nicknameLastSync=now;
  try{
   const shouldPublish=Boolean(myNickname&&!nicknameLocalPublished);
@@ -1472,6 +1472,19 @@ async function syncNicknames(force=false){
 function roomRpc(id,action='sync',args={},keepalive=false){return callRpc('renju_room_sync',{p_room:id,p_client:CLIENT_ID,p_action:action,...args},keepalive);}
 function cleanupRpc(id=null){return callRpc('renju_cleanup',{p_room:id});}
 function gateRpc(id,action='sync'){return callRpc('renju_match_gate_sync',{p_room:id,p_client:CLIENT_ID,p_action:action});}
+// Synchronization requests share a single in-flight promise per room. Actions (ready/start)
+// intentionally bypass this throttle so game controls remain immediate.
+const gateSyncInFlight=new Map(),gateSyncLastAttempt=new Map();
+async function gateSyncThrottled(id,minGapMs=1700){
+ if(gateSyncInFlight.has(id))return gateSyncInFlight.get(id);
+ const now=Date.now();
+ if(now-(gateSyncLastAttempt.get(id)||0)<minGapMs)return null;
+ gateSyncLastAttempt.set(id,now);
+ const task=gateRpc(id,'sync');
+ gateSyncInFlight.set(id,task);
+ try{return await task;}
+ finally{if(gateSyncInFlight.get(id)===task)gateSyncInFlight.delete(id);}
+}
 let roleSwitchPending=false;
 function roleSwitchRpc(room,mode){return callRpc('renju_role_switch',{
  p_room:room,p_client:CLIENT_ID,p_token:memberToken||null,p_mode:mode
@@ -1714,7 +1727,7 @@ function visibleOddEvenRooms(rooms){
  });
 }
 async function pollOddEvenPresenceSummary(force=false){
- if(oePresenceRequest||(!force&&Date.now()-oePresenceSeenAt<6500))return oePresenceRequest;
+ if(oePresenceRequest||(!force&&Date.now()-oePresenceSeenAt<12000))return oePresenceRequest;
  const task=(async()=>{
   const data=await callRpc('renju_oddeven_room_social',{p_action:'summary',p_client:null,p_token:null,p_room:null,p_text:null},false,7500);
   if(!Array.isArray(data?.rooms))return;
@@ -1851,6 +1864,9 @@ function pollLobbyInBackground(){
  if(Date.now()-oeLobbyLastRefreshAt<15000)return;
  oeLobbyLastRefreshAt=Date.now();
  lobbyPollInFlight=true;
+ // Identity sync must not wait for a slow or failed poker/racing/odd-even RPC.
+ // It is read independently so a single optional game endpoint cannot block nickname access.
+ syncNicknames().catch(()=>{});
  (async()=>{
   // Each source starts immediately. Even if renju_lobby_v2 fails or times out,
   // the online Odd/Even room list is still fetched and rendered.
@@ -1901,17 +1917,20 @@ function pollLobbyInBackground(){
    if(Array.isArray(s)){matchGateLobbyStatuses=new Map(s.map(z=>[z.room_id,z]));if(lastLegacyLobbyPayload)refreshCombinedLobby();}
   }).catch(()=>{});
   await Promise.allSettled([legacyTask,holdemTask,uoTask,evenTask,gateTask,presenceTask,raceTask]);
-  await syncNicknames().catch(()=>{});
   maybeOpenInitialRoom();
  })().finally(()=>{lobbyPollInFlight=false;});
 }
+// Cleanup touches server state. Run infrequently instead of from every short UI tick.
+let lastBackgroundCleanupAt=Date.now(),lastOtherRoomsPollAt=0;
 function pollCleanupInBackground(){
- if(cleanupPollInFlight||stopped)return;
+ if(cleanupPollInFlight||stopped||Date.now()-lastBackgroundCleanupAt<45000)return;
+ lastBackgroundCleanupAt=Date.now();
  cleanupPollInFlight=true;
  cleanupRpc().catch(()=>{}).finally(()=>{cleanupPollInFlight=false;});
 }
 function pollOtherRoomsInBackground(){
- if(stopped)return;
+ if(stopped||Date.now()-lastOtherRoomsPollAt<12000)return;
+ lastOtherRoomsPollAt=Date.now();
  for(const id of openRooms){
   if(id===activeRoom||id.startsWith('h-')||id.startsWith('e-')||id.startsWith('u-')||roomPollInFlight.has(id))continue;
   roomPollInFlight.add(id);
@@ -1942,7 +1961,11 @@ async function refresh(){
      applyMineData(id,await mineRpc(id));gamePolled=true;
     }
     const data=await roomRpc(id);applyRoom(id,data);
-    const gateData=await gateRpc(id);applyGate(id,gateData);
+    // Keep the match-gate presence alive during play, but do not re-read it every
+    // game-state tick. Ready/rematch remains fast via the dedicated quick poll.
+    const gateGap=hasMatchStarted(id)&&!currentGameFinished()?6000:1700;
+    const gateData=await gateSyncThrottled(id,gateGap);
+    if(gateData)applyGate(id,gateData);
     // First poll right after 1P clicks Start: the local gate may have been waiting.
     if(!gamePolled&&id===activeRoom&&hasMatchStarted(id)){
      if(isTetrisRoom())applyTetrisData(id,await tetrisRpc(id));
@@ -1960,7 +1983,7 @@ async function refresh(){
   if(tick%7===0)pollCleanupInBackground();
   if(tick%4===0)pollOtherRoomsInBackground();
   tick++;polling=false;
-  if(!stopped)pollTimer=setTimeout(refresh,id?(isHoldemRoom()?750:isOddEvenRoom()?950:isTetrisRoom()?450:isMineRoom()?850:1200):1550);
+  if(!stopped)pollTimer=setTimeout(refresh,id?(isHoldemRoom()?1100:isOddEvenRoom()?1350:isTetrisRoom()?450:isMineRoom()?850:1200):4000);
  }
 }
 function cell(text='',cls=''){const td=document.createElement('td');td.textContent=String(text??'');if(cls)td.className=cls;return td;}
@@ -2289,7 +2312,7 @@ $('member-logout').addEventListener('click',async()=>{
 });
 paintMemberPanel();
 setTimeout(()=>{loadMemberSession().then(refreshMemberStats);},0);
-setInterval(refreshMemberStats,12000);
+setInterval(refreshMemberStats,35000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshMemberStats();});
 $('nickname-form').addEventListener('submit',async e=>{
  e.preventDefault();const input=$('nickname-input'),button=$('nickname-save');
@@ -2364,8 +2387,10 @@ function showOperatorMessage(message,error=false){
  $('sheet1-chat-feedback-row').hidden=!!$('sheet1-chat-feedback').hidden;
  updateSheet1RowNumbers();
 }
+let announcementRequestInFlight=false;
 async function pollAnnouncement(){
- if(document.hidden)return;
+ if(document.hidden||stopped||announcementRequestInFlight)return;
+ announcementRequestInFlight=true;
  try{
   const data=await callRpc('renju_admin_notice_sync',{});
   const notice=data.notice;
@@ -2377,19 +2402,20 @@ async function pollAnnouncement(){
   $('admin-notice-text').textContent=notice.text;
   $('admin-notice').hidden=false;
  }catch(_){/* Optional add-on; core game remains operational while network is offline. */}
+ finally{announcementRequestInFlight=false;}
 }
 $('admin-notice-close').addEventListener('click',()=>{
  $('admin-notice').hidden=true;
  try{sessionStorage.setItem('excel-games-dismissed-notice',lastNoticeId||'');}catch(_){}
 });
-setInterval(pollAnnouncement,3200);
+setInterval(pollAnnouncement,10000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollAnnouncement();});
 setTimeout(pollAnnouncement,800);
 // Shared Sheet1 notes: separate feed from each room's existing memo.
 let sheet1Messages=[],sheet1LastPaint='',sheet1ChatPending=false,sheet1LastSync=0;
 async function syncSheet1Chat(force=false){
  if(activeRoom!==null||document.hidden||sheet1ChatPending)return;
- if(!force&&Date.now()-sheet1LastSync<2200)return;
+ if(!force&&Date.now()-sheet1LastSync<3500)return;
  sheet1ChatPending=true;
  try{
   const data=await callRpc('renju_sheet1_chat',{p_client:CLIENT_ID,p_action:'list',p_text:null});
@@ -2426,7 +2452,7 @@ function paintSheet1Chat(){
  }
  panel.replaceChildren(...rows);updateSheet1RowNumbers();
 }
-setInterval(()=>syncSheet1Chat(),2500);
+setInterval(()=>syncSheet1Chat(),4000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncSheet1Chat(true);});
 window.addEventListener('focus',()=>syncSheet1Chat(true));
 setTimeout(()=>syncSheet1Chat(true),450);
@@ -2554,7 +2580,7 @@ function paintChat(){const messages=Array.isArray(state?.chat)?state.chat:[];con
 // Read-only streak/settlement query. SQL RPC is the authority: no local point transfers.
 async function syncGomokuRewards(force=false){
  if(!memberToken||document.hidden||gomokuRewardPending)return;
- const now=Date.now();if(!force&&now-gomokuRewardSyncAt<6500)return;
+ const now=Date.now();if(!force&&now-gomokuRewardSyncAt<20000)return;
  gomokuRewardPending=true;gomokuRewardSyncAt=now;
  const room=activeRoom&&!activeRoom.startsWith('h-')&&currentGameType()==='gomoku'?activeRoom:null;
  try{
@@ -2585,7 +2611,7 @@ function paintGomokuRewards(){
 // v2.6: server-only Tetris/Mines payout and independent persistent streak status.
 async function syncArcadeRewards(force=false){
  if(!memberToken||document.hidden||arcadeRewardPending)return;
- const now=Date.now();if(!force&&now-arcadeRewardSyncAt<6500)return;
+ const now=Date.now();if(!force&&now-arcadeRewardSyncAt<20000)return;
  arcadeRewardPending=true;arcadeRewardSyncAt=now;
  const room=activeRoom&&['tetris','mine_battle'].includes(currentGameType())?activeRoom:null;
  try{
@@ -2617,9 +2643,9 @@ function paintArcadeRewards(game){
   el.textContent='참가 +'+money(rr.start_points)+'P 지급 · 현재 '+money(streak)+'연승 · 다음 승리 시 '+(streak>=9?'20%':streak>=4?'15%':'10%')+' 획득 · 상대가 더 적으면 내 포인트 5% (패자는 10% 차감)';
  }else el.textContent=name+' · 현재 '+money(streak)+'연승 · 게임 시작 +100P · 다음 승리 '+(streak>=9?'20%':streak>=4?'15%':'10%')+' / 상대가 더 적으면 내 포인트 5% · 패자는 10% 차감';
 }
-setInterval(()=>syncArcadeRewards(),6500);
+setInterval(()=>syncArcadeRewards(),20000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncArcadeRewards(true);});
-setInterval(()=>syncGomokuRewards(),6500);
+setInterval(()=>syncGomokuRewards(),20000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncGomokuRewards(true);});
 function paintState(){const s=state;if(!s)return;
  const black=s.players?.black,white=s.players?.white;const ready=Boolean(black?.online&&white?.online),finished=s.winner!==null;
@@ -2645,6 +2671,13 @@ window.addEventListener('load',()=>{
  restoreOddEvenLobby();
  refresh();
 },{once:true});
+// A page restored from browser back/forward cache does not fire a new load event.
+window.addEventListener('pageshow',event=>{
+ if(event.persisted){stopped=false;polling=false;refresh();pollLobbyInBackground();}
+});
+document.addEventListener('visibilitychange',()=>{
+ if(!document.hidden&&!stopped){pollLobbyInBackground();syncNicknames().catch(()=>{});}
+});
 function resizeCanvas() {
   const bounds = canvas.getBoundingClientRect();
   if(!bounds.width)return;
@@ -3493,7 +3526,7 @@ function holdemChatState(id){
 async function holdemChatSync(id,force=false){
  if(!id?.startsWith('h-')||document.hidden||!memberToken)return;
  const state=holdemChatState(id);
- if(state.busy||state.sending||(!force&&Date.now()-state.last<1750))return;
+ if(state.busy||state.sending||(!force&&Date.now()-state.last<2500))return;
  state.busy=true;
  try{
   const data=await callRpc('renju_holdem_chat',{p_client:CLIENT_ID,p_token:memberToken,p_room:id,p_action:'list',p_text:null});
@@ -3579,7 +3612,7 @@ $('holdem-chat-form').addEventListener('submit',async e=>{
  }catch(err){if(activeRoom===id)holdemChatFeedback('전송 실패: '+err.message);}
  finally{state.sending=false;send.disabled=false;}
 });
-setInterval(()=>{if(isHoldemRoom())holdemChatSync(activeRoom);},1700);
+setInterval(()=>{if(isHoldemRoom())holdemChatSync(activeRoom);},2800);
 
 $('holdem-ready').addEventListener('click',()=>holdemAct('ready'));
 $('holdem-role-switch').addEventListener('click',()=>{const d=holdemDataByRoom.get(activeRoom);const mine=d?.players?.find(p=>p.seat===d.my_seat);changeMyRole(mine?.present?'spectator':'player');});
@@ -3619,7 +3652,7 @@ function oddEvenSocialRpc(action,room,text=null){
 async function oddEvenSocialSync(id,force=false){
  if(!id?.startsWith('e-')||!memberToken||document.hidden)return;
  const s=oddEvenSocialState(id);
- if(s.busy||s.sending||(!force&&Date.now()-s.last<3000))return;
+ if(s.busy||s.sending||(!force&&Date.now()-s.last<4000))return;
  s.busy=true;
  try{
   const data=await oddEvenSocialRpc('list',id);
@@ -3672,7 +3705,7 @@ oeEl('oe-chat-form').addEventListener('submit',async event=>{
  }catch(err){s.error='전송 실패: '+String(err?.message||err);if(activeRoom===id)oddEvenSocialRender(id);}
  finally{s.sending=false;oeEl('oe-chat-send').disabled=false;}
 });
-setInterval(()=>{if(isOddEvenRoom())oddEvenSocialSync(activeRoom);},3500);
+setInterval(()=>{if(isOddEvenRoom())oddEvenSocialSync(activeRoom);},4500);
 
 // =============== Odd/Even (1-6 players, authoritative Supabase RPC) ===============
 const oddEvenDataByRoom=new Map(),oddEvenRevealUntil=new Map();
