@@ -1035,29 +1035,35 @@ async function pingRacePresence(){
  },10000);}catch(_){/* Retry next tick; do not interrupt the current race. */}
  finally{racePresenceBusy=false;}
 }
+// v1.1.6: One sync per player is a transactional, room-locking RPC, NOT a cheap
+// read-only GET. It can settle a race. Keep traffic low for multiplayer rooms
+// and spread recovery attempts after a PostgreSQL statement_timeout.
 function raceSyncDelay(){
- if(!raceFrameVisible()||active!=='race')return 6000;
- if(!currentId)return 10000;
- let ms=3800;
- if(room?.phase==='betting')ms=2200;
+ if(!raceFrameVisible()||active!=='race')return 12000;
+ if(!currentId)return 12000;
+ let ms=8500;
+ if(room?.phase==='betting')ms=6500;
  else if(room?.phase==='running'){
   const end=Date.parse(room.ends_at||'');
   const start=Date.parse(room.started_at||'');
   const finish=Number.isFinite(end)?end:Number.isFinite(start)?start+raceDuration()*1000:NaN;
   const left=Number.isFinite(finish)?finish-Date.now():999999;
-  ms=left<0?1800:left<4000?2400:2800;
+  // Before the authoritative finish, costly polling cannot produce a result.
+  // One player will settle the room after its end; all others observe it later.
+  ms=left<=0?4200:left<3500?4200:7500;
  }else if(room?.phase==='finished'){
   const pendingPayout=myBet&&String(myBet.target_key)===String(room?.result?.winner)&&Number(myBet.payout||0)===0;
-  ms=pendingPayout?2800:5000;
+  ms=pendingPayout?6500:11000;
  }
- return Math.min(13000,Math.round(ms*Math.pow(1.6,raceSyncFailures)));
+ // Exponential load shedding. Do not hammer a congested DB every 1-2 sec.
+ return Math.min(28000,Math.round(ms*Math.pow(1.8,raceSyncFailures)));
 }
 function scheduleRaceSync(ms=null){
  if(autoTimer!==null){clearTimeout(autoTimer);autoTimer=null;}
  if(!token||!currentId)return;
  const delay=Math.max(250,ms??raceSyncDelay());
- // Small per-client jitter prevents every player from polling at the same instant.
- autoTimer=setTimeout(()=>{autoTimer=null;void tick()},delay+Math.round(Math.random()*190));
+ // Distribute 4-6 players over 1.5s, avoiding a burst of row-lock waiters.
+ autoTimer=setTimeout(()=>{autoTimer=null;void tick()},delay+Math.round(Math.random()*1500));
 }
 async function tick(){
  if(!token||!currentId)return;
@@ -1091,18 +1097,21 @@ async function tick(){
    }
   }else if(room?.race_no!==previousRound&&room?.phase==='waiting')info('다음 경기가 준비됐습니다. READY를 눌러 주세요.');
  }catch(e){
-  raceSyncFailures=Math.min(4,raceSyncFailures+1);
-  info('레이스 서버 연결 지연 · 자동으로 다시 확인합니다. ('+e.message+')',true);
+  raceSyncFailures=Math.min(5,raceSyncFailures+1);
+  const timedOut=/statement timeout|canceling statement|서버 응답 지연|timeout/i.test(String(e.message||''));
+  info((timedOut?'⚠ 서버 SQL 실행시간 초과 · 경기 종료/정산을 재확인 중입니다. 베팅·출발을 반복 클릭하지 마세요.':'레이스 서버 연결 지연 · 자동으로 다시 확인합니다.')+' ('+e.message+')',true);
  }finally{refreshing=false;scheduleRaceSync()}
 }
 let previousFrameVisible=false;
 init().then(()=>{
  void loadPhotos();
  scheduleRaceSync(700);
- setInterval(pingRacePresence,18000);
- setInterval(refreshRaceSale,20000);
+ // Presence's live window is much longer than 30s; no need for 18s writes.
+ setInterval(pingRacePresence,30000);
+ // Discount is configuration. The periodic read need not compete with settlement.
+ setInterval(()=>{if(raceFrameVisible())void refreshRaceSale()},60000);
  // Chat / spectator list is noncritical to official results.
- setInterval(()=>{if(active==='race')void loadRaceSocial()},9000);
+ setInterval(()=>{if(active==='race'&&!refreshing&&!pending)void loadRaceSocial()},16000);
  setInterval(()=>{if(raceFrameVisible()&&active==='solo'&&soloData?.phase==='running')updateSoloLanes()},750);
  setInterval(()=>{
   const visible=raceFrameVisible();
