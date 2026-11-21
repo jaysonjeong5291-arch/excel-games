@@ -131,6 +131,16 @@ let socialData=null,socialBusy=false,socialMissing=false,socialRoom='',socialSig
 // Trust the exact parent frame and origin; never send credentials in the URL.
 let parentClient='',parentToken='',parentAuthSeen=false;
 const embedded=window.parent!==window;
+// Parent Sheet1 controls iframe liveness explicitly: CSS-hidden iframes keep running
+// timers on mobile, falsely keeping unattended rooms visible forever.
+let parentSheetVisible=!embedded;
+const uoIsVisible=()=>!document.hidden&&(!embedded||parentSheetVisible);
+window.addEventListener('message',e=>{
+ if(!embedded||e.source!==window.parent||e.origin!==location.origin||e.data?.type!=='UO_VIEW_STATE')return;
+ const wasVisible=parentSheetVisible;
+ parentSheetVisible=e.data.visible===true;
+ if(parentSheetVisible&&!wasVisible){void refresh();void syncSocial();}
+});
 const client=()=>{if(embedded)return parentClient;try{return sessionStorage.getItem('renju-multi-client-v1')||''}catch{return ''}};
 const token=()=>{if(embedded)return parentToken;try{return localStorage.getItem('excel-games-member-session-v1')||''}catch{return ''}};
 function isParentAuthMessage(e){return embedded&&e.source===window.parent&&e.origin===location.origin&&e.data?.type==='UO_AUTH'}
@@ -204,7 +214,7 @@ function renderSocial(){
  if(pinned||messages.length===1)panel.scrollTop=panel.scrollHeight;
 }
 async function syncSocial(){
- if(socialBusy||!room||!data||socialMissing||document.hidden)return;
+ if(socialBusy||!room||!data||socialMissing||!uoIsVisible())return;
  const requested=room;socialBusy=true;
  try{
   if(!(await ensureCredentials()))return;
@@ -362,10 +372,10 @@ async function act(action,choice=null,amount=null){if(busy)return;busy=true;
  catch(e){feedback('요청 실패: '+e.message,true);if(action==='join'){room='';data=null;history.replaceState(null,'',location.pathname);render();}}
  finally{busy=false;}
 }
-async function refresh(){if(busy||polling)return;polling=true;try{
+async function refresh(){if(busy||polling||!uoIsVisible())return;polling=true;try{
  if(room){if(!(await ensureCredentials())){feedback('회원 로그인 정보가 없습니다. Sheet1에서 로그인한 후 다시 열어 주세요.',true);return;}let d=await rpc('sync');if(!data||Number(d.revision)>Number(data.revision)){data=d;wallet=d.my_balance??wallet;render();}else{if(d.my_balance!==undefined&&d.my_balance!==wallet){wallet=d.my_balance;data.my_balance=d.my_balance;render();}else updateClock();}}
  else{const response=await rpc('list');lobby=response.rooms||[];render();}}
  catch(e){feedback('동기화 실패: '+e.message,true);if(!room)renderLobby();}finally{polling=false;}}
 if(room&&!/^u-[0-9a-f]{12}$/.test(room))room='';
-if(!room){renderLobby();refresh()}else{act(watchMode?'watch':'join')}setInterval(()=>{if(!document.hidden)refresh()},1500);setInterval(()=>{if(!document.hidden)syncSocial()},3000);setInterval(updateClock,400);window.addEventListener('focus',()=>{refresh();syncSocial()});
+if(!room){renderLobby();refresh()}else{act(watchMode?'watch':'join')}setInterval(()=>{if(uoIsVisible())refresh()},1500);setInterval(()=>{if(uoIsVisible())syncSocial()},3000);setInterval(updateClock,400);window.addEventListener('focus',()=>{if(uoIsVisible()){refresh();syncSocial();}});
 </script></body></html>

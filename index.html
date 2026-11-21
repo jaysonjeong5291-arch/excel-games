@@ -1782,7 +1782,7 @@ async function refreshRaceOnlineRooms(){
  }
 }
 function mergedRoomList(){
- const legacyRooms=(lastLegacyLobbyPayload?.rooms||[]).filter(r=>r?.game!=='race'&&r?.game!=='oddeven'&&r?.game!=='홀짝');
+ const legacyRooms=(lastLegacyLobbyPayload?.rooms||[]).filter(r=>r?.game!=='race'&&r?.game!=='oddeven'&&r?.game!=='홀짝'&&r?.game!=='underover'&&!String(r?.id||'').startsWith('u-'));
  const incoming=[...raceOnlineRooms,...underOverLobbyRooms,...visibleOddEvenRooms(oddEvenLobbyRooms),...holdemLobbyRooms,...legacyRooms];
  const seen=new Set();
  return incoming.filter(r=>{
@@ -1872,9 +1872,19 @@ function pollLobbyInBackground(){
     }
    }
   });
-  const uoTask=underOverRpc('list').then(h=>{
-   if(Array.isArray(h.rooms)){underOverLobbyRooms=h.rooms.map(r=>({...r,game:'underover',status:r.status==='waiting'?'waiting':'playing',waiting:Math.max(0,2-Number(r.count||0)),moves:r.hand||0,black:null,white:null,title:(r.p1||'방장')+' / '+(r.p2||'대기 중')}));refreshCombinedLobby();}
-  }).catch(()=>{});
+  // v1.0.9: require a recent server-confirmed heartbeat. Old updated_at-based
+  // U/O list kept finished rooms and carry pots visible while everyone was offline.
+  const uoTask=callRpc('renju_uo_live_lobby',{},false,12000).then(h=>{
+   if(Array.isArray(h.rooms)){
+    underOverLobbyRooms=h.rooms.map(r=>({...r,game:'underover',
+     status:r.status==='waiting'?'waiting':r.status==='finished'?'finished':'playing',
+     waiting:Math.max(0,2-Number(r.count||0)),moves:r.hand||0,
+     black:null,white:null,title:(r.p1||'방장')+' / '+(r.p2||'대기 중')}));
+    refreshCombinedLobby();
+   }
+  }).catch(()=>{ // A failed read must not revive stale rooms from the old cached list.
+   underOverLobbyRooms=[];refreshCombinedLobby();
+  });
   const holdemTask=holdemRpc('list').then(h=>{
    if(Array.isArray(h.rooms)){holdemLobbyRooms=h.rooms;refreshCombinedLobby();}
   }).catch(()=>{});
@@ -1992,7 +2002,16 @@ function updateSheetTabs(){const nav=$('sheet-nav');nav.querySelectorAll('[data-
  territoryTab.classList.toggle('active',activeTerritory);
  const lobby=nav.querySelector('[data-sheet="lobby"]');lobby.classList.toggle('active',activeRoom===null&&!activeTerritory&&!activeRace);}
 function changeUrl(id){const url=new URL(location.href);if(id)url.searchParams.set('room',id);else url.searchParams.delete('room');try{history.replaceState(null,'',url.pathname+url.search+url.hash);}catch(_){}}
+function setUnderOverFrameVisible(visible){
+ const frame=$('underover-frame');
+ try{if(frame?.contentWindow&&frame.getAttribute('src'))
+  frame.contentWindow.postMessage({type:'UO_VIEW_STATE',visible:!!visible},location.origin);
+ }catch(_){}
+}
 function switchView(id){
+ // A CSS-hidden iframe does not receive a reliable document.visibilitychange event.
+ // Pause its RPC heartbeats when returning to Sheet1 or another game.
+ if(!(typeof id==='string'&&id.startsWith('u-')))setUnderOverFrameVisible(false);
  document.body.classList.toggle('territory-active',id==='__territory__');
  document.body.classList.toggle('race-active',id==='__race__');
  if(id==='__race__'){
@@ -2023,9 +2042,9 @@ function switchView(id){
   $('territory-view').hidden=true;$('lobby-view').hidden=true;$('room-view').hidden=true;
   $('holdem-view').hidden=true;$('oddeven-view').hidden=true;$('chat').hidden=true;
   $('underover-view').hidden=false;
-  const frame=$('underover-frame');const src='./underover.html?build=uo10&room='+encodeURIComponent(id);
+  const frame=$('underover-frame');const src='./underover.html?build=uo109&room='+encodeURIComponent(id);
   if(!frame.getAttribute('src')||!frame.getAttribute('src').endsWith(encodeURIComponent(id)))frame.src=src;
-  setTimeout(deliverUnderOverAuth,0);
+  setTimeout(()=>{deliverUnderOverAuth();setUnderOverFrameVisible(true);},0);
   $('cell-address').textContent='A1';$('formula-value').textContent='=언더오버(1:1)';
   updateSheetTabs();changeUrl(id);return;
  }
@@ -2224,7 +2243,9 @@ function deliverUnderOverAuth(){
  // Target only our same-origin game frame. Do not use '*' or URL credentials.
  frame.contentWindow.postMessage({type:'UO_AUTH',client:CLIENT_ID,token:memberToken||''},location.origin);
 }
-$('underover-frame').addEventListener('load',deliverUnderOverAuth);
+$('underover-frame').addEventListener('load',()=>{
+ deliverUnderOverAuth();setUnderOverFrameVisible(!$('underover-view').hidden);
+});
 window.addEventListener('message',event=>{
  if(event.origin!==location.origin||event.source!==$('underover-frame').contentWindow)return;
  if(event.data?.type==='UO_AUTH_REQUEST'){deliverUnderOverAuth();return;}
@@ -2396,7 +2417,7 @@ function paintSheet1Chat(){
   const td=document.createElement('td');td.colSpan=10;td.className='sheet1-chat-empty';td.textContent='아직 대화가 없습니다. 아래 입력 행에서 메시지를 보내보세요.';
   tr.append(th,td);rows.push(tr);
  }else for(const m of messages.slice(-15)){
-  const tr=document.createElement('tr');if(m.nickname===myNickname)tr.className='sheet1-chat-own';if(['🏆 오목 결과','🏆 테트리스 결과','🏆 지뢰찾기 결과','🃏 홀덤 결과'].includes(m.nickname))tr.classList.add('sheet1-game-result');
+  const tr=document.createElement('tr');if(m.nickname===myNickname)tr.className='sheet1-chat-own';if(['🏆 오목 결과','🏆 테트리스 결과','🏆 지뢰찾기 결과','🃏 홀덤 결과','🏁 레이스 결과'].includes(m.nickname))tr.classList.add('sheet1-game-result');
   const th=document.createElement('th');th.className='row-no';th.dataset.chatRowNo='';
   const time=document.createElement('td');time.className='sheet1-chat-id';time.textContent=String(m.id||'');
   const name=document.createElement('td');name.className='sheet1-chat-name';nameWithRankByServer(name,m.nickname||'Player');
