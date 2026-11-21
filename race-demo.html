@@ -167,6 +167,26 @@
 .race-tv.is-finished{background:linear-gradient(140deg,#273721,#163d2c)}
 @media(max-width:760px){.track-mini-wrap{grid-template-columns:minmax(0,1fr)}.track-mini-map{height:160px;max-height:190px}.track-mini-detail{line-height:1.45}.race-course-always{grid-template-columns:155px minmax(0,1fr)}.race-course-always .track-mini-map{height:108px}.race-broadcast{grid-template-columns:.8fr 1.3fr .65fr;gap:4px}.race-broadcast>div{padding:5px}.race-broadcast strong{font-size:12px}.race-broadcast #race-clock{font-size:17px}.race-tv{padding:7px}.race-tv-lane{gap:4px;grid-template-columns:18px minmax(0,1fr) 36px}}
 @media(max-width:390px){.race-course-always{grid-template-columns:minmax(0,1fr)}.race-course-always .track-mini-map{height:133px}.race-course-always .track-mini-detail{padding:0 4px}}
+
+/* v1.0.6 - server-timed accident and pit repair broadcast. */
+.race-incident-hud{margin-top:10px;border:1px solid #517263;background:#18342c;overflow:hidden;border-radius:5px}
+.race-incident-head{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#25493a;padding:8px 10px;color:#f6f9e1;font-size:11px;font-weight:800}
+.race-incident-head span{font-size:10px;color:#b5d9c1;font-weight:600}
+.race-incident-highlight{padding:10px;background:#423528;color:#ffe4ad;border-left:4px solid #f9bd66;font-weight:900;font-size:13px;line-height:1.45;min-height:42px}
+.race-incident-highlight.is-danger{background:#53292c;color:#ffe2db;border-color:#fb7772;animation:race-alert-flash .48s ease 2}
+.race-incident-highlight.is-repair{background:#25443c;color:#c9f8d4;border-color:#5fd49a}
+.race-incident-log{max-height:140px;overflow:auto;padding:5px 9px 9px;display:grid;gap:4px}
+.race-incident-item{display:grid;grid-template-columns:48px 1fr;gap:7px;align-items:baseline;border-bottom:1px solid #35544b;padding:5px 3px;color:#dceee0;font-size:11px}
+.race-incident-item time{color:#9fc0a8;font-family:Consolas,monospace}
+.race-incident-item b{color:#ffe6a4;font-weight:700}
+.race-incident-idle{font-size:11px;color:#a8c1b0;padding:7px}
+.race-tarmac .race-lane-alert{position:absolute;right:10%;top:8px;z-index:3;border-radius:3px;padding:3px 5px;font-size:10px;line-height:1;font-weight:900;color:#1e2821;background:#ffe6a5;white-space:nowrap;max-width:45%;overflow:hidden;text-overflow:ellipsis}
+.race-tarmac .race-lane-alert[hidden]{display:none}
+.race-tv-lane.is-incident .race-tarmac{border-color:#f57b6e;box-shadow:inset 0 0 12px rgba(244,77,62,.45)}
+.race-tv-lane.is-repair .race-tarmac{border-color:#72d9a0;box-shadow:inset 0 0 9px rgba(90,199,126,.38)}
+@keyframes race-alert-flash{50%{filter:brightness(1.3)}}
+@media(max-width:600px){.race-incident-head{padding:7px}.race-incident-highlight{padding:8px;font-size:12px}.race-incident-log{max-height:115px}.race-incident-item{grid-template-columns:38px 1fr;font-size:10px}.race-tarmac .race-lane-alert{font-size:9px;padding:2px}}
+@media(prefers-reduced-motion:reduce){.race-incident-highlight.is-danger{animation:none}}
 </style></head><body><main class="shell"><header class="top"><div><div class="title">🏁 업무현황_레이스_VER.2026</div><div class="sub">6개 출전석 · 유저/컴퓨터/닫기 · 실시간 예상 배당 · 선택 베팅 · 채팅</div></div><div class="head-actions"><span class="smallstat">내 포인트 <strong id="wallet">-</strong></span><span class="smallstat">회원 <strong id="my-name">로그인 확인 중</strong></span><button id="home" type="button">Sheet1</button></div></header><div class="greenbar"></div><div class="gridbox"><nav class="nav" id="tabs"><button data-tab="race" class="active">🏁 경기장</button><button data-tab="garage">🚗 차량</button><button data-tab="drivers">👤 드라이버</button><button data-tab="upgrades">🔧 파츠·스킬</button></nav><div class="formula"><span id="address">A1</span><strong>fx</strong><code id="formula-text">=RACE_ONLINE(포인트,차량,배당률)</code></div><div id="status" class="status" role="status"></div><div id="panes">
 <section class="pane" id="pane-lobby" hidden><div class="toolbar"><div><h2>레이스 온라인 방 목록</h2><p class="intro">2~6명이 각자 차량을 출전시키며 출전자와 관전자 모두 우승 팀에 베팅할 수 있습니다.</p></div><button id="refresh" type="button">↻ 새로고침</button></div><div class="panel"><div class="sheethead">A열 / 온라인 레이스방 생성</div><div class="pbody hero"><label>방 이름<input type="text" id="room-title" maxlength="32" value="주말 그랑프리" placeholder="방 이름"></label><button id="create" type="button" class="primary">＋ 방 만들기</button><label>초대코드 입력<input type="text" id="room-code" placeholder="rc-xxxxxxxxxxxx"></label><button id="join-code" type="button">입장</button></div></div><div class="panel"><div class="sheethead">B열 / 접속 가능한 경기</div><div class="tablewrap"><table><thead><tr><th>시트</th><th>방 이름</th><th>단계</th><th>출전자</th><th>관전자</th><th></th></tr></thead><tbody id="room-list"><tr><td colspan="6" class="empty">목록을 확인하는 중...</td></tr></tbody></table></div></div></section>
 <section class="pane" id="pane-race"><div class="toolbar"><div><h2 id="race-title">경기장</h2><p class="intro" id="race-code">Sheet1에서 방을 선택하세요</p></div><div class="row"><button id="share" type="button">초대 링크</button><button id="leave" type="button">방 나가기</button></div></div><div class="warning" id="room-help">Sheet1에서 방을 만들거나 입장하면 경기장 정보가 표시됩니다.</div>
@@ -179,7 +199,12 @@
  <div class="sheethead grid-setup-title">출전석 편성 · 매 경기 새로 설정</div>
  <div id="slot-editor" class="slot-editor" aria-label="6개 출전석 설정"></div>
  <p class="help" id="mixed-config-hint">6개 칸마다 유저 참가·컴퓨터·닫기를 설정할 수 있습니다. 입장한 유저는 빈 유저 참가석을 선택할 수 있습니다.</p>
- </div></div><div class="statstrip"><div><small>경기 단계</small><strong id="phase">준비 중</strong></div><div><small>출전 팀</small><strong id="entry-count">0 / 6</strong></div><div><small>관전자</small><strong id="spec-count">0명</strong></div><div><small>트랙</small><strong id="track-name">-</strong></div></div><div id="track-profile" class="track-profile" aria-label="트랙 공략 정보"></div><div class="twocol"><div><div class="panel"><div class="sheethead">B열 / 출전팀 · 실시간 예상 배당률</div><div class="pbody"><div class="lineups" id="lineups"></div><div class="race-summary" id="result">경기 준비 중입니다.</div></div></div><div class="panel"><div class="sheethead">C열 / 레이스 중계센터 · 6레인 실황</div><div class="pbody"><div class="race-map-head"><b>🗺 트랙 미니맵</b><span>선택하면 코스 미리보기 자동 변경</span></div><div id="race-course-preview" class="track-mini-wrap race-course-always" aria-label="경주 트랙 미니맵"></div><div class="race-tv"><div class="race-broadcast"><div><small id="race-broadcast-stage">그리드 준비</small><strong id="race-clock">17.0s</strong></div><div><small>레이스 실황</small><strong id="race-leader">출발 대기</strong></div><div><small>진행률</small><strong id="race-percent">0%</strong></div></div><div class="race-meter"><i id="race-meter-fill"></i></div><div id="race-road" class="race-road"></div><div id="race-announcer" class="race-announcer" role="status">🏁 출전팀이 확정되면 레이스 연출이 이곳에 나타납니다.</div></div><div class="help">약 17초 경주 연출 중 선두 위치와 순위는 참고용입니다. 최종 우승자·기록·포인트 정산은 서버 확정 결과를 따릅니다.</div></div></div></div><aside><div class="panel"><div class="sheethead">D열 / 내 참여 방식</div><div class="pbody"><div id="role-summary" class="player-state"></div><div class="row" style="margin-top:10px"><button id="enter-race" type="button" class="primary">🏎 출전하기</button><button id="spectate" type="button">👀 관전하기</button><button id="ready" type="button">준비</button></div><div class="help">출전하려면 차량·드라이버를 보유해야 합니다. 기본 차량과 신인 드라이버는 처음에 무상 지급됩니다. 사람 출전자 1명일 때는 참가비·입상수당 0P, 2명 이상이면 사람당 참가비 1,000P를 사람 참가자들의 순위에 따라 분배합니다. 컴퓨터는 입상수당을 받지 않습니다.</div><div class="row" style="margin-top:10px"><button id="open-bets" type="button" hidden>배당 확정 / 베팅 접수</button><button id="start-race" type="button" class="primary">🏁 경기 시작</button><button id="next-race" type="button">⚙ 출전석 다시 편성하기</button></div></div></div><div class="panel"><div class="sheethead">E열 / 배당률 · 출전자/관전자 베팅</div><div class="pbody"><div class="tablewrap"><table><thead><tr><th>선수</th><th>종합 능력</th><th>배당</th></tr></thead><tbody id="odds-table"></tbody></table></div><div class="bet-note" id="bet-open-note">출전자 전원 레디 시 배당 확정 · 이후 베팅은 자유 선택 · 방장만 경기 시작</div><div class="betbox" style="margin-top:12px"><label>우승 예상 팀<select id="bet-target"></select></label><label>베팅 금액 (P)<input type="number" id="bet-amount" min="1" step="1" value="1000" inputmode="numeric"></label><div id="expected" class="muted">베팅 가능 시 표시</div><button class="primary" id="bet-submit" type="button">베팅하기</button><div class="muted" id="bet-status">전원 READY 후 경기 시작 전까지 자유롭게 베팅 가능 · 베팅 없이도 출전할 수 있습니다.</div></div><div class="help">대기 중 예상 배당은 출전석·장비·트랙에 따라 자동으로 변합니다. 모두 레디하면 배당이 확정되고 베팅이 열립니다. 베팅은 선택 사항이며 경기 시작 시 마감합니다. 비공개 기복·내구성은 배당에 포함되지 않습니다.</div></div></div><div class="panel race-social-panel">
+ </div></div><div class="statstrip"><div><small>경기 단계</small><strong id="phase">준비 중</strong></div><div><small>출전 팀</small><strong id="entry-count">0 / 6</strong></div><div><small>관전자</small><strong id="spec-count">0명</strong></div><div><small>트랙</small><strong id="track-name">-</strong></div></div><div id="track-profile" class="track-profile" aria-label="트랙 공략 정보"></div><div class="twocol"><div><div class="panel"><div class="sheethead">B열 / 출전팀 · 실시간 예상 배당률</div><div class="pbody"><div class="lineups" id="lineups"></div><div class="race-summary" id="result">경기 준비 중입니다.</div></div></div><div class="panel"><div class="sheethead">C열 / 레이스 중계센터 · 6레인 실황</div><div class="pbody"><div class="race-map-head"><b>🗺 트랙 미니맵</b><span>선택하면 코스 미리보기 자동 변경</span></div><div id="race-course-preview" class="track-mini-wrap race-course-always" aria-label="경주 트랙 미니맵"></div><div class="race-tv"><div class="race-broadcast"><div><small id="race-broadcast-stage">그리드 준비</small><strong id="race-clock">17.0s</strong></div><div><small>레이스 실황</small><strong id="race-leader">출발 대기</strong></div><div><small>진행률</small><strong id="race-percent">0%</strong></div></div><div class="race-meter"><i id="race-meter-fill"></i></div><div id="race-road" class="race-road"></div><div id="race-announcer" class="race-announcer" role="status">🏁 출전팀이 확정되면 레이스 연출이 이곳에 나타납니다.</div>
+<div class="race-incident-hud" role="region" aria-label="실시간 사고 및 피트스톱 이벤트">
+ <div class="race-incident-head">⚠ 레이스 관제센터 · 사고 / 피트스톱 <span id="race-incident-count">이벤트 대기</span></div>
+ <div id="race-incident-highlight" class="race-incident-highlight">🟢 출전 차량 점검 중 · 레이스 이벤트는 자동 진행됩니다.</div>
+ <div id="race-incident-log" class="race-incident-log" aria-live="polite"><div class="race-incident-idle">경기 시작 후 사고와 정비 내역이 시간순으로 기록됩니다.</div></div>
+</div></div><div class="help">사고·펑크·피트스톱은 서버에서 확정하고 완주 기록에 반영됩니다. 주행 화면의 중간 순위는 연출이며 공식 순위와 베팅 정산은 서버 결과를 따릅니다.</div></div></div></div><aside><div class="panel"><div class="sheethead">D열 / 내 참여 방식</div><div class="pbody"><div id="role-summary" class="player-state"></div><div class="row" style="margin-top:10px"><button id="enter-race" type="button" class="primary">🏎 출전하기</button><button id="spectate" type="button">👀 관전하기</button><button id="ready" type="button">준비</button></div><div class="help">출전하려면 차량·드라이버를 보유해야 합니다. 기본 차량과 신인 드라이버는 처음에 무상 지급됩니다. 사람 출전자 1명일 때는 참가비·입상수당 0P, 2명 이상이면 사람당 참가비 1,000P를 사람 참가자들의 순위에 따라 분배합니다. 컴퓨터는 입상수당을 받지 않습니다.</div><div class="row" style="margin-top:10px"><button id="open-bets" type="button" hidden>배당 확정 / 베팅 접수</button><button id="start-race" type="button" class="primary">🏁 경기 시작</button><button id="next-race" type="button">⚙ 출전석 다시 편성하기</button></div></div></div><div class="panel"><div class="sheethead">E열 / 배당률 · 출전자/관전자 베팅</div><div class="pbody"><div class="tablewrap"><table><thead><tr><th>선수</th><th>종합 능력</th><th>배당</th></tr></thead><tbody id="odds-table"></tbody></table></div><div class="bet-note" id="bet-open-note">출전자 전원 레디 시 배당 확정 · 이후 베팅은 자유 선택 · 방장만 경기 시작</div><div class="betbox" style="margin-top:12px"><label>우승 예상 팀<select id="bet-target"></select></label><label>베팅 금액 (P)<input type="number" id="bet-amount" min="1" step="1" value="1000" inputmode="numeric"></label><div id="expected" class="muted">베팅 가능 시 표시</div><button class="primary" id="bet-submit" type="button">베팅하기</button><div class="muted" id="bet-status">전원 READY 후 경기 시작 전까지 자유롭게 베팅 가능 · 베팅 없이도 출전할 수 있습니다.</div></div><div class="help">대기 중 예상 배당은 출전석·장비·트랙에 따라 자동으로 변합니다. 모두 레디하면 배당이 확정되고 베팅이 열립니다. 베팅은 선택 사항이며 경기 시작 시 마감합니다. 비공개 기복·내구성은 배당에 포함되지 않습니다.</div></div></div><div class="panel race-social-panel">
  <div class="sheethead">F열 / 관전자 명단 <span id="social-online-count" class="social-count">0명 접속 중</span></div>
  <div class="pbody"><div id="race-spectators" class="spectator-list"><span class="muted">관전자 정보를 불러오는 중…</span></div>
  <p class="help">접속 중인 관전자는 ●로 표시됩니다. 출전자도 채팅에 참여할 수 있습니다.</p></div>
@@ -272,6 +297,7 @@ const TRACK_DATA=Object.fromEntries(TRACK.map(x=>[x.key,x]));
 const IMG={};let uid='',token='',client='',profile=null,points=0,room=null,seats=[],currentId='',myBet=null,rooms=[],active='race',pending=false,animation=null,autoTimer=null,refreshing=false,photoQueue=[];
 let raceSocialBusy=false,raceChatBusy=false,raceSocialMessages=[],raceSpectators=[],raceSocialRoom='';
 let racePresenceBusy=false;let racePreviewSelection='';let raceAnimationSignature='';let lastWinnerNotice='';
+let raceEvents=[],raceEventsScope='';
 let soloData=null,soloBusy=false,soloFetching=false,soloLoaded=false;
 function raceFrameVisible(){
  if(document.hidden)return false;
@@ -329,14 +355,24 @@ async function processRaceOperatorCommand(message,rid){
  }
  throw new Error('사용법: /포인트 닉네임 금액 · /공지 내용 · /강퇴 닉네임');
 }
-async function action(cmd,payload={},rid=currentId){if(pending)return;pending=true;try{const d=await rpc('renju_race_mixed_rpc',{p_action:cmd,p_client:client,p_token:token,p_room:rid||null,p_payload:payload});apply(d);if(['buy_car','buy_driver','select','upgrade','reset_upgrades'].includes(cmd)){info('차고 정보가 저장됐습니다.')}else{info('');}if(cmd==='create'||cmd==='join'){raceAnimationSignature='';racePreviewSelection='';currentId=d.room?.id||rid;if(cmd==='create'&&window.parent!==window)window.parent.postMessage({type:'RACE_CREATED',id:currentId},location.origin);tab('race');history.replaceState(null,'','#'+encodeURIComponent(currentId));raceSocialMessages=[];raceSpectators=[];raceChatFeedback('');renderRaceSocial();raceAdminGuide();void loadRaceSocial()}if(cmd==='leave'){raceAnimationSignature='';racePreviewSelection='';currentId='';room=null;seats=[];raceSocialMessages=[];raceSpectators=[];history.replaceState(null,'',location.pathname);tab('race');await loadRooms();if(window.parent!==window)window.parent.postMessage({type:'RACE_CLOSE'},location.origin)}if(cmd==='next'){racePreviewSelection='';info('출전석이 초기화됐습니다. 방장이 6개 칸을 편성하고 유저들이 다시 출전·READY해 주세요.');}return d}catch(err){info(err.message,true);return null}finally{pending=false;render();}}
-function apply(d){if(d.my_id)uid=d.my_id;if(d.my_profile)profile=d.my_profile;if(d.points!==undefined)points=d.points;if('room'in d)room=d.room;if(d.seats)seats=d.seats;if('my_bet'in d)myBet=d.my_bet;$('wallet').textContent=fmt(points);}
+async function action(cmd,payload={},rid=currentId){if(pending)return;pending=true;try{const d=await rpc('renju_race_cinematic_rpc',{p_action:cmd,p_client:client,p_token:token,p_room:rid||null,p_payload:payload});apply(d);if(['buy_car','buy_driver','select','upgrade','reset_upgrades'].includes(cmd)){info('차고 정보가 저장됐습니다.')}else{info('');}if(cmd==='create'||cmd==='join'){raceAnimationSignature='';racePreviewSelection='';currentId=d.room?.id||rid;if(cmd==='create'&&window.parent!==window)window.parent.postMessage({type:'RACE_CREATED',id:currentId},location.origin);tab('race');history.replaceState(null,'','#'+encodeURIComponent(currentId));raceSocialMessages=[];raceSpectators=[];raceChatFeedback('');renderRaceSocial();raceAdminGuide();void loadRaceSocial()}if(cmd==='leave'){raceAnimationSignature='';racePreviewSelection='';currentId='';room=null;seats=[];raceSocialMessages=[];raceSpectators=[];history.replaceState(null,'',location.pathname);tab('race');await loadRooms();if(window.parent!==window)window.parent.postMessage({type:'RACE_CLOSE'},location.origin)}if(cmd==='next'){racePreviewSelection='';info('출전석이 초기화됐습니다. 방장이 6개 칸을 편성하고 유저들이 다시 출전·READY해 주세요.');}return d}catch(err){info(err.message,true);return null}finally{pending=false;render();}}
+function apply(d){
+ if(d.my_id)uid=d.my_id;if(d.my_profile)profile=d.my_profile;if(d.points!==undefined)points=d.points;
+ const nextRoom='room'in d?d.room:room;
+ const scope=(nextRoom?.id||'')+'|'+(nextRoom?.race_no||0);
+ if(scope!==raceEventsScope){raceEvents=[];raceEventsScope=scope}
+ if('race_events'in d)raceEvents=Array.isArray(d.race_events)?d.race_events:[];
+ if('room'in d)room=d.room;
+ if(d.seats)seats=d.seats;
+ if('my_bet'in d)myBet=d.my_bet;
+ $('wallet').textContent=fmt(points);
+}
 async function init(){client=getClient();token=localStorage.getItem(STORAGE)||'';if(!token){info('Sheet1에서 회원 로그인 후 레이스를 이용해 주세요.',true);return}try{const auth=await rpc('renju_member_auth',{p_client:client,p_action:'session',p_token:token});$('my-name').textContent=auth.profile?.nickname||'회원';points=auth.profile?.points||0;$('wallet').textContent=fmt(points);await loadRooms();await action('sync',{},null);const qs=new URLSearchParams(location.search);
  const deep=qs.get('room')||decodeURIComponent(location.hash.slice(1));
  if(/^rc-[0-9a-f]{12}$/.test(deep))await action('join',{},deep);
  else if(qs.get('create')==='1')await action('create',{name:'레이스 경기장'},null);
  else tab('race');}catch(e){info('로그인 확인 오류: '+e.message,true)}}
-async function loadRooms(){try{const d=await rpc('renju_race_mixed_rpc',{p_action:'list',p_client:client,p_token:token,p_room:null,p_payload:{}});rooms=d.rooms||[];points=d.points??points;$('wallet').textContent=fmt(points);renderRooms()}catch(e){info(e.message,true)}}
+async function loadRooms(){try{const d=await rpc('renju_race_cinematic_rpc',{p_action:'list',p_client:client,p_token:token,p_room:null,p_payload:{}});rooms=d.rooms||[];points=d.points??points;$('wallet').textContent=fmt(points);renderRooms()}catch(e){info(e.message,true)}}
 function tab(n){active=n;document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===n));document.querySelectorAll('.pane').forEach(p=>p.hidden=p.id!=='pane-'+n);$('address').textContent={lobby:'A1',race:'B2',solo:'S1',garage:'C3',drivers:'D4',upgrades:'E5'}[n];$('formula-text').textContent={lobby:'=COUNTIF(경기목록,"접수중")',race:'=RACE(출전자,배당률,주행)',solo:'=SOLO_RACE(내차,NPC×5,배당률)',garage:'=VLOOKUP(차량,내차고,전력)',drivers:'=DRIVER(실존선수,능력치)',upgrades:'=POWER(파츠,스킬)'}[n];render()}
 function renderRooms(){$('room-list').innerHTML=rooms.length?rooms.map((r,i)=>`<tr><td>Race${i+1}</td><td>${text(r.name)}</td><td>${text(phaseName(r.phase))}</td><td>${r.entrants} / 6</td><td>${r.spectators}명</td><td><button data-join="${text(r.id)}">입장 · 관전</button></td></tr>`).join(''):'<tr><td colspan="6" class="empty">열려 있는 레이스방이 없어요. 첫 경기를 만들어 보세요.</td></tr>'}
 function phaseName(p){return({waiting:'출전 준비',betting:'베팅 접수',running:'경기 진행',finished:'정산 완료'})[p]||p}
@@ -464,7 +500,7 @@ function renderFinishedRace(entrants,host,mine){
  $('result').classList.add('is-finished');
  $('result').innerHTML=`<b>🏆 ${valid?text(winner.name)+' 우승':'경기 종료'}</b> · ${sorted.map(s=>`${Number(s.rank)||'?'}위 ${text(s.name)}`).join(' / ')}<br><small>상세 순위와 내 베팅 정산은 화면 위쪽 '공식 경기 결과'에서 확인할 수 있습니다.</small>`;
 }
-function renderRace(){if(!room){$('race-finish-hero').hidden=true;$('result').classList.remove('is-finished');$('result').textContent='경기 준비 중입니다.';$('race-road').innerHTML='';raceAnimationSignature='';$('race-clock').textContent='READY';$('race-leader').textContent='출발 대기';$('race-percent').textContent='0%';$('race-meter-fill').style.width='0%';$('race-announcer').textContent='🏁 Sheet1에서 레이스방을 생성하거나 입장하세요.';$('room-help').textContent='Sheet1에서 레이스방을 생성하거나 입장하세요. 방 목록과 새 방 만들기는 Sheet1에 있습니다.';$('mixed-settings').hidden=true;renderTrackMini('city',false);['enter-race','spectate','ready','open-bets','start-race','next-race','bet-submit','share','leave'].forEach(id=>{const el=$(id);if(el)el.disabled=true});$('race-title').textContent='경기장 · 방 미입장';return;}['share','leave'].forEach(id=>$(id).disabled=false);const mine=seats.find(x=>x.id===uid);$('race-title').textContent=room.name+' · '+room.race_no+'경주';$('race-code').textContent='방 코드: '+room.id+' · 전원 READY 시 베팅 접수 자동 시작 · 방장이 출발';$('phase').textContent=phaseName(room.phase);$('entry-count').textContent=seats.filter(x=>x.role==='entrant'&&!x.bot).length+'명 + 컴 '+seats.filter(x=>x.bot).length+'대 / 6';$('spec-count').textContent=seats.filter(x=>x.role==='spectator').length+'명';$('track-name').textContent=TRACK_DATA[room.track]?.name||'도심 그랑프리';renderTrackProfile(room.track);$('role-summary').innerHTML=mine?`<span class="pill">내 역할: ${mine.role==='entrant'?'출전자':'관전자'}</span> ${mine.role==='entrant'?`<span class="pill">${mine.ready?'준비 완료':'준비 전'}</span>`:''}`:'<span class="pill">참가 정보를 확인해 주세요.</span>';
+function renderRace(){if(!room){raceEvents=[];raceEventsScope='';renderRaceIncidents(0,false,false);$('race-finish-hero').hidden=true;$('result').classList.remove('is-finished');$('result').textContent='경기 준비 중입니다.';$('race-road').innerHTML='';raceAnimationSignature='';$('race-clock').textContent='READY';$('race-leader').textContent='출발 대기';$('race-percent').textContent='0%';$('race-meter-fill').style.width='0%';$('race-announcer').textContent='🏁 Sheet1에서 레이스방을 생성하거나 입장하세요.';$('room-help').textContent='Sheet1에서 레이스방을 생성하거나 입장하세요. 방 목록과 새 방 만들기는 Sheet1에 있습니다.';$('mixed-settings').hidden=true;renderTrackMini('city',false);['enter-race','spectate','ready','open-bets','start-race','next-race','bet-submit','share','leave'].forEach(id=>{const el=$(id);if(el)el.disabled=true});$('race-title').textContent='경기장 · 방 미입장';return;}['share','leave'].forEach(id=>$(id).disabled=false);const mine=seats.find(x=>x.id===uid);$('race-title').textContent=room.name+' · '+room.race_no+'경주';$('race-code').textContent='방 코드: '+room.id+' · 전원 READY 시 베팅 접수 자동 시작 · 방장이 출발';$('phase').textContent=phaseName(room.phase);$('entry-count').textContent=seats.filter(x=>x.role==='entrant'&&!x.bot).length+'명 + 컴 '+seats.filter(x=>x.bot).length+'대 / 6';$('spec-count').textContent=seats.filter(x=>x.role==='spectator').length+'명';$('track-name').textContent=TRACK_DATA[room.track]?.name||'도심 그랑프리';renderTrackProfile(room.track);$('role-summary').innerHTML=mine?`<span class="pill">내 역할: ${mine.role==='entrant'?'출전자':'관전자'}</span> ${mine.role==='entrant'?`<span class="pill">${mine.ready?'준비 완료':'준비 전'}</span>`:''}`:'<span class="pill">참가 정보를 확인해 주세요.</span>';
  const waiting=room.phase==='waiting',betting=room.phase==='betting',running=room.phase==='running',finished=room.phase==='finished';const host=room.host===uid;
  $('mixed-settings').hidden=false;
  const previewKey=racePreviewSelection||room.track||'city';
@@ -487,6 +523,39 @@ function renderRace(){if(!room){$('race-finish-hero').hidden=true;$('result').cl
  $('bet-status').textContent=myBet?`베팅 완료: ${fmt(myBet.stake)} · 확정 배당 ${Number(myBet.odds).toFixed(2)}배${finished?' · 지급 '+fmt(myBet.payout):''}`:betting?'베팅 선택사항 · 참가/관전자 모두 가능 · 베팅하지 않아도 레이스 참가 가능':'1등 단승식 · 대기 중 배당은 예상값이며 아직 베팅할 수 없습니다.';
  updateExpected();renderTrack(entrants);if(finished){renderFinishedRace(entrants,host,mine)}else{$('race-finish-hero').hidden=true;$('result').classList.remove('is-finished');$('result').textContent=running?'🚦 경주가 진행 중입니다.':'경기 접수 상태. 출전 차량·드라이버·능력치를 확인하세요.';}
 }
+const RACE_INCIDENT_COPY={
+ collision:{icon:'💥',short:'충돌 사고',desc:'추월 도중 접촉! 차체 손상으로 속도가 떨어집니다.'},
+ puncture:{icon:'🛞',short:'타이어 펑크',desc:'타이어 손상! 급히 피트로 진입합니다.'},
+ engine:{icon:'⚠️',short:'엔진 트러블',desc:'엔진 출력이 떨어졌습니다! 긴급 수리 필요.'},
+ pit:{icon:'🔧',short:'타이어 교체',desc:'피트스톱! 새 타이어로 교체 후 코스에 복귀합니다.'},
+ repair:{icon:'🛠️',short:'긴급 수리 완료',desc:'정비팀이 손상 파츠를 교체했습니다. 다시 추격합니다!'}
+};
+function renderRaceIncidents(elapsed,running,finished){
+ const highlight=$('race-incident-highlight'),log=$('race-incident-log'),counter=$('race-incident-count');
+ if(!highlight||!log||!counter)return;
+ const events=(running||finished?raceEvents:[]).filter(e=>RACE_INCIDENT_COPY[e.kind]).sort((a,b)=>Number(a.second)-Number(b.second));
+ const mostRecent=events.at(-1);
+ const isLive=!!(running&&mostRecent&&elapsed-Number(mostRecent.second)<=3.4);
+ const inDanger=isLive&&['collision','puncture','engine'].includes(mostRecent.kind);
+ const isRepair=isLive&&['pit','repair'].includes(mostRecent.kind);
+ highlight.classList.toggle('is-danger',inDanger);
+ highlight.classList.toggle('is-repair',isRepair);
+ if(finished){highlight.textContent=events.length?'🏁 경기 종료 · 사고/정비 기록 '+events.length+'건 · 최종 순위는 서버 공식 결과':'🏁 경기 종료 · 공식 순위를 확인하세요.';}
+ else if(isLive){const c=RACE_INCIDENT_COPY[mostRecent.kind];highlight.textContent=c.icon+' '+String(mostRecent.name||'출전자')+' · '+c.desc;}
+ else if(running){highlight.textContent=events.length?'🏎 정비 후 추격전! 다음 코너를 주목하세요.':'🟢 현재 코스 정상 주행 · 사고/피트 상황 감시 중';}
+ else{highlight.textContent='🟢 출전 차량 점검 중 · 사고와 피트스톱은 경기 중 자동 진행됩니다.';}
+ counter.textContent=running?('접수 '+events.length+'건 · 라이브'):finished?('기록 '+events.length+'건'):'출발 전';
+ log.innerHTML=events.length?events.slice(-6).map(e=>{
+  const c=RACE_INCIDENT_COPY[e.kind];
+  return `<div class="race-incident-item"><time>${Number(e.second).toFixed(1)}s</time><span><b>${c.icon} ${text(e.name)}</b> · ${text(c.short)} — ${text(c.desc)}</span></div>`;
+ }).join(''):'<div class="race-incident-idle">경기 시작 후 사고·펑크·엔진 점검·피트스톱 기록이 표시됩니다.</div>';
+}
+function raceLaneAlert(id,elapsed){
+ const mine=raceEvents.filter(e=>String(e.team)===String(id)&&RACE_INCIDENT_COPY[e.kind]);
+ const latest=mine.length?mine[mine.length-1]:null;
+ if(!latest||elapsed-Number(latest.second)>2.9)return null;
+ return latest;
+}
 function renderTrack(list){
  const board=$('race-road'),phase=room?.phase||'waiting';
  const running=phase==='running',finished=phase==='finished';
@@ -499,7 +568,7 @@ function renderTrack(list){
  const rebuild=signature!==raceAnimationSignature||board.children.length!==entries.length;
  if(rebuild){
   raceAnimationSignature=signature;
-  board.innerHTML=entries.length?entries.map((e,i)=>`<div class="race-tv-lane ${e.id===uid?'is-me':''}" data-race-id="${text(e.id)}" style="--team-color:${colors[(Number(e.seat_no)-1)%6]}"><span class="race-lane-number">${Number(e.seat_no)}<i></i></span><div class="race-tarmac"><span class="race-line-title">${text(e.name)} ${e.bot?'🤖':'🏎'}</span><span class="race-timing">그리드 대기</span><span class="race-progress-fill"></span><span class="race-progress-car">🏎️</span></div><span class="race-lane-rank">--</span></div>`).join(''):'<p class="muted">출전석 편성 후 레이스가 이곳에 표시됩니다.</p>';
+  board.innerHTML=entries.length?entries.map((e,i)=>`<div class="race-tv-lane ${e.id===uid?'is-me':''}" data-race-id="${text(e.id)}" style="--team-color:${colors[(Number(e.seat_no)-1)%6]}"><span class="race-lane-number">${Number(e.seat_no)}<i></i></span><div class="race-tarmac"><span class="race-line-title">${text(e.name)} ${e.bot?'🤖':'🏎'}</span><span class="race-timing">그리드 대기</span><span class="race-lane-alert" hidden></span><span class="race-progress-fill"></span><span class="race-progress-car">🏎️</span></div><span class="race-lane-rank">--</span></div>`).join(''):'<p class="muted">출전석 편성 후 레이스가 이곳에 표시됩니다.</p>';
  }
  const provisional=entries.map((e,i)=>{
   let pos=0;
@@ -508,7 +577,17 @@ function renderTrack(list){
    // Animated provisional positions. The authoritative server result is ONLY used when finished.
    const strength=(Number(e.power)||87)-87;
    const noise=Math.sin(elapsed*.74+i*1.71)*2.2+Math.sin(elapsed*1.43+i*2.83)*1.7;
-   pos=Math.max(0,Math.min(96.2,fraction*90+strength*.45*fraction+noise*Math.sin(Math.PI*fraction)));
+   // Position changes are dramatic visuals; actual race ranking is
+   // computed once on the server, including incident time penalties.
+   let incidentLag=0;
+   for(const ev of raceEvents){
+    if(String(ev.team)!==String(e.id)||Number(ev.second)>elapsed)continue;
+    if(['collision','puncture','engine'].includes(ev.kind)){
+     const repaired=raceEvents.some(v=>String(v.team)===String(e.id)&&v.kind==='repair'&&Number(v.second)>Number(ev.second)&&Number(v.second)<=elapsed);
+     incidentLag+=repaired?2.4:Math.min(12,7.5+(elapsed-Number(ev.second))*1.4);
+    }else if(ev.kind==='pit'){incidentLag+=elapsed-Number(ev.second)<2.5?5:1.5}
+   }
+   pos=Math.max(0,Math.min(96.2,fraction*90+strength*.45*fraction+noise*Math.sin(Math.PI*fraction)-incidentLag));
   }
   return {e,i,pos};
  });
@@ -518,6 +597,11 @@ function renderTrack(list){
   const item=provisional[i];if(!item)return;
   const rank=rankMap.get(String(item.e.id))||i+1;
   node.classList.toggle('is-leader',(running||finished)&&rank===1);
+  const alert=running?raceLaneAlert(item.e.id,elapsed):null;
+  node.classList.toggle('is-incident',!!alert&&['collision','puncture','engine'].includes(alert.kind));
+  node.classList.toggle('is-repair',!!alert&&['pit','repair'].includes(alert.kind));
+  const alertEl=node.querySelector('.race-lane-alert');
+  if(alertEl){alertEl.hidden=!alert;alertEl.textContent=alert?RACE_INCIDENT_COPY[alert.kind].icon+' '+RACE_INCIDENT_COPY[alert.kind].short:'';}
   node.querySelector('.race-progress-car').style.left=`calc(${item.pos}% - ${(item.pos*.33).toFixed(1)}px)`;
   node.querySelector('.race-progress-fill').style.width=item.pos+'%';
   const label=node.querySelector('.race-lane-rank');
@@ -541,6 +625,7 @@ function renderTrack(list){
  ]:[];
  const comment=finished&&order.length?`🏆 공식 결과 · ${text(order[0].e.name)} 우승! 상단 결과표에서 전체 기록과 베팅 정산을 확인하세요.`:running?messages[Math.min(4,Math.floor(elapsed/3.4))]+' · 화면 순위는 연출입니다.':'🏎 출전석을 열고 참가자를 READY시킨 뒤 방장이 출발시킬 수 있습니다.';
  if($('race-announcer'))$('race-announcer').textContent=comment.replace(/&amp;/g,'&');
+ renderRaceIncidents(elapsed,running,finished);
 }
 
 function updateExpected(){const t=seats.find(x=>x.id===$('bet-target').value),n=Number($('bet-amount').value);$('expected').textContent=t?.odds&&Number.isFinite(n)&&n>0?'예상 적중 지급: '+fmt(Math.floor(n*Number(t.odds)))+' · 원금 포함':'배당 접수 후 예상 지급액이 표시됩니다.'}
@@ -678,6 +763,6 @@ async function pingRacePresence(){
  },10000);}catch(_){/* Retry next tick; do not interrupt the current race. */}
  finally{racePresenceBusy=false;}
 }
-async function tick(){if(!token||!currentId||!raceFrameVisible()||refreshing||pending)return;refreshing=true;try{const d=await rpc('renju_race_mixed_rpc',{p_action:'sync',p_client:client,p_token:token,p_room:currentId,p_payload:{}});if(uid&&Array.isArray(d.seats)&&!d.seats.some(s=>s.id===uid)){currentId='';room=null;seats=[];raceSocialMessages=[];raceSpectators=[];history.replaceState(null,'',location.pathname);tab('race');info('이 레이스방에서 나왔습니다. 운영자 강퇴 또는 접속 상태 변경일 수 있습니다.',true);await loadRooms();return}apply(d);render()}catch(e){info(e.message,true)}finally{refreshing=false}};
+async function tick(){if(!token||!currentId||!raceFrameVisible()||refreshing||pending)return;refreshing=true;try{const d=await rpc('renju_race_cinematic_rpc',{p_action:'sync',p_client:client,p_token:token,p_room:currentId,p_payload:{}});if(uid&&Array.isArray(d.seats)&&!d.seats.some(s=>s.id===uid)){currentId='';room=null;seats=[];raceSocialMessages=[];raceSpectators=[];history.replaceState(null,'',location.pathname);tab('race');info('이 레이스방에서 나왔습니다. 운영자 강퇴 또는 접속 상태 변경일 수 있습니다.',true);await loadRooms();return}apply(d);render()}catch(e){info(e.message,true)}finally{refreshing=false}};
 init().then(()=>{loadPhotos();autoTimer=setInterval(tick,4500);setInterval(pingRacePresence,18000);setInterval(loadRaceSocial,5000);setInterval(()=>{if(active==='solo'&&token&&raceFrameVisible())void loadSolo()},4500);setInterval(()=>{if(raceFrameVisible()&&active==='solo'&&soloData?.phase==='running')updateSoloLanes()},1500);setInterval(()=>{if(raceFrameVisible()&&room?.phase==='running')renderTrack(seats.filter(x=>x.role==='entrant'))},500);setInterval(()=>{if(!currentId&&token&&raceFrameVisible())loadRooms()},18000)});
 </script></body></html>
