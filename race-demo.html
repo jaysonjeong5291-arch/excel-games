@@ -56,6 +56,11 @@
 /* v0.8: race social connection and administrator feedback */
 .race-chat-feedback{font-size:11px;color:#496950;min-height:17px;margin:7px 0 0;overflow-wrap:anywhere}
 .race-chat-feedback.error{color:#ae4242}
+/* v1.1.3: make command errors visible immediately above chat input on mobile */
+.race-chat-feedback:not(:empty){font-weight:700;padding:10px 12px;border:1px solid #9fcdb2;background:#eaf7ee;color:#17643d;border-radius:3px;margin:8px 0}
+.race-chat-feedback.error:not(:empty){background:#fff1ee;border-color:#e0b4ae;color:#a52a25}
+.race-admin-hint{padding:8px 10px;background:#f1f7f2;border-left:3px solid #15824b;font-size:11px;margin:0 0 8px}
+
 #race-admin-guide code{color:#27653e;background:#f1f8f3;padding:2px 4px;white-space:normal}
 /* v1.1.2 global vehicle/driver sale — never discount upgrades */
 .sale-banner{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:9px 12px;background:#fff9df;border:1px solid #dfbf71;color:#735413;font-size:12px;font-weight:700;margin:0 0 11px}
@@ -249,8 +254,9 @@
  <div class="pbody">
   <div class="chat-grid-header"><span>시간</span><span>닉네임</span><span>메시지</span></div>
   <div id="race-chat-messages" class="chat-history" role="log" aria-live="polite"><p class="muted">채팅을 불러오는 중…</p></div>
+  <p id="race-admin-hint" class="race-admin-hint" hidden>★ 운영자 할인 명령은 <b>/sale 50</b> 입력 후 <b>전송</b>을 눌러 적용합니다. 서버 인증 실패 시 바로 아래에 원인이 표시됩니다.</p>
+  <p id="race-chat-feedback" class="race-chat-feedback" role="status" aria-live="assertive"></p>
   <form id="race-chat-form" class="chat-compose"><label for="race-chat-input" class="sr-only">채팅 메시지</label><input id="race-chat-input" maxlength="240" placeholder="같은 레이스방 참가자·관전자와 대화" autocomplete="off"><button class="primary" id="race-chat-send" type="submit">전송</button></form>
-  <p id="race-chat-feedback" class="race-chat-feedback" role="status" aria-live="polite"></p>
   <p class="help">방마다 채팅이 구분됩니다. 240자 이내 · 최근 80개 메시지 표시</p>
   <p id="race-admin-guide" class="help" hidden>★ 운영자 명령: <code>/포인트 닉네임 100,000</code> · <code>/포인트 닉네임 -50,000</code> · <code>/공지 내용</code> · <code>/강퇴 닉네임</code> · <code>/sale 50</code> (50% 가격) · <code>/sale 100</code> (정상가 복귀)</p>
  </div>
@@ -382,7 +388,11 @@ function raceAdminCredential(){
  try{return sessionStorage.getItem('excel-games-admin-token-v1')||''}catch(_){return ''}
 }
 function raceChatFeedback(s='',bad=false){const el=$('race-chat-feedback');if(el){el.textContent=s;el.classList.toggle('error',bad)}}
-function raceAdminGuide(){const el=$('race-admin-guide');if(el)el.hidden=!raceAdminCredential()}
+function raceAdminGuide(){
+ const enabled=!!raceAdminCredential();
+ const el=$('race-admin-guide');if(el)el.hidden=!enabled;
+ const hint=$('race-admin-hint');if(hint)hint.hidden=!enabled;
+}
 function discountedPrice(price){return Math.max(1,Math.floor(Number(price)*salePercent/100))}
 function applySalePercent(next){
  const pct=Number(next);
@@ -402,7 +412,7 @@ async function refreshRaceSale(){
 }
 async function processRaceOperatorCommand(message,rid){
  const admin=raceAdminCredential();
- if(!admin)throw new Error('운영자 회원 로그인 및 운영자 인증이 필요합니다.');
+ if(!admin)throw new Error('레이스방에서 운영자 인증을 찾지 못했습니다. Sheet1로 이동해 운영자 계정으로 다시 로그인한 뒤 레이스방에 재입장하세요.');
  let command='',params={p_client:client,p_token:admin,p_room:rid};
  const point=message.match(/^\/포인트\s+(.+?)\s+([+-]?[0-9][0-9,]*)\s*$/);
  const notice=message.match(/^\/공지\s+([\s\S]+)$/);
@@ -510,7 +520,8 @@ async function loadRaceSocial(){
   const d=await rpc('renju_race_social_rpc',{p_client:client,p_token:token,p_room:rid,p_action:'sync',p_message:null},30000);
   if(rid!==currentId)return;
   raceSocialRoom=rid;raceSocialMessages=d.messages||[];raceSpectators=d.spectators||[];
-  raceChatFeedback('');renderRaceSocial();raceAdminGuide();
+  if($('race-chat-feedback')?.textContent.startsWith('연결 지연:'))raceChatFeedback('');
+  renderRaceSocial();raceAdminGuide();
  }catch(err){if(rid===currentId){raceChatFeedback('연결 지연: '+err.message+' (자동 재시도 중)',true);}}
  finally{raceSocialBusy=false;}
 }
@@ -829,6 +840,7 @@ $('race-chat-form').addEventListener('submit',async e=>{
     el.value='';
     if(d.social){raceSocialMessages=d.social.messages||raceSocialMessages;raceSpectators=d.social.spectators||raceSpectators;renderRaceSocial()}
     raceChatFeedback('✓ '+(d.message||'처리 완료'));
+    if(/^\/sale\s/i.test(msg)){void refreshRaceSale();void loadRaceSocial();}
     if(msg.startsWith('/포인트')){try{const result=await rpc('renju_member_auth',{p_client:client,p_action:'session',p_token:token});points=result.profile?.points??points;$('wallet').textContent=fmt(points)}catch(_){}}
    }
   }else if(msg.startsWith('/')){
@@ -837,7 +849,7 @@ $('race-chat-form').addEventListener('submit',async e=>{
    const d=await rpc('renju_race_social_rpc',{p_client:client,p_token:token,p_room:rid,p_action:'send',p_message:msg},30000);
    if(rid===currentId){el.value='';raceSocialMessages=d.messages||[];raceSpectators=d.spectators||[];renderRaceSocial();raceChatFeedback('전송 완료')}
   }
- }catch(err){raceChatFeedback('전송 실패: '+err.message+' · 전송 여부를 확인한 뒤 다시 시도해 주세요.',true)}
+ }catch(err){raceChatFeedback('명령/채팅 실패: '+err.message+' · 입력 내용은 유지됩니다. 서버 설정 또는 운영자 인증을 확인해 주세요.',true)}
  finally{raceChatBusy=false;$('race-chat-send').disabled=false}
 });
 $('bet-target').addEventListener('change',updateExpected);$('bet-amount').addEventListener('input',updateExpected);
