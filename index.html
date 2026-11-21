@@ -908,6 +908,7 @@ $('admin-auth-overlay').addEventListener('click',e=>{if(e.target.id==='admin-aut
 let myNickname='';
 try{myNickname=(localStorage.getItem(NICKNAME_STORAGE)||'').trim().slice(0,16);}catch(_){}
 let myLobbyNumber=0,nicknameByNumber=new Map(),nicknameLastSync=0,nicknameSyncFailed=false,nicknameLocalPublished=false,nicknameRevision=0;
+let nicknameSyncPending=false;
 const MEMBER_TOKEN_KEY='excel-games-member-session-v1';
 let memberToken='';
 try{memberToken=localStorage.getItem(MEMBER_TOKEN_KEY)||'';}catch(_){}
@@ -915,6 +916,7 @@ let memberProfile=null,memberLevelsByNumber=new Map(),memberPanelMode='login';
 let memberGomokuStreak=null, gomokuRewardData=null, gomokuRewardPending=false, gomokuRewardSyncAt=0, gomokuRewardRoom=null;
 let memberArcadeStreaks={tetris:null,mine_battle:null},arcadeRewardData=null,arcadeRewardPending=false,arcadeRewardSyncAt=0,arcadeRewardRoom=null;
 let memberAuthPending=false,memberRefreshBusy=false,memberSessionRestoreBusy=false;
+let lastMemberSessionSuccessAt=0;
 // Login/session requests get their own time budget. A slow lobby refresh must not silently log users out.
 function memberRpc(action,rest={}){return callRpc('renju_member_auth',{p_client:CLIENT_ID,p_action:action,...rest},false,22000);}
 function isConfirmedMemberExpiry(error){
@@ -1217,6 +1219,7 @@ async function loadMemberSession(){
   const result=await memberRpc('session',{p_token:restoreToken});
   if(memberToken!==restoreToken)return; // user switched accounts while the request was in flight
   if(Object.prototype.hasOwnProperty.call(result,'admin_token'))persistAdminToken(result.admin_token||'');
+  lastMemberSessionSuccessAt=Date.now();
   useMemberProfile(result.profile);maybeOpenInitialRoom();
   if($('lobby-notice')?.textContent?.includes('회원 인증 서버 연결이 지연'))lobbyNotify('회원 로그인 연결이 복구되었습니다.');
  }catch(error){if(memberToken===restoreToken)applyMemberSessionError(error);}
@@ -1226,12 +1229,13 @@ async function refreshMemberStats(){
  if(document.hidden||memberRefreshBusy)return;
  memberRefreshBusy=true;
  try{
-   if(memberToken&&!memberProfile)await loadMemberSession();
-   if(memberToken&&memberProfile){
+   if(memberToken&&!memberProfile){await loadMemberSession();if(!memberProfile)return;}
+   if(memberToken&&memberProfile&&Date.now()-lastMemberSessionSuccessAt>90000){
      const refreshToken=memberToken;
      try{
       const data=await memberRpc('session',{p_token:refreshToken});
       if(memberToken===refreshToken){
+       lastMemberSessionSuccessAt=Date.now();
        if(Object.prototype.hasOwnProperty.call(data,'admin_token')&&adminToken!==(data.admin_token||''))persistAdminToken(data.admin_token||'');
        if(!memberProfile||JSON.stringify(normalizedMemberProfile(data.profile))!==JSON.stringify(memberProfile))useMemberProfile(data.profile);
       }
@@ -1345,6 +1349,7 @@ let activeRoom=null,openRooms=[],roomCache=new Map(),roomList=[],waitingList=[];
 let chatLastSeen='',movePending=false,pendingMovePoint=null,chatPending=false,revision=-1;
 let tick=0,polling=false,stopped=false,pollTimer=null,initialDeepLink=new URLSearchParams(location.search).get('room');
 let lobbyHealthy=false,lobbyReady=false,creating=false,lobbySignature="";
+let lobbyAnyConfirmedAt=0; // A *successful* source response, not a failed optional request.
 let hunterLobbyStatuses=new Map(),matchGateLobbyStatuses=new Map(),holdemLobbyRooms=[],oddEvenLobbyRooms=[],underOverLobbyRooms=[],raceOnlineRooms=[];
 // Freshly created races must be visible immediately even before Supabase's next heartbeat/list refresh.
 // Optimistic rows expire quickly and can never revive an abandoned historical room.
@@ -1441,8 +1446,9 @@ function applyNicknameData(data){
 function updateNicknameInput(){const input=$('nickname-input');if(document.activeElement!==input)input.value=myNickname;
  input.placeholder=myLobbyNumber?numbered(myLobbyNumber):'Player';}
 async function syncNicknames(force=false){
- const now=Date.now();if(!force&&now-nicknameLastSync<30000)return;
- nicknameLastSync=now;
+ const now=Date.now();
+ if(nicknameSyncPending||(!force&&now-nicknameLastSync<(nicknameSyncFailed?18000:30000)))return;
+ nicknameSyncPending=true;nicknameLastSync=now;
  try{
   const shouldPublish=Boolean(myNickname&&!nicknameLocalPublished);
   const publishAllowed=!shouldPublish||myNickname!=='운영자'||Boolean(adminToken);
@@ -1451,6 +1457,7 @@ async function syncNicknames(force=false){
   nicknameSyncFailed=false;
   applyNicknameData(data);maybeOpenInitialRoom();
  }catch(e){nicknameSyncFailed=true;refreshNicknameAccess();/* Keep the room gate closed if profile sync fails. */}
+ finally{nicknameSyncPending=false;}
 }
 
 function roomRpc(id,action='sync',args={},keepalive=false){return callRpc('renju_room_sync',{p_room:id,p_client:CLIENT_ID,p_action:action,...args},keepalive);}
@@ -1716,6 +1723,7 @@ async function pollOddEvenPresenceSummary(force=false){
   const data=await callRpc('renju_oddeven_room_social',{p_action:'summary',p_client:null,p_token:null,p_room:null,p_text:null},false,7500);
   if(!Array.isArray(data?.rooms))return;
   oePresenceByRoom=new Map(data.rooms.map(x=>[x.id,x]));oePresenceSeenAt=Date.now();
+  lobbyAnyConfirmedAt=Date.now();
   // Preserve raw lobby data in the cache but filter its visible representation.
   refreshCombinedLobby();
  })();
@@ -1737,7 +1745,14 @@ function restoreOddEvenLobby(){
 }
 function applyOddEvenLobbyReport(report){
  if(!report||!Array.isArray(report.rooms))return;
+ if(report.stale){
+  // Do not wipe a previously confirmed list on a single timed-out request.
+  // visibleOddEvenRooms() still requires a recent independent presence heartbeat.
+  showOddEvenLobbyStatus(report);
+  return;
+ }
  oddEvenLobbyRooms=report.rooms;
+  if(!report.stale)lobbyAnyConfirmedAt=Date.now();
  // Historic room cache intentionally disabled: expired rooms must not reappear.
  refreshCombinedLobby();
  showOddEvenLobbyStatus(report);
@@ -1764,6 +1779,7 @@ async function refreshRaceOnlineRooms(){
   // Keep the newly-created room in Sheet1 while its first live heartbeat is being indexed.
   raceOnlineRooms=[...activeNew().filter(x=>!seen.has(x.id)),...live];
   raceLobbyLastSuccess=now;raceLobbyLastError='';
+  lobbyAnyConfirmedAt=Date.now();
   // Live server data, not a browser cache, is authoritative after the short grace period.
   for(const r of live)raceNewlyCreated.delete(r.id);
   refreshCombinedLobby();
@@ -1789,12 +1805,13 @@ function mergedRoomList(){
 }
 let combinedLobbyPaintTimer=null;
 function refreshCombinedLobby(){
+ if(!lastLegacyLobbyPayload && !lobbyAnyConfirmedAt && !roomList.length)return;
  if(combinedLobbyPaintTimer!==null)return;
  combinedLobbyPaintTimer=setTimeout(()=>{
   combinedLobbyPaintTimer=null;
   const base=lastLegacyLobbyPayload||{player_no:myLobbyNumber||null,waiting:waitingList};
   applyLobby({...base,rooms:mergedRoomList()});
-  if(!lastLegacyLobbyPayload)setNetwork('온라인 게임방 연결',true);
+  if(!lastLegacyLobbyPayload)setNetwork('일부 게임 서버 연결',true);
  },180);
 }
 
@@ -1812,7 +1829,15 @@ async function fetchOddEvenLobby(){
    const data=await callRpc('renju_oddeven_lobby_v348',{},false,12000);
    if(!Array.isArray(data.rooms))throw new Error('전용 목록 응답 형식 오류');
    return {rooms:data.rooms,source:'DB',stale:false,note:''};
-  }catch(error){dbError=String(error?.message||error);}
+  }catch(error){
+   dbError=String(error?.message||error);
+   // During a server outage, invoking a second game RPC after a 12-second timeout
+   // doubles load and holds the only optional-list slot. Fall back only when the
+   // specialized endpoint is genuinely unavailable (missing RPC/schema).
+   if(/시간 초과|Failed to fetch|NetworkError|서버 오류 (?:429|5\d\d)/i.test(dbError)){
+    return {rooms:[],source:'서버 지연',stale:true,cacheAt:Date.now(),note:' · '+dbError};
+   }
+  }
   try{
    // The legacy game endpoint is a fallback only when the dedicated query failed.
    const legacy=await callRpc('renju_oddeven_rpc',{
@@ -1848,16 +1873,32 @@ function showOddEvenLobbyStatus(report){
 const LOBBY_MAX_CONCURRENT_READS=2;
 const lobbyReadStates=new Map(),lobbyReadQueue=[];
 let lobbyActiveReads=0,lobbyLastManualRefresh=0;
+let lobbyInitialCoreSettled=false;
+const lobbyStartupAt=Date.now();
+// Reserve first contact for the core lobby: avoid seven simultaneous list calls
+// on a cold, resource-constrained Supabase instance. Optional calls begin after
+// its first reply, or after 2.5 seconds to keep other games usable if it stalls.
+setTimeout(()=>pumpLobbyReadQueue(),2600);
 function pumpLobbyReadQueue(){
  if(stopped||document.hidden)return;
  while(lobbyActiveReads<LOBBY_MAX_CONCURRENT_READS && lobbyReadQueue.length){
-  const job=lobbyReadQueue.shift(),state=job.state;
+  // Core reads always get the next available slot. Optional reads never block
+  // initial connection by occupying both slots.
+  let index=lobbyReadQueue.findIndex(j=>j.name==='base');
+  if(index<0){
+   if(!lobbyInitialCoreSettled&&Date.now()-lobbyStartupAt<2500)return;
+   // Keep one free slot for critical core refresh while optional calls are slow.
+   if(lobbyActiveReads>=1)return;
+   index=0;
+  }
+  const [job]=lobbyReadQueue.splice(index,1),state=job.state;
   state.queued=false;state.inFlight=true;state.lastStartedAt=Date.now();
   lobbyActiveReads++;
   Promise.resolve().then(job.task).then(()=>{state.errors=0;}).catch(error=>{
    state.errors=Math.min(3,(state.errors||0)+1);
    console.warn('로비 '+job.name+' 조회 지연:',String(error?.message||error));
   }).finally(()=>{
+   if(job.name==='base')lobbyInitialCoreSettled=true;
    state.inFlight=false;lobbyActiveReads--;
    pumpLobbyReadQueue();
   });
@@ -1869,7 +1910,10 @@ function scheduleLobbyRead(name,lobbyIntervalMs,gameIntervalMs,task,force=false)
  if(!state){state={queued:false,inFlight:false,lastStartedAt:0,errors:0};lobbyReadStates.set(name,state);}
  if(state.queued||state.inFlight)return;
  const base=(!activeRoom&&!activeRace)?lobbyIntervalMs:gameIntervalMs;
- const delay=base*Math.min(4,2**state.errors);
+ // Initial base failure: retry without the long optional-list exponential delay.
+ const delay=name==='base'&&!lastLegacyLobbyPayload
+  ? Math.min(24000,7500*(1+state.errors))
+  : base*Math.min(4,2**state.errors);
  if(!force&&Date.now()-state.lastStartedAt<delay)return;
  state.queued=true;
  lobbyReadQueue.push({name,state,task});
@@ -1885,6 +1929,10 @@ function pollLobbyInBackground(force=false){
   try{
    const data=await lobbyRpc();
    lastLegacyLobbyPayload=data;
+   lobbyAnyConfirmedAt=Date.now();
+   lobbyInitialCoreSettled=true;
+   const notice=$('lobby-notice');
+   if(notice?.textContent?.startsWith('기본 게임방 조회 지연'))lobbyNotify('기본 로비 연결이 복구되었습니다.');
    refreshCombinedLobby();maybeOpenInitialRoom();
    const legacyRooms=Array.isArray(data.rooms)?data.rooms:[];
    if(legacyRooms.some(r=>r?.game==='mine_battle')){
@@ -1901,9 +1949,12 @@ function pollLobbyInBackground(force=false){
     },force);
    }else if(matchGateLobbyStatuses.size){matchGateLobbyStatuses.clear();refreshCombinedLobby();}
   }catch(error){
-   if(!lastLegacyLobbyPayload&&!oddEvenLobbyRooms.length&&!holdemLobbyRooms.length){
+   lobbyInitialCoreSettled=true;
+   if(!lastLegacyLobbyPayload&&!lobbyAnyConfirmedAt){
     lobbyHealthy=false;setNetwork('기본 로비 연결 지연',false);
-    lobbyNotify('기본 게임방 조회 지연: '+String(error?.message||error),true);
+    lobbyNotify('기본 게임방 조회 지연: '+String(error?.message||error)+' · 자동 재시도 중',true);
+    const row=$('lobby-cells')?.querySelector('.section');
+    if(!lobbyReady&&row)row.textContent='서버 응답 지연 · 방 목록 자동 재시도 중…';
    }
    throw error;
   }
@@ -1917,11 +1968,12 @@ function pollLobbyInBackground(force=false){
  },force);
  scheduleLobbyRead('holdem-list',20000,45000,async()=>{
   const h=await holdemRpc('list');
-  if(Array.isArray(h.rooms)){holdemLobbyRooms=h.rooms;refreshCombinedLobby();}
+  if(Array.isArray(h.rooms)){lobbyAnyConfirmedAt=Date.now();holdemLobbyRooms=h.rooms;refreshCombinedLobby();}
  },force);
  scheduleLobbyRead('under-over-list',20000,45000,async()=>{
   const h=await callRpc('renju_uo_live_lobby',{},false,12000);
   if(Array.isArray(h.rooms)){
+   lobbyAnyConfirmedAt=Date.now();
    underOverLobbyRooms=h.rooms.map(r=>({...r,game:'underover',
     status:r.status==='waiting'?'waiting':r.status==='finished'?'finished':'playing',
     waiting:Math.max(0,2-Number(r.count||0)),moves:r.hand||0,
@@ -2297,7 +2349,7 @@ $('member-form').addEventListener('submit',async e=>{
  try{
   const result=await memberRpc(memberPanelMode,{p_nickname:nickname,p_password:password});
   if(!result.token||!result.profile)throw new Error('계정 인증 결과가 올바르지 않습니다.');
-  saveMemberToken(result.token);persistAdminToken(result.admin_token||'');
+  saveMemberToken(result.token);lastMemberSessionSuccessAt=Date.now();persistAdminToken(result.admin_token||'');
   useMemberProfile(result.profile);closeMemberPanel();
   lobbyNotify(memberPanelMode==='register'?'회원가입 완료! 계정으로 로그인되었습니다.':'로그인 완료!');
   await syncNicknames(true);await refreshMemberStats();maybeOpenInitialRoom();
@@ -2318,7 +2370,9 @@ $('member-logout').addEventListener('click',async()=>{
  lobbyNotify('로그아웃했습니다. 닉네임 저장 또는 로그인 후 게임에 입장할 수 있습니다.');
 });
 paintMemberPanel();
-setTimeout(()=>{loadMemberSession().then(refreshMemberStats);},0);
+setTimeout(()=>{if(memberToken)loadMemberSession();},0);
+// Leaderboard/ranks are optional; do not compete with the critical first lobby/auth reads.
+setTimeout(refreshMemberStats,7000);
 setInterval(refreshMemberStats,35000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshMemberStats();});
 $('nickname-form').addEventListener('submit',async e=>{
@@ -2413,7 +2467,7 @@ $('admin-notice-close').addEventListener('click',()=>{
 });
 setInterval(pollAnnouncement,10000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollAnnouncement();});
-setTimeout(pollAnnouncement,800);
+setTimeout(pollAnnouncement,2400);
 // Shared Sheet1 notes: separate feed from each room's existing memo.
 let sheet1Messages=[],sheet1LastPaint='',sheet1ChatPending=false,sheet1LastSync=0;
 async function syncSheet1Chat(force=false){
@@ -2458,7 +2512,7 @@ function paintSheet1Chat(){
 setInterval(()=>syncSheet1Chat(),4000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncSheet1Chat(true);});
 window.addEventListener('focus',()=>syncSheet1Chat(true));
-setTimeout(()=>syncSheet1Chat(true),450);
+setTimeout(()=>syncSheet1Chat(true),1800);
 
 async function handleChatSubmit(e){
  e.preventDefault();const form=e.currentTarget,input=form.querySelector('input'),text=input.value.trim();
