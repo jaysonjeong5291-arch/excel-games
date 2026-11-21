@@ -343,6 +343,16 @@ let raceSocialBusy=false,raceChatBusy=false,raceSocialMessages=[],raceSpectators
 let racePresenceBusy=false;let racePreviewSelection='';let raceAnimationSignature='';let lastWinnerNotice='';
 let raceEvents=[],raceEventsScope='';
 let raceFocusedKey='';let lastFinishFocusKey='';
+// One in-flight game sync per tab. Shorten checks near the official finish time,
+// instead of polling every 4.5 seconds regardless of race phase.
+let raceSyncFailures=0,raceActionRevision=0,raceLastPhase='',raceLastRound='';
+let soloSyncTimer=null,soloSyncFailures=0;
+const renderedHtml=new WeakMap();
+function setHtmlIfChanged(element,html){
+ if(!element||renderedHtml.get(element)===html)return;
+ renderedHtml.set(element,html);element.innerHTML=html;
+}
+
 let salePercent=100,saleFetching=false;
 function focusRaceBroadcast(){
  if(active!=='race'||!raceFrameVisible())return;
@@ -429,7 +439,7 @@ function applySalePercent(next){
  $('sale-banner').hidden=!sale;$('sale-top-chip').hidden=!sale;
  $('sale-top-percent').textContent=pct+'% 가격';
  $('sale-banner-percent').textContent=pct+'% 가격 ('+(100-pct)+'% 할인)';
- if(changed&&profile){renderShop('car');renderShop('driver')}
+ if(changed&&profile){if(active==='garage')renderShop('car');if(active==='drivers')renderShop('driver')}
 }
 async function refreshRaceSale(){
  if(saleFetching||!token||!raceFrameVisible())return;
@@ -472,9 +482,14 @@ async function processRaceOperatorCommand(message,rid){
  }
  throw new Error('사용법: /sale 50 · /sale 100 · /포인트 닉네임 금액 · /공지 내용 · /강퇴 닉네임');
 }
-async function action(cmd,payload={},rid=currentId){if(pending)return;pending=true;try{const d=await raceGameRPC(cmd,{p_action:cmd,p_client:client,p_token:token,p_room:rid||null,p_payload:payload});apply(d);if(['buy_car','buy_driver','select','upgrade','reset_upgrades'].includes(cmd)){info('차고 정보가 저장됐습니다.')}else if(Number(d.payout_recovered_for_me||0)===0){info('');}if(cmd==='create'||cmd==='join'){raceAnimationSignature='';racePreviewSelection='';currentId=d.room?.id||rid;if(window.parent!==window)window.parent.postMessage({type:cmd==='create'?'RACE_CREATED':'RACE_JOINED',id:currentId},location.origin);
+async function action(cmd,payload={},rid=currentId){if(pending)return;pending=true;raceActionRevision++;try{const d=await raceGameRPC(cmd,{p_action:cmd,p_client:client,p_token:token,p_room:rid||null,p_payload:payload});apply(d);if(['buy_car','buy_driver','select','upgrade','reset_upgrades'].includes(cmd)){info('차고 정보가 저장됐습니다.')}else if(Number(d.payout_recovered_for_me||0)===0){info('');}if(cmd==='create'||cmd==='join'){raceAnimationSignature='';racePreviewSelection='';currentId=d.room?.id||rid;if(window.parent!==window)window.parent.postMessage({type:cmd==='create'?'RACE_CREATED':'RACE_JOINED',id:currentId},location.origin);
  // A fresh room must not wait 18 seconds for its first heartbeat.
- void pingRacePresence();tab('race');history.replaceState(null,'','#'+encodeURIComponent(currentId));raceSocialMessages=[];raceSpectators=[];raceChatFeedback('');renderRaceSocial();raceAdminGuide();void loadRaceSocial()}if(cmd==='leave'){raceAnimationSignature='';racePreviewSelection='';currentId='';room=null;seats=[];raceSocialMessages=[];raceSpectators=[];history.replaceState(null,'',location.pathname);tab('race');await loadRooms();if(window.parent!==window)window.parent.postMessage({type:'RACE_CLOSE'},location.origin)}return d}catch(err){info(err.message,true);return null}finally{pending=false;render();}}
+ void pingRacePresence();tab('race');history.replaceState(null,'','#'+encodeURIComponent(currentId));raceSocialMessages=[];raceSpectators=[];raceChatFeedback('');renderRaceSocial();raceAdminGuide();void loadRaceSocial()}if(cmd==='leave'){raceAnimationSignature='';racePreviewSelection='';currentId='';room=null;seats=[];raceSocialMessages=[];raceSpectators=[];history.replaceState(null,'',location.pathname);tab('race');await loadRooms();if(window.parent!==window)window.parent.postMessage({type:'RACE_CLOSE'},location.origin)}return d}catch(err){info(err.message,true);return null}finally{
+  pending=false;render();
+  // A successful action already contains the authoritative state; schedule a fresh
+  // check quickly for the other participants' state changes, not an overlapping RPC.
+  if(currentId)scheduleRaceSync(['start','ready','join','create'].includes(cmd)?1200:null);
+ }}
 function apply(d){
  if(d.my_id)uid=d.my_id;if(d.my_profile)profile=d.my_profile;if(d.points!==undefined)points=d.points;
  const nextRoom='room'in d?d.room:room;
@@ -487,20 +502,46 @@ function apply(d){
  if(Number(d.payout_recovered_for_me||0)>0)info('🏁 적중 베팅금 '+fmt(d.payout_recovered_for_me)+'P가 지급·반영됐습니다.');
  $('wallet').textContent=fmt(points);
 }
-async function init(){client=getClient();token=localStorage.getItem(STORAGE)||'';if(!token){info('Sheet1에서 회원 로그인 후 레이스를 이용해 주세요.',true);return}try{const auth=await rpc('renju_member_auth',{p_client:client,p_action:'session',p_token:token});$('my-name').textContent=auth.profile?.nickname||'회원';points=auth.profile?.points||0;$('wallet').textContent=fmt(points);await loadRooms();void refreshRaceSale();await action('sync',{},null);const qs=new URLSearchParams(location.search);
- const deep=qs.get('room')||decodeURIComponent(location.hash.slice(1));
- if(/^rc-[0-9a-f]{12}$/.test(deep))await action('join',{},deep);
- else if(qs.get('create')==='1')await action('create',{name:'레이스 경기장'},null);
- else tab('race');}catch(e){info('로그인 확인 오류: '+e.message,true)}}
+async function init(){
+ client=getClient();token=localStorage.getItem(STORAGE)||'';
+ if(!token){info('Sheet1에서 회원 로그인 후 레이스를 이용해 주세요.',true);return;}
+ try{
+  const auth=await rpc('renju_member_auth',{p_client:client,p_action:'session',p_token:token});
+  $('my-name').textContent=auth.profile?.nickname||'회원';points=auth.profile?.points||0;$('wallet').textContent=fmt(points);
+  // Room deep links must not wait for a full lobby list + unrelated sync.
+  const qs=new URLSearchParams(location.search);
+  const deep=qs.get('room')||decodeURIComponent(location.hash.slice(1));
+  void refreshRaceSale();
+  if(/^rc-[0-9a-f]{12}$/.test(deep))await action('join',{},deep);
+  else if(qs.get('create')==='1')await action('create',{name:'레이스 경기장'},null);
+  else{await action('sync',{},null);await loadRooms();tab('race');}
+ }catch(e){info('로그인 확인 오류: '+e.message,true)}
+}
 async function loadRooms(){try{const d=await raceGameRPC('list',{p_action:'list',p_client:client,p_token:token,p_room:null,p_payload:{}});rooms=d.rooms||[];points=d.points??points;$('wallet').textContent=fmt(points);renderRooms()}catch(e){info(e.message,true)}}
-function tab(n){active=n;document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===n));document.querySelectorAll('.pane').forEach(p=>p.hidden=p.id!=='pane-'+n);$('address').textContent={lobby:'A1',race:'B2',solo:'S1',garage:'C3',drivers:'D4',upgrades:'E5'}[n];$('formula-text').textContent={lobby:'=COUNTIF(경기목록,"접수중")',race:'=RACE(출전자,배당률,주행)',solo:'=SOLO_RACE(내차,NPC×5,배당률)',garage:'=VLOOKUP(차량,내차고,전력)',drivers:'=DRIVER(실존선수,능력치)',upgrades:'=POWER(파츠,스킬)'}[n];render()}
+function tab(n){
+ active=n;
+ document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===n));
+ document.querySelectorAll('.pane').forEach(p=>p.hidden=p.id!=='pane-'+n);
+ $('address').textContent={lobby:'A1',race:'B2',solo:'S1',garage:'C3',drivers:'D4',upgrades:'E5'}[n];
+ $('formula-text').textContent={lobby:'=COUNTIF(경기목록,"접수중")',race:'=RACE(출전자,배당률,주행)',solo:'=SOLO_RACE(내차,NPC×5,배당률)',garage:'=VLOOKUP(차량,내차고,전력)',drivers:'=DRIVER(실존선수,능력치)',upgrades:'=POWER(파츠,스킬)'}[n];
+ render();
+ if(n==='solo'){scheduleSoloSync(350);scheduleRaceSync();}
+ else if(n==='race'){scheduleRaceSync(350);scheduleSoloSync();}
+ else{scheduleSoloSync();scheduleRaceSync();}
+}
 function renderRooms(){$('room-list').innerHTML=rooms.length?rooms.map((r,i)=>`<tr><td>Race${i+1}</td><td>${text(r.name)}</td><td>${text(phaseName(r.phase))}</td><td>${r.entrants} / 6</td><td>${r.spectators}명</td><td><button data-join="${text(r.id)}">입장 · 관전</button></td></tr>`).join(''):'<tr><td colspan="6" class="empty">열려 있는 레이스방이 없어요. 첫 경기를 만들어 보세요.</td></tr>'}
 function phaseName(p){return({waiting:'출전 준비',betting:'베팅 접수',running:'경기 진행',finished:'정산 완료'})[p]||p}
 function sCar(id){return CAR_DATA[id]||CAR_DATA.gtr}function sDriver(id){return DRIVER_DATA[id]||DRIVER_DATA.newbie}
 function getPhoto(id){return IMG[id]?.url||''}
 function photoTag(id,kind='car'){const f=IMG[id];const fallback=kind==='car'?'🏎':'👤';if(f?.url)return `<img class="${kind==='driver'?'driver-photo':'car-photo'}" src="${text(f.url)}" alt="${text((kind==='car'?sCar(id):sDriver(id)).name)} 실제 사진" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display='none';this.parentElement.classList.add('no-img');this.parentElement.textContent='${fallback}'">`;return `<div class="no-img">${fallback}</div>`}
-const photoLookup={};async function fetchPhoto(id){if(!PHOTO_TITLES[id]||IMG[id])return;try{const title=PHOTO_TITLES[id];const url='https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages&titles='+encodeURIComponent(title)+'&pithumbsize=600&origin=*';const d=await fetch(url).then(r=>r.json());const page=Object.values(d.query?.pages||{})[0];IMG[id]={url:page?.thumbnail?.source||'',source:'https://en.wikipedia.org/wiki/'+encodeURIComponent(title)};}catch{IMG[id]={url:'',source:''}};if(active==='garage'||active==='drivers'||active==='race'||active==='solo')render()}
-function loadPhotos(){for(const id of [...CAR,...DRIVER].map(x=>x.id).filter(x=>x!=='newbie'))fetchPhoto(id)}
+const photoLookup={};async function fetchPhoto(id){if(!PHOTO_TITLES[id]||IMG[id])return;try{const title=PHOTO_TITLES[id];const url='https://en.wikipedia.org/w/api.php?action=query&format=json&prop=pageimages&titles='+encodeURIComponent(title)+'&pithumbsize=600&origin=*';const d=await fetch(url).then(r=>r.json());const page=Object.values(d.query?.pages||{})[0];IMG[id]={url:page?.thumbnail?.source||'',source:'https://en.wikipedia.org/wiki/'+encodeURIComponent(title)};}catch{IMG[id]={url:'',source:''}};if((active==='garage'||active==='drivers'||active==='solo'||(active==='race'&&room?.phase!=='running'))&&raceFrameVisible())render()}
+async function loadPhotos(){
+ // Do not launch 18 external image fetches and 18 full-page renders at once.
+ const remaining=[...CAR,...DRIVER].map(x=>x.id).filter(x=>x!=='newbie');
+ await Promise.allSettled(Array.from({length:3},async()=>{
+  while(remaining.length){const id=remaining.shift();if(id)await fetchPhoto(id)}
+ }));
+}
 function metric(stats){return stats.map((v,i)=>`<div class="metric"><span>${['속도','가속','코너','안정'][i]}</span><div class="meter"><i style="width:${v}%"></i></div><b>${v}</b></div>`).join('')}
 function renderShop(which){if(!profile)return;const isCar=which==='car',data=isCar?CAR:DRIVER,owned=isCar?profile.owned_cars:profile.owned_drivers,current=isCar?profile.selected_car:profile.selected_driver,element=$(isCar?'cars':'drivers');element.innerHTML=data.map(x=>{const got=owned?.includes(x.id),selected=current===x.id;const btn=selected?'출전 중':got?'출전 선택':'영입/구매';return `<article class="product ${isCar?'car-product':'driver-product'}"><div class="imagewrap">${photoTag(x.id,which)}</div><div class="prodtext"><h3>${text(x.name)}</h3><p>${text(x.desc)}</p>${metric(x.stats)}<div class="help">공개 능력치 평균 <b>${(x.stats.reduce((a,b)=>a+b,0)/4).toFixed(1)}</b> · 트랙별 전력 차등</div><footer><span class="meta">${got?'보유 · '+fmt(x.price):salePercent<100?`<span class="sale-price">${fmt(discountedPrice(x.price))}</span><span class="sale-original">${fmt(x.price)}</span>`:fmt(x.price)}</span><button ${selected?'disabled':''} data-purchase="${x.id}" data-kind="${which}" class="${got?'':'primary'}">${btn}</button></footer>${!got&&salePercent<100?`<div class="sale-shopline">🎁 ${100-salePercent}% 할인 적용 · 서버 결제 금액</div>`:''}${PHOTO_TITLES[x.id]?`<div class="photo-credit">사진: <a href="https://en.wikipedia.org/wiki/${encodeURIComponent(PHOTO_TITLES[x.id])}" target="_blank" rel="noopener">Wikipedia/Wikimedia Commons</a></div>`:''}</div></article>`}).join('')}
 function upgradeUsed(kind,id){
@@ -582,22 +623,22 @@ function renderTrackMini(key,pendingSave=false){
   <g transform="translate(${oval?82:50} ${oval?30:44})"><path d="M0 -11V12" stroke="#f7faf6" stroke-width="6"/><path d="M-5 -11H5V11H-5Z" fill="#fafafa" stroke="#555" stroke-width=".7"/><path d="M-5 -11h5v6h-5zm5 6h5v6h-5zm-5 6h5v6h-5zm5 6h5v5h-5z" fill="#353535"/></g>
   </svg></div><div class="track-mini-detail"><b>${text(track.name)}</b><span>${text(track.type)} · ${text(track.weather)}</span><br><span>${text(track.desc)}</span><br><em>${label}</em><br><span>직선 ${Math.round((track.w[0]+track.w[1])*100)}% · 코너 ${Math.round(track.w[2]*100)}% · 안정성 ${Math.round(track.w[3]*100)}%</span></div>`;
  // Keep both the selector preview and C-column preview visible. Works on mobile too.
- for(const id of ['track-mini-preview','race-course-preview']){const node=$(id);if(node&&node.innerHTML!==markup)node.innerHTML=markup;}
+ for(const id of ['track-mini-preview','race-course-preview'])setHtmlIfChanged($(id),markup);
 }
 function renderTrackProfile(key){
  const t=TRACK_DATA[key]||TRACK_DATA.city;
  const labels=['최고속도','가속','코너링','안정성'];
- $('track-profile').innerHTML='<div class="track-profile-title"><b>트랙 전략 / '+text(t.name)+'</b><span>'+text(t.type)+' · '+text(t.weather)+' · '+text(t.desc)+'</span></div><div class="track-weight-grid">'+t.w.map((w,i)=>'<div class="track-weight"><span>'+labels[i]+'</span><div class="track-weight-bar"><i style="width:'+(w*100).toFixed(0)+'%"></i></div><b>'+Math.round(w*100)+'%</b></div>').join('')+'</div><div class="track-public-note">배당: 차량·드라이버 공개 능력치 × 트랙 가중치 + 강화 점수만 사용 · 경기 결과에는 공개되지 않는 변수가 별도 반영됩니다.</div>';
+ setHtmlIfChanged($('track-profile'),'<div class="track-profile-title"><b>트랙 전략 / '+text(t.name)+'</b><span>'+text(t.type)+' · '+text(t.weather)+' · '+text(t.desc)+'</span></div><div class="track-weight-grid">'+t.w.map((w,i)=>'<div class="track-weight"><span>'+labels[i]+'</span><div class="track-weight-bar"><i style="width:'+(w*100).toFixed(0)+'%"></i></div><b>'+Math.round(w*100)+'%</b></div>').join('')+'</div><div class="track-public-note">배당: 차량·드라이버 공개 능력치 × 트랙 가중치 + 강화 점수만 사용 · 경기 결과에는 공개되지 않는 변수가 별도 반영됩니다.</div>');
 }
 function renderSixSlots(slots,editable){
  const players=new Map(seats.filter(x=>x.role==='entrant'&&!x.bot).map(p=>[String(p.id),p]));
- $('slot-editor').innerHTML=Array.from({length:6},(_,i)=>{
+ setHtmlIfChanged($('slot-editor'),Array.from({length:6},(_,i)=>{
   const sl=slots.find(s=>Number(s.number)===i+1)||{number:i+1,mode:'closed',occupant:null};
   const p=players.get(String(sl.occupant||''));
   const label=sl.mode==='cpu'?'🤖 컴퓨터 출전':sl.mode==='user'?'👤 유저 참가':'✕ 닫기';
   const status=sl.mode==='closed'?'출전하지 않음':sl.mode==='cpu'?'컴퓨터 자동 출전':p?text(p.name)+' · '+(p.ready?'READY':'준비 전'):'빈 유저 자리 · 참가 대기';
   return `<div class="slot-card is-${text(sl.mode)}"><div class="slot-top"><b>${i+1}번 출전석</b><small>${text(label)}</small></div>${editable?`<select data-slot="${i+1}" aria-label="${i+1}번 출전석 방식"><option value="user" ${sl.mode==='user'?'selected':''}>유저 참가</option><option value="cpu" ${sl.mode==='cpu'?'selected':''}>컴퓨터</option><option value="closed" ${sl.mode==='closed'?'selected':''}>닫기</option></select>`:`<div class="pill">${text(label)}</div>`}<div class="slot-details ${p?.ready?'ready-yes':p?'ready-no':''}">${status}</div></div>`;
- }).join('');
+ }).join(''));
 }
 
 function renderFinishedRace(entrants,host,mine){
@@ -614,15 +655,15 @@ function renderFinishedRace(entrants,host,mine){
  const betMsg=myBet?waitingForPayout?`<b>💳 적중 확인 · 지급 확인 중</b> · 베팅 ${fmt(stake)}P · <button type="button" id="recover-bet">지급 재확인</button>`:`<b>내 베팅 정산:</b> ${text(entrants.find(s=>String(s.id)===String(myBet.target_key))?.name||'선택 팀')} · 베팅 ${fmt(stake)} · 지급 ${fmt(payout)} · ${payout-stake>=0?'순수익 +':'손익 '}${fmt(payout-stake)}`:'<b>내 베팅:</b> 이번 판은 베팅하지 않았습니다.';
  const places=sorted.filter(s=>Number.isFinite(Number(s.rank))&&Number(s.rank)>0).map(s=>`<div class="finish-place"><b>${Number(s.rank)===1?'🏆':Number(s.rank)===2?'🥈':Number(s.rank)===3?'🥉':'🏁'} ${Number(s.rank)}위 · ${text(s.name)} ${s.bot?'🤖':String(s.id)===String(uid)?'★':''}</b><small>${text(sCar(s.car).name)} · ${s.finish_ms?((Number(s.finish_ms)/1000).toFixed(3)+'초'):'🚨 리타이어 (DNF)'}</small></div>`).join('');
  // From v1.1.1 onward, an entrant's READY is the only rematch control.
- hero.innerHTML=`<div class="finish-eyebrow">${Number(room.race_no)||1}경주 · 공식 경기 결과</div>
+ setHtmlIfChanged(hero,`<div class="finish-eyebrow">${Number(room.race_no)||1}경주 · 공식 경기 결과</div>
   <div class="finish-winner"><div class="finish-crown">🏆</div><div><h3>${valid?'우승 · '+text(winner.name):'경기 결과 확정 · 순위 확인 중'}</h3><p>${valid?text(sCar(winner.car).name)+' / '+text(sDriver(winner.driver).name)+(winner.finish_ms?' · '+(Number(winner.finish_ms)/1000).toFixed(3)+'초':''):'서버 순위가 표시될 때까지 잠시 뒤 새로고침해 주세요.'}</p></div></div>
   <div class="finish-grid">${places||'<div class="finish-place">순위 기록을 불러오는 중입니다.</div>'}</div>
   <div class="finish-my-bet">${betMsg}${myRaceEntry&&myRaceEntry.rank?' · 내 순위 '+Number(myRaceEntry.rank)+'위':''}</div>
-  <div class="finish-actions"><b>다음 경기를 하려면 위쪽 READY를 누르세요.</b><small>첫 READY 시 자동으로 다음 회차가 열립니다. 6개 출전석·컴퓨터·참가자·트랙은 그대로 유지되고, 다른 참가자는 READY만 다시 누르면 됩니다.</small></div>`;
+  <div class="finish-actions"><b>다음 경기를 하려면 위쪽 READY를 누르세요.</b><small>첫 READY 시 자동으로 다음 회차가 열립니다. 6개 출전석·컴퓨터·참가자·트랙은 그대로 유지되고, 다른 참가자는 READY만 다시 누르면 됩니다.</small></div>`);
  $('result').classList.add('is-finished');
- $('result').innerHTML=`<b>🏆 ${valid?text(winner.name)+' 우승':'경기 종료'}</b> · ${sorted.map(s=>`${Number(s.rank)||'?'}위 ${text(s.name)}`).join(' / ')}<br><small>상세 순위와 내 베팅 정산은 화면 위쪽 '공식 경기 결과'에서 확인할 수 있습니다.</small>`;
+ setHtmlIfChanged($('result'),`<b>🏆 ${valid?text(winner.name)+' 우승':'경기 종료'}</b> · ${sorted.map(s=>`${Number(s.rank)||'?'}위 ${text(s.name)}`).join(' / ')}<br><small>상세 순위와 내 베팅 정산은 화면 위쪽 '공식 경기 결과'에서 확인할 수 있습니다.</small>`);
 }
-function renderRace(){if(!room){raceEvents=[];raceEventsScope='';renderRaceIncidents(0,false,false);$('race-finish-hero').hidden=true;$('result').classList.remove('is-finished');$('result').textContent='경기 준비 중입니다.';$('race-road').innerHTML='';raceAnimationSignature='';$('race-clock').textContent='READY';$('race-leader').textContent='출발 대기';$('race-percent').textContent='0%';$('race-meter-fill').style.width='0%';$('race-announcer').textContent='🏁 Sheet1에서 레이스방을 생성하거나 입장하세요.';$('room-help').textContent='Sheet1에서 레이스방을 생성하거나 입장하세요. 방 목록과 새 방 만들기는 Sheet1에 있습니다.';$('mixed-settings').hidden=true;$('race-quickbar').hidden=true;renderTrackMini('city',false);['enter-race','spectate','ready','open-bets','start-race','bet-submit','share','leave'].forEach(id=>{const el=$(id);if(el)el.disabled=true});$('race-title').textContent='경기장 · 방 미입장';return;}['share','leave'].forEach(id=>$(id).disabled=false);const mine=seats.find(x=>x.id===uid);$('race-title').textContent=room.name+' · '+room.race_no+'경주';$('race-code').textContent='방 코드: '+room.id+' · 전원 READY 시 베팅 접수 자동 시작 · 방장이 출발';$('phase').textContent=phaseName(room.phase);$('entry-count').textContent=seats.filter(x=>x.role==='entrant'&&!x.bot).length+'명 + 컴 '+seats.filter(x=>x.bot).length+'대 / 6';$('spec-count').textContent=seats.filter(x=>x.role==='spectator').length+'명';$('track-name').textContent=TRACK_DATA[room.track]?.name||'도심 그랑프리';if($('race-duration-caption'))$('race-duration-caption').textContent=raceDuration()+'초 코스';renderTrackProfile(room.track);$('role-summary').innerHTML=mine?`<span class="pill">내 역할: ${mine.role==='entrant'?'출전자':'관전자'}</span> ${mine.role==='entrant'?`<span class="pill">${room.phase==='finished'?'다음 경기 READY 대기':mine.ready?'READY':'준비 전'}</span>`:''}`:'<span class="pill">참가 정보를 확인해 주세요.</span>';
+function renderRace(){if(!room){raceEvents=[];raceEventsScope='';renderRaceIncidents(0,false,false);$('race-finish-hero').hidden=true;$('result').classList.remove('is-finished');renderedHtml.delete($('result'));$('result').textContent='경기 준비 중입니다.';$('race-road').innerHTML='';raceAnimationSignature='';$('race-clock').textContent='READY';$('race-leader').textContent='출발 대기';$('race-percent').textContent='0%';$('race-meter-fill').style.width='0%';$('race-announcer').textContent='🏁 Sheet1에서 레이스방을 생성하거나 입장하세요.';$('room-help').textContent='Sheet1에서 레이스방을 생성하거나 입장하세요. 방 목록과 새 방 만들기는 Sheet1에 있습니다.';$('mixed-settings').hidden=true;$('race-quickbar').hidden=true;renderTrackMini('city',false);['enter-race','spectate','ready','open-bets','start-race','bet-submit','share','leave'].forEach(id=>{const el=$(id);if(el)el.disabled=true});$('race-title').textContent='경기장 · 방 미입장';return;}['share','leave'].forEach(id=>$(id).disabled=false);const mine=seats.find(x=>x.id===uid);$('race-title').textContent=room.name+' · '+room.race_no+'경주';$('race-code').textContent='방 코드: '+room.id+' · 전원 READY 시 베팅 접수 자동 시작 · 방장이 출발';$('phase').textContent=phaseName(room.phase);$('entry-count').textContent=seats.filter(x=>x.role==='entrant'&&!x.bot).length+'명 + 컴 '+seats.filter(x=>x.bot).length+'대 / 6';$('spec-count').textContent=seats.filter(x=>x.role==='spectator').length+'명';$('track-name').textContent=TRACK_DATA[room.track]?.name||'도심 그랑프리';if($('race-duration-caption'))$('race-duration-caption').textContent=raceDuration()+'초 코스';renderTrackProfile(room.track);$('role-summary').innerHTML=mine?`<span class="pill">내 역할: ${mine.role==='entrant'?'출전자':'관전자'}</span> ${mine.role==='entrant'?`<span class="pill">${room.phase==='finished'?'다음 경기 READY 대기':mine.ready?'READY':'준비 전'}</span>`:''}`:'<span class="pill">참가 정보를 확인해 주세요.</span>';
  const waiting=room.phase==='waiting',betting=room.phase==='betting',running=room.phase==='running',finished=room.phase==='finished';const host=room.host===uid;
  $('mixed-settings').hidden=false;$('race-quickbar').hidden=false;
  const previewKey=racePreviewSelection||room.track||'city';
@@ -638,12 +679,12 @@ function renderRace(){if(!room){raceEvents=[];raceEventsScope='';renderRaceIncid
  $('start-race').disabled=!host||!betting;
  $('bet-open-note').textContent=waiting?'현재 배당은 예상값이며 출전 구성에 따라 자동 변경됩니다. 전원 READY 후 배당이 확정됩니다.':betting?'확정 배당으로 베팅 접수 중 · 베팅하지 않아도 출전 가능 · 방장이 경기 시작을 누르면 마감됩니다.':running?'베팅 마감 · 경주 진행 중':'베팅 마감 · 경기 종료';
  $('room-help').textContent=waiting?'출전석은 지난 경기를 유지합니다. 바꾸려면 방장이 개별 슬롯을 설정하고, 출전자는 READY를 눌러 주세요.':betting?'전원 READY! 출전자와 관전자 모두 베팅은 선택 사항입니다. 방장이 경기 시작을 누르면 출발합니다.':running?'경기 진행 중입니다. 결과는 서버에서 확정합니다.':'경기 정산 완료 · 위쪽 READY로 다음 경기를 시작할 수 있습니다. 출전석·컴퓨터 수·참가자와 트랙은 그대로 유지됩니다.';
- const entrants=seats.filter(x=>x.role==='entrant').sort((a,b)=>(a.seat_no||9)-(b.seat_no||9));$('lineups').innerHTML=entrants.length?entrants.map((s,i)=>`<div class="lineup ${finished&&Number(s.rank)===1?'is-winning':''}"><div class="picrow"><div class="photo-slot car-slot">${photoTag(s.car||'gtr','car')}</div><div class="photo-slot driver-slot">${photoTag(s.driver||'newbie','driver')}</div></div><div class="info"><b>#${i+1} ${text(s.name)} ${s.bot?'🤖 컴퓨터':s.id===uid?'★':''}</b><span class="driver-name">${text(sCar(s.car).name)} / ${text(sDriver(s.driver).name)}</span><div class="chips"><span>전력 ${s.power==null?'-':Number(s.power).toFixed(1)}</span><strong>${s.odds?Number(s.odds).toFixed(2)+'배':s.ready?'READY':'대기'}</strong></div></div></div>`).join(''):'<p class="muted">출전자가 없습니다. 차량을 선택하고 출전해 주세요.</p>';
- $('odds-table').innerHTML=entrants.map(s=>`<tr><td>${text(s.name)}</td><td class="num">${s.power==null?'-':Number(s.power).toFixed(1)}</td><td class="num">${s.odds?Number(s.odds).toFixed(2)+'배':'대기'}</td></tr>`).join('');
- const selected=$('bet-target').value;$('bet-target').innerHTML=entrants.map(s=>`<option value="${s.id}">${text(s.name)} (${s.odds?Number(s.odds).toFixed(2):'-'}배)</option>`).join('');if(entrants.some(s=>s.id===selected))$('bet-target').value=selected;
+ const entrants=seats.filter(x=>x.role==='entrant').sort((a,b)=>(a.seat_no||9)-(b.seat_no||9));setHtmlIfChanged($('lineups'),entrants.length?entrants.map((s,i)=>`<div class="lineup ${finished&&Number(s.rank)===1?'is-winning':''}"><div class="picrow"><div class="photo-slot car-slot">${photoTag(s.car||'gtr','car')}</div><div class="photo-slot driver-slot">${photoTag(s.driver||'newbie','driver')}</div></div><div class="info"><b>#${i+1} ${text(s.name)} ${s.bot?'🤖 컴퓨터':s.id===uid?'★':''}</b><span class="driver-name">${text(sCar(s.car).name)} / ${text(sDriver(s.driver).name)}</span><div class="chips"><span>전력 ${s.power==null?'-':Number(s.power).toFixed(1)}</span><strong>${s.odds?Number(s.odds).toFixed(2)+'배':s.ready?'READY':'대기'}</strong></div></div></div>`).join(''):'<p class="muted">출전자가 없습니다. 차량을 선택하고 출전해 주세요.</p>');
+ setHtmlIfChanged($('odds-table'),entrants.map(s=>`<tr><td>${text(s.name)}</td><td class="num">${s.power==null?'-':Number(s.power).toFixed(1)}</td><td class="num">${s.odds?Number(s.odds).toFixed(2)+'배':'대기'}</td></tr>`).join(''));
+ const selected=$('bet-target').value;setHtmlIfChanged($('bet-target'),entrants.map(s=>`<option value="${s.id}">${text(s.name)} (${s.odds?Number(s.odds).toFixed(2):'-'}배)</option>`).join(''));if(entrants.some(s=>s.id===selected))$('bet-target').value=selected;
  $('bet-submit').disabled=!betting||!mine||!!myBet;
  $('bet-status').textContent=myBet?`베팅 완료: ${fmt(myBet.stake)} · 확정 배당 ${Number(myBet.odds).toFixed(2)}배${finished?' · 지급 '+fmt(myBet.payout):''}`:betting?'베팅 선택사항 · 참가/관전자 모두 가능 · 베팅하지 않아도 레이스 참가 가능':'1등 단승식 · 대기 중 배당은 예상값이며 아직 베팅할 수 없습니다.';
- updateExpected();renderTrack(entrants);maybeFocusRace();if(finished){renderFinishedRace(entrants,host,mine)}else{$('race-finish-hero').hidden=true;$('result').classList.remove('is-finished');$('result').textContent=running?'🚦 경주가 진행 중입니다.':'경기 접수 상태. 출전 차량·드라이버·능력치를 확인하세요.';}
+ updateExpected();renderTrack(entrants);maybeFocusRace();if(finished){renderFinishedRace(entrants,host,mine)}else{$('race-finish-hero').hidden=true;$('result').classList.remove('is-finished');renderedHtml.delete($('result'));$('result').textContent=running?'🚦 경주가 진행 중입니다.':'경기 접수 상태. 출전 차량·드라이버·능력치를 확인하세요.';}
 }
 const RACE_INCIDENT_COPY={
  surge:{icon:'🚀',short:'선두 질주',desc:'선두권 차량이 갑자기 치고 나갑니다! 마지막 구간까지 버틸 수 있을까요?'},
@@ -669,10 +710,11 @@ function renderRaceIncidents(elapsed,running,finished){
  else if(running){highlight.textContent=events.length?'🏎 정비 후 추격전! 다음 코너를 주목하세요.':'🟢 현재 코스 정상 주행 · 사고/피트 상황 감시 중';}
  else{highlight.textContent='🟢 출전 차량 점검 중 · 사고와 피트스톱은 경기 중 자동 진행됩니다.';}
  counter.textContent=running?('접수 '+events.length+'건 · 라이브'):finished?('기록 '+events.length+'건'):'출발 전';
- log.innerHTML=events.length?events.slice(-6).map(e=>{
+ const eventHtml=events.length?events.slice(-6).map(e=>{
   const c=RACE_INCIDENT_COPY[e.kind];
   return `<div class="race-incident-item"><time>${Number(e.second).toFixed(1)}s</time><span><b>${c.icon} ${text(e.name)}</b> · ${text(c.short)} — ${text(c.desc)}</span></div>`;
  }).join(''):'<div class="race-incident-idle">경기 시작 후 사고·펑크·엔진 점검·피트스톱 기록이 표시됩니다.</div>';
+ setHtmlIfChanged(log,eventHtml);
 }
 function raceLaneAlert(id,elapsed){
  const mine=raceEvents.filter(e=>String(e.team)===String(id)&&RACE_INCIDENT_COPY[e.kind]);
@@ -741,7 +783,7 @@ function renderTrack(list){
   node.querySelector('.race-timing').textContent=dnf?'🚨 리타이어 · 완주 실패':finished?(item.e.finish_ms?(Number(item.e.finish_ms)/1000).toFixed(3)+'초':'기록 확인 중'):(running?(item.pos.toFixed(1)+'%'):'출발 전');
  });
  const clock=$('race-clock'),leader=$('race-leader'),stage=$('race-broadcast-stage'),percent=$('race-percent');
- if(clock)clock.textContent=finished?'FINISH':running?Math.max(0,duration-elapsed).toFixed(1)+'s':'READY';
+ if(clock)clock.textContent=finished?'FINISH':running?(elapsed>=duration?'🏁 공식 결과 확인 중':Math.max(0,duration-elapsed).toFixed(1)+'s'):'READY';
  if(leader)leader.textContent=(running||finished)&&order.length?order[0].e.name:'출발 대기';
  if(stage)stage.textContent=finished?'🏆 공식 경기 종료':running?'● LIVE · 주행 연출':'그리드 편성 중';
  if(percent)percent.textContent=Math.round(fraction*100)+'%';
@@ -763,7 +805,15 @@ function renderTrack(list){
 }
 
 function updateExpected(){const t=seats.find(x=>x.id===$('bet-target').value),n=Number($('bet-amount').value);$('expected').textContent=t?.odds&&Number.isFinite(n)&&n>0?'예상 적중 지급: '+fmt(Math.floor(n*Number(t.odds)))+' · 원금 포함':'배당 접수 후 예상 지급액이 표시됩니다.'}
-function render(){renderRooms();if(profile){renderShop('car');renderShop('driver');renderUpgrades()}renderRace();if(active==='solo')renderSolo();}
+function render(){
+ // Live sync must not recreate dozens of shop cards, photographs and upgrade controls.
+ if(active==='lobby')renderRooms();
+ if(active==='garage'&&profile)renderShop('car');
+ if(active==='drivers'&&profile)renderShop('driver');
+ if(active==='upgrades'&&profile)renderUpgrades();
+ if(active==='race')renderRace();
+ if(active==='solo')renderSolo();
+}
 
 /* Solo NPC race: everything authoritative, including deductions and outcome, stays on Supabase. */
 async function soloCall(cmd,more={},notify=true){
@@ -780,9 +830,27 @@ async function soloCall(cmd,more={},notify=true){
   if(active==='solo')renderSolo();
   return d;
  }catch(e){if(notify)info('솔로 레이스: '+e.message,true);return null}
- finally{soloBusy=false;if(active==='solo')renderSolo()}
+ finally{soloBusy=false;if(active==='solo')renderSolo();if(cmd!=='sync')scheduleSoloSync(cmd==='start'?900:null)}
 }
-async function loadSolo(){if(soloBusy||soloFetching||!token)return;soloFetching=true;try{await soloCall('sync',{},false)}finally{soloFetching=false}}
+async function loadSolo(){
+ if(active!=='solo'||!raceFrameVisible())return;
+ if(soloBusy||soloFetching||!token){scheduleSoloSync(600);return;}
+ soloFetching=true;
+ try{const d=await soloCall('sync',{},false);soloSyncFailures=d?0:Math.min(4,soloSyncFailures+1)}
+ finally{soloFetching=false;scheduleSoloSync()}
+}
+function soloSyncDelay(){
+ if(!raceFrameVisible())return 6000;
+ const running=soloData?.phase==='running';
+ const elapsed=(Date.now()-Date.parse(soloData?.started_at||''))/1000;
+ let ms=running?(Number.isFinite(elapsed)&&elapsed>=14?1000:2400):soloData?.phase==='betting'?3500:7000;
+ return Math.min(12000,ms*Math.pow(1.45,soloSyncFailures));
+}
+function scheduleSoloSync(ms=null){
+ if(soloSyncTimer!==null){clearTimeout(soloSyncTimer);soloSyncTimer=null;}
+ if(active!=='solo'||!token)return;
+ soloSyncTimer=setTimeout(()=>{soloSyncTimer=null;void loadSolo()},ms??soloSyncDelay());
+}
 function updateSoloLanes(){
  if(soloData?.phase!=='running')return;
  const entries=soloData.entries||[];
@@ -910,6 +978,71 @@ async function pingRacePresence(){
  },10000);}catch(_){/* Retry next tick; do not interrupt the current race. */}
  finally{racePresenceBusy=false;}
 }
-async function tick(){if(!token||!currentId||!raceFrameVisible()||refreshing||pending)return;refreshing=true;try{const d=await raceGameRPC('sync',{p_action:'sync',p_client:client,p_token:token,p_room:currentId,p_payload:{}});if(uid&&Array.isArray(d.seats)&&!d.seats.some(s=>s.id===uid)){currentId='';room=null;seats=[];raceSocialMessages=[];raceSpectators=[];history.replaceState(null,'',location.pathname);tab('race');info('이 레이스방에서 나왔습니다. 운영자 강퇴 또는 접속 상태 변경일 수 있습니다.',true);await loadRooms();return}apply(d);render()}catch(e){info(e.message,true)}finally{refreshing=false}};
-init().then(()=>{loadPhotos();autoTimer=setInterval(tick,4500);setInterval(pingRacePresence,18000);setInterval(refreshRaceSale,15000);setInterval(loadRaceSocial,5000);setInterval(()=>{if(active==='solo'&&token&&raceFrameVisible())void loadSolo()},4500);setInterval(()=>{if(raceFrameVisible()&&active==='solo'&&soloData?.phase==='running')updateSoloLanes()},1500);setInterval(()=>{if(raceFrameVisible()&&room?.phase==='running')renderTrack(seats.filter(x=>x.role==='entrant'))},500);setInterval(()=>{if(!currentId&&token&&raceFrameVisible())loadRooms()},18000)});
+function raceSyncDelay(){
+ if(!raceFrameVisible()||active!=='race')return 6000;
+ if(!currentId)return 10000;
+ let ms=3800;
+ if(room?.phase==='betting')ms=2200;
+ else if(room?.phase==='running'){
+  const end=Date.parse(room.ends_at||'');
+  const start=Date.parse(room.started_at||'');
+  const finish=Number.isFinite(end)?end:Number.isFinite(start)?start+raceDuration()*1000:NaN;
+  const left=Number.isFinite(finish)?finish-Date.now():999999;
+  ms=left<4000?1100:2300;
+ }else if(room?.phase==='finished'){
+  const pendingPayout=myBet&&String(myBet.target_key)===String(room?.result?.winner)&&Number(myBet.payout||0)===0;
+  ms=pendingPayout?1800:4200;
+ }
+ return Math.min(13000,Math.round(ms*Math.pow(1.6,raceSyncFailures)));
+}
+function scheduleRaceSync(ms=null){
+ if(autoTimer!==null){clearTimeout(autoTimer);autoTimer=null;}
+ if(!token||!currentId)return;
+ const delay=Math.max(250,ms??raceSyncDelay());
+ // Small per-client jitter prevents every player from polling at the same instant.
+ autoTimer=setTimeout(()=>{autoTimer=null;void tick()},delay+Math.round(Math.random()*190));
+}
+async function tick(){
+ if(!token||!currentId)return;
+ if(!raceFrameVisible()||active!=='race'||refreshing||pending){scheduleRaceSync(refreshing||pending?600:6000);return;}
+ refreshing=true;
+ const rid=currentId,actionRevision=raceActionRevision;
+ try{
+  const d=await raceGameRPC('sync',{p_action:'sync',p_client:client,p_token:token,p_room:rid,p_payload:{}});
+  // Never overwrite a more recent user action, or state for a different room.
+  if(rid!==currentId||actionRevision!==raceActionRevision)return;
+  raceSyncFailures=0;
+  if(uid&&Array.isArray(d.seats)&&!d.seats.some(s=>s.id===uid)){
+   currentId='';room=null;seats=[];raceSocialMessages=[];raceSpectators=[];
+   history.replaceState(null,'',location.pathname);tab('race');
+   info('이 레이스방에서 나왔습니다. 운영자 강퇴 또는 접속 상태 변경일 수 있습니다.',true);
+   void loadRooms();return;
+  }
+  const previousPhase=room?.phase,previousRound=room?.race_no;
+  apply(d);render();
+  if(room?.phase==='finished'&&previousPhase!=='finished'){
+   info('🏁 공식 경기 결과·베팅 정산 정보가 도착했습니다.');
+  }else if(room?.race_no!==previousRound&&room?.phase==='waiting')info('다음 경기가 준비됐습니다. READY를 눌러 주세요.');
+ }catch(e){
+  raceSyncFailures=Math.min(4,raceSyncFailures+1);
+  info('레이스 서버 연결 지연 · 자동으로 다시 확인합니다. ('+e.message+')',true);
+ }finally{refreshing=false;scheduleRaceSync()}
+}
+let previousFrameVisible=false;
+init().then(()=>{
+ void loadPhotos();
+ scheduleRaceSync(700);
+ setInterval(pingRacePresence,18000);
+ setInterval(refreshRaceSale,20000);
+ // Chat / spectator list is noncritical to official results.
+ setInterval(()=>{if(active==='race')void loadRaceSocial()},9000);
+ setInterval(()=>{if(raceFrameVisible()&&active==='solo'&&soloData?.phase==='running')updateSoloLanes()},750);
+ setInterval(()=>{
+  const visible=raceFrameVisible();
+  if(visible&&!previousFrameVisible){if(active==='race')scheduleRaceSync(350);else if(active==='solo')scheduleSoloSync(350)}
+  previousFrameVisible=visible;
+  if(visible&&active==='race'&&room?.phase==='running')renderTrack(seats.filter(x=>x.role==='entrant'));
+ },500);
+ setInterval(()=>{if(!currentId&&token&&raceFrameVisible()&&active==='lobby')loadRooms()},18000);
+});
 </script></body></html>
