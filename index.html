@@ -1695,6 +1695,13 @@ function applyRoom(id,data){if(!data?.state||!Array.isArray(data.state.board)||d
   if(Number.isFinite(serverMs))gomokuClockOffsetMs=serverMs-Date.now();
  }
  roomCache.set(id,{state:data.state,revision:data.revision,seat:data.seat,player_no:data.player_no,connected:true});
+ // The currently connected player is authoritative even if Sheet1 misses a poll.
+ // Do not keep a room alive after the game has a winner.
+ const protectedRoom=gomokuLiveRoomGrace.get(id);
+ if(protectedRoom){
+  if(data.state?.winner!=null)gomokuLiveRoomGrace.delete(id);
+  else if(id===activeRoom)protectedRoom.seenAt=Date.now();
+ }
  if(activeRoom===id){const previousGame=state?.gameNumber,previousWinner=state?.winner;activateCache();if(previousGame && previousGame<state.gameNumber)notify('새 작업 시작',false,true);if(previousGame!==state?.gameNumber||previousWinner!==state?.winner)syncGomokuRewards(true);}
 }
 function activateCache(){const data=roomData(activeRoom);state=data?.state||null;mySeat=data?.seat||'waiting';myNumber=data?.player_no||null;revision=data?.revision??-1;connected=!!data?.connected;
@@ -1706,6 +1713,12 @@ function applyLobby(data){
  roomList=(Array.isArray(data.rooms)?data.rooms:[]).map(r=>{
  const status=hunterLobbyStatuses.get(r.id),gate=matchGateLobbyStatuses.get(r.id);
  const base=r.game==='mine_battle'&&status?{...r,status:status.phase==='finished'?'done':status.phase,moves:status.moves}:r;
+ if(base.game==='gomoku'&&base.status!=='done'&&base.status!=='finished'){
+  const protectedRoom=gomokuLiveRoomGrace.get(r.id);
+  if(gate?.started||protectedRoom&&Date.now()-protectedRoom.seenAt<GOMOKU_LOBBY_GRACE_MS){
+   return {...base,status:'playing'};
+  }
+ }
  if(gate&&!gate.started&&base.status!=='done')return {...base,status:gate.guest_ready?'ready':'waiting'};
  return base;
 });
@@ -1736,6 +1749,35 @@ const roomPollInFlight=new Set();
 // v3.4.8: read the authoritative odd/even room table independently of the legacy lobby RPC.
 // Show Odd/Even rooms first so they are never cut off by older worksheets.
 let lastLegacyLobbyPayload=null;
+// Keep server-confirmed live Gomoku rooms through a brief lobby/heartbeat gap.
+// Only a successful base lobby fetch or a successful in-room sync can extend this.
+const gomokuLiveRoomGrace=new Map();
+const GOMOKU_LOBBY_GRACE_MS=150000;
+function rememberLiveGomokuFromLobby(rooms){
+ const now=Date.now();
+ if(!Array.isArray(rooms))return;
+ for(const room of rooms){
+  if(room?.game!=='gomoku'||!/^r-[a-f0-9]{10}$/i.test(String(room.id||'')))continue;
+  if(room.status==='done'||room.status==='finished'){
+   gomokuLiveRoomGrace.delete(room.id);continue;
+  }
+  const gate=matchGateLobbyStatuses.get(room.id);
+  const saved=gomokuLiveRoomGrace.get(room.id);
+  const playing=room.status==='playing'||gate?.started===true;
+  if(playing){
+   gomokuLiveRoomGrace.set(room.id,{room:{...room,status:'playing'},seenAt:now});
+  }else if(saved){
+   // A transient 45-second online-count drop is NOT proof that a match ended.
+   if(now-saved.seenAt<GOMOKU_LOBBY_GRACE_MS){
+    gomokuLiveRoomGrace.set(room.id,{room:{...room,status:'playing'},seenAt:saved.seenAt});
+   }else gomokuLiveRoomGrace.delete(room.id);
+  }
+ }
+ for(const [id,saved] of gomokuLiveRoomGrace){
+  if(now-saved.seenAt>GOMOKU_LOBBY_GRACE_MS)gomokuLiveRoomGrace.delete(id);
+ }
+}
+
 // v3.5.1: A slow Supabase response is not evidence that online rooms disappeared.
 // Preserve the last CONFIRMED room list briefly across page reloads; label it as unverified.
 const OE_LOBBY_CACHE_KEY='excel-games-oe-last-good-v351:'+SUPABASE_URL;
@@ -1860,7 +1902,13 @@ function visibleHoldemRooms(rooms){
 }
 function mergedRoomList(){
  const legacyRooms=(lastLegacyLobbyPayload?.rooms||[]).filter(r=>r?.game!=='race'&&r?.game!=='holdem'&&r?.game!=='oddeven'&&r?.game!=='홀짝'&&r?.game!=='underover'&&!/^(?:h-|rc-|e-|u-)/.test(String(r?.id||'')));
- const incoming=[...raceOnlineRooms,...underOverLobbyRooms,...visibleOddEvenRooms(oddEvenLobbyRooms),...visibleHoldemRooms(holdemLobbyRooms),...legacyRooms];
+ // A single missing lobby snapshot must not erase an active Gomoku match.
+ // The grace cache expires, so deleted/abandoned rooms cannot persist forever.
+ const now=Date.now();
+ const protectedGomoku=[...gomokuLiveRoomGrace.values()]
+  .filter(x=>now-x.seenAt<GOMOKU_LOBBY_GRACE_MS)
+  .map(x=>({...x.room,status:'playing'}));
+ const incoming=[...raceOnlineRooms,...underOverLobbyRooms,...visibleOddEvenRooms(oddEvenLobbyRooms),...visibleHoldemRooms(holdemLobbyRooms),...legacyRooms,...protectedGomoku];
  const seen=new Set();
  return incoming.filter(r=>{
   if(!r||typeof r.id!=='string'||seen.has(r.id))return false;
@@ -1993,6 +2041,8 @@ function pollLobbyInBackground(force=false){
  scheduleLobbyRead('base',15000,40000,async()=>{
   try{
    const data=await lobbyRpc();
+   // Record only server-confirmed ongoing games; optional lists must not refresh it.
+   rememberLiveGomokuFromLobby(data.rooms);
    lastLegacyLobbyPayload=data;
    lobbyAnyConfirmedAt=Date.now();
    lobbyInitialCoreSettled=true;
@@ -2340,6 +2390,7 @@ async function closeRoom(id){
    await roomRpc(id,'leave');
    const reply=await cleanupRpc(id);
    if(reply.deleted>0){
+     gomokuLiveRoomGrace.delete(id);
      roomList=roomList.filter(r=>r.id!==id);
      renderLobby();updateSheetTabs();
    }
