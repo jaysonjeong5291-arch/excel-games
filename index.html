@@ -1362,6 +1362,10 @@ let chatLastSeen='',movePending=false,pendingMovePoint=null,chatPending=false,re
 let tick=0,polling=false,stopped=false,pollTimer=null,initialDeepLink=new URLSearchParams(location.search).get('room');
 let lobbyHealthy=false,lobbyReady=false,creating=false,lobbySignature="";
 let hunterLobbyStatuses=new Map(),matchGateLobbyStatuses=new Map(),holdemLobbyRooms=[],oddEvenLobbyRooms=[],underOverLobbyRooms=[],raceOnlineRooms=[];
+// Freshly created races must be visible immediately even before Supabase's next heartbeat/list refresh.
+// Optimistic rows expire quickly and can never revive an abandoned historical room.
+const raceNewlyCreated=new Map();
+let raceCurrentInviteId='',raceLobbyLastSuccess=0,raceLobbyLastError='';
 let matchGateByRoom=new Map(),matchGateActionPending=false,matchGateRestarting=new Map();
 // Rematch UX: keep the small ready/start gate fresh independently of the heavier room/game poll.
 // Only poll quickly while waiting for Ready/Start or after a completed round.
@@ -1742,19 +1746,40 @@ function applyOddEvenLobbyReport(report){
  showOddEvenLobbyStatus(report);
 }
 async function refreshRaceOnlineRooms(){
- if(!memberToken||!memberProfile){raceOnlineRooms=[];return;}
- // Lightweight read-only summary excludes rooms with no heartbeat within 90s.
- // Avoid the full mixed-race list RPC, which loads each game and retained stale seat.
- const d=await callRpc('renju_race_live_lobby',{},false,11000);
- if(!Array.isArray(d.rooms))return;
- raceOnlineRooms=d.rooms.map((r,i)=>({
-  id:r.id,game:'race',sheet:'Race'+(i+1),
-  title:String(r.name||'레이스 경기장')+' · 컴 '+Number(r.bots||0)+'대',
-  status:r.phase==='finished'?'finished':r.phase==='running'?'playing':r.phase==='betting'?'ready':'waiting',
-  count:Number(r.entrants||0),waiting:Math.max(0,6-Number(r.entrants||0)),
-  spectators:Number(r.spectators||0),moves:Number(r.race_no||1),black:null,white:null
- }));
- refreshCombinedLobby();
+ // This is a public, read-only heartbeat summary. Do not block it on an unrelated
+ // member-profile response: login might be refreshing at the exact same time.
+ const now=Date.now();
+ const activeNew=()=>{
+  for(const [id,entry] of raceNewlyCreated){if(now-entry.created>120000)raceNewlyCreated.delete(id);}
+  return [...raceNewlyCreated.values()].map(x=>x.row);
+ };
+ try{
+  const d=await callRpc('renju_race_live_lobby',{},false,14000);
+  if(!Array.isArray(d.rooms))throw new Error('레이스방 목록 데이터 형식이 올바르지 않습니다.');
+  const live=d.rooms.map((r,i)=>({
+   id:r.id,game:'race',sheet:'Race'+(i+1),
+   title:String(r.name||'레이스 경기장')+' · 컴 '+Number(r.bots||0)+'대',
+   status:r.phase==='finished'?'finished':r.phase==='running'?'playing':r.phase==='betting'?'ready':'waiting',
+   count:Number(r.entrants||0),waiting:Math.max(0,6-Number(r.entrants||0)),
+   spectators:Number(r.spectators||0),moves:Number(r.race_no||1),black:null,white:null
+  }));
+  const seen=new Set(live.map(x=>x.id));
+  // Keep the newly-created room in Sheet1 while its first live heartbeat is being indexed.
+  raceOnlineRooms=[...activeNew().filter(x=>!seen.has(x.id)),...live];
+  raceLobbyLastSuccess=now;raceLobbyLastError='';
+  // Live server data, not a browser cache, is authoritative after the short grace period.
+  for(const r of live)raceNewlyCreated.delete(r.id);
+  refreshCombinedLobby();
+ }catch(error){
+  raceLobbyLastError=String(error?.message||error);
+  // Surface the actual error rather than silently displaying an empty race lobby.
+  if(Date.now()-raceLobbyLastSuccess>120000)raceOnlineRooms=activeNew();
+  refreshCombinedLobby();
+  if(!activeRace&&!activeRoom){
+   const msg='레이스방 목록 조회 실패: '+raceLobbyLastError+' · 방 코드로 직접 입장할 수 있습니다.';
+   const el=$('lobby-notice');if(el&&(!el.textContent||el.textContent.includes('레이스방 목록')))lobbyNotify(msg,true);
+  }
+ }
 }
 function mergedRoomList(){
  const legacyRooms=(lastLegacyLobbyPayload?.rooms||[]).filter(r=>r?.game!=='race'&&r?.game!=='oddeven'&&r?.game!=='홀짝');
@@ -2076,6 +2101,8 @@ function launchRaceRoom(roomId=null,makeNew=false){
  const frame=$('race-frame');
  const desired='./race-demo.html'+(roomId?'?room='+encodeURIComponent(roomId):makeNew?'?create=1':'');
  if((roomId||makeNew||!frame.getAttribute('src'))&&frame.getAttribute('src')!==desired)frame.src=desired;
+ if(roomId&&/^rc-[a-f0-9]{12}$/i.test(roomId)){raceCurrentInviteId=roomId;frame.dataset.roomId=roomId;}
+ else if(makeNew){raceCurrentInviteId='';frame.dataset.roomId='';}
  switchView('__race__');
 }
 async function openRoom(id){if(id?.startsWith('rc-')){launchRaceRoom(id);return;}if(id?.startsWith('u-')){
@@ -2149,12 +2176,46 @@ async function closeRoom(id){
 async function gameAction(type,args={}){if(!activeRoom)return false;const id=activeRoom;
  try{const data=await roomRpc(id,type,args);applyRoom(id,data);notify('');return true;}
  catch(e){notify(e.message,true);return false;}}
-function shareLink(){return location.origin+location.pathname+(activeRoom?'?room='+encodeURIComponent(activeRoom):'');}
-async function copyShare(){const link=shareLink();try{await navigator.clipboard.writeText(link);
- if(isOddEvenRoom()){oddEvenInfo='초대 링크 복사 완료 · 친구에게 보내면 같은 온라인방으로 입장합니다.';renderOddEven();}
- else if(activeRoom)notify('주소 복사 완료',false,true);else lobbyNotify('주소를 복사했어요.');
- }catch(_){if(isOddEvenRoom()){oddEvenInfo='초대 링크: '+link;renderOddEven();try{window.prompt('친구에게 보낼 초대 링크를 복사하세요.',link);}catch(_){}}
- else if(activeRoom)notify(link);else lobbyNotify(link);}}
+function currentRaceRoomId(){
+ const frame=$('race-frame');
+ const valid=x=>/^rc-[a-f0-9]{12}$/i.test(String(x||''))?String(x).toLowerCase():'';
+ // A same-origin frame can navigate with history.replaceState after we last set its src.
+ try{
+  const u=new URL(frame.contentWindow.location.href);
+  const current=valid(decodeURIComponent(u.hash.slice(1)))||valid(u.searchParams.get('room'));
+  if(current)return current;
+ }catch(_){/* frame not ready: use the verified postMessage room id instead */}
+ return valid(raceCurrentInviteId)||valid(frame.dataset.roomId);
+}
+function shareLink(){
+ const id=activeRace?currentRaceRoomId():activeRoom;
+ if(activeRace&&!id)return '';
+ return location.origin+location.pathname+(id?'?room='+encodeURIComponent(id):'');
+}
+function fallbackCopyText(value){
+ const field=document.createElement('textarea');
+ field.value=value;field.setAttribute('readonly','');field.style.cssText='position:fixed;left:8px;top:8px;opacity:0.01;width:1px;height:1px;z-index:99999';
+ document.body.append(field);field.focus();field.select();field.setSelectionRange(0,field.value.length);
+ let success=false;try{success=document.execCommand('copy');}catch(_){}field.remove();return success;
+}
+async function copyShare(){
+ const link=shareLink();
+ if(!link){lobbyNotify('레이스방 생성·입장이 완료된 후 주소를 복사할 수 있습니다.',true);return;}
+ let copied=false;
+ try{if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(link);copied=true;}}catch(_){}
+ if(!copied)copied=fallbackCopyText(link);
+ if(copied){
+  if(isOddEvenRoom()){oddEvenInfo='초대 링크 복사 완료';renderOddEven();}
+  else if(activeRoom)notify('주소 복사 완료',false,true);
+  else lobbyNotify(activeRace?'레이스방 초대 주소 복사 완료 · '+link:'주소를 복사했어요.');
+ }else{
+  // Mobile browsers sometimes block clipboard-write (including embedded frames).
+  if(isOddEvenRoom()){oddEvenInfo='초대 링크: '+link;renderOddEven();}
+  else if(activeRoom)notify('초대 주소: '+link);
+  else lobbyNotify('주소를 길게 눌러 복사하세요: '+link);
+  try{window.prompt('초대 주소를 길게 눌러 복사하세요',link);}catch(_){}
+ }
+}
 $('copy-link-btn').addEventListener('click',copyShare);$('room-copy').addEventListener('click',copyShare);
 $('room-lobby').addEventListener('click',()=>switchView(null));
 function deliverUnderOverAuth(){
@@ -2242,11 +2303,23 @@ $('open-territory-btn').addEventListener('click',()=>switchView('__territory__')
 // Direct Sheet1 race shortcut removed; race remains available via 새 방 만들기 → 레이스.
 window.addEventListener('message',e=>{
  if(e.origin!==location.origin||e.source!==$('race-frame').contentWindow)return;
- if(e.data?.type==='RACE_CLOSE')switchView(null);
- if(e.data?.type==='RACE_CREATED'&&/^rc-[a-f0-9]{12}$/.test(e.data.id||'')){
-   const id=e.data.id;
-   const frame=$('race-frame');frame.dataset.src='./race-demo.html?room='+encodeURIComponent(id);
-   void refreshRaceOnlineRooms().catch(()=>{});
+ if(e.data?.type==='RACE_CLOSE'){
+   raceCurrentInviteId='';$('race-frame').dataset.roomId='';switchView(null);
+ }
+ if(['RACE_CREATED','RACE_JOINED'].includes(e.data?.type)&&/^rc-[a-f0-9]{12}$/i.test(e.data.id||'')){
+   const id=String(e.data.id).toLowerCase();raceCurrentInviteId=id;
+   const frame=$('race-frame');frame.dataset.roomId=id;
+   frame.dataset.src='./race-demo.html?room='+encodeURIComponent(id);
+   if(e.data.type==='RACE_CREATED'){
+    const now=Date.now();raceNewlyCreated.set(id,{created:now,row:{
+     id,game:'race',sheet:'Race 신규',title:'레이스 경기장 · 생성 완료',
+     status:'waiting',count:1,waiting:5,spectators:0,moves:1,black:null,white:null
+    }});
+    // Show the room right away, not after the next 15-second Sheet1 poll.
+    raceOnlineRooms=[raceNewlyCreated.get(id).row,...raceOnlineRooms.filter(r=>r.id!==id)];
+    refreshCombinedLobby();
+   }
+   void refreshRaceOnlineRooms();
  }
 });
 window.addEventListener('message',e=>{const frame=$('territory-frame');if(e.origin===location.origin&&e.source===frame.contentWindow&&e.data?.type==='CHEONHA_CLOSE')switchView(null);});

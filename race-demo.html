@@ -355,7 +355,9 @@ async function processRaceOperatorCommand(message,rid){
  }
  throw new Error('사용법: /포인트 닉네임 금액 · /공지 내용 · /강퇴 닉네임');
 }
-async function action(cmd,payload={},rid=currentId){if(pending)return;pending=true;try{const d=await rpc('renju_race_cinematic_rpc',{p_action:cmd,p_client:client,p_token:token,p_room:rid||null,p_payload:payload});apply(d);if(['buy_car','buy_driver','select','upgrade','reset_upgrades'].includes(cmd)){info('차고 정보가 저장됐습니다.')}else{info('');}if(cmd==='create'||cmd==='join'){raceAnimationSignature='';racePreviewSelection='';currentId=d.room?.id||rid;if(cmd==='create'&&window.parent!==window)window.parent.postMessage({type:'RACE_CREATED',id:currentId},location.origin);tab('race');history.replaceState(null,'','#'+encodeURIComponent(currentId));raceSocialMessages=[];raceSpectators=[];raceChatFeedback('');renderRaceSocial();raceAdminGuide();void loadRaceSocial()}if(cmd==='leave'){raceAnimationSignature='';racePreviewSelection='';currentId='';room=null;seats=[];raceSocialMessages=[];raceSpectators=[];history.replaceState(null,'',location.pathname);tab('race');await loadRooms();if(window.parent!==window)window.parent.postMessage({type:'RACE_CLOSE'},location.origin)}if(cmd==='next'){racePreviewSelection='';info('출전석이 초기화됐습니다. 방장이 6개 칸을 편성하고 유저들이 다시 출전·READY해 주세요.');}return d}catch(err){info(err.message,true);return null}finally{pending=false;render();}}
+async function action(cmd,payload={},rid=currentId){if(pending)return;pending=true;try{const d=await rpc('renju_race_cinematic_rpc',{p_action:cmd,p_client:client,p_token:token,p_room:rid||null,p_payload:payload});apply(d);if(['buy_car','buy_driver','select','upgrade','reset_upgrades'].includes(cmd)){info('차고 정보가 저장됐습니다.')}else{info('');}if(cmd==='create'||cmd==='join'){raceAnimationSignature='';racePreviewSelection='';currentId=d.room?.id||rid;if(window.parent!==window)window.parent.postMessage({type:cmd==='create'?'RACE_CREATED':'RACE_JOINED',id:currentId},location.origin);
+ // A fresh room must not wait 18 seconds for its first heartbeat.
+ void pingRacePresence();tab('race');history.replaceState(null,'','#'+encodeURIComponent(currentId));raceSocialMessages=[];raceSpectators=[];raceChatFeedback('');renderRaceSocial();raceAdminGuide();void loadRaceSocial()}if(cmd==='leave'){raceAnimationSignature='';racePreviewSelection='';currentId='';room=null;seats=[];raceSocialMessages=[];raceSpectators=[];history.replaceState(null,'',location.pathname);tab('race');await loadRooms();if(window.parent!==window)window.parent.postMessage({type:'RACE_CLOSE'},location.origin)}if(cmd==='next'){racePreviewSelection='';info('출전석이 초기화됐습니다. 방장이 6개 칸을 편성하고 유저들이 다시 출전·READY해 주세요.');}return d}catch(err){info(err.message,true);return null}finally{pending=false;render();}}
 function apply(d){
  if(d.my_id)uid=d.my_id;if(d.my_profile)profile=d.my_profile;if(d.points!==undefined)points=d.points;
  const nextRoom='room'in d?d.room:room;
@@ -751,12 +753,23 @@ $('bet-submit').addEventListener('click',()=>{const amount=Number($('bet-amount'
 $('cars').addEventListener('click',e=>{const b=e.target.closest('[data-purchase]');if(!b||!profile)return;const owned=profile.owned_cars?.includes(b.dataset.purchase);action(owned?'select':'buy_car',owned?{kind:'car',id:b.dataset.purchase}:{id:b.dataset.purchase});});
 $('drivers').addEventListener('click',e=>{const b=e.target.closest('[data-purchase]');if(!b||!profile)return;const owned=profile.owned_drivers?.includes(b.dataset.purchase);action(owned?'select':'buy_driver',owned?{kind:'driver',id:b.dataset.purchase}:{id:b.dataset.purchase});});
 $('upgrades').addEventListener('click',e=>{const reset=e.target.closest('[data-reset]');if(reset){const kind=reset.dataset.reset;const object=kind==='car'?sCar(profile.selected_car).name:sDriver(profile.selected_driver).name;if(confirm(object+'의 '+(kind==='car'?'차량 파츠':'드라이버 스킬')+'을 1,000,000P를 지불하고 초기화할까요?\n기존 강화 비용은 환불되지 않습니다.'))action('reset_upgrades',{kind});return;}const b=e.target.closest('[data-upgrade]');if(!b)return;const [kind,key]=b.dataset.upgrade.split(':');action('upgrade',{kind,key})});
-$('share').addEventListener('click',async()=>{const url=new URL('./index.html?room='+encodeURIComponent(currentId),location.href);url.hash='';try{await navigator.clipboard.writeText(url.toString());info('경기방 초대 주소를 복사했습니다.')}catch{prompt('방 주소를 복사해 주세요',url.toString())}});
+$('share').addEventListener('click',async()=>{
+ if(!/^rc-[0-9a-f]{12}$/i.test(currentId||'')){info('방 생성 또는 입장 후 초대 링크를 복사할 수 있습니다.',true);return;}
+ const url=new URL('./index.html?room='+encodeURIComponent(currentId),location.href);url.hash='';
+ const value=url.toString();let copied=false;
+ try{if(navigator.clipboard?.writeText){await navigator.clipboard.writeText(value);copied=true;}}catch(_){}
+ if(!copied){const a=document.createElement('textarea');a.value=value;a.readOnly=true;a.style.cssText='position:fixed;top:4px;left:4px;opacity:.01;width:2px;height:2px';document.body.append(a);a.focus();a.select();try{copied=document.execCommand('copy');}catch(_){}a.remove();}
+ if(copied)info('레이스방 초대 주소가 복사됐습니다.');
+ else{info('초대 주소: '+value+' (길게 눌러 복사)',true);try{window.prompt('복사할 초대 주소',value)}catch(_){}}
+});
 $('home').addEventListener('click',()=>{if(window.parent!==window)window.parent.postMessage({type:'RACE_CLOSE'},location.origin);else location.href='./index.html'});
 // Lightweight heartbeat: the legacy race `sync` action does not update last_seen.
 // This is needed to keep truly active entrants in the live lobby, even if chat fails.
 async function pingRacePresence(){
- if(racePresenceBusy||!token||!currentId||!raceFrameVisible())return;
+ // Keep the real member's room alive while they view Sheet1. Only pause when the
+ // whole browser tab is backgrounded; expensive game syncs still pause when hidden.
+ if(racePresenceBusy||!token||!currentId||document.hidden)return;
+ try{if(window.parent!==window&&window.parent.document.hidden)return;}catch(_){}
  racePresenceBusy=true;
  try{await rpc('renju_race_presence_ping',{
   p_client:client,p_token:token,p_room:currentId
