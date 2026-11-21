@@ -1798,19 +1798,31 @@ async function refreshRaceOnlineRooms(){
  try{
   const d=await callRpc('renju_race_live_lobby',{},false,14000);
   if(!Array.isArray(d.rooms))throw new Error('레이스방 목록 데이터 형식이 올바르지 않습니다.');
-  const live=d.rooms.map((r,i)=>({
-   id:r.id,game:'race',sheet:'Race'+(i+1),
-   title:String(r.name||'레이스 경기장')+' · 컴 '+Number(r.bots||0)+'대',
-   status:r.phase==='finished'?'finished':r.phase==='running'?'playing':r.phase==='betting'?'ready':'waiting',
-   count:Number(r.entrants||0),waiting:Math.max(0,6-Number(r.entrants||0)),
-   spectators:Number(r.spectators||0),moves:Number(r.race_no||1),black:null,white:null
-  }));
+  // "entrants" includes computer drivers. An empty 6-CPU race is NOT six connected users.
+  // Prefer the server's online human/spectator heartbeat counts (90-second window).
+  // Do not delete any DB row: finished races can still have unsettled betting history.
+  const live=d.rooms.filter(r=>{
+   const humans=Number(r.humans);
+   const fallbackHumans=Math.max(0,Number(r.entrants||0)-Number(r.bots||0));
+   const onlineHumans=Number.isFinite(humans)?humans:fallbackHumans;
+   return onlineHumans>0 || Number(r.spectators||0)>0;
+  }).map((r,i)=>{
+   const humans=Number(r.humans);
+   const onlineHumans=Math.max(0,Number.isFinite(humans)?humans:Number(r.entrants||0)-Number(r.bots||0));
+   return {
+    id:r.id,game:'race',sheet:'Race'+(i+1),
+    title:String(r.name||'레이스 경기장')+' · 컴 '+Number(r.bots||0)+'대',
+    status:r.phase==='finished'?'finished':r.phase==='running'?'playing':r.phase==='betting'?'ready':'waiting',
+    count:onlineHumans,waiting:Math.max(0,6-Number(r.entrants||0)),
+    spectators:Number(r.spectators||0),moves:Number(r.race_no||1),black:null,white:null
+   };
+  });
   const seen=new Set(live.map(x=>x.id));
-  // Keep the newly-created room in Sheet1 while its first live heartbeat is being indexed.
+  // Recently created rooms have a short local visibility grace period while the
+  // first heartbeat is indexed; after that they require real online users.
   raceOnlineRooms=[...activeNew().filter(x=>!seen.has(x.id)),...live];
   raceLobbyLastSuccess=now;raceLobbyLastError='';
   lobbyAnyConfirmedAt=Date.now();
-  // Live server data, not a browser cache, is authoritative after the short grace period.
   for(const r of live)raceNewlyCreated.delete(r.id);
   refreshCombinedLobby();
  }catch(error){
@@ -1824,9 +1836,22 @@ async function refreshRaceOnlineRooms(){
   }
  }
 }
+// A server-confirmed Hold'em seat count measures seated users with a recent
+// heartbeat. The game RPC may return all historic tables, including empty rooms.
+let holdemLobbyLastSuccessAt=0;
+function visibleHoldemRooms(rooms){
+ if(!Array.isArray(rooms))return [];
+ // Don't continue advertising an old, occupied snapshot throughout a DB outage.
+ if(holdemLobbyLastSuccessAt && Date.now()-holdemLobbyLastSuccessAt>90000)return [];
+ return rooms.filter(r=>{
+  if(!r||typeof r.id!=='string')return false;
+  const occupied=Number(r.count);
+  return Number.isFinite(occupied)?occupied>0:true;
+ });
+}
 function mergedRoomList(){
- const legacyRooms=(lastLegacyLobbyPayload?.rooms||[]).filter(r=>r?.game!=='race'&&r?.game!=='oddeven'&&r?.game!=='홀짝'&&r?.game!=='underover'&&!String(r?.id||'').startsWith('u-'));
- const incoming=[...raceOnlineRooms,...underOverLobbyRooms,...visibleOddEvenRooms(oddEvenLobbyRooms),...holdemLobbyRooms,...legacyRooms];
+ const legacyRooms=(lastLegacyLobbyPayload?.rooms||[]).filter(r=>r?.game!=='race'&&r?.game!=='holdem'&&r?.game!=='oddeven'&&r?.game!=='홀짝'&&r?.game!=='underover'&&!/^(?:h-|rc-|e-|u-)/.test(String(r?.id||'')));
+ const incoming=[...raceOnlineRooms,...underOverLobbyRooms,...visibleOddEvenRooms(oddEvenLobbyRooms),...visibleHoldemRooms(holdemLobbyRooms),...legacyRooms];
  const seen=new Set();
  return incoming.filter(r=>{
   if(!r||typeof r.id!=='string'||seen.has(r.id))return false;
@@ -1999,7 +2024,7 @@ function pollLobbyInBackground(force=false){
  },force);
  scheduleLobbyRead('holdem-list',20000,45000,async()=>{
   const h=await holdemRpc('list');
-  if(Array.isArray(h.rooms)){lobbyAnyConfirmedAt=Date.now();holdemLobbyRooms=h.rooms;refreshCombinedLobby();}
+  if(Array.isArray(h.rooms)){lobbyAnyConfirmedAt=Date.now();holdemLobbyLastSuccessAt=Date.now();holdemLobbyRooms=h.rooms;refreshCombinedLobby();}
  },force);
  scheduleLobbyRead('under-over-list',20000,45000,async()=>{
   const h=await callRpc('renju_uo_live_lobby',{},false,12000);
@@ -2296,7 +2321,12 @@ async function closeRoom(id){
   }).then(report=>applyOddEvenLobbyReport(report)).catch(()=>{});
   return;
  }
- if(id.startsWith('h-')){const v=holdemVisualByRoom.get(id);if(v){clearTimeout(v.flipTimer);clearTimeout(v.showTimer);}holdemVisualByRoom.delete(id);holdemChatByRoom.delete(id);holdemDataByRoom.delete(id);holdemRpc('leave',id).catch(()=>{});return;}
+ if(id.startsWith('h-')){const v=holdemVisualByRoom.get(id);if(v){clearTimeout(v.flipTimer);clearTimeout(v.showTimer);}holdemVisualByRoom.delete(id);holdemChatByRoom.delete(id);holdemDataByRoom.delete(id);
+  // Reconcile immediately after a confirmed departure instead of showing an
+  // empty historical table until the next 20-second background lobby poll.
+  holdemRpc('leave',id).then(()=>holdemRpc('list')).then(result=>{
+   if(Array.isArray(result?.rooms)){holdemLobbyLastSuccessAt=Date.now();holdemLobbyRooms=result.rooms;refreshCombinedLobby();}
+  }).catch(()=>{});return;}
  try{
    await roomRpc(id,'leave');
    const reply=await cleanupRpc(id);
@@ -2442,7 +2472,10 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCreateModal();}
 window.addEventListener('message',e=>{
  if(e.origin!==location.origin||e.source!==$('race-frame').contentWindow)return;
  if(e.data?.type==='RACE_CLOSE'){
+   // Closing our last participant should not leave a local optimistic race row.
+   if(raceCurrentInviteId)raceNewlyCreated.delete(raceCurrentInviteId);
    raceCurrentInviteId='';$('race-frame').dataset.roomId='';switchView(null);
+   void refreshRaceOnlineRooms();
  }
  if(['RACE_CREATED','RACE_JOINED'].includes(e.data?.type)&&/^rc-[a-f0-9]{12}$/i.test(e.data.id||'')){
    const id=String(e.data.id).toLowerCase();raceCurrentInviteId=id;
@@ -2624,8 +2657,9 @@ async function handleChatSubmit(e){
       const legacy=await lobbyRpc();
       const poker=await holdemRpc('list');
       holdemLobbyRooms=Array.isArray(poker.rooms)?poker.rooms:[];
+      if(Array.isArray(poker.rooms))holdemLobbyLastSuccessAt=Date.now();
       try{const even=await fetchOddEvenLobby();oddEvenLobbyRooms=even.rooms;}catch(_){}
-      applyLobby({...legacy,rooms:[...(legacy.rooms||[]),...holdemLobbyRooms,...oddEvenLobbyRooms]});
+      applyLobby({...legacy,rooms:[...(legacy.rooms||[]),...visibleHoldemRooms(holdemLobbyRooms),...visibleOddEvenRooms(oddEvenLobbyRooms)]});
      }catch(err){lobbyNotify(err.message,true);}
     }
    }
