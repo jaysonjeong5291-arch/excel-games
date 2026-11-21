@@ -99,14 +99,45 @@
 .slot-card .ready-yes{color:#117e46;font-weight:800}.slot-card .ready-no{color:#986f3c}
 .odds-preview{font-size:11px;color:#286a49}.bet-note{background:#f1f8f3;border-left:3px solid #118246;padding:8px 10px;font-size:11px;line-height:1.55;margin-bottom:8px}
 @media(max-width:760px){.slot-editor{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:420px){.slot-editor{grid-template-columns:1fr 1fr;gap:5px}.slot-card{padding:7px}}
+
+/* v1.0.4: result banner & in-room rematches */
+.race-finish-hero{border:1px solid #b9d3c3;border-top:5px solid #107c41;background:#fff;margin-bottom:14px;padding:14px;box-shadow:0 2px 10px rgba(15,75,41,.06)}
+.race-finish-hero[hidden]{display:none!important}
+.finish-eyebrow{font-size:11px;letter-spacing:.05em;color:#436b50;font-weight:800}
+.finish-winner{display:flex;align-items:center;gap:13px;margin:8px 0;flex-wrap:wrap}
+.finish-crown{font-size:32px;line-height:1}
+.finish-winner h3{font-size:21px;line-height:1.25;color:#175e35;margin:0}
+.finish-winner p{margin:5px 0;color:#62786b;font-size:12px}
+.finish-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:6px;margin:12px 0}
+.finish-place{border:1px solid #d8e5dd;background:#f8fbf8;padding:9px 10px;min-width:0}
+.finish-place:first-child{border-color:#dfc67e;background:#fff9e5}
+.finish-place b{display:block;color:#265c39;font-size:13px}
+.finish-place small{color:#6b8372;display:block;margin-top:4px;font-size:11px}
+.finish-my-bet{background:#f0f7f2;border:1px solid #cee3d3;padding:9px 10px;line-height:1.6;font-size:12px}
+.finish-actions{display:flex;flex-wrap:wrap;gap:9px;align-items:center;margin-top:12px}
+.finish-actions button{font-weight:800;padding:11px 15px}
+.finish-actions small{color:#6a8173;line-height:1.5}
+.lineup.is-winning{border:2px solid #d3a731;box-shadow:0 1px 6px rgba(194,152,33,.15)}
+.race-summary.is-finished{border:1px solid #c3dccb;background:#eff8f2;line-height:1.65}
+/* small, course-shaped previews update on track selection, before save */
+.track-mini-wrap{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px;border:1px solid #d1e2d5;background:#f8fcf9;padding:8px;max-width:630px}
+.track-mini-map{flex:0 0 245px;width:245px;max-width:100%;height:138px;background:#e1eee5;border:1px solid #b9d4c2;border-radius:3px;overflow:hidden}
+.track-mini-map svg{width:100%;height:100%;display:block}
+.track-mini-detail{flex:1;min-width:155px;font-size:11px;line-height:1.75;color:#526d59}
+.track-mini-detail b{display:block;font-size:13px;color:#19643c}
+.track-mini-detail em{font-style:normal;color:#926f38}
+@media(max-width:600px){.track-mini-map{flex-basis:180px;width:180px;height:105px}.track-mini-detail{min-width:120px}.finish-winner h3{font-size:18px}}
 </style></head><body><main class="shell"><header class="top"><div><div class="title">🏁 업무현황_레이스_VER.2026</div><div class="sub">6개 출전석 · 유저/컴퓨터/닫기 · 실시간 예상 배당 · 선택 베팅 · 채팅</div></div><div class="head-actions"><span class="smallstat">내 포인트 <strong id="wallet">-</strong></span><span class="smallstat">회원 <strong id="my-name">로그인 확인 중</strong></span><button id="home" type="button">Sheet1</button></div></header><div class="greenbar"></div><div class="gridbox"><nav class="nav" id="tabs"><button data-tab="race" class="active">🏁 경기장</button><button data-tab="garage">🚗 차량</button><button data-tab="drivers">👤 드라이버</button><button data-tab="upgrades">🔧 파츠·스킬</button></nav><div class="formula"><span id="address">A1</span><strong>fx</strong><code id="formula-text">=RACE_ONLINE(포인트,차량,배당률)</code></div><div id="status" class="status" role="status"></div><div id="panes">
 <section class="pane" id="pane-lobby" hidden><div class="toolbar"><div><h2>레이스 온라인 방 목록</h2><p class="intro">2~6명이 각자 차량을 출전시키며 출전자와 관전자 모두 우승 팀에 베팅할 수 있습니다.</p></div><button id="refresh" type="button">↻ 새로고침</button></div><div class="panel"><div class="sheethead">A열 / 온라인 레이스방 생성</div><div class="pbody hero"><label>방 이름<input type="text" id="room-title" maxlength="32" value="주말 그랑프리" placeholder="방 이름"></label><button id="create" type="button" class="primary">＋ 방 만들기</button><label>초대코드 입력<input type="text" id="room-code" placeholder="rc-xxxxxxxxxxxx"></label><button id="join-code" type="button">입장</button></div></div><div class="panel"><div class="sheethead">B열 / 접속 가능한 경기</div><div class="tablewrap"><table><thead><tr><th>시트</th><th>방 이름</th><th>단계</th><th>출전자</th><th>관전자</th><th></th></tr></thead><tbody id="room-list"><tr><td colspan="6" class="empty">목록을 확인하는 중...</td></tr></tbody></table></div></div></section>
-<section class="pane" id="pane-race"><div class="toolbar"><div><h2 id="race-title">경기장</h2><p class="intro" id="race-code">Sheet1에서 방을 선택하세요</p></div><div class="row"><button id="share" type="button">초대 링크</button><button id="leave" type="button">방 나가기</button></div></div><div class="warning" id="room-help">Sheet1에서 방을 만들거나 입장하면 경기장 정보가 표시됩니다.</div><div id="mixed-settings" class="panel" hidden>
+<section class="pane" id="pane-race"><div class="toolbar"><div><h2 id="race-title">경기장</h2><p class="intro" id="race-code">Sheet1에서 방을 선택하세요</p></div><div class="row"><button id="share" type="button">초대 링크</button><button id="leave" type="button">방 나가기</button></div></div><div class="warning" id="room-help">Sheet1에서 방을 만들거나 입장하면 경기장 정보가 표시됩니다.</div>
+<div id="race-finish-hero" class="race-finish-hero" hidden role="region" aria-label="지난 경기 우승 결과" aria-live="polite"></div>
+<div id="mixed-settings" class="panel" hidden>
  <div class="sheethead">A열 / 6개 출전석 편성 · 유저 / 컴퓨터 / 닫기</div>
  <div class="pbody"><div id="slot-editor" class="slot-editor" aria-label="6개 출전석 설정"></div>
  <div class="row" style="margin:12px 0 6px"><label>이번 경기 트랙 <select id="track-choice" aria-label="트랙 변경"></select></label><button id="set-track" type="button">트랙 적용</button></div>
+ <div id="track-mini-preview" class="track-mini-wrap" aria-label="선택 트랙 코스 미리보기"></div>
  <p class="help" id="mixed-config-hint">6개 칸마다 유저 참가·컴퓨터·닫기를 설정할 수 있습니다. 입장한 유저는 빈 유저 참가석을 선택할 수 있습니다.</p>
- </div></div><div class="statstrip"><div><small>경기 단계</small><strong id="phase">준비 중</strong></div><div><small>출전 팀</small><strong id="entry-count">0 / 6</strong></div><div><small>관전자</small><strong id="spec-count">0명</strong></div><div><small>트랙</small><strong id="track-name">-</strong></div></div><div id="track-profile" class="track-profile" aria-label="트랙 공략 정보"></div><div class="twocol"><div><div class="panel"><div class="sheethead">B열 / 출전팀 · 실시간 예상 배당률</div><div class="pbody"><div class="lineups" id="lineups"></div><div class="race-summary" id="result">경기 준비 중입니다.</div></div></div><div class="panel"><div class="sheethead">C열 / 최대 6레인 레이싱 실황</div><div class="pbody"><div id="race-road"></div><div class="help">경기는 약 17초간 진행되며, 베팅 및 경주 결과는 서버에 저장됩니다.</div></div></div></div><aside><div class="panel"><div class="sheethead">D열 / 내 참여 방식</div><div class="pbody"><div id="role-summary" class="player-state"></div><div class="row" style="margin-top:10px"><button id="enter-race" type="button" class="primary">🏎 출전하기</button><button id="spectate" type="button">👀 관전하기</button><button id="ready" type="button">준비</button></div><div class="help">출전하려면 차량·드라이버를 보유해야 합니다. 기본 차량과 신인 드라이버는 처음에 무상 지급됩니다. 사람 출전자 1명일 때는 참가비·입상수당 0P, 2명 이상이면 사람당 참가비 1,000P를 사람 참가자들의 순위에 따라 분배합니다. 컴퓨터는 입상수당을 받지 않습니다.</div><div class="row" style="margin-top:10px"><button id="open-bets" type="button" hidden>배당 확정 / 베팅 접수</button><button id="start-race" type="button" class="primary">🏁 경기 시작</button><button id="next-race" type="button">다음 경기</button></div></div></div><div class="panel"><div class="sheethead">E열 / 배당률 · 출전자/관전자 베팅</div><div class="pbody"><div class="tablewrap"><table><thead><tr><th>선수</th><th>종합 능력</th><th>배당</th></tr></thead><tbody id="odds-table"></tbody></table></div><div class="bet-note" id="bet-open-note">출전자 전원 레디 시 배당 확정 · 이후 베팅은 자유 선택 · 방장만 경기 시작</div><div class="betbox" style="margin-top:12px"><label>우승 예상 팀<select id="bet-target"></select></label><label>베팅 금액 (P)<input type="number" id="bet-amount" min="1" step="1" value="1000" inputmode="numeric"></label><div id="expected" class="muted">베팅 가능 시 표시</div><button class="primary" id="bet-submit" type="button">베팅하기</button><div class="muted" id="bet-status">전원 READY 후 경기 시작 전까지 자유롭게 베팅 가능 · 베팅 없이도 출전할 수 있습니다.</div></div><div class="help">대기 중 예상 배당은 출전석·장비·트랙에 따라 자동으로 변합니다. 모두 레디하면 배당이 확정되고 베팅이 열립니다. 베팅은 선택 사항이며 경기 시작 시 마감합니다. 비공개 기복·내구성은 배당에 포함되지 않습니다.</div></div></div><div class="panel race-social-panel">
+ </div></div><div class="statstrip"><div><small>경기 단계</small><strong id="phase">준비 중</strong></div><div><small>출전 팀</small><strong id="entry-count">0 / 6</strong></div><div><small>관전자</small><strong id="spec-count">0명</strong></div><div><small>트랙</small><strong id="track-name">-</strong></div></div><div id="track-profile" class="track-profile" aria-label="트랙 공략 정보"></div><div class="twocol"><div><div class="panel"><div class="sheethead">B열 / 출전팀 · 실시간 예상 배당률</div><div class="pbody"><div class="lineups" id="lineups"></div><div class="race-summary" id="result">경기 준비 중입니다.</div></div></div><div class="panel"><div class="sheethead">C열 / 최대 6레인 레이싱 실황</div><div class="pbody"><div id="race-road"></div><div class="help">경기는 약 17초간 진행되며, 베팅 및 경주 결과는 서버에 저장됩니다.</div></div></div></div><aside><div class="panel"><div class="sheethead">D열 / 내 참여 방식</div><div class="pbody"><div id="role-summary" class="player-state"></div><div class="row" style="margin-top:10px"><button id="enter-race" type="button" class="primary">🏎 출전하기</button><button id="spectate" type="button">👀 관전하기</button><button id="ready" type="button">준비</button></div><div class="help">출전하려면 차량·드라이버를 보유해야 합니다. 기본 차량과 신인 드라이버는 처음에 무상 지급됩니다. 사람 출전자 1명일 때는 참가비·입상수당 0P, 2명 이상이면 사람당 참가비 1,000P를 사람 참가자들의 순위에 따라 분배합니다. 컴퓨터는 입상수당을 받지 않습니다.</div><div class="row" style="margin-top:10px"><button id="open-bets" type="button" hidden>배당 확정 / 베팅 접수</button><button id="start-race" type="button" class="primary">🏁 경기 시작</button><button id="next-race" type="button">↻ 다음 판 준비 열기</button></div></div></div><div class="panel"><div class="sheethead">E열 / 배당률 · 출전자/관전자 베팅</div><div class="pbody"><div class="tablewrap"><table><thead><tr><th>선수</th><th>종합 능력</th><th>배당</th></tr></thead><tbody id="odds-table"></tbody></table></div><div class="bet-note" id="bet-open-note">출전자 전원 레디 시 배당 확정 · 이후 베팅은 자유 선택 · 방장만 경기 시작</div><div class="betbox" style="margin-top:12px"><label>우승 예상 팀<select id="bet-target"></select></label><label>베팅 금액 (P)<input type="number" id="bet-amount" min="1" step="1" value="1000" inputmode="numeric"></label><div id="expected" class="muted">베팅 가능 시 표시</div><button class="primary" id="bet-submit" type="button">베팅하기</button><div class="muted" id="bet-status">전원 READY 후 경기 시작 전까지 자유롭게 베팅 가능 · 베팅 없이도 출전할 수 있습니다.</div></div><div class="help">대기 중 예상 배당은 출전석·장비·트랙에 따라 자동으로 변합니다. 모두 레디하면 배당이 확정되고 베팅이 열립니다. 베팅은 선택 사항이며 경기 시작 시 마감합니다. 비공개 기복·내구성은 배당에 포함되지 않습니다.</div></div></div><div class="panel race-social-panel">
  <div class="sheethead">F열 / 관전자 명단 <span id="social-online-count" class="social-count">0명 접속 중</span></div>
  <div class="pbody"><div id="race-spectators" class="spectator-list"><span class="muted">관전자 정보를 불러오는 중…</span></div>
  <p class="help">접속 중인 관전자는 ●로 표시됩니다. 출전자도 채팅에 참여할 수 있습니다.</p></div>
@@ -256,7 +287,7 @@ async function processRaceOperatorCommand(message,rid){
  }
  throw new Error('사용법: /포인트 닉네임 금액 · /공지 내용 · /강퇴 닉네임');
 }
-async function action(cmd,payload={},rid=currentId){if(pending)return;pending=true;try{const d=await rpc('renju_race_mixed_rpc',{p_action:cmd,p_client:client,p_token:token,p_room:rid||null,p_payload:payload});apply(d);if(['buy_car','buy_driver','select','upgrade','reset_upgrades'].includes(cmd)){info('차고 정보가 저장됐습니다.')}else{info('');}if(cmd==='create'||cmd==='join'){currentId=d.room?.id||rid;if(cmd==='create'&&window.parent!==window)window.parent.postMessage({type:'RACE_CREATED',id:currentId},location.origin);tab('race');history.replaceState(null,'','#'+encodeURIComponent(currentId));raceSocialMessages=[];raceSpectators=[];raceChatFeedback('');renderRaceSocial();raceAdminGuide();void loadRaceSocial()}if(cmd==='leave'){currentId='';room=null;seats=[];raceSocialMessages=[];raceSpectators=[];history.replaceState(null,'',location.pathname);tab('race');await loadRooms();if(window.parent!==window)window.parent.postMessage({type:'RACE_CLOSE'},location.origin)}if(cmd==='next'){info('새 경기 준비가 시작됐습니다.');}return d}catch(err){info(err.message,true);return null}finally{pending=false;render();}}
+async function action(cmd,payload={},rid=currentId){if(pending)return;pending=true;try{const d=await rpc('renju_race_mixed_rpc',{p_action:cmd,p_client:client,p_token:token,p_room:rid||null,p_payload:payload});apply(d);if(['buy_car','buy_driver','select','upgrade','reset_upgrades'].includes(cmd)){info('차고 정보가 저장됐습니다.')}else{info('');}if(cmd==='create'||cmd==='join'){currentId=d.room?.id||rid;if(cmd==='create'&&window.parent!==window)window.parent.postMessage({type:'RACE_CREATED',id:currentId},location.origin);tab('race');history.replaceState(null,'','#'+encodeURIComponent(currentId));raceSocialMessages=[];raceSpectators=[];raceChatFeedback('');renderRaceSocial();raceAdminGuide();void loadRaceSocial()}if(cmd==='leave'){currentId='';room=null;seats=[];raceSocialMessages=[];raceSpectators=[];history.replaceState(null,'',location.pathname);tab('race');await loadRooms();if(window.parent!==window)window.parent.postMessage({type:'RACE_CLOSE'},location.origin)}if(cmd==='next'){info('새 판이 열렸습니다. 모든 출전자가 다시 준비 완료를 누르면 베팅 접수가 열립니다.');}return d}catch(err){info(err.message,true);return null}finally{pending=false;render();}}
 function apply(d){if(d.my_id)uid=d.my_id;if(d.my_profile)profile=d.my_profile;if(d.points!==undefined)points=d.points;if('room'in d)room=d.room;if(d.seats)seats=d.seats;if('my_bet'in d)myBet=d.my_bet;$('wallet').textContent=fmt(points);}
 async function init(){client=getClient();token=localStorage.getItem(STORAGE)||'';if(!token){info('Sheet1에서 회원 로그인 후 레이스를 이용해 주세요.',true);return}try{const auth=await rpc('renju_member_auth',{p_client:client,p_action:'session',p_token:token});$('my-name').textContent=auth.profile?.nickname||'회원';points=auth.profile?.points||0;$('wallet').textContent=fmt(points);await loadRooms();await action('sync',{},null);const qs=new URLSearchParams(location.search);
  const deep=qs.get('room')||decodeURIComponent(location.hash.slice(1));
@@ -323,6 +354,35 @@ async function loadRaceSocial(){
  }catch(err){if(rid===currentId){raceChatFeedback('연결 지연: '+err.message+' (자동 재시도 중)',true);}}
  finally{raceSocialBusy=false;}
 }
+
+// Illustrated racing layouts are game maps, not surveyed real-world circuits.
+const TRACK_SKETCH={
+ city:'M48 44 L94 44 L94 20 L245 20 Q270 20 270 44 L270 90 L226 90 L226 139 L163 139 L163 105 L92 105 Q45 104 48 75 Z',
+ coast:'M47 96 Q27 86 36 55 Q50 24 93 29 L240 29 Q273 31 274 60 Q270 84 237 91 L135 91 L117 137 L69 137 Q43 132 47 96 Z',
+ mountain:'M47 38 Q75 12 103 39 T166 39 Q196 7 234 37 T242 81 Q222 109 190 94 T139 117 Q113 141 90 113 T43 92 Q25 62 47 38 Z',
+ rain:'M53 34 Q75 17 100 35 L146 70 L186 34 Q213 18 240 40 Q257 55 232 78 L194 106 L238 127 Q257 141 218 144 L88 144 Q51 138 54 109 L94 80 Z',
+ desert:'M44 50 L101 50 L115 86 L246 86 Q272 86 266 112 Q261 136 239 136 L54 136 Q32 136 32 108 L32 67 Q32 50 44 50 Z',
+ oval:'M82 30 L218 30 C303 30 303 140 218 140 L82 140 C-3 140 -3 30 82 30 Z',
+ technical:'M51 29 L126 29 L126 78 L173 78 L173 33 L250 33 L250 126 L203 126 L203 99 L151 99 L151 139 L51 139 L51 98 L86 98 L86 68 L51 68 Z',
+ harbor:'M39 47 L133 47 L133 21 L255 21 L255 78 L205 78 L205 111 L253 111 L253 148 L92 148 L92 110 L39 110 Z',
+ alpine:'M47 24 L93 24 L93 52 L205 52 L205 24 L258 24 L258 82 L188 82 L188 111 L245 111 L245 148 L45 148 L45 111 L130 111 L130 83 L47 83 Z'
+};
+function renderTrackMini(key,pendingSave=false){
+ const track=TRACK_DATA[key]||TRACK_DATA.city;
+ const d=TRACK_SKETCH[key]||TRACK_SKETCH.city;
+ const oval=key==='oval';
+ const label=pendingSave?'선택한 코스 · 아직 적용 전':'현재 적용된 코스';
+ $('track-mini-preview').innerHTML=`<div class="track-mini-map"><svg viewBox="0 0 300 170" role="img" aria-label="${text(track.name)} 게임용 레이스 코스">
+  <defs><pattern id="racegrid" width="22" height="22" patternUnits="userSpaceOnUse"><path d="M22 0H0V22" fill="none" stroke="#b9d0bf" stroke-width=".65"/></pattern></defs>
+  <rect x="0" y="0" width="300" height="170" fill="#dbeadc"/><rect width="300" height="170" fill="url(#racegrid)"/>
+  <path d="M0 148Q75 112 144 148T300 142L300 170H0Z" fill="#bad8c5" opacity=".68"/>
+  ${['coast','harbor'].includes(key)?'<path d="M0 0L36 0Q13 60 12 170H0Z" fill="#93c5dd"/>':''}
+  <path d="${d}" fill="none" stroke="#f6f7ef" stroke-linejoin="round" stroke-linecap="round" stroke-width="23"/>
+  <path d="${d}" fill="none" stroke="#4e6661" stroke-linejoin="round" stroke-linecap="round" stroke-width="17"/>
+  <path d="${d}" fill="none" stroke="#dde4d8" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="4 8" stroke-width="1.7"/>
+  <g transform="translate(${oval?82:50} ${oval?30:44})"><path d="M0 -11V12" stroke="#f7faf6" stroke-width="6"/><path d="M-5 -11H5V11H-5Z" fill="#fafafa" stroke="#555" stroke-width=".7"/><path d="M-5 -11h5v6h-5zm5 6h5v6h-5zm-5 6h5v6h-5zm5 6h5v5h-5z" fill="#353535"/></g>
+  </svg></div><div class="track-mini-detail"><b>${text(track.name)}</b><span>${text(track.type)} · ${text(track.weather)}</span><br><span>${text(track.desc)}</span><br><em>${label}</em><br><span>직선 ${Math.round((track.w[0]+track.w[1])*100)}% · 코너 ${Math.round(track.w[2]*100)}% · 안정성 ${Math.round(track.w[3]*100)}%</span></div>`;
+}
 function renderTrackProfile(key){
  const t=TRACK_DATA[key]||TRACK_DATA.city;
  const labels=['최고속도','가속','코너링','안정성'];
@@ -338,10 +398,33 @@ function renderSixSlots(slots,editable){
   return `<div class="slot-card is-${text(sl.mode)}"><div class="slot-top"><b>${i+1}번 출전석</b><small>${text(label)}</small></div>${editable?`<select data-slot="${i+1}" aria-label="${i+1}번 출전석 방식"><option value="user" ${sl.mode==='user'?'selected':''}>유저 참가</option><option value="cpu" ${sl.mode==='cpu'?'selected':''}>컴퓨터</option><option value="closed" ${sl.mode==='closed'?'selected':''}>닫기</option></select>`:`<div class="pill">${text(label)}</div>`}<div class="slot-details ${p?.ready?'ready-yes':p?'ready-no':''}">${status}</div></div>`;
  }).join('');
 }
-function renderRace(){if(!room){$('room-help').textContent='Sheet1에서 레이스방을 생성하거나 입장하세요. 방 목록과 새 방 만들기는 Sheet1에 있습니다.';$('mixed-settings').hidden=true;['enter-race','spectate','ready','open-bets','start-race','next-race','bet-submit','share','leave'].forEach(id=>{const el=$(id);if(el)el.disabled=true});$('race-title').textContent='경기장 · 방 미입장';return;}['share','leave'].forEach(id=>$(id).disabled=false);const mine=seats.find(x=>x.id===uid);$('race-title').textContent=room.name+' · '+room.race_no+'경주';$('race-code').textContent='방 코드: '+room.id+' · 전원 READY 시 베팅 접수 자동 시작 · 방장이 출발';$('phase').textContent=phaseName(room.phase);$('entry-count').textContent=seats.filter(x=>x.role==='entrant'&&!x.bot).length+'명 + 컴 '+seats.filter(x=>x.bot).length+'대 / 6';$('spec-count').textContent=seats.filter(x=>x.role==='spectator').length+'명';$('track-name').textContent=TRACK_DATA[room.track]?.name||'도심 그랑프리';renderTrackProfile(room.track);$('role-summary').innerHTML=mine?`<span class="pill">내 역할: ${mine.role==='entrant'?'출전자':'관전자'}</span> ${mine.role==='entrant'?`<span class="pill">${mine.ready?'준비 완료':'준비 전'}</span>`:''}`:'<span class="pill">참가 정보를 확인해 주세요.</span>';
+
+function renderFinishedRace(entrants,host,mine){
+ const hero=$('race-finish-hero');
+ const finished=room?.phase==='finished';
+ hero.hidden=!finished;
+ if(!finished)return;
+ const sorted=[...entrants].sort((a,b)=>(Number(a.rank)||99)-(Number(b.rank)||99));
+ const winner=sorted.find(s=>Number(s.rank)===1)||entrants.find(s=>String(s.id)===String(room.result?.winner));
+ const valid=!!winner;
+ const stake=Number(myBet?.stake||0),payout=Number(myBet?.payout||0);
+ const myRaceEntry=entrants.find(s=>String(s.id)===String(uid));
+ const betMsg=myBet?`<b>내 베팅 정산:</b> ${text(entrants.find(s=>String(s.id)===String(myBet.target_key))?.name||'선택 팀')} · 베팅 ${fmt(stake)} · 지급 ${fmt(payout)} · ${payout-stake>=0?'순수익 +':'손익 '}${fmt(payout-stake)}`:'<b>내 베팅:</b> 이번 판은 베팅하지 않았습니다.';
+ const places=sorted.filter(s=>Number.isFinite(Number(s.rank))&&Number(s.rank)>0).map(s=>`<div class="finish-place"><b>${Number(s.rank)===1?'🏆':Number(s.rank)===2?'🥈':Number(s.rank)===3?'🥉':'🏁'} ${Number(s.rank)}위 · ${text(s.name)} ${s.bot?'🤖':String(s.id)===String(uid)?'★':''}</b><small>${text(sCar(s.car).name)} · ${s.finish_ms?((Number(s.finish_ms)/1000).toFixed(3)+'초'):'완주'}</small></div>`).join('');
+ const canNext=host;
+ hero.innerHTML=`<div class="finish-eyebrow">${Number(room.race_no)||1}경주 · 공식 경기 결과</div>
+  <div class="finish-winner"><div class="finish-crown">🏆</div><div><h3>${valid?'우승 · '+text(winner.name):'경기 결과 확정 · 순위 확인 중'}</h3><p>${valid?text(sCar(winner.car).name)+' / '+text(sDriver(winner.driver).name)+(winner.finish_ms?' · '+(Number(winner.finish_ms)/1000).toFixed(3)+'초':''):'서버 순위가 표시될 때까지 잠시 뒤 새로고침해 주세요.'}</p></div></div>
+  <div class="finish-grid">${places||'<div class="finish-place">순위 기록을 불러오는 중입니다.</div>'}</div>
+  <div class="finish-my-bet">${betMsg}${myRaceEntry&&myRaceEntry.rank?' · 내 순위 '+Number(myRaceEntry.rank)+'위':''}</div>
+  <div class="finish-actions">${canNext?'<button id="result-next-race" type="button" class="primary">↻ 같은 방에서 다음 경기 열기</button>':'<small>방장이 다음 경기를 열면 같은 방에서 다시 READY할 수 있습니다.</small>'}<small>이 방의 참가자·관전자·채팅은 유지됩니다. 다음 경기에 앞서 전원 READY가 다시 필요합니다.</small></div>`;
+ $('result').classList.add('is-finished');
+ $('result').innerHTML=`<b>🏆 ${valid?text(winner.name)+' 우승':'경기 종료'}</b> · ${sorted.map(s=>`${Number(s.rank)||'?'}위 ${text(s.name)}`).join(' / ')}<br><small>상세 순위와 내 베팅 정산은 화면 위쪽 '공식 경기 결과'에서 확인할 수 있습니다.</small>`;
+}
+function renderRace(){if(!room){$('race-finish-hero').hidden=true;$('result').classList.remove('is-finished');$('result').textContent='경기 준비 중입니다.';$('race-road').innerHTML='';$('room-help').textContent='Sheet1에서 레이스방을 생성하거나 입장하세요. 방 목록과 새 방 만들기는 Sheet1에 있습니다.';$('mixed-settings').hidden=true;['enter-race','spectate','ready','open-bets','start-race','next-race','bet-submit','share','leave'].forEach(id=>{const el=$(id);if(el)el.disabled=true});$('race-title').textContent='경기장 · 방 미입장';return;}['share','leave'].forEach(id=>$(id).disabled=false);const mine=seats.find(x=>x.id===uid);$('race-title').textContent=room.name+' · '+room.race_no+'경주';$('race-code').textContent='방 코드: '+room.id+' · 전원 READY 시 베팅 접수 자동 시작 · 방장이 출발';$('phase').textContent=phaseName(room.phase);$('entry-count').textContent=seats.filter(x=>x.role==='entrant'&&!x.bot).length+'명 + 컴 '+seats.filter(x=>x.bot).length+'대 / 6';$('spec-count').textContent=seats.filter(x=>x.role==='spectator').length+'명';$('track-name').textContent=TRACK_DATA[room.track]?.name||'도심 그랑프리';renderTrackProfile(room.track);$('role-summary').innerHTML=mine?`<span class="pill">내 역할: ${mine.role==='entrant'?'출전자':'관전자'}</span> ${mine.role==='entrant'?`<span class="pill">${mine.ready?'준비 완료':'준비 전'}</span>`:''}`:'<span class="pill">참가 정보를 확인해 주세요.</span>';
  const waiting=room.phase==='waiting',betting=room.phase==='betting',running=room.phase==='running',finished=room.phase==='finished';const host=room.host===uid;
  $('mixed-settings').hidden=false;
  if(document.activeElement!==$('track-choice'))$('track-choice').value=room.track||'city';
+ renderTrackMini($('track-choice').value, $('track-choice').value!==(room.track||'city'));
  renderSixSlots(room.slots||[],host&&waiting);
  $('set-track').disabled=!host||!waiting;$('track-choice').disabled=!host||!waiting;
  const humans=seats.filter(x=>x.role==='entrant'&&!x.bot),readyCount=humans.filter(x=>x.ready).length;
@@ -351,13 +434,13 @@ function renderRace(){if(!room){$('room-help').textContent='Sheet1에서 레이�
  $('open-bets').hidden=true;$('start-race').hidden=!host||!betting;$('next-race').hidden=!host||!finished;
  $('start-race').disabled=!host||!betting;
  $('bet-open-note').textContent=waiting?'현재 배당은 예상값이며 출전 구성에 따라 자동 변경됩니다. 전원 READY 후 배당이 확정됩니다.':betting?'확정 배당으로 베팅 접수 중 · 베팅하지 않아도 출전 가능 · 방장이 경기 시작을 누르면 마감됩니다.':running?'베팅 마감 · 경주 진행 중':'베팅 마감 · 경기 종료';
- $('room-help').textContent=waiting?'6개 출전석을 정하고 유저 참가자는 준비를 누르세요. 전원이 레디하면 자동으로 베팅 접수로 전환합니다.':betting?'전원 READY! 출전자와 관전자 모두 베팅은 선택 사항입니다. 방장이 경기 시작을 누르면 출발합니다.':running?'경기 진행 중입니다. 결과는 서버에서 확정합니다.':'경기 정산 완료. 같은 방에서 다음 경기를 시작할 수 있어요.';
- const entrants=seats.filter(x=>x.role==='entrant').sort((a,b)=>(a.seat_no||9)-(b.seat_no||9));$('lineups').innerHTML=entrants.length?entrants.map((s,i)=>`<div class="lineup"><div class="picrow"><div class="photo-slot car-slot">${photoTag(s.car||'gtr','car')}</div><div class="photo-slot driver-slot">${photoTag(s.driver||'newbie','driver')}</div></div><div class="info"><b>#${i+1} ${text(s.name)} ${s.bot?'🤖 컴퓨터':s.id===uid?'★':''}</b><span class="driver-name">${text(sCar(s.car).name)} / ${text(sDriver(s.driver).name)}</span><div class="chips"><span>전력 ${s.power==null?'-':Number(s.power).toFixed(1)}</span><strong>${s.odds?Number(s.odds).toFixed(2)+'배':s.ready?'READY':'대기'}</strong></div></div></div>`).join(''):'<p class="muted">출전자가 없습니다. 차량을 선택하고 출전해 주세요.</p>';
+ $('room-help').textContent=waiting?'6개 출전석을 정하고 유저 참가자는 READY를 누르세요. 재경기에서도 모든 사람이 READY하면 자동으로 베팅 접수가 열립니다.':betting?'전원 READY! 출전자와 관전자 모두 베팅은 선택 사항입니다. 방장이 경기 시작을 누르면 출발합니다.':running?'경기 진행 중입니다. 결과는 서버에서 확정합니다.':'경기 정산 완료. 같은 방에서 다음 경기를 시작할 수 있어요.';
+ const entrants=seats.filter(x=>x.role==='entrant').sort((a,b)=>(a.seat_no||9)-(b.seat_no||9));$('lineups').innerHTML=entrants.length?entrants.map((s,i)=>`<div class="lineup ${finished&&Number(s.rank)===1?'is-winning':''}"><div class="picrow"><div class="photo-slot car-slot">${photoTag(s.car||'gtr','car')}</div><div class="photo-slot driver-slot">${photoTag(s.driver||'newbie','driver')}</div></div><div class="info"><b>#${i+1} ${text(s.name)} ${s.bot?'🤖 컴퓨터':s.id===uid?'★':''}</b><span class="driver-name">${text(sCar(s.car).name)} / ${text(sDriver(s.driver).name)}</span><div class="chips"><span>전력 ${s.power==null?'-':Number(s.power).toFixed(1)}</span><strong>${s.odds?Number(s.odds).toFixed(2)+'배':s.ready?'READY':'대기'}</strong></div></div></div>`).join(''):'<p class="muted">출전자가 없습니다. 차량을 선택하고 출전해 주세요.</p>';
  $('odds-table').innerHTML=entrants.map(s=>`<tr><td>${text(s.name)}</td><td class="num">${s.power==null?'-':Number(s.power).toFixed(1)}</td><td class="num">${s.odds?Number(s.odds).toFixed(2)+'배':'대기'}</td></tr>`).join('');
  const selected=$('bet-target').value;$('bet-target').innerHTML=entrants.map(s=>`<option value="${s.id}">${text(s.name)} (${s.odds?Number(s.odds).toFixed(2):'-'}배)</option>`).join('');if(entrants.some(s=>s.id===selected))$('bet-target').value=selected;
  $('bet-submit').disabled=!betting||!mine||!!myBet;
  $('bet-status').textContent=myBet?`베팅 완료: ${fmt(myBet.stake)} · 확정 배당 ${Number(myBet.odds).toFixed(2)}배${finished?' · 지급 '+fmt(myBet.payout):''}`:betting?'베팅 선택사항 · 참가/관전자 모두 가능 · 베팅하지 않아도 레이스 참가 가능':'1등 단승식 · 대기 중 배당은 예상값이며 아직 베팅할 수 없습니다.';
- updateExpected();renderTrack(entrants);if(finished){const sorted=[...entrants].sort((a,b)=>(a.rank||9)-(b.rank||9));$('result').innerHTML='<b>🏆 결과</b> · '+sorted.map((s,i)=>`${i+1}위 ${text(s.name)}`).join(' / ')+`<br><small>사람 출전자 1명이면 입상수당 0P, 2명 이상이면 사람 참가비 풀을 사람끼리 분배 · 사람과 컴퓨터 모두 우승 베팅 가능</small>`;}else $('result').textContent='경기중'===phaseName(room.phase)?'🚦 레이스가 진행되고 있습니다.':'경기 접수 상태. 출전 차량·드라이버·능력치를 확인하세요.';
+ updateExpected();renderTrack(entrants);if(finished){renderFinishedRace(entrants,host,mine)}else{$('race-finish-hero').hidden=true;$('result').classList.remove('is-finished');$('result').textContent=running?'🚦 경주가 진행 중입니다.':'경기 접수 상태. 출전 차량·드라이버·능력치를 확인하세요.';}
 }
 function renderTrack(list){const run=room.phase==='running'||room.phase==='finished';const start=new Date(room.started_at).getTime();const now=Date.now();const pc=run?Math.min(100,Math.max(0,(now-start)/17000*100)):0;$('race-road').innerHTML=Array.from({length:6},(_,i)=>{const e=list.find(x=>Number(x.seat_no)===i+1);return `<div class="lane"><span>${i+1}</span><div class="bar">${e?`<span class="racecar" style="left:calc(${run?(room.phase==='finished'?92:Math.min(92,pc*(1+(100-Number(e.power||75))/500))):0}% - 3px)" title="${text(e.name)}">🏎</span>`:''}</div></div>`}).join('');}
 function updateExpected(){const t=seats.find(x=>x.id===$('bet-target').value),n=Number($('bet-amount').value);$('expected').textContent=t?.odds&&Number.isFinite(n)&&n>0?'예상 적중 지급: '+fmt(Math.floor(n*Number(t.odds)))+' · 원금 포함':'배당 접수 후 예상 지급액이 표시됩니다.'}
@@ -444,10 +527,12 @@ $('room-list').addEventListener('click',e=>{const b=e.target.closest('[data-join
 $('refresh').addEventListener('click',loadRooms);
 $('leave').addEventListener('click',()=>action('leave'));
 $('enter-race').addEventListener('click',()=>action('role',{role:'entrant'}));$('spectate').addEventListener('click',()=>action('role',{role:'spectator'}));$('ready').addEventListener('click',()=>action('ready'));
+$('race-finish-hero').addEventListener('click',e=>{if(e.target.closest('#result-next-race'))action('next')});
 $('open-bets').addEventListener('click',()=>action('open_bets'));$('start-race').addEventListener('click',()=>action('start'));$('next-race').addEventListener('click',()=>action('next'));
 // Host controls: settings persist in Supabase, never only in the browser.
 $('track-choice').innerHTML=TRACK.map(t=>'<option value="'+text(t.key)+'">'+text(t.name)+' · '+text(t.type)+'</option>').join('');
 $('slot-editor').addEventListener('change',e=>{const sel=e.target.closest('[data-slot]');if(!sel)return;action('set_slot',{slot:Number(sel.dataset.slot),mode:sel.value});});
+$('track-choice').addEventListener('change',()=>{if(room)renderTrackMini($('track-choice').value, $('track-choice').value!==(room.track||'city'))});
 $('set-track').addEventListener('click',()=>action('set_track',{track:$('track-choice').value}));
 $('race-chat-form').addEventListener('submit',async e=>{
  e.preventDefault();
