@@ -1331,12 +1331,21 @@ function requireNickname(){
 }
 let onlineDeepLinkPending=false;
 function maybeOpenInitialRoom(){
- if(!initialDeepLink||!lobbyReady)return;
- const id=initialDeepLink;
+ if(!initialDeepLink)return;
+ const id=String(initialDeepLink).trim().toLowerCase();
+ // Race invitations are resolved directly by the race iframe; the Sheet1 lobby
+ // may be delayed/unavailable and must NOT gate invite navigation.
  if(/^rc-[a-f0-9]{12}$/.test(id)){
-   if(!memberToken){lobbyNotify('레이스 초대 링크입니다. 로그인 후 자동으로 입장합니다.');return;}
-   initialDeepLink=null;openRoom(id);return;
+   if(!memberToken){
+     lobbyNotify('레이스 초대 링크입니다. 회원 로그인 후 해당 방으로 자동 입장합니다.');
+     openMemberPanel('login');
+     return;
+   }
+   initialDeepLink=null;
+   launchRaceRoom(id);
+   return;
  }
+ if(!lobbyReady)return;
  // 홀짝 초대는 Sheet1 목록 수신 여부와 무관하게 서버에서 직접 확인합니다.
  if(/^e-[a-f0-9]{12}$/.test(id)){
   if(!memberToken){lobbyNotify('홀짝 초대 링크를 받았습니다. 회원 로그인 후 자동으로 해당 방에 입장합니다.');return;}
@@ -2162,7 +2171,7 @@ function switchView(id){
   $('race-view').hidden=false;
   const frame=$('race-frame');if(!frame.getAttribute('src'))frame.src=frame.dataset.src;
   $('cell-address').textContent='A1';$('formula-value').textContent='=RACE(차고,드라이버,베팅)';
-  updateSheetTabs();changeUrl(null);return;
+  updateSheetTabs();changeUrl(raceCurrentInviteId||currentRaceRoomId()||null);return;
  }
  $('race-view').hidden=true;activeRace=false;
  if(id&&id.startsWith('u-')){
@@ -2481,6 +2490,8 @@ window.addEventListener('message',e=>{
    const id=String(e.data.id).toLowerCase();raceCurrentInviteId=id;
    const frame=$('race-frame');frame.dataset.roomId=id;
    frame.dataset.src='./race-demo.html?room='+encodeURIComponent(id);
+   // Keep the parent URL shareable after create/join; leaving for Sheet1 removes it.
+   if(activeRace)changeUrl(id);
    if(e.data.type==='RACE_CREATED'){
     const now=Date.now();raceNewlyCreated.set(id,{created:now,row:{
      id,game:'race',sheet:'Race 신규',title:'레이스 경기장 · 생성 완료',
@@ -2794,6 +2805,8 @@ window.addEventListener('pagehide',()=>{stopped=true;clearTimeout(pollTimer);});
 window.addEventListener('load',()=>{
  setNetwork('서버 연결 중',false);
  restoreOddEvenLobby();
+ // Open direct race invitations immediately; no need to wait for lobby RPC.
+ maybeOpenInitialRoom();
  refresh();
 },{once:true});
 // A page restored from browser back/forward cache does not fire a new load event.
