@@ -2592,12 +2592,36 @@ window.addEventListener('message',e=>{
 $('superleague-frame').addEventListener('load',()=>{
  const frame=$('superleague-frame');
  if(activeSuperleague&&frame.contentWindow){
-  frame.contentWindow.postMessage({type:'EXCEL_SUPERLEAGUE_IDENTITY',nickname:myNickname},location.origin);
+  frame.contentWindow.postMessage({type:'EXCEL_SUPERLEAGUE_IDENTITY',nickname:memberProfile?.nickname||myNickname,online:true},location.origin);
  }
 });
+function frameSafeSlReply(requestId,payload){
+ const frame=$('superleague-frame');
+ if(!activeSuperleague||!frame?.contentWindow)return;
+ frame.contentWindow.postMessage({type:'SL_RPC_RESULT',requestId,...payload},location.origin);
+}
 window.addEventListener('message',e=>{
  if(e.origin!==location.origin||e.source!==$('superleague-frame').contentWindow)return;
  if(e.data?.type==='SUPERLEAGUE_RETURN_TO_SHEET1'&&activeSuperleague)switchView(null);
+ // Only this same-origin child can request the authenticated league RPC; the session token stays in the host.
+ if(e.data?.type==='SL_RPC'&&activeSuperleague){
+  const rid=String(e.data.requestId||'');
+  const method=e.data.method;
+  if(!/^[a-zA-Z0-9_-]{1,60}$/.test(rid)||!['sl_snapshot','sl_command'].includes(method))return;
+  const args=e.data.args||{};
+  if(method==='sl_command'&&!['claim','offer','respond','cancel','fa_sign','release','advance'].includes(args.p_action))return;
+  (async()=>{
+   let response;
+   try{
+    if(!memberToken||!memberProfile)throw new Error('로그인이 만료되었습니다. Sheet1에서 다시 로그인하세요.');
+    const tokenAtStart=memberToken;
+    response=await callRpc(method,method==='sl_snapshot'?{p_token:tokenAtStart}:{p_token:tokenAtStart,p_action:args.p_action,p_payload:args.p_payload||{}},false,16000);
+    if(memberToken!==tokenAtStart)throw new Error('로그인 계정이 변경되어 요청이 취소됐습니다.');
+    frameSafeSlReply(rid,{ok:true,data:response});
+   }catch(err){frameSafeSlReply(rid,{ok:false,error:String(err?.message||err)});}
+  })();
+ }
+
 });
 $('sheet-nav').addEventListener('click',e=>{
  if(e.target.closest('[data-close-race]')){e.stopPropagation();raceSheetOpen=false;if(activeRace)switchView(null);else updateSheetTabs();return;}
