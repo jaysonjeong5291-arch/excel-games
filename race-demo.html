@@ -874,7 +874,32 @@ function renderTrack(list){
  renderRaceIncidents(elapsed,running,finished);
 }
 
-function updateExpected(){const t=seats.find(x=>x.id===$('bet-target').value),n=Number($('bet-amount').value);$('expected').textContent=t?.odds&&Number.isFinite(n)&&n>0?'예상 적중 지급: '+fmt(Math.floor(n*Number(t.odds)))+' · 원금 포함':'배당 접수 후 예상 지급액이 표시됩니다.'}
+// Bet preview: exact integer arithmetic and a visible Korean-unit magnitude.
+// Only the existing stake RPC performs actual balance deductions and settlement.
+function updateExpected(){
+ const target=seats.find(x=>x.id===$('bet-target').value);
+ const raw=String($('bet-amount').value||'').trim();
+ const el=$('expected');
+ if(!/^[1-9]\d*$/.test(raw)){
+  el.textContent='베팅 금액을 1P 이상의 정수로 입력하세요.';
+  return;
+ }
+ const stake=BigInt(raw);
+ const limit=9007199254740991n; // JS safe-integer limit; game sends numbers to RPC.
+ if(stake>limit){
+  el.textContent='입력 금액: '+fmt(stake)+' · 브라우저에서 정확하게 전송할 수 있는 숫자 범위를 초과합니다.';
+  return;
+ }
+ const amountDisplay='입력 금액: '+fmt(stake);
+ const cents=Math.round(Number(target?.odds)*100);
+ if(!target || !Number.isSafeInteger(cents) || cents<=0){
+  el.textContent=amountDisplay+' · 배당 접수 후 예상 지급액이 표시됩니다.';
+  return;
+ }
+ const expected=(stake*BigInt(cents))/100n;
+ el.textContent=amountDisplay+' · 예상 적중 지급: '+fmt(expected)+' (원금 포함, 적중 시)';
+}
+
 function render(){
  // Live sync must not recreate dozens of shop cards, photographs and upgrade controls.
  if(active==='lobby')renderRooms();
@@ -1021,7 +1046,13 @@ $('race-chat-form').addEventListener('submit',async e=>{
 });
 $('bet-target').addEventListener('change',updateExpected);$('bet-amount').addEventListener('input',updateExpected);
 document.addEventListener('click',e=>{if(e.target?.id==='recover-bet'){if(pending||refreshing){info('이미 서버 정산을 확인하고 있습니다. 추가 요청을 보내지 않습니다.');return;}void action('sync');}});
-$('bet-submit').addEventListener('click',()=>{const amount=Number($('bet-amount').value);if(!Number.isSafeInteger(amount)||amount<1){info('베팅 포인트를 확인해 주세요.',true);return;}action('bet',{target:$('bet-target').value,amount})});
+$('bet-submit').addEventListener('click',()=>{
+ const raw=String($('bet-amount').value||'').trim();
+ if(!/^[1-9]\d*$/.test(raw)){info('베팅 금액은 1P 이상의 정수여야 합니다.',true);return;}
+ const stake=BigInt(raw);
+ if(stake>9007199254740991n){info('베팅 금액이 브라우저의 정확한 정수 처리 범위를 초과합니다.',true);return;}
+ action('bet',{target:$('bet-target').value,amount:Number(stake)});
+});
 $('cars').addEventListener('click',e=>{const b=e.target.closest('[data-purchase]');if(!b||!profile)return;const owned=profile.owned_cars?.includes(b.dataset.purchase);action(owned?'select':'buy_car',owned?{kind:'car',id:b.dataset.purchase}:{id:b.dataset.purchase});});
 $('drivers').addEventListener('click',e=>{const b=e.target.closest('[data-purchase]');if(!b||!profile)return;const owned=profile.owned_drivers?.includes(b.dataset.purchase);action(owned?'select':'buy_driver',owned?{kind:'driver',id:b.dataset.purchase}:{id:b.dataset.purchase});});
 $('upgrades').addEventListener('click',e=>{const reset=e.target.closest('[data-reset]');if(reset){const kind=reset.dataset.reset;const object=kind==='car'?sCar(profile.selected_car).name:sDriver(profile.selected_driver).name;if(confirm(object+'의 '+(kind==='car'?'차량 파츠':'드라이버 스킬')+'을 1,000,000P를 지불하고 초기화할까요?\n기존 강화 비용은 환불되지 않습니다.'))action('reset_upgrades',{kind});return;}const b=e.target.closest('[data-upgrade]');if(!b)return;const [kind,key]=b.dataset.upgrade.split(':');action('upgrade',{kind,key})});
