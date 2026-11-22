@@ -287,7 +287,25 @@
 </div><div class="sheetfoot">※ 차량·선수 사진은 Wikipedia/Wikimedia Commons 공개 이미지에서 불러옵니다. 사진은 각 원저작자의 라이선스가 적용되며 링크로 출처를 확인할 수 있습니다. 온라인·솔로 레이스 모두 회원 포인트를 사용합니다. 솔로 경기 우승수당은 0P입니다.</div></div></main>
 <script>
 'use strict';
-const $=id=>document.getElementById(id),fmt=n=>Math.trunc(Number(n)||0).toLocaleString('ko-KR')+'P';
+// Display only: the underlying points, wagers and transfers remain integer values.
+function formatPointUnits(value){
+ let n;
+ try {
+  const raw=String(value??'0').trim();
+  n=/^[+-]?\d+$/.test(raw)?BigInt(raw):BigInt(Math.trunc(Number(value)||0));
+ } catch(_) { return '0'; }
+ const negative=n<0n;
+ if(negative)n=-n;
+ const parts=[];
+ for(const [unit,base] of [['조',1000000000000n],['억',100000000n],['만',10000n]]){
+  const chunk=n/base;
+  if(chunk)parts.push(chunk.toLocaleString('ko-KR')+unit);
+  n%=base;
+ }
+ if(n||!parts.length)parts.push(n.toLocaleString('ko-KR'));
+ return (negative?'-':'')+parts.join(' ');
+}
+const $=id=>document.getElementById(id),fmt=n=>formatPointUnits(n)+'P';
 const RPC_URL='https://ghijkkumzvutfzpvdekv.supabase.co/rest/v1/rpc/';
 const ANON_KEY='sb_publishable_dWxi5S2-WH8Rn2sE0ADHJQ_JvbBjGBu';
 const STORAGE='excel-games-member-session-v1';
@@ -471,9 +489,9 @@ async function processRaceOperatorCommand(message,rid){
   const nick=point[1].trim(),amount=Number(point[2].replaceAll(',',''));
   if(!nick||nick.length>16||!Number.isSafeInteger(amount)||amount===0||Math.abs(amount)>1000000000000)
    throw new Error('사용법: /포인트 닉네임 금액 (최대 ±1조 P)');
-  if((amount<0||amount>=1000000)&&!confirm(nick+' 회원에게 '+Math.abs(amount).toLocaleString('ko-KR')+'P를 '+(amount>0?'지급':'차감')+'할까요?'))return {cancelled:true};
+  if((amount<0||amount>=1000000)&&!confirm(nick+' 회원에게 '+formatPointUnits(Math.abs(amount))+'P를 '+(amount>0?'지급':'차감')+'할까요?'))return {cancelled:true};
   const d=await rpc('renju_admin_points_large',{p_client:client,p_token:admin,p_target_nickname:nick,p_amount:amount},30000);
-  return {message:nick+' · '+(amount>0?'+':'')+amount.toLocaleString('ko-KR')+'P · 잔액 '+Number(d.points||0).toLocaleString('ko-KR')+'P'};
+  return {message:nick+' · '+(amount>0?'+':'')+formatPointUnits(amount)+'P · 잔액 '+formatPointUnits(d.points)+'P'};
  }
  if(notice){
   if(notice[1].trim().length>220)throw new Error('공지 내용은 220자 이내로 입력해 주세요.');

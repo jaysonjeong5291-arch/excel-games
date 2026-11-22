@@ -951,7 +951,25 @@ function applyMemberSessionError(error){
 }
 // v3.5.0 — Account-bound gifts. All balances are checked/updated on Supabase.
 let giftSubmitting=false, giftRetry=null;
-const giftMoney=(n)=>Number(n||0).toLocaleString('ko-KR');
+// Display only: the underlying points, wagers and transfers remain integer values.
+function formatPointUnits(value){
+ let n;
+ try {
+  const raw=String(value??'0').trim();
+  n=/^[+-]?\d+$/.test(raw)?BigInt(raw):BigInt(Math.trunc(Number(value)||0));
+ } catch(_) { return '0'; }
+ const negative=n<0n;
+ if(negative)n=-n;
+ const parts=[];
+ for(const [unit,base] of [['조',1000000000000n],['억',100000000n],['만',10000n]]){
+  const chunk=n/base;
+  if(chunk)parts.push(chunk.toLocaleString('ko-KR')+unit);
+  n%=base;
+ }
+ if(n||!parts.length)parts.push(n.toLocaleString('ko-KR'));
+ return (negative?'-':'')+parts.join(' ');
+}
+const giftMoney=(n)=>formatPointUnits(n);
 function giftInfo(message='',isError=false){const el=$('gift-feedback');el.textContent=message;el.classList.toggle('error',!!isError);}
 function giftClose(){if(giftSubmitting)return;$('gift-overlay').hidden=true;giftInfo('');}
 function giftHistoryRender(items){
@@ -1005,9 +1023,9 @@ async function claimRelief(){
    useMemberProfile({...memberProfile,points:Number(res.points)});
   }
   if(res.claimed){
-   lobbyNotify('🎉 [이벤트] 재난지원금 100,000P 지급 완료! 현재 잔액: '+Number(res.points).toLocaleString('ko-KR')+'P');
+   lobbyNotify('🎉 [이벤트] 재난지원금 100,000P 지급 완료! 현재 잔액: '+formatPointUnits(res.points)+'P');
   }else{
-   lobbyNotify('지급 불가: 현재 잔액이 '+Number(res.points).toLocaleString('ko-KR')+'P입니다. 0P일 때만 신청할 수 있습니다.',true);
+   lobbyNotify('지급 불가: 현재 잔액이 '+formatPointUnits(res.points)+'P입니다. 0P일 때만 신청할 수 있습니다.',true);
   }
   try{await refreshMemberStats();}catch(_e){}
  }catch(err){lobbyNotify('재난지원금 확인 실패: '+err.message,true);}
@@ -1157,7 +1175,7 @@ function openRankGuide(){
   const points=document.createElement('span');points.className='rank-guide-points';
   const startPoints=pointsForLevel(tier.min);
   const endPoints=i<RANK_TIERS.length-1?RANK_TIERS[i+1].minPoints-1:null;
-  points.textContent=startPoints.toLocaleString('ko-KR')+'P'+(endPoints===null?' 이상':' ~ '+endPoints.toLocaleString('ko-KR')+'P');
+  points.textContent=formatPointUnits(startPoints)+'P'+(endPoints===null?' 이상':' ~ '+formatPointUnits(endPoints)+'P');
   range.append(levels,points);
   line.append(badge,range);node.append(line);
  }
@@ -1176,7 +1194,7 @@ function openRankGuide(){
   const levelLine=document.createElement('span');levelLine.className='rank-guide-levels';
   levelLine.textContent=leader?leader.nickname:'전체 회원 포인트 순위';
   const moneyLine=document.createElement('span');moneyLine.className='rank-guide-points';
-  moneyLine.textContent=leader?Number(leader.points).toLocaleString('ko-KR')+'P':'순위 집계 중';
+  moneyLine.textContent=leader?formatPointUnits(leader.points)+'P':'순위 집계 중';
   range.append(levelLine,moneyLine);line.append(badge,range);node.append(line);
  }
  // Operator is a separate, non-levelled role above every earned rank.
@@ -1187,7 +1205,7 @@ function openRankGuide(){
  operatorRange.textContent='운영자 전용 · 포인트 무관';
  operatorLine.append(operatorBadge,operatorRange);node.append(operatorLine);
  const summary=$('rank-guide-summary');
- summary.textContent=current?.isOperator?'현재 운영자 · 특별 등급':current?`현재 ${current.name} · ${Number(memberProfile.points||0).toLocaleString('ko-KR')}P · 1P = 1원`:'1P = 1원 · 포인트 보유액으로 등급 결정 · 재계 순위는 전체 회원 기준';
+ summary.textContent=current?.isOperator?'현재 운영자 · 특별 등급':current?`현재 ${current.name} · ${formatPointUnits(memberProfile.points)}P · 1P = 1원`:'1P = 1원 · 포인트 보유액으로 등급 결정 · 재계 순위는 전체 회원 기준';
  $('rank-guide-overlay').hidden=false;
 }
 $('rank-guide-open').addEventListener('click',openRankGuide);
@@ -1205,7 +1223,7 @@ function paintMemberPanel(){
    const line=document.createElement('div');line.className='member-status-line';
    const tier=rankInfo(lvl,memberProfile.nickname);
    const name=document.createElement('strong');name.textContent=memberProfile.nickname;name.className='rank-name '+tier.css;
-   const point=document.createElement('span');point.className='member-status-points';point.textContent=pts.toLocaleString('ko-KR')+' P';
+   const point=document.createElement('span');point.className='member-status-points';point.textContent=formatPointUnits(pts)+' P';
    line.append(name,rankBadge(lvl,memberProfile.nickname),point);
    const meter=document.createElement('div');meter.className='member-rank-progress';const progress=document.createElement('span');meter.append(progress);
    const hint=document.createElement('div');hint.className='member-next-tier';
@@ -1214,10 +1232,10 @@ function paintMemberPanel(){
     const startPoints=pointsForLevel(tier.min),nextPoints=pointsForLevel(nextTier.min);
     const remaining=Math.max(0,nextPoints-pts);
     progress.style.width=Math.max(0,Math.min(100,(pts-startPoints)/(nextPoints-startPoints)*100))+'%';
-    hint.textContent='다음 등급 '+nextTier.name+' (Lv.'+nextTier.min+')까지 '+remaining.toLocaleString('ko-KR')+'P';
+    hint.textContent='다음 등급 '+nextTier.name+' (Lv.'+nextTier.min+')까지 '+formatPointUnits(remaining)+'P';
    }else{
     progress.style.width='100%';
-    hint.textContent=tier.isOperator?'운영자 특별 등급':tier.isTop3?'전체 회원 보유 포인트 기준 '+tier.name:'최고 자산 등급 · '+pts.toLocaleString('ko-KR')+'P';
+    hint.textContent=tier.isOperator?'운영자 특별 등급':tier.isTop3?'전체 회원 보유 포인트 기준 '+tier.name:'최고 자산 등급 · '+formatPointUnits(pts)+'P';
    }
    panel.append(line,meter,hint);
    if(memberGomokuStreak!==null){const streak=document.createElement('div');streak.className='member-arcade-streak';streak.textContent='오목 '+memberGomokuStreak+'연승';panel.append(streak);}
@@ -2295,7 +2313,7 @@ async function joinOddEvenOnline(input){
   const data=await oddEvenRpc('join',id);
   if(!data?.ok||data.room!==id)throw new Error(data?.error||'방 연결 응답이 올바르지 않습니다.');
   const count=Number(data.count||data.participants?.length||0);
-  const item={id,sheet:data.sheet||'홀짝',title:Number(data.stake||0).toLocaleString('ko-KR')+'P 홀짝',game:'oddeven',status:data.phase==='finished'?'done':'waiting',count,waiting:Math.max(0,6-count),moves:Number(data.round||0)};
+  const item={id,sheet:data.sheet||'홀짝',title:formatPointUnits(data.stake)+'P 홀짝',game:'oddeven',status:data.phase==='finished'?'done':'waiting',count,waiting:Math.max(0,6-count),moves:Number(data.round||0)};
   oddEvenLobbyRooms=[item,...oddEvenLobbyRooms.filter(x=>x.id!==id)];
   roomList=[...roomList.filter(x=>x.id!==id),item];
   if(!openRooms.includes(id))openRooms.push(id);
@@ -2694,7 +2712,7 @@ async function handleChatSubmit(e){
    if(!target||target.length>16||!Number.isSafeInteger(amount)||amount===0||Math.abs(amount)>1000000000000){
     showOperatorMessage('포인트는 -1,000,000,000,000 ~ +1,000,000,000,000 범위이며 0은 사용할 수 없습니다.',true);return;
    }
-   if((amount<0||amount>=1000000)&&!window.confirm(`${target} 회원의 포인트를 ${amount>0?'지급':'차감'}할까요?\n금액: ${Math.abs(amount).toLocaleString('ko-KR')}P\n기존 잔액은 서버에서 확인합니다.`))return;
+   if((amount<0||amount>=1000000)&&!window.confirm(`${target} 회원의 포인트를 ${amount>0?'지급':'차감'}할까요?\n금액: ${formatPointUnits(Math.abs(amount))}P\n기존 잔액은 서버에서 확인합니다.`))return;
    operation='renju_admin_points_large';params={p_client:CLIENT_ID,p_token:adminToken,p_target_nickname:target,p_amount:amount};
   }else if(commandMatch){
    const cmd=commandMatch[1],value=commandMatch[2].trim();
@@ -2712,7 +2730,7 @@ async function handleChatSubmit(e){
   chatPending=true;form.querySelector('button').disabled=true;
   try{
    const result=await callRpc(operation,params);
-   showOperatorMessage(operation==='renju_admin_points_large'&&Number.isSafeInteger(Number(result.points))?`${result.nickname} · ${Number(result.added)>0?'+':''}${Number(result.added).toLocaleString('ko-KR')}P / 잔액 ${Number(result.points).toLocaleString('ko-KR')}P`:result.message||'명령 처리 완료');input.value='';input.focus();
+   showOperatorMessage(operation==='renju_admin_points_large'&&Number.isSafeInteger(Number(result.points))?`${result.nickname} · ${Number(result.added)>0?'+':''}${formatPointUnits(result.added)}P / 잔액 ${formatPointUnits(result.points)}P`:result.message||'명령 처리 완료');input.value='';input.focus();
    if(notice)await pollAnnouncement();
    if(operation==='renju_admin_points_large')await refreshMemberStats();
    if(operation==='renju_admin_clear'&&params.p_target==='room'){
@@ -2801,15 +2819,15 @@ function paintGomokuRewards(){
  el.classList.remove('is-result','is-loss');
  if(!memberToken){el.textContent='오목: 대국 시작 +10P · 상대 점수가 더 적다면 내 포인트의 9% / 5연승 14% / 10연승 19% (회원 로그인 필요)';return;}
  const streak=memberGomokuStreak??0,rr=gomokuRewardRoom===activeRoom?gomokuRewardData:null;
- const money=n=>Math.max(0,Number(n)||0).toLocaleString('ko-KR');
+ const money=n=>formatPointUnits(Math.max(0,Number(n)||0));
  if(rr?.finished){
   el.classList.add('is-result');
-  if(rr.my_result==='win')el.textContent='🏆 승리 · +'+money(rr.winner_points)+'P (상대 -'+money(rr.loser_points)+'P) · '+money(rr.winning_streak)+'연승'+(rr.bonus_points?' · 추가 지급 +'+money(rr.bonus_points)+'P':'')+' · 시작 보너스 +'+money(rr.start_points)+'P';
+  if(rr.my_result==='win')el.textContent='🏆 승리 · +'+money(rr.winner_points)+'P (상대 -'+money(rr.loser_points)+'P) · '+Number(rr.winning_streak||0).toLocaleString('ko-KR')+'연승'+(rr.bonus_points?' · 추가 지급 +'+money(rr.bonus_points)+'P':'')+' · 시작 보너스 +'+money(rr.start_points)+'P';
   else if(rr.my_result==='loss'){el.classList.add('is-loss');el.textContent='대국 종료 · -'+money(rr.loser_points)+'P · 연승 초기화 · 시작 보너스 +'+money(rr.start_points)+'P';}
   else el.textContent='무승부 · 연승 초기화 · 시작 보너스 +'+money(rr.start_points)+'P';
  } else if(rr){
-  el.textContent='대국 참가 +'+money(rr.start_points)+'P 지급 · 현재 '+money(streak)+'연승 · 승리 시 '+(streak>=9?'20%':streak>=4?'15%':'10%')+' 획득 · 상대 포인트가 더 낮으면 내 포인트 '+(streak>=9?'19%':streak>=4?'14%':'9%')+' 획득 (패자는 10% 차감)';
- }else el.textContent='현재 '+money(streak)+'연승 · 대국 시작 +10P · 승리 시 '+(streak>=9?'20%':streak>=4?'15%':'10%')+' / 상대가 더 적으면 내 포인트 '+(streak>=9?'19%':streak>=4?'14%':'9%')+' · 패자는 10% 차감';
+  el.textContent='대국 참가 +'+money(rr.start_points)+'P 지급 · 현재 '+Number(streak||0).toLocaleString('ko-KR')+'연승 · 승리 시 '+(streak>=9?'20%':streak>=4?'15%':'10%')+' 획득 · 상대 포인트가 더 낮으면 내 포인트 '+(streak>=9?'19%':streak>=4?'14%':'9%')+' 획득 (패자는 10% 차감)';
+ }else el.textContent='현재 '+Number(streak||0).toLocaleString('ko-KR')+'연승 · 대국 시작 +10P · 승리 시 '+(streak>=9?'20%':streak>=4?'15%':'10%')+' / 상대가 더 적으면 내 포인트 '+(streak>=9?'19%':streak>=4?'14%':'9%')+' · 패자는 10% 차감';
 }
 // v2.6: server-only Tetris/Mines payout and independent persistent streak status.
 async function syncArcadeRewards(force=false){
@@ -2833,18 +2851,18 @@ function paintArcadeRewards(game){
  const el=$(game==='tetris'?'tetris-reward-status':'mine-reward-status');if(!el)return;
  el.classList.remove('is-result','is-loss');
  const name=game==='tetris'?'테트리스':'지뢰찾기';
- const money=n=>Math.max(0,Number(n)||0).toLocaleString('ko-KR');
+ const money=n=>formatPointUnits(Math.max(0,Number(n)||0));
  if(!memberToken){el.textContent=name+': 시작 +100P · 승리 10%, 5연승 15%, 10연승 20% · 상대가 더 적으면 내 포인트 5% · 패자 10% 차감 (회원 로그인 필요)';return;}
  const streak=memberArcadeStreaks[game]??0;
  const rr=arcadeRewardRoom===activeRoom&&arcadeRewardData?.game===game?arcadeRewardData:null;
  if(rr?.finished){
   el.classList.add('is-result');
-  if(rr.my_result==='win')el.textContent='🏆 승리 · +'+money(rr.winner_points)+'P (상대 -'+money(rr.loser_points)+'P) · '+money(rr.winning_streak)+'연승'+(rr.bonus_points?' · 추가 지급 +'+money(rr.bonus_points)+'P':'')+' · 시작 +'+money(rr.start_points)+'P';
+  if(rr.my_result==='win')el.textContent='🏆 승리 · +'+money(rr.winner_points)+'P (상대 -'+money(rr.loser_points)+'P) · '+Number(rr.winning_streak||0).toLocaleString('ko-KR')+'연승'+(rr.bonus_points?' · 추가 지급 +'+money(rr.bonus_points)+'P':'')+' · 시작 +'+money(rr.start_points)+'P';
   else if(rr.my_result==='loss'){el.classList.add('is-loss');el.textContent='패배 · -'+money(rr.loser_points)+'P · 연승 초기화 · 시작 +'+money(rr.start_points)+'P';}
   else el.textContent='무승부 · 연승 초기화 · 시작 +'+money(rr.start_points)+'P';
  }else if(rr){
-  el.textContent='참가 +'+money(rr.start_points)+'P 지급 · 현재 '+money(streak)+'연승 · 다음 승리 시 '+(streak>=9?'20%':streak>=4?'15%':'10%')+' 획득 · 상대가 더 적으면 내 포인트 5% (패자는 10% 차감)';
- }else el.textContent=name+' · 현재 '+money(streak)+'연승 · 게임 시작 +100P · 다음 승리 '+(streak>=9?'20%':streak>=4?'15%':'10%')+' / 상대가 더 적으면 내 포인트 5% · 패자는 10% 차감';
+  el.textContent='참가 +'+money(rr.start_points)+'P 지급 · 현재 '+Number(streak||0).toLocaleString('ko-KR')+'연승 · 다음 승리 시 '+(streak>=9?'20%':streak>=4?'15%':'10%')+' 획득 · 상대가 더 적으면 내 포인트 5% (패자는 10% 차감)';
+ }else el.textContent=name+' · 현재 '+Number(streak||0).toLocaleString('ko-KR')+'연승 · 게임 시작 +100P · 다음 승리 '+(streak>=9?'20%':streak>=4?'15%':'10%')+' / 상대가 더 적으면 내 포인트 5% · 패자는 10% 차감';
 }
 setInterval(()=>syncArcadeRewards(),20000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncArcadeRewards(true);});
@@ -3594,7 +3612,7 @@ function holdemCardNode(card,small=false){
  else{node.append(document.createTextNode(r));const sym=document.createElement('em');sym.textContent=s;node.append(sym);}
  return node;
 }
-function formatHoldemScore(v){return Number(v||0).toLocaleString('ko-KR')+'P';}
+function formatHoldemScore(v){return formatPointUnits(v)+'P';}
 function renderHoldem(){
  if(!isHoldemRoom())return;
  const d=holdemDataByRoom.get(activeRoom),$h=id=>document.getElementById(id);
@@ -3780,7 +3798,7 @@ async function holdemAdminCommand(id,text){
   if(!target||target.length>16||!Number.isSafeInteger(amount)||amount===0||Math.abs(amount)>1000000000000){
    holdemChatFeedback('포인트는 -1,000,000,000,000 ~ +1,000,000,000,000 범위이며 0은 사용할 수 없습니다.');return true;
   }
-  if((amount<0||amount>=1000000)&&!window.confirm(`${target} 회원의 포인트를 ${amount>0?'지급':'차감'}할까요?\n금액: ${Math.abs(amount).toLocaleString('ko-KR')}P`))return true;
+  if((amount<0||amount>=1000000)&&!window.confirm(`${target} 회원의 포인트를 ${amount>0?'지급':'차감'}할까요?\n금액: ${formatPointUnits(Math.abs(amount))}P`))return true;
   rpc='renju_admin_points_large';params={p_client:CLIENT_ID,p_token:adminToken,p_target_nickname:target,p_amount:amount};
  }else if(text.startsWith('/공지')){
   const msg=text.slice(3).trim();
@@ -3794,7 +3812,7 @@ async function holdemAdminCommand(id,text){
  const state=holdemChatState(id),send=$('holdem-chat-send');state.sending=true;send.disabled=true;
  try{
   const result=await callRpc(rpc,params);
-  if(activeRoom===id){$('holdem-chat-input').value='';$('holdem-chat-input').focus();holdemChatFeedback('✓ '+(rpc==='renju_admin_points_large'&&Number.isSafeInteger(Number(result.points))?`${result.nickname} · ${Number(result.added)>0?'+':''}${Number(result.added).toLocaleString('ko-KR')}P / 잔액 ${Number(result.points).toLocaleString('ko-KR')}P`:result.message||'운영자 명령 처리 완료'),false);}
+  if(activeRoom===id){$('holdem-chat-input').value='';$('holdem-chat-input').focus();holdemChatFeedback('✓ '+(rpc==='renju_admin_points_large'&&Number.isSafeInteger(Number(result.points))?`${result.nickname} · ${Number(result.added)>0?'+':''}${formatPointUnits(result.added)}P / 잔액 ${formatPointUnits(result.points)}P`:result.message||'운영자 명령 처리 완료'),false);}
   if(notice)await pollAnnouncement();
   if(rpc==='renju_admin_points_large')await refreshMemberStats();
  }catch(err){if(activeRoom===id)holdemChatFeedback('명령 실패: '+err.message);}
@@ -3918,7 +3936,7 @@ let oddEvenActionPending=false,oddEvenInfo='';
 function oddEvenRpc(action='list',room=null,stake=null,guess=null){
  return callRpc('renju_oddeven_rpc',{p_action:action,p_client:CLIENT_ID,p_token:memberToken||null,p_room:room,p_stake:stake,p_guess:guess});
 }
-function oddEvenFmt(value){return Number(value||0).toLocaleString('ko-KR')+'P';}
+function oddEvenFmt(value){return formatPointUnits(value)+'P';}
 function applyOddEvenData(id,data){
  if(!data?.ok)return;
  const old=oddEvenDataByRoom.get(id);
