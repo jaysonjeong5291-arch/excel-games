@@ -2609,7 +2609,7 @@ window.addEventListener('message',e=>{
   const method=e.data.method;
   if(!/^[a-zA-Z0-9_-]{1,60}$/.test(rid)||!['sl_snapshot','sl_command'].includes(method))return;
   const args=e.data.args||{};
-  if(method==='sl_command'&&!['claim','offer','respond','cancel','fa_sign','release','advance'].includes(args.p_action))return;
+  if(method==='sl_command'&&!['claim','offer','respond','cancel','fa_sign','release','advance','post'].includes(args.p_action))return;
   (async()=>{
    let response;
    try{
