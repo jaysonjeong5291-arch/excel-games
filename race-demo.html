@@ -222,6 +222,9 @@
 .race-quickbar-actions .start-spotlight[hidden]{display:none!important}
 @media(max-width:600px){.race-quickbar-actions .ready-spotlight,.race-quickbar-actions .start-spotlight{width:auto;flex:1 1 44%;min-width:132px;font-size:14px!important}}
 .ready-spotlight.ready-rematch{background:#ffe28a;border-color:#c28b16;color:#523909;animation:readyPulse 1.8s ease-in-out infinite}@keyframes readyPulse{0%,100%{box-shadow:0 0 0 0 rgba(220,160,18,.1)}50%{box-shadow:0 0 0 5px rgba(220,160,18,.18)}}
+/* Bet limit: client-side instant status, independent of SQL server validation. */
+.cap-warning{font-size:12px;font-weight:600;color:#597160;line-height:1.45}
+.cap-warning.over-limit{color:#c4272c}
 </style></head><body><main class="shell"><header class="top"><div><div class="title">🏁 업무현황_레이스_VER.2026</div><div class="sub">6개 출전석 · 유저/컴퓨터/닫기 · 실시간 예상 배당 · 선택 베팅 · 채팅 · 방 생성 안전복구 v1.1.5</div></div><div class="head-actions"><span class="smallstat">내 포인트 <strong id="wallet">-</strong></span><span class="smallstat">회원 <strong id="my-name">로그인 확인 중</strong></span><button id="race-reconnect" type="button" title="세션과 레이스 상태를 다시 확인합니다">↻ 연결 재확인</button><span id="sale-top-chip" class="smallstat" hidden>🎁 레이스 특가 <strong id="sale-top-percent">정상가</strong></span><button id="home" type="button">Sheet1</button></div></header><div class="greenbar"></div><div class="gridbox"><nav class="nav" id="tabs"><button data-tab="race" class="active">🏁 경기장</button><button data-tab="garage">🚗 차량</button><button data-tab="drivers">👤 드라이버</button><button data-tab="upgrades">🔧 파츠·스킬</button></nav><div class="formula"><span id="address">A1</span><strong>fx</strong><code id="formula-text">=RACE_ONLINE(포인트,차량,배당률)</code></div><div id="status" class="status" role="status"></div><div id="race-rpc-warning" class="warning" role="alert" hidden>⚠ 정산 보호 함수가 설치되지 않았습니다. 방 조회·생성·입장만 임시 사용 가능하며, <b>베팅·READY·경기 시작·구매·강화는 안전을 위해 제한</b>합니다. Supabase 정산 보호 SQL을 설치하고 새로고침해 주세요.</div><div id="sale-banner" class="sale-banner" hidden>🎉 운영자 할인 이벤트 · 차량·드라이버 <strong id="sale-banner-percent">정상가</strong> · 파츠·스킬 강화 제외 · 전체 레이스방 적용</div><div id="panes">
 <section class="pane" id="pane-lobby" hidden><div class="toolbar"><div><h2>레이스 온라인 방 목록</h2><p class="intro">2~6명이 각자 차량을 출전시키며 출전자와 관전자 모두 우승 팀에 베팅할 수 있습니다.</p></div><button id="refresh" type="button">↻ 새로고침</button></div><div class="panel"><div class="sheethead">A열 / 온라인 레이스방 생성</div><div class="pbody hero"><label>방 이름<input type="text" id="room-title" maxlength="32" value="주말 그랑프리" placeholder="방 이름"></label><button id="create" type="button" class="primary">＋ 방 만들기</button><label>초대코드 입력<input type="text" id="room-code" placeholder="rc-xxxxxxxxxxxx"></label><button id="join-code" type="button">입장</button></div></div><div class="panel"><div class="sheethead">B열 / 접속 가능한 경기</div><div class="tablewrap"><table><thead><tr><th>시트</th><th>방 이름</th><th>단계</th><th>출전자</th><th>관전자</th><th></th></tr></thead><tbody id="room-list"><tr><td colspan="6" class="empty">목록을 확인하는 중...</td></tr></tbody></table></div></div></section>
 <section class="pane" id="pane-race"><div class="toolbar"><div><h2 id="race-title">경기장</h2><p class="intro" id="race-code">Sheet1에서 방을 선택하세요</p></div><div class="row"><button id="share" type="button">초대 링크</button><button id="leave" type="button">방 나가기</button></div></div><div class="warning" id="room-help">Sheet1에서 방을 만들거나 입장하면 경기장 정보가 표시됩니다.</div>
@@ -244,7 +247,7 @@
  <div class="race-incident-head">⚠ 레이스 관제센터 · 사고 / 피트스톱 <span id="race-incident-count">이벤트 대기</span></div>
  <div id="race-incident-highlight" class="race-incident-highlight">🟢 출전 차량 점검 중 · 레이스 이벤트는 자동 진행됩니다.</div>
  <div id="race-incident-log" class="race-incident-log" aria-live="polite"><div class="race-incident-idle">경기 시작 후 사고와 정비 내역이 시간순으로 기록됩니다.</div></div>
-</div></div><div class="help">사고·펑크·피트스톱은 서버에서 확정하고 완주 기록에 반영됩니다. 주행 화면의 중간 순위는 연출이며 공식 순위와 베팅 정산은 서버 결과를 따릅니다.</div></div></div></div><aside><div class="panel"><div class="sheethead">D열 / 내 참여 방식</div><div class="pbody"><div class="help">참가·관전·READY·경기 시작 버튼은 경기장 상단에 고정해 두었습니다. 경주가 시작되면 새 입장은 자동 관전으로 처리됩니다.</div><div class="help">출전하려면 차량·드라이버를 보유해야 합니다. 기본 차량과 신인 드라이버는 처음에 무상 지급됩니다. 사람 출전자 1명일 때는 참가비·입상수당 0P, 2명 이상이면 사람당 참가비 1,000P를 사람 참가자들의 순위에 따라 분배합니다. 컴퓨터는 입상수당을 받지 않습니다.</div><div class="row" style="margin-top:10px"><button id="open-bets" type="button" hidden>배당 확정 / 베팅 접수</button></div></div></div><div class="panel"><div class="sheethead">E열 / 배당률 · 출전자/관전자 베팅</div><div class="pbody"><div class="tablewrap"><table><thead><tr><th>선수</th><th>종합 능력</th><th>배당</th></tr></thead><tbody id="odds-table"></tbody></table></div><div class="bet-note" id="bet-open-note">출전자 전원 레디 시 배당 확정 · 이후 베팅은 자유 선택 · 방장만 경기 시작</div><div class="betbox" style="margin-top:12px"><label>우승 예상 팀<select id="bet-target"></select></label><label>베팅 금액 (P)<input type="number" id="bet-amount" min="1" max="10000000000" step="1" value="1000" inputmode="numeric"></label><div id="expected" class="muted">베팅 가능 시 표시</div><button class="primary" id="bet-submit" type="button">베팅하기</button><div class="muted" id="bet-status">전원 READY 후 경기 시작 전까지 자유롭게 베팅 가능 · 베팅 없이도 출전할 수 있습니다.</div></div><div class="help">대기 중 예상 배당은 출전석·장비·트랙에 따라 자동으로 변합니다. 모두 레디하면 배당이 확정되고 베팅이 열립니다. 베팅은 선택 사항이며 경기 시작 시 마감합니다. 비공개 기복·내구성은 배당에 포함되지 않습니다.</div></div></div><div class="panel race-social-panel">
+</div></div><div class="help">사고·펑크·피트스톱은 서버에서 확정하고 완주 기록에 반영됩니다. 주행 화면의 중간 순위는 연출이며 공식 순위와 베팅 정산은 서버 결과를 따릅니다.</div></div></div></div><aside><div class="panel"><div class="sheethead">D열 / 내 참여 방식</div><div class="pbody"><div class="help">참가·관전·READY·경기 시작 버튼은 경기장 상단에 고정해 두었습니다. 경주가 시작되면 새 입장은 자동 관전으로 처리됩니다.</div><div class="help">출전하려면 차량·드라이버를 보유해야 합니다. 기본 차량과 신인 드라이버는 처음에 무상 지급됩니다. 사람 출전자 1명일 때는 참가비·입상수당 0P, 2명 이상이면 사람당 참가비 1,000P를 사람 참가자들의 순위에 따라 분배합니다. 컴퓨터는 입상수당을 받지 않습니다.</div><div class="row" style="margin-top:10px"><button id="open-bets" type="button" hidden>배당 확정 / 베팅 접수</button></div></div></div><div class="panel"><div class="sheethead">E열 / 배당률 · 출전자/관전자 베팅</div><div class="pbody"><div class="tablewrap"><table><thead><tr><th>선수</th><th>종합 능력</th><th>배당</th></tr></thead><tbody id="odds-table"></tbody></table></div><div class="bet-note" id="bet-open-note">출전자 전원 레디 시 배당 확정 · 이후 베팅은 자유 선택 · 방장만 경기 시작</div><div class="betbox" style="margin-top:12px"><label>우승 예상 팀<select id="bet-target"></select></label><label>베팅 금액 (P)<input type="number" id="bet-amount" min="1" max="100000000" step="1" value="1000" inputmode="numeric"></label><div id="bet-limit-note" class="cap-warning" role="status" aria-live="polite">1회 최대 1억 P까지 베팅 가능합니다.</div><div id="expected" class="muted">베팅 가능 시 표시</div><button class="primary" id="bet-submit" type="button">베팅하기</button><div class="muted" id="bet-status">전원 READY 후 경기 시작 전까지 자유롭게 베팅 가능 · 베팅 없이도 출전할 수 있습니다.</div></div><div class="help">대기 중 예상 배당은 출전석·장비·트랙에 따라 자동으로 변합니다. 모두 레디하면 배당이 확정되고 베팅이 열립니다. 베팅은 선택 사항이며 경기 시작 시 마감합니다. 비공개 기복·내구성은 배당에 포함되지 않습니다.</div></div></div><div class="panel race-social-panel">
  <div class="sheethead">F열 / 관전자 명단 <span id="social-online-count" class="social-count">0명 접속 중</span></div>
  <div class="pbody"><div id="race-spectators" class="spectator-list"><span class="muted">관전자 정보를 불러오는 중…</span></div>
  <p class="help">접속 중인 관전자는 ●로 표시됩니다. 출전자도 채팅에 참여할 수 있습니다.</p></div>
@@ -276,7 +279,7 @@
   </div>
   <aside>
    <div class="panel"><div class="sheethead">D열 / 우승 배당 · 베팅</div><div class="pbody"><div class="tablewrap"><table><thead><tr><th>우승 후보</th><th>공개 전력</th><th>고정 배당</th></tr></thead><tbody id="solo-odds"></tbody></table></div>
-   <div class="betbox" style="margin-top:12px"><label>베팅할 팀<select id="solo-target"></select></label><label>베팅 포인트 (P)<input type="number" id="solo-stake" value="1000" step="1" min="1" max="10000000000" inputmode="numeric"></label><div class="muted" id="solo-expected">경기를 만들면 고정 배당이 표시됩니다.</div><div class="row"><button id="solo-bet" class="primary" type="button">포인트 베팅</button><button id="solo-cancel" type="button">베팅 취소·반환</button></div><button id="solo-start" class="primary" type="button" style="width:100%">🏁 레이스 출발</button><div id="solo-bet-state" class="help"></div></div></div></div>
+   <div class="betbox" style="margin-top:12px"><label>베팅할 팀<select id="solo-target"></select></label><label>베팅 포인트 (P)<input type="number" id="solo-stake" value="1000" step="1" min="1" max="100000000" inputmode="numeric"></label><div id="solo-limit-note" class="cap-warning" role="status" aria-live="polite">1회 최대 1억 P까지 베팅 가능합니다.</div><div class="muted" id="solo-expected">경기를 만들면 고정 배당이 표시됩니다.</div><div class="row"><button id="solo-bet" class="primary" type="button">포인트 베팅</button><button id="solo-cancel" type="button">베팅 취소·반환</button></div><button id="solo-start" class="primary" type="button" style="width:100%">🏁 레이스 출발</button><div id="solo-bet-state" class="help"></div></div></div></div>
    <div class="panel"><div class="sheethead">E열 / 플레이 안내</div><div class="pbody"><p class="help">① 차고에서 내 차량·드라이버 선택 → ② 솔로 경기 생성 → ③ 내 차나 NPC의 우승에 베팅 → ④ 출발 → ⑤ 자동 주행 후 결과 정산.</p><p class="help"><b>베팅하지 않고도 출발</b>할 수 있으나, 승리수당은 언제나 0P입니다. 베팅 취소는 출발 전에만 가능합니다.</p><p class="help">혼자 레이스와 기존 온라인 2~6인 레이스는 별개입니다. 솔로 결과는 온라인 방의 승리수당이나 베팅을 변경하지 않습니다.</p></div></div>
   </aside>
  </div>
@@ -876,7 +879,19 @@ function renderTrack(list){
 
 // Bet preview: exact integer arithmetic and a visible Korean-unit magnitude.
 // Only the existing stake RPC performs actual balance deductions and settlement.
+function updateRaceStakeCap(noteId, fieldId){
+ const note=$(noteId), input=$(fieldId);
+ if(!note||!input)return false;
+ const raw=String(input.value||'').trim();
+ const tooHigh=/^[1-9]\d*$/.test(raw) && BigInt(raw)>100000000n;
+ note.classList.toggle('over-limit',tooHigh);
+ note.textContent=tooHigh
+  ? '1억 P를 초과하여 베팅할 수 없습니다. 최대 1억 P까지 가능합니다.'
+  : '1회 최대 1억 P까지 베팅 가능합니다.';
+ return tooHigh;
+}
 function updateExpected(){
+ updateRaceStakeCap('bet-limit-note','bet-amount');
  const target=seats.find(x=>x.id===$('bet-target').value);
  const raw=String($('bet-amount').value||'').trim();
  const el=$('expected');
@@ -885,9 +900,9 @@ function updateExpected(){
   return;
  }
  const stake=BigInt(raw);
- const limit=10000000000n; // Race bet limit: 10 billion P per wager.
+ const limit=100000000n; // Race bet limit: 100 million P per wager.
  if(stake>limit){
-  el.textContent='입력 금액: '+fmt(stake)+' · 레이싱 베팅은 한 번에 최대 100억 P입니다.';
+  el.textContent='입력 금액: '+fmt(stake)+' · 레이싱 베팅은 한 번에 최대 1억 P입니다.';
   return;
  }
  const amountDisplay='입력 금액: '+fmt(stake);
@@ -982,8 +997,9 @@ function renderSolo(){
  const selected=$('solo-target').value;
  const optionHtml=entries.map(e=>`<option value="${text(e.id)}">${text(e.name)} · ${Number(e.odds).toFixed(2)}배</option>`).join('');
  if($('solo-target').innerHTML!==optionHtml){$('solo-target').innerHTML=optionHtml;if(entries.some(e=>e.id===selected))$('solo-target').value=selected;}
+ updateRaceStakeCap('solo-limit-note','solo-stake');
  const stake=Number($('solo-stake').value),t=entries.find(e=>e.id===$('solo-target').value);
- $('solo-expected').textContent=t&&Number.isSafeInteger(stake)&&stake>0&&stake<=10000000000?'적중 예상 지급: '+fmt(Math.floor(stake*Number(t.odds)))+' (원금 포함)':'베팅 대상과 포인트를 입력하세요.';
+ $('solo-expected').textContent=stake>100000000?'1억 P 초과 베팅은 불가능합니다.':t&&Number.isSafeInteger(stake)&&stake>0&&stake<=100000000?'적중 예상 지급: '+fmt(Math.floor(stake*Number(t.odds)))+' (원금 포함)':'베팅 대상과 포인트를 입력하세요.';
  if(Number(sd.bet_stake)>0){
   const b=entries.find(e=>e.id===sd.bet_target);
   $('solo-bet-state').innerHTML=`<b>베팅 접수:</b> ${text(b?.name||sd.bet_target)} · ${fmt(sd.bet_stake)} · ${Number(sd.bet_odds).toFixed(2)}배`;
@@ -996,11 +1012,11 @@ function renderSolo(){
  }else $('solo-result').textContent=run?'🚦 경기 진행 중입니다. 경기가 끝나면 서버가 결과와 베팅금을 정산합니다.':`배당 고정 · ${Number(sd.bet_stake)>0?'베팅 완료. ':'원하는 팀에 베팅하거나 바로 출발할 수 있습니다. '}출발 시 우승·입상수당은 없습니다.`;
 }
 $('solo-new').addEventListener('click',()=>soloCall('new'));
-$('solo-bet').addEventListener('click',()=>{const stake=Number($('solo-stake').value);if(!Number.isSafeInteger(stake)||stake<1||stake>10000000000){info('솔로 레이싱 베팅은 1~100억 P 정수만 가능합니다.',true);return}void soloCall('bet',{target:$('solo-target').value,stake});});
+$('solo-bet').addEventListener('click',()=>{const stake=Number($('solo-stake').value);if(!Number.isSafeInteger(stake)||stake<1||stake>100000000){updateRaceStakeCap('solo-limit-note','solo-stake');info('1억 P를 초과하여 베팅할 수 없습니다. 최대 1억 P까지 가능합니다.',true);return}void soloCall('bet',{target:$('solo-target').value,stake});});
 $('solo-cancel').addEventListener('click',()=>soloCall('cancel'));
 $('solo-start').addEventListener('click',()=>soloCall('start'));
 $('solo-target').addEventListener('change',renderSolo);
-$('solo-stake').addEventListener('input',()=>{const sd=soloData;if(!sd)return;const e=sd.entries?.find(e=>e.id===$('solo-target').value),v=Number($('solo-stake').value);$('solo-expected').textContent=e&&Number.isSafeInteger(v)&&v>0&&v<=10000000000?'적중 예상 지급: '+fmt(Math.floor(v*Number(e.odds)))+' (원금 포함)':'베팅 대상과 포인트를 입력하세요.'});
+$('solo-stake').addEventListener('input',()=>{updateRaceStakeCap('solo-limit-note','solo-stake');const sd=soloData;if(!sd)return;const e=sd.entries?.find(e=>e.id===$('solo-target').value),v=Number($('solo-stake').value);$('solo-expected').textContent=v>100000000?'1억 P 초과 베팅은 불가능합니다.':e&&Number.isSafeInteger(v)&&v>0&&v<=100000000?'적중 예상 지급: '+fmt(Math.floor(v*Number(e.odds)))+' (원금 포함)':'베팅 대상과 포인트를 입력하세요.'});
 
 $('tabs').addEventListener('click',e=>{const b=e.target.closest('[data-tab]');if(b)tab(b.dataset.tab)});
 $('create').addEventListener('click',()=>action('create',{name:$('room-title').value},null));
@@ -1050,7 +1066,7 @@ $('bet-submit').addEventListener('click',()=>{
  const raw=String($('bet-amount').value||'').trim();
  if(!/^[1-9]\d*$/.test(raw)){info('베팅 금액은 1P 이상의 정수여야 합니다.',true);return;}
  const stake=BigInt(raw);
- if(stake>10000000000n){info('레이싱 베팅금액은 한 번에 최대 100억 P입니다.',true);return;}
+ if(stake>100000000n){info('레이싱 베팅금액은 한 번에 최대 1억 P입니다.',true);return;}
  action('bet',{target:$('bet-target').value,amount:Number(stake)});
 });
 $('cars').addEventListener('click',e=>{const b=e.target.closest('[data-purchase]');if(!b||!profile)return;const owned=profile.owned_cars?.includes(b.dataset.purchase);action(owned?'select':'buy_car',owned?{kind:'car',id:b.dataset.purchase}:{id:b.dataset.purchase});});
