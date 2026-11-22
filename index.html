@@ -2607,7 +2607,7 @@ window.addEventListener('message',e=>{
  if(e.data?.type==='SL_RPC'&&activeSuperleague){
   const rid=String(e.data.requestId||'');
   const method=e.data.method;
-  if(!/^[a-zA-Z0-9_-]{1,60}$/.test(rid)||!['sl_snapshot','sl_command','sl_offer_submit'].includes(method))return;
+  if(!/^[a-zA-Z0-9_-]{1,60}$/.test(rid)||!['sl_snapshot','sl_command','sl_offer_submit','sl_offer_status'].includes(method))return;
   const args=e.data.args||{};
   if(method==='sl_command'&&!['claim','offer','respond','cancel','fa_sign','release','advance','post'].includes(args.p_action))return;
   (async()=>{
@@ -2615,7 +2615,7 @@ window.addEventListener('message',e=>{
    try{
     if(!memberToken||!memberProfile)throw new Error('로그인이 만료되었습니다. Sheet1에서 다시 로그인하세요.');
     const tokenAtStart=memberToken;
-    response=await callRpc(method,method==='sl_snapshot'?{p_token:tokenAtStart}:method==='sl_offer_submit'?{p_token:tokenAtStart,p_request:args.p_request,p_player:args.p_player,p_amount:args.p_amount}:{p_token:tokenAtStart,p_action:args.p_action,p_payload:args.p_payload||{}},false,16000);
+    response=await callRpc(method,method==='sl_snapshot'?{p_token:tokenAtStart}:method==='sl_offer_submit'?{p_token:tokenAtStart,p_request:args.p_request,p_player:args.p_player,p_amount:args.p_amount}:method==='sl_offer_status'?{p_token:tokenAtStart,p_request:args.p_request||null}:{p_token:tokenAtStart,p_action:args.p_action,p_payload:args.p_payload||{}},false,11500);
     if(memberToken!==tokenAtStart)throw new Error('로그인 계정이 변경되어 요청이 취소됐습니다.');
     frameSafeSlReply(rid,{ok:true,data:response});
    }catch(err){frameSafeSlReply(rid,{ok:false,error:String(err?.message||err)});}
