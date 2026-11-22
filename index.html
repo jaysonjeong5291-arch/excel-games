@@ -1028,8 +1028,24 @@ $('gift-form').addEventListener('submit',async e=>{
  if(target.toLocaleLowerCase()===memberProfile.nickname.toLocaleLowerCase()){giftInfo('본인에게는 선물할 수 없습니다.',true);return;}
  // Real balance is validated atomically on the server (local display may be stale).
  if(!giftRetry||giftRetry.to.toLowerCase()!==target.toLowerCase()||giftRetry.amount!==amount){
-  if(!crypto?.randomUUID){giftInfo('보안 연결(HTTPS)에서 다시 시도해 주세요.',true);return;}
-  giftRetry={to:target,amount,id:crypto.randomUUID()};
+  // Some mobile browsers omit crypto.randomUUID even over HTTPS.
+  // Generate the same secure UUIDv4 using crypto.getRandomValues.
+  const c=window.crypto;
+  let requestId;
+  if(c && typeof c.randomUUID==='function'){
+   requestId=c.randomUUID();
+  }else if(c && typeof c.getRandomValues==='function'){
+   const bytes=new Uint8Array(16);
+   c.getRandomValues(bytes);
+   bytes[6]=(bytes[6]&15)|64;
+   bytes[8]=(bytes[8]&63)|128;
+   const hex=Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
+   requestId=hex.slice(0,8)+'-'+hex.slice(8,12)+'-'+hex.slice(12,16)+'-'+hex.slice(16,20)+'-'+hex.slice(20);
+  }else{
+   giftInfo('보안 난수 기능을 사용할 수 없습니다. 다른 브라우저에서 시도해 주세요.',true);
+   return;
+  }
+  giftRetry={to:target,amount,id:requestId};
  }
  if(!window.confirm('['+target+'] 회원에게 '+giftMoney(amount)+'P를 선물하시겠습니까?\n완료 후 취소할 수 없습니다.'))return;
  giftSubmitting=true;$('gift-send').disabled=true;$('gift-close').disabled=true;giftInfo('서버에서 선물을 처리하고 있습니다...');
