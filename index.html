@@ -544,14 +544,6 @@ body.race-active .race-sheet-view{height:calc(100dvh - 145px);min-height:550px}
 #race-sheet-tab.active{border-bottom-color:#107c41;background:#fff;color:#0d713b}
 
 @media(max-width:700px){body.race-active .race-sheet-view{height:calc(100dvh - 135px);min-height:590px}}
-/* Superleague bridge: the manager runs only while its sheet is open. */
-#superleague-view[hidden]{display:none!important}
-#superleague-view{height:calc(100dvh - 193px);min-height:570px;background:#f4f8f5}
-#superleague-frame{width:100%;height:100%;border:0;display:block;background:#f5f8f6}
-#superleague-sheet-tab.active{border-bottom-color:#107c41;background:#fff;color:#0d713b}
-body.superleague-active .ribbon{display:none!important}
-body.superleague-active #superleague-view{height:calc(100dvh - 145px);min-height:550px}
-@media(max-width:700px){body.superleague-active #superleague-view{height:calc(100dvh - 135px);min-height:590px}}
 </style>
 </head>
 <body>
@@ -570,7 +562,7 @@ body.superleague-active #superleague-view{height:calc(100dvh - 145px);min-height
   <label for="gift-recipient">받는 회원 닉네임</label>
   <input id="gift-recipient" type="text" maxlength="16" required placeholder="가입된 닉네임을 정확하게 입력" spellcheck="false" autocapitalize="none">
   <label for="gift-amount">선물할 포인트</label>
-  <input id="gift-amount" type="number" min="1" max="2147483647" step="1" required placeholder="예: 500">
+  <input id="gift-amount" type="number" min="1" max="100000000000" step="1" required placeholder="예: 500">
   <p>선물은 수수료 없이 전액 지급되며, 완료 후 취소할 수 없습니다. 선물과 받기 내역은 본인만 확인할 수 있습니다.</p>
   <div id="gift-feedback" class="gift-feedback" role="status" aria-live="polite"></div>
   <div class="gift-actions"><button type="button" id="gift-close">닫기</button><button type="submit" id="gift-send">선물 보내기</button></div>
@@ -695,7 +687,7 @@ body.superleague-active #superleague-view{height:calc(100dvh - 145px);min-height
 <div class="oe-multiplayer-note">같은 방에 최대 6명 참가합니다. 친구에게 위 방 코드 또는 초대 링크를 보내세요. 각각 다른 회원 계정으로 로그인해야 별도의 참가 좌석을 사용할 수 있습니다.</div>
  <div class="oe-meta"><div><small>고정 판돈</small><strong id="oe-stake">100P</strong></div><div><small>준비 인원</small><strong id="oe-ready-count">0 / 1</strong></div><div><small>보유 포인트</small><strong id="oe-wallet">0P</strong></div><div><small>라운드</small><strong id="oe-round">#0</strong></div></div>
  <div class="oe-dice-zone"><div class="oe-dice-label">SERVER ROLL · 두 주사위 합계의 홀짝</div><div id="oe-dice-pair" class="oe-dice-pair"><div id="oe-die-a" class="oe-die">?</div><div id="oe-die-b" class="oe-die">?</div></div><div id="oe-result" class="oe-result muted">참가자 준비를 기다리는 중</div><div class="oe-subtext">홀수 = 홀 · 짝수 = 짝 · 동일한 결과로 모든 참가자 정산</div></div>
- <div class="oe-config" id="oe-config"><strong>방장 판돈 설정</strong><label for="oe-stake-input">포인트(P)</label><input id="oe-stake-input" type="number" min="1" max="1000000" step="1" value="100" inputmode="numeric"><button type="button" id="oe-set-stake">판돈 적용</button><span>변경하면 모두의 준비가 해제됩니다.</span></div>
+ <div class="oe-config" id="oe-config"><strong>방장 판돈 설정</strong><label for="oe-stake-input">포인트(P)</label><input id="oe-stake-input" type="number" min="1" max="100000000000" step="1" value="100" inputmode="numeric"><button type="button" id="oe-set-stake">판돈 적용</button><span>변경하면 모두의 준비가 해제됩니다.</span></div>
  <div class="oe-choice"><button type="button" data-oe-guess="odd" aria-pressed="false">홀 · ODD</button><button type="button" data-oe-guess="even" aria-pressed="false">짝 · EVEN</button></div>
  <div class="oe-actions"><button type="button" class="role-switch-btn" id="oe-role-switch" hidden>참가/관전 전환</button><button type="button" id="oe-join" hidden>참가</button><button type="button" id="oe-ready">준비</button><button type="button" class="primary" id="oe-start">게임 시작</button><span id="oe-notice" role="status" aria-live="polite">홀 또는 짝을 고르고 준비하세요.</span></div>
  <div id="oe-feedback" class="oe-feedback" role="alert"></div>
@@ -713,9 +705,8 @@ body.superleague-active #superleague-view{height:calc(100dvh - 145px);min-height
  <div class="oe-footnote">적중 시 베팅금의 2배를 지급합니다(원금 포함, 순이익 +판돈). 실패 시 판돈만 차감됩니다. 방장도 선택과 준비가 필요하며, 1명만 있어도 시작할 수 있습니다. 게임 포인트만 사용하며 현금 환전은 지원하지 않습니다.</div>
 </section>
 <div id="chat" class="chat" hidden><button type="button" id="chat-title-button" class="chat-title" aria-expanded="true" aria-controls="chat-body" title="메모 접기/펼치기"><span>메모 <span id="chat-count"></span></span><span class="chat-toggle" id="chat-toggle-glyph">−</span></button><div class="chat-body" id="chat-body"><div id="chat-messages" class="chat-messages"><div class="chat-empty">내용 없음</div></div><div id="admin-chat-feedback" class="admin-chat-feedback" role="status" hidden></div><form class="chat-form" id="chat-form"><input id="chat-input" class="chat-input" placeholder="메시지 입력" maxlength="280" autocomplete="off" aria-label="채팅 메시지"><button type="submit" class="chat-send">보내기</button></form></div></div>
-<section id="superleague-view" hidden aria-label="슈퍼리그 매니저 시트"><iframe id="superleague-frame" title="슈퍼리그" data-src="./superleague.html" referrerpolicy="same-origin"></iframe></section>
 <section id="race-view" class="race-sheet-view" hidden aria-label="레이스 게임 시트"><iframe id="race-frame" title="업무현황_레이스_VER.2026" data-src="./race-demo.html" referrerpolicy="same-origin"></iframe></section>
-<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="superleague-sheet-tab" class="sheet-tab" type="button" data-sheet="superleague">⚽ 슈퍼리그</button><button id="race-sheet-tab" class="sheet-tab" type="button" data-sheet="race" hidden>🏁 레이스 <span class="tab-close" data-close-race title="레이스 시트 닫기">×</span></button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="레벨 등급 v3.0">100% · v1.0.1 인증 안정화</span></footer>
+<footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="race-sheet-tab" class="sheet-tab" type="button" data-sheet="race" hidden>🏁 레이스 <span class="tab-close" data-close-race title="레이스 시트 닫기">×</span></button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="레벨 등급 v3.0">100% · v1.0.1 인증 안정화</span></footer>
 <script>
 'use strict';
 const SIZE = 15;
@@ -1033,7 +1024,7 @@ $('gift-form').addEventListener('submit',async e=>{
  e.preventDefault();if(giftSubmitting)return;
  if(!memberToken||!memberProfile){giftInfo('회원 로그인 상태를 확인해 주세요.',true);return;}
  const target=$('gift-recipient').value.trim();const amount=Number($('gift-amount').value);
- if(!target||target.length>16||!Number.isSafeInteger(amount)||amount<=0||amount>2147483647){giftInfo('받는 닉네임과 1P 이상의 정수 금액을 입력해 주세요.',true);return;}
+ if(!target||target.length>16||!Number.isSafeInteger(amount)||amount<=0||amount>100000000000){giftInfo('받는 닉네임과 1~100,000,000,000P 사이의 정수 금액을 입력해 주세요.',true);return;}
  if(target.toLocaleLowerCase()===memberProfile.nickname.toLocaleLowerCase()){giftInfo('본인에게는 선물할 수 없습니다.',true);return;}
  // Real balance is validated atomically on the server (local display may be stale).
  if(!giftRetry||giftRetry.to.toLowerCase()!==target.toLowerCase()||giftRetry.amount!==amount){
@@ -1391,7 +1382,7 @@ const CLIENT_ID=makeClientId();
 const ROOM_REGEX=/^(?:r-[0-9a-f]{10}|h-[0-9a-f]{12}|e-[0-9a-f]{12}|u-[0-9a-f]{12})$/;
 let geometry={size:600,header:31,step:37.93},hover=null;
 let state=null,myNumber=null,mySeat='waiting',connected=false;
-let activeRoom=null,openRooms=[],roomCache=new Map(),roomList=[],waitingList=[]; let activeRace=false,raceSheetOpen=false,activeSuperleague=false;
+let activeRoom=null,openRooms=[],roomCache=new Map(),roomList=[],waitingList=[]; let activeRace=false,raceSheetOpen=false;
 let chatLastSeen='',movePending=false,pendingMovePoint=null,chatPending=false,revision=-1;
 let tick=0,polling=false,stopped=false,pollTimer=null,initialDeepLink=new URLSearchParams(location.search).get('room');
 let lobbyHealthy=false,lobbyReady=false,creating=false,lobbySignature="";
@@ -2128,7 +2119,6 @@ function pollOtherRoomsInBackground(){
 }
 async function refresh(){
  if(stopped||polling)return;
- if(activeSuperleague){pollTimer=setTimeout(refresh,15000);return;}
  polling=true;
  const id=activeRoom;
  try{
@@ -2211,8 +2201,7 @@ function updateSheetTabs(){const nav=$('sheet-nav');nav.querySelectorAll('[data-
  for(const id of openRooms){const tab=document.createElement('button');tab.type='button';tab.className='sheet-tab'+(id===activeRoom?' active':'');tab.dataset.roomTab=id;tab.title='시트 열기';tab.textContent=roomLabel(id)+(roomList.find(r=>r.id===id)?.game==='tetris'?' · T':roomList.find(r=>r.id===id)?.game==='mine_battle'?' · M':id.startsWith('h-')?' · H':id.startsWith('e-')?' · O':id.startsWith('u-')?' · U':'');
   const close=document.createElement('span');close.className='tab-close';close.textContent='×';close.title='시트 닫기';close.dataset.closeRoom=id;tab.append(close);nav.insertBefore(tab,$('add-sheet-btn'));}
  const raceTab=$('race-sheet-tab');raceTab.hidden=!raceSheetOpen;raceTab.classList.toggle('active',activeRace);
- const superTab=$('superleague-sheet-tab');superTab.classList.toggle('active',activeSuperleague);
- const lobby=nav.querySelector('[data-sheet="lobby"]');lobby.classList.toggle('active',activeRoom===null&&!activeRace&&!activeSuperleague);}
+ const lobby=nav.querySelector('[data-sheet="lobby"]');lobby.classList.toggle('active',activeRoom===null&&!activeRace);}
 function changeUrl(id){const url=new URL(location.href);if(id)url.searchParams.set('room',id);else url.searchParams.delete('room');try{history.replaceState(null,'',url.pathname+url.search+url.hash);}catch(_){}}
 function setUnderOverFrameVisible(visible){
  const frame=$('underover-frame');
@@ -2221,28 +2210,6 @@ function setUnderOverFrameVisible(visible){
  }catch(_){}
 }
 function switchView(id){
- // Superleague is a separately loaded game: unload it on exit to release CPU, timers and memory.
- if(id!=='__superleague__' && activeSuperleague){
-  activeSuperleague=false;
-  $('superleague-view').hidden=true;
-  $('superleague-frame').removeAttribute('src');
- }
- document.body.classList.remove('superleague-active');
- if(id==='__superleague__'){
-  if(activeRoom||activeRace){lobbyNotify('진행 중인 게임방을 나와 Sheet1에서 슈퍼리그를 열어 주세요.',true);return;}
-  setUnderOverFrameVisible(false);
-  if(!memberToken||!memberProfile){lobbyNotify('슈퍼리그는 회원 로그인 후 이용할 수 있습니다.',true);openMemberPanel('login');return;}
-  if(!requireNickname())return;
-  document.body.classList.add('superleague-active');
-  activeSuperleague=true;activeRoom=null;activeRace=false;
-  $('race-view').hidden=true;$('lobby-view').hidden=true;$('room-view').hidden=true;$('chat').hidden=true;
-  $('holdem-view').hidden=true;$('oddeven-view').hidden=true;$('underover-view').hidden=true;
-  $('superleague-view').hidden=false;
-  const frame=$('superleague-frame');
-  if(!frame.getAttribute('src'))frame.src=frame.dataset.src;
-  $('cell-address').textContent='A1';$('formula-value').textContent='=슈퍼리그(구단,리그,이적시장)';
-  updateSheetTabs();changeUrl(null);return;
- }
  // A CSS-hidden iframe does not receive a reliable document.visibilitychange event.
  // Pause its RPC heartbeats when returning to Sheet1 or another game.
  if(!(typeof id==='string'&&id.startsWith('u-')))setUnderOverFrameVisible(false);
@@ -2515,7 +2482,6 @@ $('member-form').addEventListener('submit',async e=>{
 });
 $('member-logout').addEventListener('click',async()=>{
  if(!memberToken)return;
- if(activeSuperleague)switchView(null);
  const token=memberToken;
  for(const id of [...openRooms])await closeRoom(id);
  try{await memberRpc('logout',{p_token:token});}
@@ -2589,44 +2555,9 @@ window.addEventListener('message',e=>{
    void refreshRaceOnlineRooms();
  }
 });
-$('superleague-frame').addEventListener('load',()=>{
- const frame=$('superleague-frame');
- if(activeSuperleague&&frame.contentWindow){
-  frame.contentWindow.postMessage({type:'EXCEL_SUPERLEAGUE_IDENTITY',nickname:memberProfile?.nickname||myNickname,online:true},location.origin);
- }
-});
-function frameSafeSlReply(requestId,payload){
- const frame=$('superleague-frame');
- if(!activeSuperleague||!frame?.contentWindow)return;
- frame.contentWindow.postMessage({type:'SL_RPC_RESULT',requestId,...payload},location.origin);
-}
-window.addEventListener('message',e=>{
- if(e.origin!==location.origin||e.source!==$('superleague-frame').contentWindow)return;
- if(e.data?.type==='SUPERLEAGUE_RETURN_TO_SHEET1'&&activeSuperleague)switchView(null);
- // Only this same-origin child can request the authenticated league RPC; the session token stays in the host.
- if(e.data?.type==='SL_RPC'&&activeSuperleague){
-  const rid=String(e.data.requestId||'');
-  const method=e.data.method;
-  if(!/^[a-zA-Z0-9_-]{1,60}$/.test(rid)||!['sl_snapshot','sl_command','sl_offer_submit','sl_offer_status'].includes(method))return;
-  const args=e.data.args||{};
-  if(method==='sl_command'&&!['claim','offer','respond','cancel','fa_sign','release','advance','post'].includes(args.p_action))return;
-  (async()=>{
-   let response;
-   try{
-    if(!memberToken||!memberProfile)throw new Error('로그인이 만료되었습니다. Sheet1에서 다시 로그인하세요.');
-    const tokenAtStart=memberToken;
-    response=await callRpc(method,method==='sl_snapshot'?{p_token:tokenAtStart}:method==='sl_offer_submit'?{p_token:tokenAtStart,p_request:args.p_request,p_player:args.p_player,p_amount:args.p_amount}:method==='sl_offer_status'?{p_token:tokenAtStart,p_request:args.p_request||null}:{p_token:tokenAtStart,p_action:args.p_action,p_payload:args.p_payload||{}},false,11500);
-    if(memberToken!==tokenAtStart)throw new Error('로그인 계정이 변경되어 요청이 취소됐습니다.');
-    frameSafeSlReply(rid,{ok:true,data:response});
-   }catch(err){frameSafeSlReply(rid,{ok:false,error:String(err?.message||err)});}
-  })();
- }
-
-});
 $('sheet-nav').addEventListener('click',e=>{
  if(e.target.closest('[data-close-race]')){e.stopPropagation();raceSheetOpen=false;if(activeRace)switchView(null);else updateSheetTabs();return;}
  if(e.target.closest('[data-sheet="race"]')){switchView('__race__');return;}
- if(e.target.closest('[data-sheet="superleague"]')){switchView('__superleague__');return;}
  const closer=e.target.closest('[data-close-room]');if(closer){e.stopPropagation();closeRoom(closer.dataset.closeRoom);return;}
  const tab=e.target.closest('[data-room-tab]');if(tab){switchView(tab.dataset.roomTab);return;}
  if(e.target.closest('[data-sheet="lobby"]'))switchView(null);});
@@ -2669,7 +2600,7 @@ setTimeout(pollAnnouncement,2400);
 // Shared Sheet1 notes: separate feed from each room's existing memo.
 let sheet1Messages=[],sheet1LastPaint='',sheet1ChatPending=false,sheet1LastSync=0;
 async function syncSheet1Chat(force=false){
- if(activeSuperleague||activeRoom!==null||!optionalSheet1ReadOK()||sheet1ChatPending)return;
+ if(activeRoom!==null||!optionalSheet1ReadOK()||sheet1ChatPending)return;
  if(!force&&Date.now()-sheet1LastSync<3500)return;
  sheet1ChatPending=true;
  try{
@@ -4034,7 +3965,7 @@ oeEl('oe-share').addEventListener('click',copyShare);
 oeEl('oe-exit').addEventListener('click',()=>{if(activeRoom)closeRoom(activeRoom)});
 oeEl('oe-set-stake').addEventListener('click',()=>{
  const n=Number(oeEl('oe-stake-input').value);
- if(!Number.isSafeInteger(n)||n<1||n>1000000){oddEvenInfo='판돈은 1~1,000,000P 정수로 설정해 주세요.';renderOddEven();return;}
+ if(!Number.isSafeInteger(n)||n<1||n>100000000000){oddEvenInfo='판돈은 1~100,000,000,000P 정수로 설정해 주세요.';renderOddEven();return;}
  oddEvenAct('set_stake',n);
 });
 oeEl('oddeven-view').querySelector('.oe-choice').addEventListener('click',event=>{
