@@ -173,10 +173,10 @@
 @media(max-width:650px){.v415-story{padding:10px}.v415-match-list{grid-template-columns:1fr}}
 html.excel-embedded .titlebar{display:none!important}
 html.excel-embedded .app{min-height:100vh}
-/* V4.17 — online status and disabled occupied clubs */
+/* V4.18 — server-verified owner and account identity */
 .chooseclub:disabled{opacity:.5;cursor:not-allowed;border-color:#adbab0;background:#eef1ed}
 .chooseclub:disabled:hover{transform:none;box-shadow:none}
-</style></head><body><div class="app"><div class="titlebar"><div class="left"><span class="filename">풋살매니저_V4.15.xlsx</span><span class="ver">— 자동 저장됨 · 데모</span></div><span id="title-meta" class="ver">관리본부 / 시뮬레이션</span></div><div class="ribbon"><div class="menus"><span class="menu-current">홈</span><span>삽입</span><span>데이터</span><span>검토</span><span>보기</span></div><div class="toolstrip"><div class="toolgroup"><span class="minor">구단</span><b id="r-club">미선택</b></div><div class="toolgroup"><span class="minor">시즌</span><b id="r-season">1</b><span class="minor">운영일</span><b id="r-day">토</b></div><div class="toolgroup"><span class="minor">보유 포인트</span><b id="r-points">12,500 P</b></div><div class="toolgroup"><button class="btn xs" id="excel-bridge-back" type="button" hidden>↩ Sheet1</button><button class="btn xs" data-action="next-day">1일 진행 · 즉시 / 휴식 해제</button><button class="btn xs" data-action="fast-forward" data-days="7">1주 진행</button><button class="btn xs" data-action="fast-forward" data-days="14">1시즌 진행</button><button class="btn xs" data-action="fast-forward" data-days="28">2시즌 진행</button><button class="btn xs" data-action="fast-forward" data-days="42">3시즌 진행</button></div><div class="toolgroup"><button class="btn xs gray" data-action="reset">새 구단 선택 / 초기화</button></div></div></div><div class="workspace"><aside class="side" aria-label="게임 메뉴"><div class="side-logo"><div><b>슈퍼리그</b><small>CLUB MANAGEMENT</small></div></div><nav class="side-links" id="side-navigation" aria-label="운영 메뉴"></nav><div class="side-bottom"><b>로컬 테스트 버전</b><p>구단·선수·경기 데이터는 브라우저에 저장됩니다.<br>실제 포인트는 사용하지 않습니다.</p></div></aside><div class="workarea"><div class="formula"><div class="celladdr" id="cell-address">A1</div><div class="fx">ƒx</div><div class="formulaText" id="formula-text">=SUPERLEAGUE(20개 구단, 선수 편성, 주간 일정)</div></div><div class="columns"><span></span><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span></div><main class="worksheet"><div class="sheet-content" id="screen"></div></main></div></div><div class="statusbar"><span>준비 · 브라우저에서 자동 저장 · 수동 날짜 진행</span><span>가상 슈퍼리그 / 데이터: 20개 구단 + 선수 200명</span></div><div id="chooser"></div><div id="toast" class="toast" role="status" aria-live="polite"></div></div>
+</style></head><body><div class="app"><div class="titlebar"><div class="left"><span class="filename">풋살매니저_V4.18.xlsx</span><span class="ver">— 자동 저장됨 · 데모</span></div><span id="title-meta" class="ver">관리본부 / 시뮬레이션</span></div><div class="ribbon"><div class="menus"><span class="menu-current">홈</span><span>삽입</span><span>데이터</span><span>검토</span><span>보기</span></div><div class="toolstrip"><div class="toolgroup"><span class="minor">구단</span><b id="r-club">미선택</b></div><div class="toolgroup"><span class="minor">시즌</span><b id="r-season">1</b><span class="minor">운영일</span><b id="r-day">토</b></div><div class="toolgroup"><span class="minor">보유 포인트</span><b id="r-points">12,500 P</b></div><div class="toolgroup"><button class="btn xs" id="excel-bridge-back" type="button" hidden>↩ Sheet1</button><button class="btn xs" data-action="next-day">1일 진행 · 즉시 / 휴식 해제</button><button class="btn xs" data-action="fast-forward" data-days="7">1주 진행</button><button class="btn xs" data-action="fast-forward" data-days="14">1시즌 진행</button><button class="btn xs" data-action="fast-forward" data-days="28">2시즌 진행</button><button class="btn xs" data-action="fast-forward" data-days="42">3시즌 진행</button></div><div class="toolgroup"><button class="btn xs gray" data-action="reset">새 구단 선택 / 초기화</button></div></div></div><div class="workspace"><aside class="side" aria-label="게임 메뉴"><div class="side-logo"><div><b>슈퍼리그</b><small>CLUB MANAGEMENT</small></div></div><nav class="side-links" id="side-navigation" aria-label="운영 메뉴"></nav><div class="side-bottom"><b>온라인 공용 리그</b><p>구단 소유·이적·뉴스는 서버 기준<br>중계 연습과 전술은 로컬입니다.</p></div></aside><div class="workarea"><div class="formula"><div class="celladdr" id="cell-address">A1</div><div class="fx">ƒx</div><div class="formulaText" id="formula-text">=SUPERLEAGUE(20개 구단, 선수 편성, 주간 일정)</div></div><div class="columns"><span></span><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span></div><main class="worksheet"><div class="sheet-content" id="screen"></div></main></div></div><div class="statusbar"><span>준비 · 브라우저에서 자동 저장 · 수동 날짜 진행</span><span>가상 슈퍼리그 / 데이터: 20개 구단 + 선수 200명</span></div><div id="chooser"></div><div id="toast" class="toast" role="status" aria-live="polite"></div></div>
 <script>'use strict';
 const EXCEL_IDENTITY_KEY='excel-games-my-nickname-v1';
 function excelStoredNickname(){try{return String(localStorage.getItem(EXCEL_IDENTITY_KEY)||'').trim().slice(0,16)}catch(_){return ''}}
@@ -2856,6 +2856,24 @@ superleagueLegacyImportPrompt();
 // V4.17 — Server-authoritative shared league. Only the parent holds the member session token.
 // No high-frequency player position transport: the server sends one small state snapshot per ~15s.
 const sl=window.__slOnline;
+sl.claimPending=false;
+sl.verified=false;
+function slVerifySnapshot(data){
+ const viewer=data?.viewer;
+ if(!viewer?.id||!viewer?.nickname||data.serverVersion!=='4.18')
+   throw new Error('온라인 구단 검증 버전이 맞지 않습니다. Supabase에 V4.18 수정 SQL을 먼저 실행하세요.');
+ const expected=String(window.__excelManagerNickname||'').trim();
+ if(!expected||String(viewer.nickname).toLocaleLowerCase('ko')!==expected.toLocaleLowerCase('ko'))
+   throw new Error(`계정 불일치: 엑셀 로그인 ${expected||'미확인'} / 서버 로그인 ${viewer.nickname}. 엑셀에서 다시 로그인하세요.`);
+ const owned=(data.clubs||[]).filter(c=>c.manager===viewer.nickname);
+ if(owned.length>1)throw new Error('서버 계정에 두 구단이 배정되어 있습니다. 관리자에게 문의하세요.');
+ if(data.mine!==null&&data.mine!==undefined){
+  const club=(data.clubs||[]).find(c=>c.id===data.mine);
+  if(!club||String(club.manager).toLocaleLowerCase('ko')!==String(viewer.nickname).toLocaleLowerCase('ko'))
+    throw new Error('서버의 구단 소유 정보가 일치하지 않아 선택을 차단했습니다.');
+ }
+ return true;
+}
 function slRequest(method,args={}){
  return new Promise((resolve,reject)=>{
   if(!slEmbedded)return reject(new Error('엑셀 게임의 로그인 탭에서 실행해야 합니다.'));
@@ -2871,26 +2889,44 @@ async function slLoad(quiet=false){
  try{
   const data=await slRequest('sl_snapshot');
   if(!data.ok)throw new Error(data.error||'서버가 요청을 거부했습니다.');
-  sl.error='';sl.ready=true;sl.snapshot=data;
+  slVerifySnapshot(data);
+  sl.error='';sl.ready=true;sl.verified=true;sl.snapshot=data;
   slApply(data);
   // Keep open form fields intact when a passive sync arrives during editing.
   if(!quiet||!document.activeElement?.matches('input,select,textarea'))render();
+  return true;
  }catch(err){
   sl.error=String(err?.message||err);
+  // No stale/ambiguous state can be used for a club claim.
+  sl.verified=false;
+  if(/계정 불일치|검증 버전|구단 소유 정보/.test(sl.error)){sl.ready=false;sl.snapshot=null;}
   if(!quiet||!sl.ready){render();if(!quiet)notice(sl.error);}
+  return false;
  }finally{sl.busy=false;}
 }
 async function slCommand(action,payload={}){
- if(!sl.ready){notice('온라인 리그 연결을 먼저 확인하세요.');return;}
- if(sl.busy){notice('이전 서버 처리가 끝난 뒤 다시 시도하세요.');return;}
+ if(!sl.ready||!sl.verified){notice('온라인 구단 연결을 먼저 확인하세요.');return false;}
+ if(sl.busy){notice('서버 처리 중입니다. 완료 후 다시 시도하세요.');return false;}
  sl.busy=true;
+ let response=null,failed=null;
  try{
-  const data=await slRequest('sl_command',{p_action:action,p_payload:payload});
-  if(!data.ok)throw new Error(data.error||'거래가 거절됐습니다.');
-  notice(data.message||({claim:'구단 선택 완료',offer:'이적 제안 접수',respond:'응답 완료',cancel:'이적 철회 완료',fa_sign:'레전드 영입 완료',release:'레전드 방출 완료',advance:'공용 1일 진행 완료'}[action]||'서버 반영 완료'));
- }catch(err){notice(String(err?.message||err));}
+  response=await slRequest('sl_command',{p_action:action,p_payload:payload});
+  if(!response?.ok)throw new Error(response?.error||'서버가 요청을 거부했습니다.');
+  if(action==='claim'){
+   const expectedId=Number(payload.club);
+   if(response.club!==expectedId||response.claimedBy!==sl.snapshot?.viewer?.id)
+    throw new Error('구단 배정 결과가 요청 계정과 다릅니다. 서버 검증에 실패했습니다.');
+  }
+ }catch(err){failed=String(err?.message||err);}
  finally{sl.busy=false;}
- await slLoad(true);
+ const updated=await slLoad(false);
+ if(failed){notice(failed);return false;}
+ if(action==='claim'&&(!updated||!sl.verified||sl.snapshot?.mine!==Number(payload.club))){
+  notice('구단 배정 최종 확인에 실패했습니다. 온라인 서버 계정·구단 정보를 확인하세요.');return false;
+ }
+ if(!updated){notice('명령은 처리됐으나 결과 조회에 실패했습니다. 연결을 다시 시도하세요.');return false;}
+ notice(response.message||({claim:'서버에서 구단 배정 확인 완료',offer:'이적 제안 접수',respond:'응답 완료',cancel:'이적 철회 완료',fa_sign:'레전드 영입 완료',release:'레전드 방출 완료',advance:'공용 1일 진행 완료'}[action]||'서버 반영 완료'));
+ return true;
 }
 function slApply(data){
  const prevMine=s.selected;
@@ -2920,13 +2956,28 @@ v414ManagerCell=function(tid){const human=slEmbedded&&sl.ready?!!sl.snapshot?.cl
  return `<span class="v414-manager ${human?'user':''}">${esc(v414ManagerName(tid))}</span>${human?'<span class="tag">플레이어</span>':''}`;};
 const slOldChooser=renderChooser;
 renderChooser=function(){
- if(!slEmbedded)return slOldChooser();
- if(!sl.ready)return `<div class="overlay"><div class="choose"><div class="choosehead"><h1>온라인 슈퍼리그 연결</h1><div class="note">${esc(sl.error||'공용 20구단·순위·뉴스를 불러오는 중입니다...')}</div><p class="small">Supabase SQL을 아직 실행하지 않았다면, 설치 파일의 superleague_online_v417.sql을 먼저 실행하세요.</p><button class="btn primary" data-action="sl-retry">연결 다시 시도</button></div></div></div>`;
- return `<div class="overlay"><div class="choose"><div class="choosehead"><div class="eyebrow">공용 온라인 슈퍼리그 · 시즌 ${s.season}</div><h1>운영할 구단을 선택하세요</h1><div class="muted">전체 20개 구단은 서버에서 공동 관리되며, 한 회원은 한 구단만 맡을 수 있습니다. 중복 배정은 불가능합니다.</div></div>
+ if(!slEmbedded)return `<div class="overlay"><div class="choose"><div class="choosehead"><h1>엑셀 게임에서 실행하세요</h1><p>온라인 공용 구단을 선택하려면 엑셀 게임에 로그인하고 아래 ⚽ 슈퍼리그 탭으로 접속해야 합니다.</p></div></div></div>`;
+ if(!sl.ready)return `<div class="overlay"><div class="choose"><div class="choosehead"><h1>온라인 슈퍼리그 연결</h1><div class="note">${esc(sl.error||'공용 20구단·순위·뉴스를 불러오는 중입니다...')}</div><p class="small">Supabase SQL을 아직 실행하지 않았다면, V4.18 파일의 superleague_v418_owner_verify.sql을 먼저 실행하세요.</p><button class="btn primary" data-action="sl-retry">연결 다시 시도</button></div></div></div>`;
+ return `<div class="overlay"><div class="choose"><div class="choosehead"><div class="eyebrow">공용 온라인 슈퍼리그 · 시즌 ${s.season} · 서버 검증 V4.18</div><h1>운영할 구단을 선택하세요</h1><div class="muted">전체 20개 구단은 서버에서 공동 관리되며, 한 회원은 한 구단만 맡을 수 있습니다. 중복 배정은 불가능합니다.</div><div class="note">서버 로그인: <b>${esc(sl.snapshot?.viewer?.nickname||'미확인')}</b> · 계정 구분 ID: <b>${esc(String(sl.snapshot?.viewer?.id||'').slice(0,8))}</b> · 다른 계정으로 시험하려면 시크릿 창이나 별도 브라우저를 사용하세요.</div></div>
  <div class="choosebody"><div class="choosegrid">${s.teams.map(t=>{const manager=sl.snapshot.clubs[t.id].manager;return `<button class="chooseclub" data-action="choose" data-id="${t.id}" ${manager?'disabled':''}><span class="tag">${flagLeague(t.league)}</span><b>${esc(t.name)}</b><span class="overall">${manager?`감독 ${esc(manager)} · 선택 불가`:'선택 가능'}</span><br><small>등록 ${t.roster.length}/10 · 전력 ${power(t.id)}</small></button>`;}).join('')}</div><div class="note" style="margin-top:10px">선택은 서버에서 확정됩니다. 다른 플레이어가 먼저 선택한 구단은 자동으로 잠깁니다.</div></div></div></div>`;
 };
 const slChooseOffline=chooseClub;
-chooseClub=function(id){if(!slEmbedded)return slChooseOffline(id);if(!sl.ready)return;slCommand('claim',{club:String(id)});};
+chooseClub=async function(id){
+ if(!slEmbedded){notice('온라인 구단 선택은 엑셀 게임의 슈퍼리그 탭에서만 가능합니다.');return;}
+ if(!sl.ready||!sl.verified||sl.claimPending)return;
+ const target=Number(id);
+ if(!Number.isInteger(target)||target<0||target>19)return;
+ sl.claimPending=true;
+ try{
+  // Refresh immediately before claiming; 15s stale team cards are not authoritative.
+  if(!await slLoad(false)){notice('구단 선택 전 서버 상태를 확인할 수 없습니다.');return;}
+  if(sl.snapshot.mine!==null&&sl.snapshot.mine!==undefined){notice('이미 '+s.teams[sl.snapshot.mine].name+' 구단의 감독입니다.');return;}
+  const club=sl.snapshot.clubs.find(c=>c.id===target);
+  if(!club){notice('구단 정보를 확인할 수 없습니다.');return;}
+  if(club.manager){notice(club.name+' 구단은 '+club.manager+' 감독이 이미 선택했습니다.');return;}
+  await slCommand('claim',{club:String(target)});
+ }finally{sl.claimPending=false;}
+};
 const slNextDayOffline=nextDay;
 nextDay=function(...args){if(!slEmbedded)return slNextDayOffline(...args);if(!sl.ready)return;
  if(window.__excelManagerNickname==='운영자')return slCommand('advance');
@@ -2982,7 +3033,7 @@ newsPage=function(){
 const slDashOffline=dash;
 dash=function(){if(!slEmbedded)return slDashOffline();
  return slDashOffline().replace('데모에서는 브라우저에만 상태를 저장합니다. 여러 이용자 간 실제 중복 영입 방지는 추후 서버 DB가 필요합니다.','구단 소유권·선수 영입·포인트·순위·뉴스는 Supabase 서버에서 공동 관리합니다. 리그 경기는 서버가 자동 집계합니다.')
- +`<div class="note">온라인 공용 리그 · 다른 감독과 같은 구단·레전드·이적 기록을 공유합니다. 다음 갱신까지 ${sl.snapshot?.nextAt?Math.max(0,Math.ceil((new Date(sl.snapshot.nextAt).getTime()-Date.now())/1000)):60}초 · 자동 갱신 15초 간격</div>`;
+ +`<div class="note">서버 로그인: <b>${esc(sl.snapshot?.viewer?.nickname||'미확인')}</b> · 계정 구분 ID: ${esc(String(sl.snapshot?.viewer?.id||'').slice(0,8))} · 온라인 공용 리그 · 다른 감독과 같은 구단·레전드·이적 기록을 공유합니다. 다음 갱신까지 ${sl.snapshot?.nextAt?Math.max(0,Math.ceil((new Date(sl.snapshot.nextAt).getTime()-Date.now())/1000)):60}초 · 자동 갱신 15초 간격</div>`;
 };
 const slClubListOffline=clubList;
 clubList=function(){if(!slEmbedded)return slClubListOffline();
