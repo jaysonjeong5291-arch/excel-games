@@ -4294,9 +4294,11 @@ instantFriendly=function(target){
   const key='sl_v436_begin_'+String(sl.snapshot?.viewer?.id||'guest');
   let request;
   try{request=sessionStorage.getItem(key)||slV423Uuid();sessionStorage.setItem(key,request);}catch(_){request=slV423Uuid();}
+  // V4.56: retain the server match ID across reloads until final settlement.
+  slV456RememberFriendly({request,target,startedAt:Date.now()});
   try{
    const res=await slRequest('sl_v436_friendly_begin',{p_target:target,p_request:request});
-   if(!res?.ok){try{sessionStorage.removeItem(key);}catch(_){} throw new Error(res?.error||'전반전 접수 실패');}
+   if(!res?.ok){slV456ForgetFriendly();try{sessionStorage.removeItem(key);}catch(_){} throw new Error(res?.error||'전반전 접수 실패');}
    // Use the existing local 1-minute match presentation, but NOT its random score.
    v47StartFriendly(target);
    const m=s.match;
@@ -5009,5 +5011,130 @@ document.getElementById('excel-bridge-back')?.addEventListener('click',()=>{
 },true);
 setInterval(slV451UpdateClock,1000);
 slV451Schedule();
+
+// V4.56 — Preserve the accepted friendly match pointer across a disconnect.
+// No token, password, points, or player data is stored here: only the UUID/target.
+// Resumption replays the ORIGINAL idempotency key against sl_v436_friendly_begin;
+// it never creates or settles a second match.
+let slV456ResumeBusy=false,slV456ResumeNextAt=0;
+function slV456FriendlyKey(){
+ const viewer=sl?.snapshot?.viewer?.id;
+ return viewer?'sl_v456_pending_friendly_'+viewer:'';
+}
+function slV456ReadFriendly(){
+ const key=slV456FriendlyKey();if(!key)return null;
+ let raw=null;
+ try{raw=localStorage.getItem(key)||sessionStorage.getItem(key);}catch(_){try{raw=sessionStorage.getItem(key);}catch(__){}}
+ try{
+  const p=JSON.parse(raw||'null');
+  if(!p||!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(String(p.request||''))||
+    !Number.isInteger(Number(p.target))||Number(p.target)<0||Number(p.target)>19)return null;
+  return {request:String(p.request),target:Number(p.target),startedAt:Number(p.startedAt)||0};
+ }catch(_){return null;}
+}
+function slV456RememberFriendly(p){
+ const key=slV456FriendlyKey();if(!key)return;
+ const value=JSON.stringify({request:String(p.request),target:Number(p.target),startedAt:Number(p.startedAt)||Date.now()});
+ try{localStorage.setItem(key,value);}catch(_){}
+ try{sessionStorage.setItem(key,value);}catch(_){}
+}
+function slV456ForgetFriendly(){
+ const key=slV456FriendlyKey();if(!key)return;
+ try{localStorage.removeItem(key);}catch(_){}
+ try{sessionStorage.removeItem(key);}catch(_){}
+ try{sessionStorage.removeItem('sl_v436_begin_'+String(sl.snapshot?.viewer?.id||'guest'));}catch(_){}
+}
+async function slV456ResumeFriendly(){
+ if(slV456ResumeBusy||!slEmbedded||!sl?.ready||!sl?.verified||!hasSelected()||
+    s.match?.kind==='friendly-pvp'||Date.now()<slV456ResumeNextAt)return false;
+ slV456ResumeBusy=true;
+ try{
+  // Read-only status lookup. NEVER send a new kickoff or generate a different result.
+  const res=await slRequest('sl_v456_friendly_pending');
+  if(!res?.ok)throw new Error(res?.error||'서버 경기 상태 조회 실패');
+  if(!res.pending){
+   if(slV456ReadFriendly())slV456ForgetFriendly();
+   return false;
+  }
+  const pending={request:String(res.matchId||''),target:Number(res.target)};
+  if(!/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(pending.request) ||
+    !Number.isInteger(pending.target)||pending.target<0||pending.target>19)
+   throw new Error('서버 경기번호 또는 상대 구단이 올바르지 않습니다.');
+  slV456RememberFriendly({...pending,startedAt:Date.parse(res.createdAt)||Date.now()});
+  if(!s.teams?.[pending.target])throw new Error('상대 구단 데이터를 찾지 못했습니다.');
+  // Reconstruct the local HALF-TIME view without calling the normal
+  // v47StartFriendly() kickoff path; no extra attack count or restriction check.
+  // The SQL session alone remains the authoritative event for settlement.
+  halt();syncV45Lineup();
+  s.match={kind:'friendly-pvp',opponent:pending.target,phase:'halftime',halfMin:20,
+   hs:0,as:0,shotsHome:0,shotsAway:0,events:[],timeline:[],
+   lineup:[...s.lineup],defendingLineup:v47BestLineup(pending.target),
+   tactics:{...s.tactics},changed:0,subs:[],season:s.season,day:s.day,
+   segmentStart:Date.now()-60000,lastFlash:''};
+  s.ui.halfOut=0;s.ui.halfIn='';
+  const m=s.match;
+  m.v436MatchId=pending.request;
+  m.v436FirstA=Number(res.firstA)||0;m.v436FirstB=Number(res.firstB)||0;
+  m.hs=m.v436FirstA;m.as=m.v436FirstB;
+  m.phase='halftime';m.halfMin=20;
+  m.formation=v48Form(s.formation);
+  const defenderXI=Array.isArray(res.defenderLineup)?res.defenderLineup.map(String):null;
+  if(defenderXI?.length===5&&new Set(defenderXI).size===5&&defenderXI.every(id=>!!ply(id)))
+   m.defendingLineup=defenderXI;
+  m.defendingFormation=v48Form(res.defenderFormation||v48AiFormation(pending.target));
+  if(res.defenderTactics&&typeof res.defenderTactics==='object')m.defendingTactics={...res.defenderTactics};
+  m.timeline=slV436Timeline(m,1,m.v436FirstA,m.v436FirstB);
+  m.lastFlash='서버 전반전 복구 · 후반전을 시작해 정산할 수 있습니다.';
+  s.tab='match';slV436UpdateScenes(m);render();
+  notice('끊긴 친선경기를 복구했습니다. 전반 '+m.hs+':'+m.as+' · 후반전을 시작해 정산을 마치세요.');
+  return true;
+ }catch(err){
+  slV456ResumeNextAt=Date.now()+15000;
+  console.warn('V4.56 friendly resume:',err);
+  notice('중단된 친선경기 복구 조회 실패 · '+String(err?.message||err));
+  return false;
+ }finally{slV456ResumeBusy=false;}
+}
+let slV456LastCheckedViewer='',slV456NextAutoAt=0;
+const slV456PriorLoad=slLoad;
+slLoad=async function(quiet=false){
+ const ok=await slV456PriorLoad(quiet);
+ if(ok&&!s.match?.v436MatchId&&s.match?.kind!=='friendly-pvp'){
+  const viewer=String(sl.snapshot?.viewer?.id||'');
+  if(viewer && (viewer!==slV456LastCheckedViewer ||
+      (slV456ReadFriendly() && Date.now()>=slV456NextAutoAt))){
+    slV456LastCheckedViewer=viewer;slV456NextAutoAt=Date.now()+60000;
+    setTimeout(()=>{void slV456ResumeFriendly();},0);
+  }
+ }
+ return ok;
+};
+const slV456PriorFriendlyPage=friendlyPage;
+friendlyPage=function(){
+ const html=slV456PriorFriendlyPage();
+ if(!slEmbedded||!sl?.ready||s.match?.kind==='friendly-pvp')return html;
+ return html+block('끊긴 친선경기 복구',
+  '<div class="note warn">렉으로 끊긴 친선경기가 있으면 서버에서 찾아 복구합니다. 새 경기나 추가 정산을 만들지 않습니다.</div>'+ 
+  '<button type="button" class="btn primary" data-action="sl-v456-resume">이전 친선경기 이어하기</button>');
+};
+document.addEventListener('click',e=>{
+ const b=e.target.closest?.('[data-action="sl-v456-resume"]');if(!b)return;
+ e.preventDefault();e.stopImmediatePropagation();void slV456ResumeFriendly();
+},true);
+
+const slV456PriorInstantFriendly=instantFriendly;
+instantFriendly=function(target){
+ if(slEmbedded&&slV456ReadFriendly()&&!s.match?.v436MatchId){
+  notice('이전 친선경기가 아직 확인되지 않았습니다. 서버 경기 복구를 먼저 시도합니다.');
+  void slV456ResumeFriendly();return;
+ }
+ return slV456PriorInstantFriendly(target);
+};
+
+const slV456PriorFriendlyComplete=v47CompleteFriendly;
+v47CompleteFriendly=function(m){
+ slV456PriorFriendlyComplete(m);
+ if(m?.v436MatchId&&m.v436Final?.ok)slV456ForgetFriendly();
+};
 
 </script></body></html>
