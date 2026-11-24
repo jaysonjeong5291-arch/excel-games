@@ -2080,7 +2080,8 @@ function v410BuildTrack(m){
   }
   key(start,previousPose,previousBall,'공격 전개 준비',{kind:'setup'});
   const ids=ev.side==='home'?m.lineup:m.defendingLineup;
-  let shooter=ids.findIndex(id=>ply(id)?.name===ev.player);
+  let shooter=ev.playerId!=null?ids.findIndex(id=>String(id)===String(ev.playerId)):-1;
+  if(shooter<1)shooter=ids.findIndex(id=>ply(id)?.name===ev.player);
   if(shooter<1)shooter=3;
   const support=shooter===2?1:2;
   const baseY=v410InitialPose(m)[ev.side][shooter].y;
@@ -2302,7 +2303,8 @@ function v411Reel(m){
  const selected=v411SceneList(m),n=selected.length,span=60/n;
  const scenes=selected.map(({idx,ev},j)=>{
   const ids=ev.side==='home'?m.lineup:m.defendingLineup;
-  let shooter=ids.findIndex(id=>ply(id)?.name===ev.player);
+  let shooter=ev.playerId!=null?ids.findIndex(id=>String(id)===String(ev.playerId)):-1;
+  if(shooter<1)shooter=ids.findIndex(id=>ply(id)?.name===ev.player);
   if(shooter<1)shooter=1+((idx+j*2)%4);
   const support=shooter===1?2:1;
   const lane=[32,54,68,40,59,27,74,46][j%8];
@@ -3718,10 +3720,18 @@ document.addEventListener('click',e=>{
 // A missing role redistributes its probability among available outfield positions.
 function slV461Scorer(m,side,half,goalIndex){
  const ids=side==='home'?m.lineup:m.defendingLineup;
- const form=side==='home'?(m.formation||s.formation):m.defendingFormation;
- const roles=v48Roles(form);
- const groups=['FW','MF','DF'].map((role,i)=>({weight:[70,25,5][i],ids:(ids||[]).filter((id,j)=>j>0&&roles[j]===role&&!!ply(id))})).filter(g=>g.ids.length);
- if(!groups.length)return (ids||[]).slice(1).find(id=>!!ply(id));
+ // V4.72: use each player's registered position, not their formation slot.
+ const outfield=(ids||[]).filter((id,j)=>j>0&&!!ply(id));
+ const groups=['FW','MF','DF'].map((role,i)=>({role,weight:[75,23,2][i],ids:outfield.filter(id=>ply(id).pos===role)})).filter(g=>g.ids.length);
+ if(!groups.length)return outfield[0];
+ // If either attacking role is absent, its share goes to the other attacking
+ // role, not the defenders. A defender may finish only 2% of goals whenever
+ // a forward or midfielder and a defender are both on the pitch.
+ const fw=groups.find(g=>g.role==='FW'),mf=groups.find(g=>g.role==='MF'),df=groups.find(g=>g.role==='DF');
+ if(!fw&&mf)mf.weight+=75;
+ if(!mf&&fw)fw.weight+=23;
+ if(!df){if(fw)fw.weight+=2;else if(mf)mf.weight+=2;}
+
  // Server match ID makes the same replay reproducible after reconnect.
  const key=m.v436MatchId||m.v427Outcome?.matchId;
  const random=(salt)=>{if(!key)return Math.random();let h=2166136261;for(const ch of `${key}:${side}:${half}:${goalIndex}:${salt}`){h=Math.imul(h^ch.charCodeAt(0),16777619);}h^=h>>>16;h=Math.imul(h,0x7feb352d);h^=h>>>15;h=Math.imul(h,0x846ca68b);h^=h>>>16;return (h>>>0)/4294967296;};
@@ -3745,8 +3755,8 @@ function slV427GoalsForHalf(m,half){
    let minute=Math.min(19,Math.floor((g+.75)*20/(num+1)));
    while(used.has(minute)&&minute<19)minute++;
    used.add(minute);
-   const player=ply(slV461Scorer(m,side,half,g));
-   frames[minute].push({kind:'goal',side,min:(half-1)*20+minute+1,player:player?.name||'선수'});
+   const playerId=slV461Scorer(m,side,half,g),player=ply(playerId);
+   frames[minute].push({kind:'goal',side,min:(half-1)*20+minute+1,playerId,player:player?.name||'선수'});
   }
  };
  fill(goalsA,'home');fill(goalsB,'away');
@@ -4295,8 +4305,8 @@ function slV436Timeline(m,half,countA,countB){
   const ids=side==='home'?m.lineup:m.defendingLineup;
   for(let i=0;i<n;i++){
    const minute=Math.max(0,Math.min(19,Math.floor(20*(i+1)/(n+1))));
-   const index=slV461Scorer(m,side,half,i);
-   frames[minute].push({kind:'goal',side,min:(half-1)*20+minute+1,player:ply(index)?.name||'선수'});
+   const playerId=slV461Scorer(m,side,half,i);
+   frames[minute].push({kind:'goal',side,min:(half-1)*20+minute+1,playerId,player:ply(playerId)?.name||'선수'});
   }
  }
  add(countA,'home');add(countB,'away');return frames;
