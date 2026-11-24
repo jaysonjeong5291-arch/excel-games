@@ -490,8 +490,8 @@ body.superleague-active #superleague-view{height:calc(100dvh - 145px);min-height
   <div id="gift-wallet" class="gift-wallet">현재 잔액 확인 중...</div>
   <label for="gift-recipient">받는 회원 닉네임</label>
   <input id="gift-recipient" type="text" maxlength="16" required placeholder="가입된 닉네임을 정확하게 입력" spellcheck="false" autocapitalize="none">
-  <label for="gift-amount">선물할 포인트</label>
-  <input id="gift-amount" type="number" min="1" max="100000000" step="1" required placeholder="예: 500">
+  <label for="gift-amount">선물할 포인트 (최대 1,000억 P)</label>
+  <input id="gift-amount" type="number" min="1" max="100000000000" step="1" required placeholder="예: 500">
   <p>선물은 수수료 없이 전액 지급되며, 완료 후 취소할 수 없습니다. 선물과 받기 내역은 본인만 확인할 수 있습니다.</p>
   <div id="gift-feedback" class="gift-feedback" role="status" aria-live="polite"></div>
   <div class="gift-actions"><button type="button" id="gift-close">닫기</button><button type="submit" id="gift-send">선물 보내기</button></div>
@@ -602,7 +602,7 @@ body.superleague-active #superleague-view{height:calc(100dvh - 145px);min-height
  <div class="oe-footnote">적중 시 베팅금의 2배를 지급합니다(원금 포함, 순이익 +판돈). 실패 시 판돈만 차감됩니다. 방장도 선택과 준비가 필요하며, 1명만 있어도 시작할 수 있습니다. 게임 포인트만 사용하며 현금 환전은 지원하지 않습니다.</div>
 </section>
 <div id="chat" class="chat" hidden><button type="button" id="chat-title-button" class="chat-title" aria-expanded="true" aria-controls="chat-body" title="메모 접기/펼치기"><span>메모 <span id="chat-count"></span></span><span class="chat-toggle" id="chat-toggle-glyph">−</span></button><div class="chat-body" id="chat-body"><div id="chat-messages" class="chat-messages"><div class="chat-empty">내용 없음</div></div><div id="admin-chat-feedback" class="admin-chat-feedback" role="status" hidden></div><form class="chat-form" id="chat-form"><input id="chat-input" class="chat-input" placeholder="메시지 입력" maxlength="280" autocomplete="off" aria-label="채팅 메시지"><button type="submit" class="chat-send">보내기</button></form></div></div>
-<section id="superleague-view" hidden aria-label="슈퍼리그 매니저 시트"><iframe id="superleague-frame" title="슈퍼리그" data-src="./superleague.html" referrerpolicy="same-origin"></iframe></section>
+<section id="superleague-view" hidden aria-label="슈퍼리그 매니저 시트"><iframe id="superleague-frame" title="슈퍼리그" data-src="./superleague.html?v=461" referrerpolicy="same-origin"></iframe></section>
 <section id="race-view" class="race-sheet-view" hidden aria-label="레이스 게임 시트"><iframe id="race-frame" title="업무현황_레이스_VER.2026" data-src="./race-demo.html" referrerpolicy="same-origin"></iframe></section>
 <footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="race-sheet-tab" class="sheet-tab" type="button" data-sheet="race" hidden>🏁 레이스 <span class="tab-close" data-close-race title="레이스 시트 닫기">×</span></button><button id="superleague-sheet-tab" class="sheet-tab" type="button" data-sheet="superleague" hidden>⚽ 슈퍼리그 <span class="tab-close" data-close-superleague title="슈퍼리그 시트 닫기">×</span></button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="레벨 등급 v3.0">100% · v1.0.1 인증 안정화</span></footer>
 <script>
@@ -940,7 +940,7 @@ $('gift-form').addEventListener('submit',async e=>{
  e.preventDefault();if(giftSubmitting)return;
  if(!memberToken||!memberProfile){giftInfo('회원 로그인 상태를 확인해 주세요.',true);return;}
  const target=$('gift-recipient').value.trim();const amount=Number($('gift-amount').value);
- if(!target||target.length>16||!Number.isSafeInteger(amount)||amount<=0||amount>100000000){giftInfo('받는 닉네임과 1~100,000,000P 사이의 정수 금액을 입력해 주세요.',true);return;}
+ if(!target||target.length>16||!Number.isSafeInteger(amount)||amount<=0||amount>100000000000){giftInfo('받는 닉네임과 1~100,000,000,000P 사이의 정수 금액을 입력해 주세요.',true);return;}
  if(target.toLocaleLowerCase()===memberProfile.nickname.toLocaleLowerCase()){giftInfo('본인에게는 선물할 수 없습니다.',true);return;}
  // Real balance is validated atomically on the server (local display may be stale).
  if(!giftRetry||giftRetry.to.toLowerCase()!==target.toLowerCase()||giftRetry.amount!==amount){
@@ -2490,7 +2490,7 @@ window.addEventListener('message',e=>{
  if(e.data?.type==='SL_RPC'&&activeSuperleague){
   const rid=String(e.data.requestId||'');
   const method=e.data.method;
-  if(!/^[a-zA-Z0-9_-]{1,60}$/.test(rid)||!['sl_snapshot','sl_command','sl_offer_submit','sl_offer_status','sl_v425_admin_reset','sl_v423_item_action','sl_v424_save_tactics','sl_v427_budget','sl_v427_budget_repay','sl_v427_friendly_play','sl_v427_admin_reset','sl_v443_admin_reset','sl_v429_test_advance','sl_v428_snapshot','sl_v430_snapshot','sl_v428_facility_info','sl_v428_facility_upgrade','sl_v431_budget','sl_v431_snapshot','sl_v431_youth_action','sl_v432_snapshot','sl_v434_snapshot','sl_v435_snapshot','sl_v435_budget','sl_v435_youth_reroll','sl_v434_renew_contract','sl_v436_friendly_begin','sl_v436_friendly_end','sl_v456_friendly_pending','sl_v436_daily_rankings','sl_v437_snapshot','sl_v437_youth_draw','sl_v437_youth_decide','sl_v437_youth_reroll','sl_v440_release','sl_v440_snapshot','sl_v441_snapshot','sl_v442_snapshot','sl_v442_youth_trade','sl_v446_snapshot','sl_v446_legend_offer','sl_v453_legend_offer','sl_v446_legend_decide'].includes(method))return;
+  if(!/^[a-zA-Z0-9_-]{1,60}$/.test(rid)||!['sl_snapshot','sl_command','sl_offer_submit','sl_offer_status','sl_v425_admin_reset','sl_v423_item_action','sl_v424_save_tactics','sl_v427_budget','sl_v427_budget_repay','sl_v427_friendly_play','sl_v427_admin_reset','sl_v443_admin_reset','sl_v429_test_advance','sl_v428_snapshot','sl_v430_snapshot','sl_v428_facility_info','sl_v428_facility_upgrade','sl_v431_budget','sl_v431_snapshot','sl_v431_youth_action','sl_v432_snapshot','sl_v434_snapshot','sl_v435_snapshot','sl_v435_budget','sl_v435_youth_reroll','sl_v434_renew_contract','sl_v436_friendly_begin','sl_v436_friendly_end','sl_v436_daily_rankings','sl_v437_snapshot','sl_v437_youth_draw','sl_v437_youth_decide','sl_v437_youth_reroll','sl_v440_release','sl_v440_snapshot','sl_v441_snapshot','sl_v442_snapshot','sl_v442_youth_trade','sl_v446_snapshot','sl_v446_legend_offer','sl_v453_legend_offer','sl_v446_legend_decide'].includes(method))return;
   const args=e.data.args||{};
   if(method==='sl_command'&&!['claim','offer','respond','cancel','fa_sign','release','advance','post'].includes(args.p_action))return;
   (async()=>{
@@ -2530,8 +2530,6 @@ window.addEventListener('message',e=>{
         p_token:tokenAtStart,p_match:args.p_match,p_tactics:args.p_tactics,
         p_formation:args.p_formation,p_lineup:args.p_lineup
       },false,25000);
-    }else if(method==='sl_v456_friendly_pending'){
-      response=await callRpc('sl_v456_friendly_pending',{p_token:tokenAtStart},false,12000);
     }else if(method==='sl_v436_daily_rankings'){
       response=await callRpc('sl_v436_daily_rankings',{p_token:tokenAtStart},false,16000);
     }else if(method==='sl_v427_friendly_play'){
