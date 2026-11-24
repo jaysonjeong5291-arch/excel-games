@@ -4323,7 +4323,7 @@ instantFriendly=function(target){
    // Use the existing local 1-minute match presentation, but NOT its random score.
    v47StartFriendly(target);
    const m=s.match;
-   if(!m||m.kind!=='friendly-pvp'||m.opponent!==target)throw new Error('서버 접수는 됐지만 경기 화면 생성에 실패했습니다. 새로고침 후 다시 확인하세요.');
+   if(!m||m.kind!=='friendly-pvp'||m.opponent!==target||m.phase!=='first')throw new Error('서버 접수는 됐지만 경기 화면 생성에 실패했습니다. 새로고침 후 다시 확인하세요.');
    m.v436MatchId=res.matchId;m.v436FirstA=Number(res.firstA);m.v436FirstB=Number(res.firstB);
    m.formation=v48Form(s.formation);
    // V4.47: the defender's server-saved starting five is authoritative, even
@@ -4337,7 +4337,10 @@ instantFriendly=function(target){
    slV436UpdateScenes(m);save();render();
    try{sessionStorage.removeItem(key);}catch(_){}
    notice('전반전 서버 확정 · 상대 구단의 서버 저장 선발/전술 반영 · 하프타임에 전술 변경 가능');
-  }catch(err){notice('친선 시작 실패: '+String(err?.message||err));}
+  }catch(err){notice('친선 시작 확인 실패: '+String(err?.message||err)+' · 서버에 접수된 경기는 복구합니다.');
+   if(!s.match?.v436MatchId&&s.match?.kind==='friendly-pvp'&&s.match.opponent===target){halt();s.match=null;render();}
+   setTimeout(()=>{void slV456ResumeFriendly();},0);
+  }
   finally{slV436KickoffBusy=false;}
  })();
 };
@@ -5067,15 +5070,16 @@ function slV456ForgetFriendly(){
  try{sessionStorage.removeItem('sl_v436_begin_'+String(sl.snapshot?.viewer?.id||'guest'));}catch(_){}
 }
 async function slV456ResumeFriendly(){
- if(slV456ResumeBusy||!slEmbedded||!sl?.ready||!sl?.verified||!hasSelected()||
-    s.match?.kind==='friendly-pvp'||Date.now()<slV456ResumeNextAt)return false;
+ if(slV456ResumeBusy||slV436KickoffBusy||slV436HalfBusy||!slEmbedded||!sl?.ready||!sl?.verified||!hasSelected()||
+    (active()&&s.match?.v436MatchId)||Date.now()<slV456ResumeNextAt)return false;
  slV456ResumeBusy=true;
  try{
   // Read-only status lookup. NEVER send a new kickoff or generate a different result.
   const res=await slRequest('sl_v456_friendly_pending');
   if(!res?.ok)throw new Error(res?.error||'서버 경기 상태 조회 실패');
   if(!res.pending){
-   if(slV456ReadFriendly())slV456ForgetFriendly();
+   slV456ForgetFriendly();
+   if(active()&&s.match?.kind==='friendly-pvp'&&!s.match.v436MatchId){halt();s.match=null;render();}
    return false;
   }
   const pending={request:String(res.matchId||''),target:Number(res.target)};
@@ -5121,7 +5125,7 @@ let slV456LastCheckedViewer='',slV456NextAutoAt=0;
 const slV456PriorLoad=slLoad;
 slLoad=async function(quiet=false){
  const ok=await slV456PriorLoad(quiet);
- if(ok&&!s.match?.v436MatchId&&s.match?.kind!=='friendly-pvp'){
+ if(ok&&!active()&&!slV436KickoffBusy&&!slV436HalfBusy){
   const viewer=String(sl.snapshot?.viewer?.id||'');
   if(viewer && (viewer!==slV456LastCheckedViewer ||
       (slV456ReadFriendly() && Date.now()>=slV456NextAutoAt))){
@@ -5134,19 +5138,19 @@ slLoad=async function(quiet=false){
 const slV456PriorFriendlyPage=friendlyPage;
 friendlyPage=function(){
  const html=slV456PriorFriendlyPage();
- if(!slEmbedded||!sl?.ready||s.match?.kind==='friendly-pvp')return html;
+ if(!slEmbedded||!sl?.ready||active())return html;
  return html+block('끊긴 친선경기 복구',
   '<div class="note warn">렉으로 끊긴 친선경기가 있으면 서버에서 찾아 복구합니다. 새 경기나 추가 정산을 만들지 않습니다.</div>'+ 
   '<button type="button" class="btn primary" data-action="sl-v456-resume">이전 친선경기 이어하기</button>');
 };
 document.addEventListener('click',e=>{
  const b=e.target.closest?.('[data-action="sl-v456-resume"]');if(!b)return;
- e.preventDefault();e.stopImmediatePropagation();void slV456ResumeFriendly();
+ e.preventDefault();e.stopImmediatePropagation();slV456ResumeNextAt=0;void (async()=>{const found=await slV456ResumeFriendly();if(!found&&!slV456ReadFriendly())notice('복구할 미완료 경기가 없습니다. 새로운 친선경기를 시작할 수 있습니다.');})();
 },true);
 
 const slV456PriorInstantFriendly=instantFriendly;
 instantFriendly=function(target){
- if(slEmbedded&&slV456ReadFriendly()&&!s.match?.v436MatchId){
+ if(slEmbedded&&slV456ReadFriendly()&&!active()&&!slV436KickoffBusy){
   notice('이전 친선경기가 아직 확인되지 않았습니다. 서버 경기 복구를 먼저 시도합니다.');
   void slV456ResumeFriendly();return;
  }
