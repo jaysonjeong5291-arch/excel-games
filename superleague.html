@@ -1966,7 +1966,7 @@ friendlyPage=function(){
  // V4.47: all clubs can immediately play after a finished match.
  return page('친선경기 · 전술 실황 중계','오프라인 구단 도전 · 전반 1분 / 하프타임 / 후반 1분',`<span class="tag">오늘 ${used}경기 · 총횟수 제한 없음</span>`)
  +block('양 팀 사기 및 경기 준비',`<div class="friend-status"><div>우리 구단 사기<strong>${teamMorale(s.selected)}</strong>${moraleMeter(s.selected)}</div><div>상대 구단 사기<strong>${teamMorale(target)}</strong>${moraleMeter(target)}</div><div>오늘 친선<strong>${used}경기</strong><span class="small muted">전체 횟수 무제한</span></div><div>경기 제한<strong>대기 없음</strong><span class="small muted">수비로 참여해도 직접 도전 가능</span></div></div>`)
- +block('도전할 구단 선택',`<div class="challenge-pick"><select class="field" id="friendly-select">${other.map(t=>`<option value="${t.id}" ${t.id===target?'selected':''}>${esc(t.name)} (전력 ${Math.round(v47BestLineup(t.id).reduce((n,id)=>n+(ply(id)?.ovr||0),0)/5)} · 사기 ${teamMorale(t.id)})</option>`).join('')}</select><button class="btn primary" data-action="friendly-challenge" ${error?'disabled':''}>친선경기 시작 · 전후반 2분 중계</button></div><div class="spacer"></div><div class="note ${error?'warn':''}">${esc(error||'하루 상대 구단별 1회 · 하루 전체 도전 제한 없음 · 경기 후 대기시간 없음')}</div>`)
+ +block('도전할 구단 선택',`<div class="challenge-pick"><select class="field" id="friendly-select">${other.map(t=>`<option value="${t.id}" ${t.id===target?'selected':''}>${esc(t.name)} (전력 ${Math.round(v47BestLineup(t.id).reduce((n,id)=>n+(ply(id)?.ovr||0),0)/5)} · 사기 ${teamMorale(t.id)})</option>`).join('')}</select><button class="btn primary" data-action="friendly-challenge" ${error?'disabled':''}>배당 확인 / 친선경기 시작</button></div><div class="spacer"></div><div class="note ${error?'warn':''}">${esc(error||'하루 상대 구단별 1회 · 하루 전체 도전 제한 없음 · 경기 후 대기시간 없음')}</div>`)
  +(last?block('최근 친선 결과',`<b>${esc(s.teams[last.attacker].name)} ${last.sa} : ${last.sb} ${esc(s.teams[last.target].name)}</b> · 우리 사기 ${last.ownBefore}→${last.ownAfter} / 상대 사기 ${last.foeBefore}→${last.foeAfter}`):'')
  +block('친선 경기 기록',s.pvp.history.length?table(['시즌/날짜','도전자','상대','결과','사기 변화'],s.pvp.history.slice(0,15).map(h=>`<tr><td>${slV458SeasonLabel(h.season)}/${DAYS[h.day%7]}</td><td>${esc(s.teams[h.attacker].name)}</td><td>${esc(s.teams[h.target].name)}</td><td><b>${h.sa}:${h.sb}</b></td><td>${h.ownBefore}→${h.ownAfter}</td></tr>`)):'<div class="empty">경기 기록이 없습니다.</div>')
  +block('친선 운영 규칙',`<div class="note">동일 구단은 게임 내 하루 1회만 상대할 수 있습니다. <b>전체 도전 횟수 제한은 없습니다.</b> 상대가 내 구단을 공격해도 내 친선 도전은 별도로 진행할 수 있으며, 경기 종료 후 대기시간은 없습니다. 사기 패널티는 기존 규칙(+6/-12/-2, 방어 일일 -12 상한)을 유지합니다.</div>`);
@@ -3022,7 +3022,7 @@ function slRpcReplyTimeout(method){
  const writeOps=new Set(['sl_command','sl_offer_submit','sl_v453_legend_offer','sl_v423_item_action','sl_v424_save_tactics',
   'sl_v427_budget_repay','sl_v427_friendly_play','sl_v428_facility_upgrade',
   'sl_v431_youth_action','sl_v434_renew_contract','sl_v435_youth_reroll',
-  'sl_v436_friendly_begin','sl_v436_friendly_end','sl_v437_youth_draw',
+  'sl_v436_friendly_begin','sl_v464_friendly_begin','sl_v436_friendly_end','sl_v437_youth_draw',
   'sl_v437_youth_decide','sl_v437_youth_reroll','sl_v440_release','sl_v442_youth_trade']);
  return method==='sl_v443_admin_reset'?70000:longOps.has(method)?42000:writeOps.has(method)?35000:24000;
 }
@@ -3673,7 +3673,7 @@ function slV427BudgetPage(){
      (debt>0n?`<div class="spacer"></div><label for="sl-v427-debt-input"><b>미납금 상환 (P)</b></label><div class="line" style="display:flex;gap:8px;flex-wrap:wrap"><input class="field" id="sl-v427-debt-input" type="text" inputmode="numeric" placeholder="상환할 포인트 입력" style="flex:1;min-width:160px"><button type="button" class="btn primary" data-action="sl-v427-repay" ${slV427BudgetBusy?'disabled':''}>미납금 갚기</button></div><div class="small muted">현재 잔액 이내에서 부분 상환 가능 · 전액 상환 시 즉시 영입 제한 해제</div>`:'<div class="small muted">현재 미납금이 없습니다.</div>'))
   +block('선수별 시즌 연봉',rows.length?table(['선수','나이','OVR','연봉'],rows):'<div class="empty">등록 선수가 없습니다.</div>')
   +block('직전 시즌 정산',old?table(['시즌','순위','상금','연봉','경기장','훈련장','실제 차감','미납'],[`<tr><td>${slV458SeasonLabel(old.season)}</td><td class="num">${old.rank}위</td><td>${show(old.prize)}</td><td>${show(old.payroll)}</td><td>${prevSplit?.stadium!=null?show(prevSplit.stadium):'미분류'}</td><td>${prevSplit?.training!=null?show(prevSplit.training):'미분류'}</td><td>${show(old.deducted)}</td><td>${show(old.shortfall)}</td></tr>`]):'<div class="empty">아직 시즌 종료 정산 내역이 없습니다.</div>')
-  +block('수당 규정',`<div class="note">친선 공격자: 승리 5~10억P · 무승부 3~5억P · 패배 1~3억P. 방어자는 수당 0P.<div>정규리그 경기당 수당은 없습니다. 프리시즌은 최종 순위 상금 0P 및 순위별 사기 조정 없음. 정규 시즌 상금은 순위 탭을 참고하세요.</div></div><button class="btn" type="button" data-action="sl-v427-budget-refresh">⟳ 예산 새로고침</button>`);
+  +block('수당 규정',`<div class="note">친선 공격자: 승리 10억P · 무승부 5억P · 패배 1억P. 방어자는 수당 0P.<div>정규리그 경기당 수당은 없습니다. 프리시즌은 최종 순위 상금 0P 및 순위별 사기 조정 없음. 정규 시즌 상금은 순위 탭을 참고하세요.</div></div><button class="btn" type="button" data-action="sl-v427-budget-refresh">⟳ 예산 새로고침</button>`);
 }
 const slV427PriorSwitchTab=switchTab;
 switchTab=function(tab){slV427PriorSwitchTab(tab);if(tab==='budget')void slV427FetchBudget();};
@@ -3816,6 +3816,7 @@ v47CompleteFriendly=function(m){
   if(h&&h.attacker===s.selected&&h.target===m.opponent){
    h.ownAfter=Number(m.v427Outcome.moraleA);h.foeAfter=Number(m.v427Outcome.moraleB);
    h.prize=String(m.v427Outcome.prize);
+   h.betStake=String(m.v427Outcome.betStake||0);h.betPayout=String(m.v427Outcome.betPayout||0);h.betChoice=m.v427Outcome.betChoice;
   }
   m.lastFlash='서버 정산 완료 · '+slV427Won(m.hs,m.as)+' · 도전자 '+slV423Money(m.v427Outcome.prize)+' 지급';
   slV427BudgetInfo=null;
@@ -3826,7 +3827,7 @@ const slV427PriorFriendlyPage=friendlyPage;
 friendlyPage=function(){
  const html=slV427PriorFriendlyPage();
  const last=s.pvp?.history?.[0];
- const receipt=last?.prize!==undefined?`<div class="note"><b>최근 도전자 수익: ${slV423Money(last.prize)}</b> · 수당은 서버에서 확정한 공격자에게만 지급됩니다.</div>`:'<div class="note">공격자만 승 5~10억 · 무 3~5억 · 패 1~3억P 수령 · 방어자는 수익 없음</div>';
+ const receipt=last?.prize!==undefined?`<div class="note"><b>최근 도전자 수익: ${slV423Money(last.prize)}</b> · 수당은 서버에서 확정한 공격자에게만 지급됩니다.</div>`:'<div class="note">공격자만 승 10억 · 무 5억 · 패 1억P 수령 · 방어자는 수익 없음</div>';
  return html+block('친선 상금 · 서버 정산',receipt);
 };
 
@@ -4310,6 +4311,8 @@ instantFriendly=function(target){
  target=Number(target);
  const problem=v47FriendlyRestriction(target);
  if(problem)return notice(problem);
+ const bet=slV464BetOrder?.target===target?slV464BetOrder:{stake:0,choice:null,expected:null};
+ slV464BetOrder=null;
  slV436KickoffBusy=true;
  void (async()=>{
   const key='sl_v436_begin_'+String(sl.snapshot?.viewer?.id||'guest');
@@ -4318,13 +4321,16 @@ instantFriendly=function(target){
   // V4.56: retain the server match ID across reloads until final settlement.
   slV456RememberFriendly({request,target,startedAt:Date.now()});
   try{
-   const res=await slRequest('sl_v436_friendly_begin',{p_target:target,p_request:request});
+   const res=await slRequest('sl_v464_friendly_begin',{p_target:target,p_request:request,p_choice:bet.choice,p_stake:bet.stake,p_expected:bet.expected});
    if(!res?.ok){slV456ForgetFriendly();try{sessionStorage.removeItem(key);}catch(_){} throw new Error(res?.error||'전반전 접수 실패');}
+   if(res.finished){slV456ForgetFriendly();notice('이미 완료된 경기입니다.');return;}
    // Use the existing local 1-minute match presentation, but NOT its random score.
    v47StartFriendly(target);
    const m=s.match;
    if(!m||m.kind!=='friendly-pvp'||m.opponent!==target||m.phase!=='first')throw new Error('서버 접수는 됐지만 경기 화면 생성에 실패했습니다. 새로고침 후 다시 확인하세요.');
    m.v436MatchId=res.matchId;m.v436FirstA=Number(res.firstA);m.v436FirstB=Number(res.firstB);
+   m.v464Bet={stake:Number(res.betStake)||0,choice:res.betChoice,odds:Number(res.betOdds)||0};
+   if(m.v464Bet.stake>0)window.parent.postMessage({type:'SUPERLEAGUE_WALLET_REFRESH'},location.origin);
    m.formation=v48Form(s.formation);
    // V4.47: the defender's server-saved starting five is authoritative, even
    // when that owner is not online. Never use the attacker browser's lineup.
@@ -5100,6 +5106,7 @@ async function slV456ResumeFriendly(){
   s.ui.halfOut=0;s.ui.halfIn='';
   const m=s.match;
   m.v436MatchId=pending.request;
+  m.v464Bet={stake:Number(res.betStake)||0,choice:res.betChoice,odds:Number(res.betOdds)||0};
   m.v436FirstA=Number(res.firstA)||0;m.v436FirstB=Number(res.firstB)||0;
   m.hs=m.v436FirstA;m.as=m.v436FirstB;
   m.phase='halftime';m.halfMin=20;
@@ -5225,7 +5232,7 @@ const slV459OldSwitch=switchTab;
 switchTab=function(tab){if(!slV459IsSpectator())return slV459OldSwitch(tab);if(slV459Tabs.some(([k])=>k===tab)){s.tab=tab;render();}};
 // No mutation can leave the iframe from a spectator, even if an old timer or handler fires.
 const slV460OldRequest=slRequest;
-const slV460ReadOnly=new Set(['sl_v446_snapshot','sl_v436_daily_rankings','sl_offer_status','sl_v428_facility_info','sl_v435_budget','sl_v456_friendly_pending']);
+const slV460ReadOnly=new Set(['sl_v446_snapshot','sl_v436_daily_rankings','sl_offer_status','sl_v428_facility_info','sl_v435_budget','sl_v456_friendly_pending','sl_v464_friendly_quote']);
 slRequest=function(method,args={}){
  if(slEmbedded&&!slV460ReadOnly.has(method)){
   if(!sl.verified)return Promise.reject(new Error('서버 연결을 먼저 확인해 주세요.'));
@@ -5277,5 +5284,66 @@ window.addEventListener('click',e=>{
  }
 },true);
 window.addEventListener('change',e=>{if(slV459IsSpectator()&&e.target?.dataset?.change){e.preventDefault();e.stopImmediatePropagation();}},true);
+
+/* V4.64 — server-authoritative optional pre-match W/D/L virtual-point stake. */
+let slV464BetOrder=null,slV464QuoteBusy=false;
+const slV464Names={win:'승리',draw:'무승부',loss:'패배'};
+const slV464PriorInstant=instantFriendly;
+function slV464OpenBet(target,q,viewer,club){
+ const old=document.getElementById('sl-v464-bet-dialog');if(old)old.remove();
+ const d=document.createElement('dialog');d.id='sl-v464-bet-dialog';
+ d.style.cssText='width:min(440px,90vw);max-height:85vh;overflow:auto;border:1px solid #b5c9bd;border-radius:4px;padding:18px;background:#fff;color:#24382b;box-sizing:border-box;font:inherit;z-index:10000';
+ const entries=['win','draw','loss'];
+ d.innerHTML=`<h3 style="margin:0 0 10px">친선경기 · 승무패 배당</h3><div class="note"><b>${esc(s.teams[club]?.name||'우리 구단')} vs ${esc(s.teams[target]?.name||'상대 구단')}</b><br>공용 포인트: ${slV423Money(q.wallet)} · 최대 100억P</div><div class="spacer"></div><div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px">${entries.map(k=>`<label style="border:1px solid #becdc3;padding:8px 4px;text-align:center;cursor:pointer"><input type="radio" name="sl-v464-choice" value="${k}"><br>${slV464Names[k]}<br><b>${Number(q[k]).toFixed(2)}배</b></label>`).join('')}</div><div class="spacer"></div><label for="sl-v464-stake">베팅 금액 (P)</label><input class="field" id="sl-v464-stake" type="number" min="1" max="10000000000" step="1" inputmode="numeric" placeholder="예: 1000000000" style="width:100%;box-sizing:border-box"><div class="small" id="sl-v464-preview" style="margin:8px 0">승무패와 금액을 선택하세요.</div><div class="note">적중 시 원금 포함 배당금 지급. 실패 시 베팅금 차감 유지. 경기 기본 보상(승 10억 / 무 5억 / 패 1억)은 별도 지급. 베팅 경기는 시작 확률 고정, 미완료 만료 또는 사임 시 베팅금 소멸.</div><div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px"><button class="btn" id="sl-v464-cancel" type="button">취소</button><button class="btn" id="sl-v464-free" type="button">베팅 없이 시작</button><button class="btn primary" id="sl-v464-start" type="button" disabled>베팅 후 시작</button></div>`;
+ document.body.appendChild(d);
+ const input=d.querySelector('#sl-v464-stake'),preview=d.querySelector('#sl-v464-preview'),btn=d.querySelector('#sl-v464-start');
+ function selected(){return d.querySelector('input[name="sl-v464-choice"]:checked')?.value;}
+ function update(){
+  const k=selected(),n=Number(input.value),valid=Number.isSafeInteger(n)&&n>0&&n<=10000000000&&n<=Number(q.wallet);
+  btn.disabled=!(k&&valid);
+  preview.textContent=!input.value?'승무패와 금액을 선택하세요.':!valid?'보유 포인트 및 1~100억P 한도를 확인하세요.':!k?slV423Money(n)+' · 승무패를 선택하세요.':'베팅 '+slV423Money(n)+' · 적중 시 '+slV423Money(Math.floor(n*Math.round(Number(q[k])*100)/100))+' (원금 포함)';
+ }
+ d.addEventListener('input',update);d.addEventListener('change',update);
+ function close(){if(d.open&&typeof d.close==='function')d.close();d.remove();}
+ function launch(stake,k){
+  if(!sl.verified||String(sl.snapshot?.viewer?.id)!==viewer||s.selected!==club||slV459IsSpectator()||active()){close();notice('구단 또는 경기 상태가 변경되었습니다. 다시 시도하세요.');return;}
+  close();
+  slV464BetOrder={target,stake,choice:k,expected:k?Number(q[k]):null};
+  try{slV464PriorInstant(target);}finally{slV464BetOrder=null;}
+ }
+ d.querySelector('#sl-v464-cancel').onclick=close;
+ d.querySelector('#sl-v464-free').onclick=()=>launch(0,null);
+ btn.onclick=()=>{update();if(!btn.disabled)launch(Number(input.value),selected());};
+ d.addEventListener('cancel',e=>{e.preventDefault();close();});
+ if(typeof d.showModal==='function')d.showModal();else d.setAttribute('open','');
+}
+instantFriendly=function(target){
+ target=Number(target);
+ if(!slEmbedded)return slV464PriorInstant(target);
+ if(slV436KickoffBusy||slV464QuoteBusy||slV456ResumeBusy||document.getElementById('sl-v464-bet-dialog'))return;
+ if(slV456ReadFriendly()&&!active())return slV464PriorInstant(target);
+ const problem=v47FriendlyRestriction(target);if(problem)return notice(problem);
+ const viewer=String(sl.snapshot?.viewer?.id||''),club=s.selected;
+ if(!viewer||!sl.verified||slV459IsSpectator())return notice('서버 연결과 감독 정보를 확인해 주세요.');
+ slV464QuoteBusy=true;
+ void (async()=>{
+  try{
+   const q=await slRequest('sl_v464_friendly_quote',{p_target:target});
+   if(!q?.ok)throw new Error(q?.error||'배당 조회 실패');
+   if(String(sl.snapshot?.viewer?.id)!==viewer||s.selected!==club||active()||!sl.verified)return;
+   slV464OpenBet(target,q,viewer,club);
+  }catch(e){notice('배당 조회 실패: '+String(e?.message||e));}
+  finally{slV464QuoteBusy=false;}
+ })();
+};
+const slV464PriorMatchPage=matchPage;
+matchPage=function(){
+ const html=slV464PriorMatchPage(),m=s.match,b=m?.v464Bet;
+ if(m?.kind!=='friendly-pvp'||!b||!b.stake)return html;
+ const r=m.v436Final||m.v427Outcome,done=m.phase==='finished'&&r?.ok;
+ const message=done?' · '+(Number(r.betPayout)>0?'적중: '+slV423Money(r.betPayout)+' 지급':'미적중: 0P')+' · 기본 보상 '+slV423Money(r.prize):' · 경기 종료 후 정산';
+ return html+block('친선 승무패 베팅',`<div class="note">${slV464Names[b.choice]||'선택'} · ${Number(b.odds).toFixed(2)}배 · ${slV423Money(b.stake)}${message}</div>`);
+};
+
 render();
 </script></body></html>
