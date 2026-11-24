@@ -4273,7 +4273,7 @@ function slV436DailyPage(){
  const yesterday=slV436Daily.yesterdaySettled?(slV436Daily.yesterdayAwards||[]).map(a=>`<tr><td class="num">${a.rank}위</td><td>${esc(s.teams[Number(a.club)]?.name||'구단')}</td><td class="num">${slV423Money(a.prize)}</td><td class="num">${String(a.paid)==='0'?'미지급 · 감독 없음':slV423Money(a.paid)}</td></tr>`).join(''):'';
  return intro
   +block('금일 20개 구단 친선 순위',refresh+`<div class="spacer"></div>${table(['순위','클럽','경기','승','무','패','득','실','골득실','승점','현재 예상 상금'],clubs)}<div class="note" style="margin-top:10px">도전자와 수비자 양쪽에 경기 결과가 반영됩니다. 경기하지 않은 구단은 0점이며 보상 대상에서 제외됩니다. 승점이 같은 구단은 골득실과 관계없이 공동순위로 표시합니다(1, 1, 3위 방식). 동점 내 표시 순서와 기존 상금 정산 기준은 변경하지 않습니다.</div>`)
-  +block('매일 상금',table(['1위','2위','3위','4위','5위'],['<tr><td>100억 P</td><td>50억 P</td><td>25억 P</td><td>10억 P</td><td>5억 P</td></tr>'])+`<div class="note">당일 최종 순위 확정 후 회원 공용 포인트에 지급됩니다. 구단 사기에는 영향을 주지 않습니다. 누적 수령액: <b>${slV423Money(prize)}</b></div>`)
+  +block('매일 상금',table(['1위','2위','3위','4위','5위'],['<tr><td>1,000억 P</td><td>500억 P</td><td>250억 P</td><td>100억 P</td><td>50억 P</td></tr>'])+`<div class="note">당일 최종 순위 확정 후 회원 공용 포인트에 지급됩니다. 구단 사기에는 영향을 주지 않습니다. 누적 수령액: <b>${slV423Money(prize)}</b></div>`)
   +block('어제 정산 내역',slV436Daily.yesterdaySettled?(yesterday?table(['순위','클럽','상금','실제 지급'],yesterday):'<div class="empty">어제 완료한 친선경기가 없어 지급 내역이 없습니다.</div>'):'<div class="note">어제 경기 정산은 자정 이후 완료됩니다. 서버에서 진행 중인 경기가 끝날 때까지 지급이 지연될 수 있습니다.</div>');
 }
 const slV436PreviousSwitch=switchTab;
