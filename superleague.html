@@ -5377,11 +5377,11 @@ TABS.splice(TABS.findIndex(x=>x[0]==='friendly')+1,0,['tour','해외투어']);
 const slV473Style=document.createElement('style');
 slV473Style.textContent='.sl-tour-grid{display:grid;grid-template-columns:repeat(2,minmax(260px,1fr));gap:12px;min-width:532px}.sl-tour-wrap{overflow-x:auto}.sl-tour-grid .block{margin:0}.sl-tour-row{display:flex;gap:6px;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line,#dce5df)}.sl-tour-picks{display:flex;gap:5px}.sl-tour-picks button{min-width:65px}.sl-tour-picks .chosen{background:#217346!important;color:#fff!important;border-color:#217346!important}.sl-tour-profit{font-size:16px;font-weight:700;color:#217346}.sl-tour-bad{color:#a32e2e;font-weight:700}.sl-tour-good{color:#217346;font-weight:700}.sl-tour-open #r-points,.sl-tour-open #r-points~span{display:none}.sl-tour-open .toolgroup:has(#r-points){display:none}.sl-tour-grid .btn:disabled{opacity:.45;cursor:not-allowed}.sl-tour-error{margin-top:8px;color:#a32e2e}';
 document.head.appendChild(slV473Style);
-const slV473={state:null,viewer:'',picks:{asia:[null,null,null],europe:[null,null,null]},busy:false,error:'',offset:0,nextPoll:0,pending:null};
+const slV473={state:null,viewer:'',stakes:{asia:'30',europe:'300'},picks:{asia:[null,null,null],europe:[null,null,null]},busy:false,error:'',offset:0,nextPoll:0,pending:null};
 function slV473Now(){return Date.now()+slV473.offset;}
 function slV473ResetViewer(){
  const viewer=String(sl.snapshot?.viewer?.id||'');
- if(viewer!==slV473.viewer){slV473.viewer=viewer;slV473.state=null;slV473.picks={asia:[null,null,null],europe:[null,null,null]};slV473.pending=null;slV473.error='';}
+ if(viewer!==slV473.viewer){slV473.viewer=viewer;slV473.state=null;slV473.stakes={asia:'30',europe:'300'};slV473.picks={asia:[null,null,null],europe:[null,null,null]};slV473.pending=null;slV473.error='';}
 }
 function slV473Money(v){return slFormatMoneyUnits(v??0)+' P';}
 function slV473Sign(v){return (Number(v)>0?'+':'')+slV473Money(v);}
@@ -5412,36 +5412,36 @@ function slV473RunHtml(type,r){
 }
 function slV473Panel(type){
  const data=slV473.state,euro=type==='europe',run=data?.[type],busy=!!run&&!run.finished,lobby=data?.lobby||[],me=lobby.find(x=>x.mine),choices=(busy?run.choices:euro&&me?.ready?me.choices:slV473.picks[type])||[null,null,null],complete=choices.length===3&&choices.every(c=>c==='W'||c==='L'),locked=!data||slV473.busy||busy||(euro&&me?.ready),cool=!euro&&slV473Remaining()>0;
- const money=euro?100:10,profit=choices.reduce((n,c)=>n+(c==='W'?2:c==='L'?10:0)*money,0);
+ const cap=euro?300:30,raw=busy?String(Number(run.stake||cap*100000000)/100000000):euro&&me?.ready?String(Number(me.stake||cap*100000000)/100000000):slV473.stakes[type],stake=Number(raw),valid=/^[0-9]+$/.test(raw)&&Number.isInteger(stake)&&stake>=1&&stake<=cap,profit=valid?Math.round(stake*100000000*choices.reduce((n,c)=>n+(c==='W'?2:c==='L'?10:0),0)/3):0;
  const dis=v=>v?' disabled':'';
  const inputs=choices.map((c,i)=>'<div class="sl-tour-row"><b>'+(i+1)+'경기</b><div class="sl-tour-picks">'+['W','L'].map(x=>'<button class="btn xs '+(c===x?'chosen':'')+'" data-tour-pick="'+type+':'+i+':'+x+'"'+dis(locked)+'>'+slV473Choice(x)+' ×'+(x==='W'?2:10)+'</button>').join('')+'</div></div>').join('');
  const participants=euro?'<div class="note"><b>참가팀 '+(busy?3:lobby.length)+'/3</b></div>'+(busy?run.teams.map(t=>'<div class="sl-tour-row"><span>'+esc(t.name)+(t.mine?' (나)':'')+'</span><span class="sl-tour-good">경기 진행 중</span></div>').join(''):lobby.map(t=>'<div class="sl-tour-row"><span>'+esc(t.club)+(t.mine?' (나)':'')+'</span><span class="'+(t.ready?'sl-tour-good':'muted')+'">'+(t.ready?'준비 완료':'대기')+'</span></div>').join('')):'';
- const actions=euro?'<div class="line" style="margin-top:12px;gap:6px;flex-wrap:wrap"><button class="btn primary" data-tour-act="ready"'+dis(locked||!complete||(!me&&lobby.length>=3))+'>준비 완료</button><button class="btn" data-tour-act="cancel"'+dis(!data||slV473.busy||!me||busy)+'>참가 취소</button><button class="btn" data-tour-act="join"'+dis(!data||slV473.busy||busy||!!me||lobby.length>=3)+'>참가하기</button></div>':'<div style="margin-top:12px"><button class="btn primary" data-tour-act="asia"'+dis(locked||!complete||cool)+'>30억 걸고 시작</button></div>';
- return block(euro?'유럽 슈퍼투어':'동남아 투어','<div class="note">'+(euro?'3팀 준비 완료 시 즉시 시작':'전체 서버 5분마다 1명 출발 가능')+'</div><div class="sl-tour-row"><span>경기당 참가비</span><b>'+money+'억 P</b></div><div class="sl-tour-row"><span>총참가비</span><b>'+money*3+'억 P</b></div>'+participants+inputs+'<div class="note" style="margin-top:10px">선택: '+choices.map(slV473Choice).join(' / ')+'<br>전부 적중 시 순수익 <b class="sl-tour-profit">'+(complete?'+'+profit.toLocaleString('ko-KR')+'억 P':'—')+'</b></div>'+actions+'<div class="note">'+(busy?'게임 진행 중':euro?'준비된 3팀이 모이면 출발':'다음 출발까지 <b id="sl-v473-clock">'+slV473Clock()+'</b>')+'</div>'+slV473RunHtml(type,run));
+ const actions=euro?'<div class="line" style="margin-top:12px;gap:6px;flex-wrap:wrap"><button class="btn primary" data-tour-act="ready"'+dis(locked||!valid||!complete||(!me&&lobby.length>=3))+'>준비 완료</button><button class="btn" data-tour-act="cancel"'+dis(!data||slV473.busy||!me||busy)+'>참가 취소</button><button class="btn" data-tour-act="join"'+dis(!data||slV473.busy||busy||!!me||!valid||lobby.length>=3)+'>참가하기</button></div>':'<div style="margin-top:12px"><button class="btn primary" data-tour-act="asia"'+dis(locked||!valid||!complete||cool)+'>투어 시작</button></div>';
+ return block(euro?'유럽 슈퍼투어':'동남아 투어','<div class="note">'+(euro?'3팀 준비 완료 시 즉시 시작':'전체 서버 5분마다 1명 출발 가능')+'</div><div class="sl-tour-row"><label for="sl-tour-stake-'+type+'">총참가비 (최대 '+cap+'억)</label><div><input id="sl-tour-stake-'+type+'" data-tour-stake="'+type+'" type="text" inputmode="numeric" maxlength="3" value="'+esc(raw)+'" style="width:72px;text-align:right"'+dis(locked)+' aria-label="총참가비 억 단위"> 억 P</div></div><div class="sl-tour-row"><span>경기당 참가비</span><b id="sl-tour-unit-'+type+'">'+(valid?slV473Money(Math.round(stake*100000000/3)):'—')+'</b></div>'+participants+inputs+'<div class="note" style="margin-top:10px">선택: '+choices.map(slV473Choice).join(' / ')+'<br>전부 적중 시 순수익 <b class="sl-tour-profit" id="sl-tour-profit-'+type+'">'+(complete&&valid?slV473Sign(profit):'—')+'</b></div>'+actions+'<div class="note">'+(busy?'게임 진행 중':euro?'준비된 3팀이 모이면 출발':'다음 출발까지 <b id="sl-v473-clock">'+slV473Clock()+'</b>')+'</div>'+slV473RunHtml(type,run));
 }
 function slV473TourBody(){return '<div class="sl-tour-wrap"><div class="sl-tour-grid">'+slV473Panel('asia')+slV473Panel('europe')+'</div></div>'+(slV473.error?'<div class="sl-tour-error">'+esc(slV473.error)+'</div>':'')+(slV473.pending?'<button class="btn xs" data-tour-act="retry"'+(slV473.busy?' disabled':'')+'>이전 요청 다시 확인</button>':'');}
 function slV473TourPage(){slV473ResetViewer();return page('해외투어','3경기 승패 예측 · 전부 적중 시 참가비 반환 및 순수익 지급')+'<div id="sl-v473-tour-body">'+(slEmbedded&&slV460Mine()?slV473TourBody():'<div class="note">로그인 후 구단 감독으로 참가하세요.</div>')+'</div>';}
-function slV473Paint(){if(s.tab==='tour'&&$('sl-v473-tour-body')&&slEmbedded&&slV460Mine())$('sl-v473-tour-body').innerHTML=slV473TourBody();}
+function slV473Paint(){if(s.tab==='tour'&&$('sl-v473-tour-body')&&slEmbedded&&slV460Mine()&&!document.activeElement?.matches('[data-tour-stake]'))$('sl-v473-tour-body').innerHTML=slV473TourBody();}
 async function slV473Fetch(action='sync'){
  if(!slEmbedded||!sl.ready||!sl.verified||!slV460Mine()||slV473.busy)return;
  slV473ResetViewer();
  const viewer=slV473.viewer;
  const mutation=action!=='sync';
- let args={p_action:'sync',p_choices:null,p_request:null};
+ let args={p_action:'sync',p_choices:null,p_request:null,p_stake:null};
  if(mutation){
   if(action==='retry'){if(!slV473.pending)return;args=slV473.pending;}
-  else{if(slV473.pending){slV473.error='이전 요청을 먼저 확인해 주세요.';slV473Paint();return;}args={p_action:action,p_choices:action==='asia'?slV473.picks.asia.slice():action==='ready'?slV473.picks.europe.slice():null,p_request:slV423Uuid()};slV473.pending=args;}
+  else{if(slV473.pending){slV473.error='이전 요청을 먼저 확인해 주세요.';slV473Paint();return;}args={p_action:action,p_choices:action==='asia'?slV473.picks.asia.slice():action==='ready'?slV473.picks.europe.slice():null,p_request:slV423Uuid(),p_stake:action==='cancel'?null:Number(slV473.stakes[action==='asia'?'asia':'europe'])*100000000};slV473.pending=args;}
  }
  slV473.busy=true;if(mutation)slV473Paint();
  try{
-  const r=await slRequest('sl_v473_tour',args);
+  const r=await slRequest('sl_v474_tour',args);
   if(viewer!==String(sl.snapshot?.viewer?.id||''))return;
   if(mutation)slV473.pending=null;
   if(!r?.ok)throw new Error(r?.error||'투어 요청 실패');
   const old=slV473.state;
   slV473.state=r;slV473.offset=Date.parse(r.serverNow)-Date.now();if(!Number.isFinite(slV473.offset))slV473.offset=0;
   slV473.error='';
-  for(const type of ['asia','europe'])if(r[type]&&r[type].id!==old?.[type]?.id)slV473.picks[type]=r[type].choices?.slice()||[null,null,null];
+  for(const type of ['asia','europe'])if(r[type]&&r[type].id!==old?.[type]?.id&&!r[type].finished){slV473.picks[type]=r[type].choices?.slice()||[null,null,null];slV473.stakes[type]=String(Number(r[type].stake)/100000000);}
   if(mutation||['asia','europe'].some(k=>r[k]?.finished&&(r[k].id!==old?.[k]?.id||!old?.[k]?.finished)))window.parent.postMessage({type:'SUPERLEAGUE_WALLET_REFRESH'},location.origin);
  }catch(e){if(viewer===slV473.viewer)slV473.error=String(e?.message||e);}
  finally{slV473.busy=false;slV473.nextPoll=Date.now()+((['asia','europe'].some(k=>slV473.state?.[k]&&!slV473.state[k].finished)||slV473.state?.lobby?.some(x=>x.mine))?1700:4500);slV473Paint();}
@@ -5450,6 +5450,16 @@ const slV473PreviousSwitch=switchTab;
 switchTab=function(tab){if(tab==='tour'){if(!slEmbedded||!slV460Mine()||slV459IsSpectator())return notice('구단 감독만 해외투어에 참가할 수 있습니다.');s.tab='tour';render();void slV473Fetch();return;}return slV473PreviousSwitch(tab);};
 const slV473PreviousRender=render;
 render=function(){document.body.classList.toggle('sl-tour-open',s.tab==='tour'&&slEmbedded&&slV460Mine());slV473PreviousRender();};
+document.addEventListener('input',e=>{
+ const type=e.target.dataset?.tourStake;if(!['asia','europe'].includes(type))return;
+ const raw=e.target.value.replace(/[^0-9]/g,'').slice(0,3);e.target.value=raw;slV473.stakes[type]=raw;
+ const cap=type==='asia'?30:300,n=Number(raw),valid=!!raw&&Number.isInteger(n)&&n>=1&&n<=cap,choices=slV473.picks[type],complete=choices.every(c=>c==='W'||c==='L');
+ const profit=valid?Math.round(n*100000000*choices.reduce((sum,c)=>sum+(c==='W'?2:c==='L'?10:0),0)/3):0;
+ const u=$('sl-tour-unit-'+type),p=$('sl-tour-profit-'+type);if(u)u.textContent=valid?slV473Money(Math.round(n*100000000/3)):'—';if(p)p.textContent=valid&&complete?slV473Sign(profit):'—';
+ const d=slV473.state,run=d?.[type],me=d?.lobby?.find(x=>x.mine),busy=!!run&&!run.finished,locked=!d||slV473.busy||busy||(type==='europe'&&me?.ready);
+ const btn=document.querySelector('[data-tour-act="'+(type==='asia'?'asia':'ready')+'"]');if(btn)btn.disabled=locked||!valid||!complete||(type==='asia'?slV473Remaining()>0:!me&&d.lobby.length>=3);
+ if(type==='europe'){const j=document.querySelector('[data-tour-act="join"]');if(j)j.disabled=!d||slV473.busy||busy||!!me||!valid||d.lobby.length>=3;}
+},true);
 document.addEventListener('click',e=>{const b=e.target.closest?.('[data-tour-pick],[data-tour-act]');if(!b||b.disabled||s.tab!=='tour')return;e.preventDefault();e.stopImmediatePropagation();
  if(b.dataset.tourPick){const [type,i,c]=b.dataset.tourPick.split(':');slV473.picks[type][Number(i)]=c;slV473Paint();return;}
  void slV473Fetch(b.dataset.tourAct);
