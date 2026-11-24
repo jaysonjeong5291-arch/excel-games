@@ -5465,5 +5465,29 @@ document.addEventListener('click',e=>{const b=e.target.closest?.('[data-tour-pic
  void slV473Fetch(b.dataset.tourAct);
 },true);
 setInterval(()=>{if(s.tab!=='tour'||document.hidden||!slEmbedded||!slV460Mine())return;const c=$('sl-v473-clock');if(c){const was=c.textContent;c.textContent=slV473Clock();if(was!=='00:00'&&c.textContent==='00:00')slV473Paint();}if(Date.now()>=slV473.nextPoll&&!slV473.busy)void slV473Fetch();},1000);
+
+// V4.75 — morale +1 consumable, always available.
+const slV475OldItems=slV423ItemsPage;
+slV423ItemsPage=function(){
+ const html=slV475OldItems();
+ if(!slEmbedded||!sl.ready||!slV460Mine())return html;
+ const count=Number(sl.snapshot?.moraleBoosts||0),morale=Number(sl.snapshot?.clubs?.find(c=>c.id===s.selected)?.morale??s.morale?.[s.selected]??0),wallet=Number(sl.snapshot?.wallet||0);
+ const blocked=sl.busy||slV423ActionBusy||!sl.verified;
+ const pending=action=>{try{return !!sessionStorage.getItem('sl_v423_pending_'+sl.snapshot?.viewer?.id+'_'+action+'___morale_boost__')}catch(_){return false}};
+ return html+block('사기 상승권 · 500억 P',
+ '<div class="line between"><strong>현재 구단 사기: '+morale+' / 100</strong><span class="tag">보유 '+count+'개</span></div><div class="spacer"></div><div class="note">1개당 500억 P · 사용 시 구단 사기 +1 · 평일과 주말 모두 구매 및 사용 가능 · 사기 100에서는 사용하지 않으며 아이템도 소모되지 않습니다.</div><div class="spacer"></div><div class="line" style="gap:8px;flex-wrap:wrap"><button class="btn primary" type="button" data-action="sl-v475-morale-buy" '+(blocked||(!pending('buy')&&wallet<50000000000)?'disabled':'')+'>'+ (pending('buy')?'이전 구매 확인':'사기 상승권 구매 · 500억 P')+'</button><button class="btn" type="button" data-action="sl-v475-morale-use" '+(blocked||(!pending('use')&&(count<1||morale>=100))?'disabled':'')+'>'+ (pending('use')?'이전 사용 확인':'사기 상승권 1개 사용 · +1')+'</button></div>');
+};
+document.addEventListener('click',async e=>{
+ const b=e.target.closest?.('[data-action="sl-v475-morale-buy"],[data-action="sl-v475-morale-use"]');
+ if(!b||b.disabled||!slEmbedded||!slV460Mine())return;
+ e.preventDefault();e.stopImmediatePropagation();
+ if(slV423ActionBusy||sl.busy)return;
+ const action=b.dataset.action.endsWith('buy')?'buy':'use';
+ const key='sl_v423_pending_'+sl.snapshot?.viewer?.id+'_'+action+'___morale_boost__';
+ let pending=false;try{pending=!!sessionStorage.getItem(key)}catch(_){}
+ if(!pending&&!confirm(action==='buy'?'500억 P를 차감하여 사기 상승권 1개를 구매할까요?':'사기 상승권 1개를 사용하여 구단 사기를 1 올릴까요?'))return;
+ b.disabled=true;
+ try{await slV423Action(action,'__morale_boost__');}finally{if(s.tab==='items')render();}
+},true);
 render();
 </script></body></html>
