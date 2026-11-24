@@ -303,7 +303,7 @@ function page(title,sub,tag=''){return `<div class="pagehead"><div><div class="e
 function block(title,content,right=''){return `<section class="block"><div class="blocktitle"><span>${title}</span>${right}</div><div class="blockcontent">${content}</div></section>`}
 function table(headers,rows,cls=''){const body=Array.isArray(rows)?rows.join(''):typeof rows==='string'?rows:'';return `<div class="scrolltable"><table class="excel ${cls}"><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${body}</tbody></table></div>`}
 function slV428Weekday(){return DAYS[((Number(s.day)||0)%7+7)%7];}
-function slV428OperationalDay(){return `${Number(s.day)<7?'1주차':'2주차'} ${slV428Weekday()}요일`;}
+function slV428OperationalDay(){return `${Number(s.day)<7?'상반기':'하반기'} ${slV428Weekday()}요일`;}
 function slV458SeasonLabel(n){const v=Number(n);return !Number.isFinite(v)||v<1?"-":v===1?"프리시즌":`시즌 ${v-1}`;}
 function slV458NewsTitle(n){return String(n.title||"").replace(/^(?:S|시즌\s*)(\d+)(?=\s|[·:./-]|$)/,(_,v)=>slV458SeasonLabel(v));}
 function dayLabel(){return `${slV458SeasonLabel(s.season)} · ${slV428OperationalDay()}`;}
@@ -458,8 +458,9 @@ function catchUpAutoClock(){
   if(steps>=70)s.auto.nextAt=Date.now()+V3_AUTO_MS;
   if(steps){save();render();}
 }
-function friendDailyKey(){return `${s.season}:${s.day}:${s.selected}`}
-function defenseDailyKey(id){return `${s.season}:${s.day}:${id}`}
+function slV468KstDate(){return new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());}
+function friendDailyKey(){return slEmbedded?`${slV468KstDate()}:${s.selected}`:`${s.season}:${s.day}:${s.selected}`;}
+function defenseDailyKey(id){return slEmbedded?`${slV468KstDate()}:${id}`:`${s.season}:${s.day}:${id}`;}
 function canFriendlyAttack(id){
   if(!hasSelected()||id===s.selected||!s.teams[id])return '상대 구단을 선택해 주세요.';
   if(active())return '진행 중인 경기가 끝나야 합니다.';
@@ -1784,8 +1785,7 @@ v47FriendlyRestriction=function(target){
  target=Number(target);
  if(!hasSelected()||target===s.selected||!s.teams[target])return '상대 구단을 선택해 주세요.';
  if(active())return '진행 중인 경기가 있습니다. 왼쪽 경기 기록 탭으로 이동해 진행 중인 경기를 확인하고 마쳐 주세요.';
- if(s.pvp.history.some(h=>h.attacker===s.selected&&h.target===target&&h.season===s.season&&h.day===s.day)
-    ||s.pvp.visited?.[`${friendDailyKey()}:${target}`])return '이 구단은 게임 내 오늘 이미 상대했습니다. 내일 다시 도전할 수 있습니다.';
+ if(slEmbedded?((sl.snapshot?.friendlyKstDate===slV468KstDate()&&Array.isArray(sl.snapshot?.friendlyTodayTargets)&&sl.snapshot.friendlyTodayTargets.map(Number).includes(target))||s.pvp.visited?.[`${friendDailyKey()}:${target}`]):(s.pvp.history.some(h=>h.attacker===s.selected&&h.target===target&&h.season===s.season&&h.day===s.day)||s.pvp.visited?.[`${friendDailyKey()}:${target}`]))return '이 구단은 오늘 이미 상대했습니다. 한국시간 자정 이후 다시 도전할 수 있습니다.';
  // V4.47: being challenged by another club never blocks your own new attack.
  if(!validLineup(s.lineup))return '출전 가능한 선발 5명을 구성해 주세요.';
  return '';
@@ -1964,15 +1964,15 @@ dash=function(){
 };
 const v49PrevFriendlyPage=friendlyPage;
 friendlyPage=function(){
- const target=Number(s.ui.friendlyTarget),other=s.teams.filter(t=>t.id!==s.selected),used=s.pvp.attacks[friendDailyKey()]||0,last=s.pvp.history[0];
+ const target=Number(s.ui.friendlyTarget),other=s.teams.filter(t=>t.id!==s.selected),used=slEmbedded&&sl.snapshot?.friendlyKstDate===slV468KstDate()?Math.max(sl.snapshot.friendlyTodayTargets?.length||0,s.pvp.attacks[friendDailyKey()]||0):(s.pvp.attacks[friendDailyKey()]||0),last=s.pvp.history[0];
  const error=v47FriendlyRestriction(target);
  // V4.47: all clubs can immediately play after a finished match.
  return page('친선경기 · 전술 실황 중계','오프라인 구단 도전 · 전반 1분 / 하프타임 / 후반 1분',`<span class="tag">오늘 ${used}경기 · 총횟수 제한 없음</span>`)
  +block('양 팀 사기 및 경기 준비',`<div class="friend-status"><div>우리 구단 사기<strong>${teamMorale(s.selected)}</strong>${moraleMeter(s.selected)}</div><div>상대 구단 사기<strong>${teamMorale(target)}</strong>${moraleMeter(target)}</div><div>오늘 친선<strong>${used}경기</strong><span class="small muted">전체 횟수 무제한</span></div><div>경기 제한<strong>대기 없음</strong><span class="small muted">수비로 참여해도 직접 도전 가능</span></div></div>`)
- +block('도전할 구단 선택',`<div class="challenge-pick"><select class="field" id="friendly-select">${other.map(t=>`<option value="${t.id}" ${t.id===target?'selected':''}>${esc(t.name)} (전력 ${Math.round(v47BestLineup(t.id).reduce((n,id)=>n+(ply(id)?.ovr||0),0)/5)} · 사기 ${teamMorale(t.id)})</option>`).join('')}</select><button class="btn primary" data-action="friendly-challenge" ${error?'disabled':''}>배당 확인 / 친선경기 시작</button></div><div class="spacer"></div><div class="note ${error?'warn':''}">${esc(error||'하루 상대 구단별 1회 · 하루 전체 도전 제한 없음 · 경기 후 대기시간 없음')}</div>`)
+ +block('도전할 구단 선택',`<div class="challenge-pick"><select class="field" id="friendly-select">${other.map(t=>`<option value="${t.id}" ${t.id===target?'selected':''}>${esc(t.name)} (전력 ${Math.round(v47BestLineup(t.id).reduce((n,id)=>n+(ply(id)?.ovr||0),0)/5)} · 사기 ${teamMorale(t.id)})</option>`).join('')}</select><button class="btn primary" data-action="friendly-challenge" ${error?'disabled':''}>배당 확인 / 친선경기 시작</button></div><div class="spacer"></div><div class="note ${error?'warn':''}">${esc(error||'한국시간 하루 상대 구단별 1회 · 자정 초기화 · 전체 도전 제한 없음 · 경기 후 대기시간 없음')}</div>`)
  +(last?block('최근 친선 결과',`<b>${esc(s.teams[last.attacker].name)} ${last.sa} : ${last.sb} ${esc(s.teams[last.target].name)}</b> · 우리 사기 ${last.ownBefore}→${last.ownAfter} / 상대 사기 ${last.foeBefore}→${last.foeAfter}`):'')
  +block('친선 경기 기록',s.pvp.history.length?table(['시즌/날짜','도전자','상대','결과','사기 변화'],s.pvp.history.slice(0,15).map(h=>`<tr><td>${slV458SeasonLabel(h.season)}/${DAYS[h.day%7]}</td><td>${esc(s.teams[h.attacker].name)}</td><td>${esc(s.teams[h.target].name)}</td><td><b>${h.sa}:${h.sb}</b></td><td>${h.ownBefore}→${h.ownAfter}</td></tr>`)):'<div class="empty">경기 기록이 없습니다.</div>')
- +block('친선 운영 규칙',`<div class="note">동일 구단은 게임 내 하루 1회만 상대할 수 있습니다. <b>전체 도전 횟수 제한은 없습니다.</b> 상대가 내 구단을 공격해도 내 친선 도전은 별도로 진행할 수 있으며, 경기 종료 후 대기시간은 없습니다. 사기 패널티는 기존 규칙(+6/-12/-2, 방어 일일 -12 상한)을 유지합니다.</div>`);
+ +block('친선 운영 규칙',`<div class="note">동일 구단은 실제 한국시간 하루 1회만 상대할 수 있습니다. 00:00에 초기화되며 리그 요일과 무관합니다. <b>전체 도전 횟수 제한은 없습니다.</b> 상대가 내 구단을 공격해도 내 친선 도전은 별도로 진행할 수 있으며, 경기 종료 후 대기시간은 없습니다. 사기 패널티는 기존 규칙(+6/-12/-2, 방어 일일 -12 상한)을 유지합니다.</div>`);
 };
 const v49PrevMatchPage=matchPage;
 matchPage=function(){
@@ -3317,7 +3317,7 @@ newsPage=function(){
 const slDashOffline=dash;
 dash=function(){if(!slEmbedded)return slDashOffline();
  return slDashOffline().replace('데모에서는 브라우저에만 상태를 저장합니다. 여러 이용자 간 실제 중복 영입 방지는 추후 서버 DB가 필요합니다.','구단 소유권·선수 영입·포인트·순위·뉴스는 Supabase 서버에서 공동 관리합니다. 리그 경기는 서버가 자동 집계합니다.')
- +`<div class="note">서버 로그인: <b>${esc(sl.snapshot?.viewer?.nickname||'미확인')}</b> · 계정 구분 ID: ${esc(String(sl.snapshot?.viewer?.id||'').slice(0,8))} · 온라인 공용 리그 · 다른 감독과 같은 구단·레전드·이적 기록을 공유합니다. 다음 갱신까지 ${sl.snapshot?.nextAt?Math.max(0,Math.ceil((new Date(sl.snapshot.nextAt).getTime()-Date.now())/1000)):60}초 · 자동 갱신 15초 간격</div>`;
+ +`<div class="note">서버 로그인: <b>${esc(sl.snapshot?.viewer?.nickname||'미확인')}</b> · 계정 구분 ID: ${esc(String(sl.snapshot?.viewer?.id||'').slice(0,8))} · 온라인 공용 리그 · 다른 감독과 같은 구단·레전드·이적 기록을 공유합니다. 다음 요일 전환까지 ${sl.snapshot?.nextAt?Math.max(0,Math.ceil((new Date(sl.snapshot.nextAt).getTime()-Date.now())/60000)):0}분 · 한국시간 기준</div>`;
 };
 const slClubListOffline=clubList;
 clubList=function(){if(!slEmbedded)return slClubListOffline();
@@ -5348,5 +5348,16 @@ matchPage=function(){
  return html+block('친선 승무패 베팅',`<div class="note">${slV464Names[b.choice]||'선택'} · ${Number(b.odds).toFixed(2)}배 · ${slV423Money(b.stake)}${message}</div>`);
 };
 
+// V4.68: KST 48-hour season; server controls all fixtures and calendar transitions.
+function slV468ScheduleBlock(){
+ const next=sl.snapshot?.nextAt?new Date(sl.snapshot.nextAt).toLocaleString('ko-KR',{timeZone:'Asia/Seoul',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:false}):'조회 중';
+ return block('한국시간 기준 · 2일 시즌', '<div class="note"><b>'+esc(slV428OperationalDay())+'</b> · 다음 요일 전환 '+esc(next)+' (KST)<br>00~03 월 · 03~06 화 · 06~09 수 · 09~12 목 · 12~15 금 · 15~18 토 · 18~24 일<br>평일 공식경기: 구간 시작 후 1시간 / 2시간 (하반기 금요일은 첫 경기만). 친선은 실제 자정 초기화.</div>');
+}
+const slV468PrevCalendar=calendarPage;
+calendarPage=function(){const html=slV468PrevCalendar();if(!slEmbedded)return html;return slV468ScheduleBlock()+html.replaceAll('2주간 자동 리그 일정','2일 자동 리그 일정').replaceAll('2주 일정 · 날짜 선택','상·하반기 일정 · 날짜 선택').replaceAll('실제 달력: 매일 21:00 KST 기준(리그는 월~금)','한국시간 3시간 단위 · 일요일 6시간').replaceAll('1시즌=2주(14일)','1시즌=실제 2일(게임 내 14일)');};
+const slV468PrevDash=dash;
+dash=function(){const html=slV468PrevDash();return slEmbedded?slV468ScheduleBlock()+html.replaceAll('2주 시즌','2일 시즌').replaceAll('월~금 21:00(KST)','평일 구간 시작 +1/+2시간'):html;};
+const slV468PrevSpectatorCalendar=slV459Calendar;
+slV459Calendar=function(){return slV468ScheduleBlock()+slV468PrevSpectatorCalendar();};
 render();
 </script></body></html>
