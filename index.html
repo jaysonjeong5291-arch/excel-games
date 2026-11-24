@@ -490,8 +490,8 @@ body.superleague-active #superleague-view{height:calc(100dvh - 145px);min-height
   <div id="gift-wallet" class="gift-wallet">현재 잔액 확인 중...</div>
   <label for="gift-recipient">받는 회원 닉네임</label>
   <input id="gift-recipient" type="text" maxlength="16" required placeholder="가입된 닉네임을 정확하게 입력" spellcheck="false" autocapitalize="none">
-  <label for="gift-amount">선물할 포인트 (최대 1,000억 P)</label>
-  <input id="gift-amount" type="number" min="1" max="100000000000" step="1" required placeholder="예: 500">
+  <label for="gift-amount">선물할 포인트 (1회 최대 1,000억 P)</label>
+  <input id="gift-amount" type="number" min="1" max="100000000000" step="1" required placeholder="예: 1000000000"><p id="gift-amount-preview" aria-live="polite">최대 100,000,000,000P (1,000억 P)</p>
   <p>선물은 수수료 없이 전액 지급되며, 완료 후 취소할 수 없습니다. 선물과 받기 내역은 본인만 확인할 수 있습니다.</p>
   <div id="gift-feedback" class="gift-feedback" role="status" aria-live="polite"></div>
   <div class="gift-actions"><button type="button" id="gift-close">닫기</button><button type="submit" id="gift-send">선물 보내기</button></div>
@@ -867,7 +867,9 @@ function formatPointUnits(value){
  if(n||!parts.length)parts.push(n.toLocaleString('ko-KR'));
  return (negative?'-':'')+parts.join(' ');
 }
+const GIFT_MAX_POINTS=100000000000;
 const giftMoney=(n)=>formatPointUnits(n);
+function giftPreview(){const raw=$('gift-amount').value;const n=Number(raw);$('gift-amount-preview').textContent=raw&&Number.isSafeInteger(n)&&n>0?'입력 금액: '+n.toLocaleString('ko-KR')+'P ('+giftMoney(n)+' P)'+(n>GIFT_MAX_POINTS?' · 1,000억 한도 초과':''):'최대 100,000,000,000P (1,000억 P)';}
 function giftInfo(message='',isError=false){const el=$('gift-feedback');el.textContent=message;el.classList.toggle('error',!!isError);}
 function giftClose(){if(giftSubmitting)return;$('gift-overlay').hidden=true;giftInfo('');}
 function giftHistoryRender(items){
@@ -893,7 +895,7 @@ async function giftHistoryLoad(){
 function giftOpen(){
  if(!memberToken||!memberProfile){lobbyNotify('포인트 선물은 회원 로그인 후 이용할 수 있습니다.',true);return;}
  $('gift-overlay').hidden=false;
- $('gift-recipient').value='';$('gift-amount').value='';giftRetry=null;giftInfo('');
+ $('gift-recipient').value='';$('gift-amount').value='';$('gift-amount').max=String(GIFT_MAX_POINTS);giftPreview();giftRetry=null;giftInfo('');
  $('gift-wallet').textContent='내 잔액: '+giftMoney(memberProfile.points)+'P';
  giftHistoryLoad();$('gift-recipient').focus();
 }
@@ -935,12 +937,12 @@ $('gift-close').addEventListener('click',giftClose);
 $('gift-overlay').addEventListener('click',e=>{if(e.target.id==='gift-overlay')giftClose();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('gift-overlay').hidden)giftClose();});
 $('gift-history-refresh').addEventListener('click',giftHistoryLoad);
-for(const id of ['gift-recipient','gift-amount'])$(id).addEventListener('input',()=>{giftRetry=null;giftInfo('');});
+for(const id of ['gift-recipient','gift-amount'])$(id).addEventListener('input',()=>{giftRetry=null;giftInfo('');giftPreview();});
 $('gift-form').addEventListener('submit',async e=>{
  e.preventDefault();if(giftSubmitting)return;
  if(!memberToken||!memberProfile){giftInfo('회원 로그인 상태를 확인해 주세요.',true);return;}
  const target=$('gift-recipient').value.trim();const amount=Number($('gift-amount').value);
- if(!target||target.length>16||!Number.isSafeInteger(amount)||amount<=0||amount>100000000000){giftInfo('받는 닉네임과 1~100,000,000,000P 사이의 정수 금액을 입력해 주세요.',true);return;}
+ if(!target||target.length>16||!Number.isSafeInteger(amount)||amount<=0||amount>GIFT_MAX_POINTS){giftInfo('받는 닉네임과 1~100,000,000,000P (최대 1,000억) 사이의 정수 금액을 입력해 주세요.',true);return;}
  if(target.toLocaleLowerCase()===memberProfile.nickname.toLocaleLowerCase()){giftInfo('본인에게는 선물할 수 없습니다.',true);return;}
  // Real balance is validated atomically on the server (local display may be stale).
  if(!giftRetry||giftRetry.to.toLowerCase()!==target.toLowerCase()||giftRetry.amount!==amount){
@@ -971,7 +973,7 @@ $('gift-form').addEventListener('submit',async e=>{
    p_target_nickname:target,p_amount:amount,p_request_id:giftRetry.id
   });
   giftInfo((data.already_processed?'이미 완료된 선물입니다. ':'선물 완료! ')+data.recipient_nickname+' 회원에게 '+giftMoney(data.amount)+'P를 보냈습니다.');
-  $('gift-amount').value='';giftRetry=null;
+  $('gift-amount').value='';giftPreview();giftRetry=null;
   if(memberProfile){useMemberProfile({...memberProfile,points:Number(data.sender_points)});}
   await giftHistoryLoad();
   try{await refreshMemberStats();}catch(_){}
