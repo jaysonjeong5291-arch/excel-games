@@ -602,7 +602,7 @@ body.superleague-active #superleague-view{height:calc(100dvh - 145px);min-height
  <div class="oe-footnote">적중 시 베팅금의 2배를 지급합니다(원금 포함, 순이익 +판돈). 실패 시 판돈만 차감됩니다. 방장도 선택과 준비가 필요하며, 1명만 있어도 시작할 수 있습니다. 게임 포인트만 사용하며 현금 환전은 지원하지 않습니다.</div>
 </section>
 <div id="chat" class="chat" hidden><button type="button" id="chat-title-button" class="chat-title" aria-expanded="true" aria-controls="chat-body" title="메모 접기/펼치기"><span>메모 <span id="chat-count"></span></span><span class="chat-toggle" id="chat-toggle-glyph">−</span></button><div class="chat-body" id="chat-body"><div id="chat-messages" class="chat-messages"><div class="chat-empty">내용 없음</div></div><div id="admin-chat-feedback" class="admin-chat-feedback" role="status" hidden></div><form class="chat-form" id="chat-form"><input id="chat-input" class="chat-input" placeholder="메시지 입력" maxlength="280" autocomplete="off" aria-label="채팅 메시지"><button type="submit" class="chat-send">보내기</button></form></div></div>
-<section id="superleague-view" hidden aria-label="슈퍼리그 매니저 시트"><iframe id="superleague-frame" title="슈퍼리그" data-src="./superleague.html?v=491" referrerpolicy="same-origin"></iframe></section>
+<section id="superleague-view" hidden aria-label="슈퍼리그 매니저 시트"><iframe id="superleague-frame" title="슈퍼리그" data-src="./superleague.html?v=492" referrerpolicy="same-origin"></iframe></section>
 <section id="race-view" class="race-sheet-view" hidden aria-label="레이스 게임 시트"><iframe id="race-frame" title="업무현황_레이스_VER.2026" data-src="./race-demo.html" referrerpolicy="same-origin"></iframe></section>
 <footer class="footer"><div id="sheet-nav" class="sheet-nav"><span class="sheet-chev">‹</span><span class="sheet-chev">›</span><button class="sheet-tab active" type="button" data-sheet="lobby">Sheet1</button><button id="race-sheet-tab" class="sheet-tab" type="button" data-sheet="race" hidden>🏁 레이스 <span class="tab-close" data-close-race title="레이스 시트 닫기">×</span></button><button id="superleague-sheet-tab" class="sheet-tab" type="button" data-sheet="superleague" hidden>⚽ 슈퍼리그 <span class="tab-close" data-close-superleague title="슈퍼리그 시트 닫기">×</span></button><button id="add-sheet-btn" class="sheet-plus" type="button" title="방 만들기">＋</button></div><span class="footer-fill"></span><span class="footer-status" id="footer-label">준비 중</span><span class="footer-right" title="레벨 등급 v3.0">100% · v1.0.1 인증 안정화</span></footer>
 <script>
@@ -828,10 +828,10 @@ function retryMemberRestoreSoon(){
  },delay);
 }
 function coreAuthBusy(){return memberAuthPending||memberSessionRestoreBusy;}
-function optionalSheet1ReadOK(){return !document.hidden&&!stopped&&!coreAuthBusy()&&lobbyReady;}
+function optionalSheet1ReadOK(){return !document.hidden&&!stopped&&!coreAuthBusy()&&lobbyReady&&!activeSuperleague;}
 
 // Login/session requests get their own time budget. A slow lobby refresh must not silently log users out.
-function memberRpc(action,rest={}){return callRpc('renju_member_auth',{p_client:CLIENT_ID,p_action:action,...rest},false,22000);}
+function memberRpc(action,rest={}){return callRpc('renju_member_auth',{p_client:CLIENT_ID,p_action:action,...rest},false,32000);}
 function isConfirmedMemberExpiry(error){
  const message=String(error?.message||error||'');
  return /로그인 기간이 만료|로그인이 필요합니다|로그인 세션이 유효하지|세션이 만료|토큰이 만료/.test(message)
@@ -1394,14 +1394,17 @@ function hostIsBlack(){return state?.gameNumber%2===1;}
 function myColor(){if(mySeat==='host')return hostIsBlack()?1:2;if(mySeat==='guest')return hostIsBlack()?2:1;return 0;}
 // V4.71: circuit breaker for shared PostgREST unavailability. Never retry writes automatically.
 async function callRpc(fn,params,keepalive=false,timeoutMs=11000){
- if((callRpc.unavailableUntil||0)>Date.now())throw new Error('서버 오류 503: 서버 복구 대기 중 (자동 재조회 간격 조정)');
- if(callRpc.unavailableUntil&&callRpc.recoveryProbe)throw new Error('서버 오류 503: 서버 복구 확인 중');
- const recoveryProbe=!!callRpc.unavailableUntil;
+ const auth=fn==='renju_member_auth'&&['login','register','session','logout'].includes(params?.p_action);
+ const manualAuth=auth&&params.p_action!=='session';
+ if(!auth&&coreAuthBusy())throw new Error('회원 인증 우선 처리 중');
+ if(!manualAuth&&(callRpc.unavailableUntil||0)>Date.now())throw new Error('서버 오류 503: 서버 복구 대기 중 (자동 재조회 간격 조정)');
+ if(!manualAuth&&callRpc.unavailableUntil&&callRpc.recoveryProbe)throw new Error('서버 오류 503: 서버 복구 확인 중');
+ const recoveryProbe=!manualAuth&&!!callRpc.unavailableUntil;
  if(recoveryProbe)callRpc.recoveryProbe=true;
  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),timeoutMs);
  try{const response=await fetch(SUPABASE_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{'Content-Type':'application/json','Content-Profile':'public','apikey':SUPABASE_PUBLISHABLE_KEY},body:JSON.stringify(params),cache:'no-store',signal:controller.signal,keepalive});
  const data=await response.json().catch(()=>null);
- if([502,503,504].includes(response.status)){
+ if([429,502,503,504].includes(response.status)||(response.status===500&&data?.code==='57014')){
    // One failed recovery probe per browser, with jitter and bounded exponential backoff.
    if(!(callRpc.unavailableUntil>Date.now())){
     callRpc.failureCount=Math.min(3,(callRpc.failureCount||0)+1);
@@ -1417,7 +1420,7 @@ async function callRpc(fn,params,keepalive=false,timeoutMs=11000){
   }
  if(!data || data.ok===false)throw new Error(data?.error||'서버 요청 오류');
  return data;
- }catch(e){if(recoveryProbe&&(e.name==='AbortError'||e.name==='TypeError')){callRpc.unavailableUntil=Date.now()+20000+Math.floor(Math.random()*4000);}if(e.name==='AbortError')throw new Error('서버 응답 시간 초과');throw e;}finally{clearTimeout(timeout);if(recoveryProbe)callRpc.recoveryProbe=false;}
+ }catch(e){if((e.name==='AbortError'||e.name==='TypeError')&&!(callRpc.unavailableUntil>Date.now())){callRpc.failureCount=Math.min(3,(callRpc.failureCount||0)+1);callRpc.unavailableUntil=Date.now()+Math.min(60000,12000*2**(callRpc.failureCount-1))+Math.floor(Math.random()*4000);}if(e.name==='AbortError')throw new Error('서버 응답 시간 초과');throw e;}finally{clearTimeout(timeout);if(recoveryProbe)callRpc.recoveryProbe=false;}
 }
 function lobbyRpc(action='list',title='',game='gomoku'){return callRpc('renju_lobby_v2',{p_client:CLIENT_ID,p_action:action,p_title:title,p_game:game});}
 function nicknameRpc(nickname=null,token=null){return callRpc('renju_nickname_sync',{p_client:CLIENT_ID,p_nickname:nickname,p_admin_token:token});}
@@ -1933,7 +1936,7 @@ function showOddEvenLobbyStatus(report){
 // duplicates, spreads independent requests across at most TWO slots per browser,
 // and backs off optional sources when the database is slow.
 // Game heartbeats, joins, bets, ready/start, and writes never use this queue.
-const LOBBY_MAX_CONCURRENT_READS=2;
+const LOBBY_MAX_CONCURRENT_READS=1;
 const lobbyReadStates=new Map(),lobbyReadQueue=[];
 let lobbyActiveReads=0,lobbyLastManualRefresh=0;
 let lobbyInitialCoreSettled=false;
@@ -1943,7 +1946,7 @@ const lobbyStartupAt=Date.now();
 // its first reply, or after 2.5 seconds to keep other games usable if it stalls.
 setTimeout(()=>pumpLobbyReadQueue(),9000);
 function pumpLobbyReadQueue(){
- if(stopped||document.hidden)return;
+ if(stopped||document.hidden||coreAuthBusy()||activeSuperleague)return;
  while(lobbyActiveReads<LOBBY_MAX_CONCURRENT_READS && lobbyReadQueue.length){
   // Core reads always get the next available slot. Optional reads never block
   // initial connection by occupying both slots.
@@ -1984,12 +1987,12 @@ function scheduleLobbyRead(name,lobbyIntervalMs,gameIntervalMs,task,force=false)
  pumpLobbyReadQueue();
 }
 function pollLobbyInBackground(force=false){
- if(stopped||document.hidden)return;
+ if(stopped||document.hidden||coreAuthBusy()||activeSuperleague)return;
  // Identity sync must not wait for an optional room list.
  syncNicknames().catch(()=>{});
  // The base worksheet and currently occupied online rooms are progressively
  // rendered as results arrive. A slow game does not hold up the others.
- scheduleLobbyRead('base',15000,40000,async()=>{
+ scheduleLobbyRead('base',25000,60000,async()=>{
   try{
    const data=await lobbyRpc();
    // Record only server-confirmed ongoing games; optional lists must not refresh it.
@@ -2020,18 +2023,18 @@ function pollLobbyInBackground(force=false){
    throw error;
   }
  },force);
- scheduleLobbyRead('odd-even-presence',15000,35000,async()=>{
+ scheduleLobbyRead('odd-even-presence',30000,60000,async()=>{
   await pollOddEvenPresenceSummary(true);
  },force);
- scheduleLobbyRead('odd-even-list',20000,45000,async()=>{
+ scheduleLobbyRead('odd-even-list',35000,70000,async()=>{
   const report=await fetchOddEvenLobby();
   applyOddEvenLobbyReport(report);maybeOpenInitialRoom();
  },force);
- scheduleLobbyRead('holdem-list',20000,45000,async()=>{
+ scheduleLobbyRead('holdem-list',35000,70000,async()=>{
   const h=await holdemRpc('list');
   if(Array.isArray(h.rooms)){lobbyAnyConfirmedAt=Date.now();holdemLobbyLastSuccessAt=Date.now();holdemLobbyRooms=h.rooms;refreshCombinedLobby();}
  },force);
- scheduleLobbyRead('race-list',20000,45000,async()=>{
+ scheduleLobbyRead('race-list',35000,70000,async()=>{
   await refreshRaceOnlineRooms();
  },force);
 }
@@ -2427,7 +2430,7 @@ paintMemberPanel();
 setTimeout(()=>{if(memberToken)loadMemberSession();},0);
 // Leaderboard/ranks are optional; do not compete with the critical first lobby/auth reads.
 setTimeout(refreshMemberStats,7000);
-setInterval(refreshMemberStats,35000);
+setInterval(refreshMemberStats,60000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshMemberStats();});
 $('nickname-form').addEventListener('submit',async e=>{
  e.preventDefault();const input=$('nickname-input'),button=$('nickname-save');
@@ -2698,7 +2701,7 @@ $('admin-notice-close').addEventListener('click',()=>{
  $('admin-notice').hidden=true;
  try{sessionStorage.setItem('excel-games-dismissed-notice',lastNoticeId||'');}catch(_){}
 });
-setInterval(pollAnnouncement,10000);
+setInterval(pollAnnouncement,30000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)pollAnnouncement();});
 setTimeout(pollAnnouncement,2400);
 // Shared Sheet1 notes: separate feed from each room's existing memo.
@@ -2742,7 +2745,7 @@ function paintSheet1Chat(){
  }
  panel.replaceChildren(...rows);updateSheet1RowNumbers();
 }
-setInterval(()=>syncSheet1Chat(),4000);
+setInterval(()=>syncSheet1Chat(),8000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncSheet1Chat(true);});
 window.addEventListener('focus',()=>syncSheet1Chat(true));
 setTimeout(()=>syncSheet1Chat(true),1800);
@@ -2934,9 +2937,9 @@ function paintArcadeRewards(game){
   el.textContent='참가 +'+money(rr.start_points)+'P 지급 · 현재 '+Number(streak||0).toLocaleString('ko-KR')+'연승 · 다음 승리 시 '+(streak>=9?'20%':streak>=4?'15%':'10%')+' 획득 · 상대가 더 적으면 내 포인트 5% (패자는 10% 차감)';
  }else el.textContent=name+' · 현재 '+Number(streak||0).toLocaleString('ko-KR')+'연승 · 게임 시작 +100P · 다음 승리 '+(streak>=9?'20%':streak>=4?'15%':'10%')+' / 상대가 더 적으면 내 포인트 5% · 패자는 10% 차감';
 }
-setInterval(()=>syncArcadeRewards(),20000);
+setInterval(()=>syncArcadeRewards(),45000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncArcadeRewards(true);});
-setInterval(()=>syncGomokuRewards(),20000);
+setInterval(()=>syncGomokuRewards(),45000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncGomokuRewards(true);});
 function paintState(){const s=state;if(!s)return;
  const black=s.players?.black,white=s.players?.white;const ready=Boolean(black?.online&&white?.online),finished=s.winner!==null;
