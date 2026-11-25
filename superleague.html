@@ -1388,7 +1388,7 @@ marketPage=function(){
  .sort((a,b)=>Number(own.has(a.id))-Number(own.has(b.id))||b.ovr-a.ovr||a.name.localeCompare(b.name,'ko'));
  const pageNum=clamp(s.ui.marketPage||0,0,Math.max(0,Math.ceil(all.length/12)-1));s.ui.marketPage=pageNum;
  return page('레전드 FA · 주말 영입',`2005년 기준 레전드 40명 · 구단별 최대 10명 보유 · 선수의 성장 한계는 비공개`,`<span class="tag">${marketOpen()?'영입 OPEN':'평일 CLOSED'}</span>`)
- +block('영입 가능 현황',`<div class="recruit-summary"><b>포인트 ${fmt(s.points)}P</b><span>우리 팀 사기 ${moraleMeter(s.selected)}</span><span>선수단 ${mine().roster.length}/10명</span><span>이번 시즌 신규 계약 <b>${count}/2명</b></span></div><div class="note">일반 레전드 FA는 요일 관계없이 영입할 수 있으며 시즌당 2명까지 신규 영입할 수 있습니다. 팀 사기가 선수의 비공개 기준 이상이어야 하며, 보유 인원이 10명이면 먼저 방출해야 합니다.</div>`)
+ +block('영입 가능 현황',`<div class="recruit-summary"><b>포인트 ${fmt(s.points)}P</b><span>우리 팀 사기 ${moraleMeter(s.selected)}</span><span>선수단 ${mine().roster.length}/10명</span><span>이번 시즌 신규 계약 <b>${count}/2명</b></span></div><div class="note">일반 레전드 FA는 요일 관계없이 영입할 수 있으며 상·하반기 각각 2명까지 신규 영입할 수 있습니다. 팀 사기가 선수의 비공개 기준 이상이어야 하며, 보유 인원이 10명이면 먼저 방출해야 합니다.</div>`)
  +block('FA 선수 목록',`<div class="line between"><div class="tabs">${[['ALL','전체 40'],['GK','GK 10'],['DF','DF 10'],['MF','MF 10'],['FW','FW 10']].map(([v,l])=>`<button class="btn xs ${pos===v?'active':''}" data-action="market-pos" data-value="${v}">${l}</button>`).join('')}</div><input class="field search" id="market-search" placeholder="선수명 검색" value="${esc(s.ui.marketSearch||'')}"></div><div class="spacer"></div>${table(['포지션','선수','나이','현재 OVR','유형','사기 기준','가격','영입'],all.slice(pageNum*12,pageNum*12+12).map(p=>{
   const owner=own.get(p.id),eligible=teamMorale(s.selected)>=p.potential;
   const available=marketOpen()&&!active()&&count<2&&owner===undefined&&mine().roster.length<10&&eligible&&price(p)<=s.points;
@@ -2617,7 +2617,7 @@ function transferPage(){
  <div class="spacer"></div><button class="btn primary" data-action="v412-submit" ${!player||active()?'disabled':''}>${type==='loan'?'임대 제안 보내기':'이적 제안 보내기'}</button>`;
  const pending=relevant.filter(d=>d.status==='accepted'),loanList=Object.entries(s.loans||{}).filter(([id,l])=>l.parent===s.selected||l.to===s.selected);
  return page('이적시장 · 레전드 구단 간 거래','이적·임대 제안은 언제든 가능 · 수락하면 즉시 반영',`<span class="tag">${'상시 이적 가능'}</span>`)
- +block('시장 현황',`<div class="recruit-summary"><b>보유 포인트 ${fmt(s.points)}P</b><span>레전드 보유 ${ownedLegendCount()}명</span><span>CPU 구단 소속 레전드 ${holdings}명</span><span>예약된 이적 ${pending.length}건</span></div><div class="note">FA 신규 영입은 기존 <b>레전드 영입</b> 메뉴에서 시즌당 2명까지. 이곳은 이미 구단에 소속된 레전드만 거래해. 선수단은 교환 포함 최대 10명이고, 임대받은 선수도 한 자리를 차지해.<br>${tradeRuleNote}</div>`)
+ +block('시장 현황',`<div class="recruit-summary"><b>보유 포인트 ${fmt(s.points)}P</b><span>레전드 보유 ${ownedLegendCount()}명</span><span>CPU 구단 소속 레전드 ${holdings}명</span><span>예약된 이적 ${pending.length}건</span></div><div class="note">FA 신규 영입은 기존 <b>레전드 영입</b> 메뉴에서 상·하반기 각각 2명까지. 이곳은 이미 구단에 소속된 레전드만 거래해. 선수단은 교환 포함 최대 10명이고, 임대받은 선수도 한 자리를 차지해.<br>${tradeRuleNote}</div>`)
  +block('아이템 거래식 이적 제안',form)
  +block(`${esc(team.name)} · 레전드 보유 명단`,listings.length?table(['선수','포지션','현재 OVR','기준 영입가','잔여 계약','매각 조건'],listings.map(p=>{
  const info=v415CpuSaleInfo(p,target);
@@ -4570,7 +4570,7 @@ recruit=function(id){
  if(!slV469MarketOpen())return notice('FA 영입은 한국시간 15:00~24:00 (게임 토·일)에만 가능합니다.');
  if(slV441Recruiting||sl.busy)return notice('앞선 영입 처리 결과를 확인 중입니다.');
  if(!sl?.ready||!sl?.verified)return notice('서버 연결을 확인하세요.');
- if(Number(sl.snapshot?.seasonSigned??2)>=2)return notice('이번 시즌 일반 레전드 FA 영입은 2명까지입니다. 선수영입권 사용은 별도입니다.');
+ if(Number(sl.snapshot?.seasonSigned??2)>=2)return notice('이번 영입 기간 일반 레전드 FA 영입은 2명까지입니다. 선수영입권 사용은 별도입니다.');
  const player=ply(id),row=(sl.snapshot.players||[]).find(x=>x.id===id);
  if(!player||!row||row.club!==null||row.retired||!slV445LegendVisible(row))return notice('일반 레전드는 21세부터, 유망주 졸업 FA는 20세부터 영입할 수 있습니다.');
  if(!confirm(`${player.name} 선수를 이번 시즌 일반 FA로 영입할까요?\n회원 공용 포인트에서 최초 계약금 ${slV423Money(row.salary||0)}이 차감됩니다.`))return;
@@ -4615,13 +4615,13 @@ marketPage=function(){
  const c=sl.snapshot?.clubs?.[s.selected],morale=Number(c?.morale||0),wallet=BigInt(String(sl.snapshot?.wallet||0));
  const countBy={ALL:allRows.filter(v=>!v.retired&&slV445LegendVisible(v)).length};
  for(const x of ['GK','DF','MF','FW'])countBy[x]=allRows.filter(v=>!v.retired&&slV445LegendVisible(v)&&ply(v.id).pos===x).length;
- return page('선수 영입','일반 레전드 FA 영입: 게임 토·일 (KST 15:00~24:00) · 시즌 최대 2명 · 영입권 횟수 제외 · 1군 10명 제한')
-  +block('이번 시즌 FA 영입 현황',`<div class="recruit-summary"><b>회원 포인트 ${slV423Money(wallet.toString())}</b><span>현재 레전드 ${mine().roster.filter(id=>ply(id)?.legend).length}명</span><span>이번 시즌 일반 FA ${seasons}/2명</span><span>1군 ${rosterCount}/10명</span></div><div class="note">레전드 소유는 2명으로 제한되지 않습니다. 시즌마다 일반 FA 영입만 2회 가능하며, 아이템 상점에서 구매한 선수영입권으로 계약하면 일반 FA 영입 횟수를 사용하지 않습니다. 레전드 FA 선수 수는 시즌별 성장·은퇴·방출에 따라 변동됩니다.</div><div class="spacer"></div><button class="btn xs" data-action="tab" data-value="items">아이템 상점 열기</button>`)
+ return page('선수 영입','일반 레전드 FA 영입: 게임 토·일 (KST 15:00~24:00) · 상·하반기 각각 최대 2명 · 영입권 횟수 제외 · 1군 10명 제한')
+  +block('이번 시즌 FA 영입 현황',`<div class="recruit-summary"><b>회원 포인트 ${slV423Money(wallet.toString())}</b><span>현재 레전드 ${mine().roster.filter(id=>ply(id)?.legend).length}명</span><span>${s.day>=12?'하반기':'상반기'} 일반 FA ${seasons}/2명</span><span>1군 ${rosterCount}/10명</span></div><div class="note">레전드 소유는 2명으로 제한되지 않습니다. 일반 FA는 상·하반기 각각 2명까지 영입할 수 있으며, 하반기 토요일 시작 시 영입 횟수가 초기화됩니다. 선수영입권을 사용한 계약은 횟수에 포함되지 않습니다. 레전드 FA 선수 수는 시즌별 성장·은퇴·방출에 따라 변동됩니다.</div><div class="spacer"></div><button class="btn xs" data-action="tab" data-value="items">아이템 상점 열기</button>`)
   +slV487ReturnPanel()
   +block('레전드 FA 목록',`<div class="line"><div class="tabs">${[['ALL','전체'],['GK','GK'],['DF','DF'],['MF','MF'],['FW','FW']].map(([p,n])=>`<button class="btn xs ${pos===p?'active':''}" data-action="market-pos" data-value="${p}">${n} ${countBy[p]||0}</button>`).join('')}</div><input class="field search" id="market-search" placeholder="선수 이름 검색" value="${esc(s.ui.marketSearch||'')}"></div><div class="spacer"></div>${table(['포지션','선수','나이','OVR','최초 계약금','FA 영입'],all.slice(pageNum*12,pageNum*12+12).map(v=>{
    const p=ply(v.id),limit=Number(v.age)>=20&&Number(v.age)>0;
    const required=Math.min(98,50+Math.max(0,Number(p.potential||80)-80)*3);
-   const reasons=[v.club!==null?'소속팀 있음':null,!slV469MarketOpen()?'주말 15시부터 영입 가능':null,!limit?'20세 미만':null,rosterCount>=10?'1군 10명 보유':null,seasonSlots===0?'이번 시즌 FA 2명 영입 완료':null,morale<required?'구단 사기 부족':null,wallet<BigInt(String(v.salary||0))?'회원 포인트 부족':null];
+   const reasons=[v.club!==null?'소속팀 있음':null,!slV469MarketOpen()?'주말 15시부터 영입 가능':null,!limit?'20세 미만':null,rosterCount>=10?'1군 10명 보유':null,seasonSlots===0?'이번 영입 기간 FA 2명 영입 완료':null,morale<required?'구단 사기 부족':null,wallet<BigInt(String(v.salary||0))?'회원 포인트 부족':null];
    const reason=reasons.find(Boolean),enabled=!reason&&!slV441Recruiting&&!sl.busy;
    return `<tr><td>${esc(p.pos)}</td><td class="strong">${esc(p.name)}</td><td class="num">${Number(v.age)||''}세</td><td class="num">${Number(v.ovr)||p.ovr}</td><td class="num">${slV423Money(v.salary||0)}</td><td>${enabled?`<button class="btn xs primary" data-action="recruit" data-id="${esc(v.id)}">영입</button>`:`<span class="small muted" title="${esc(reason||'처리 중')}">${esc(reason||'처리 중')}</span>`}</td></tr>`;
   }))}<div class="spacer"></div><div class="line between"><span class="small muted">현재 ${all.length}명 · ${pageNum+1}/${maxPage+1}페이지</span><div><button class="btn xs" data-action="page-prev" ${pageNum===0?'disabled':''}>이전</button> <button class="btn xs" data-action="page-next" ${pageNum>=maxPage?'disabled':''}>다음</button></div></div>`);
