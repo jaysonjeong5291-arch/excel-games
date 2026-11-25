@@ -5470,7 +5470,7 @@ slV423ItemsPage=function(){
  const html=slV484OldItems();
  if(!slEmbedded||!sl.ready||!slV460Mine())return html;
  const count=Number(sl.snapshot?.moraleBoosts||0),morale=Number(sl.snapshot?.clubs?.find(c=>c.id===s.selected)?.morale??s.morale?.[s.selected]??0),wallet=Number(sl.snapshot?.wallet||0),scouts=Number(sl.snapshot?.potentialTickets||0);
- const blocked=sl.busy||slV423ActionBusy||slV484Busy||!sl.verified;
+ const blocked=slV423ActionBusy||slV484Busy||!sl.verified;
  const useMax=Math.max(0,Math.min(100,count,100-morale));
  const buyMax=(price)=>Math.min(100,Math.floor(wallet/price));
  const row=(kind,action,id,max,label,price)=>{const pending=slV484Pending(kind,action);return '<div class="line" style="gap:8px;flex-wrap:wrap;margin:8px 0"><label>수량 '+slV484Input(id,max,blocked||!!pending||max<1)+'</label><button type="button" class="btn '+(action==='buy'?'primary':'')+'" data-v484-item="'+kind+':'+action+'" '+(blocked||(!pending&&max<1)?'disabled':'')+'>'+(pending?'이전 요청 확인':label)+'</button>'+(price?'<span class="small muted" id="'+id+'-total">총 '+slV423Money(String(price))+'</span>':'<span class="small muted">최대 '+max+'개 사용 가능</span>')+'</div>';};
@@ -5482,7 +5482,7 @@ document.addEventListener('input',e=>{
  if(!prices[id])return;const n=slV484Qty(id),el=$(id+'-total');if(el)el.textContent=n?'총 '+slV423Money(String(n*prices[id])):'수량을 확인하세요.';
 },true);
 async function slV484Run(kind,action,count,batch=null,youth=null){
- if(slV484Busy||sl.busy||!sl.verified)return;
+ if(slV484Busy)return;if(sl.busy||!sl.verified)return notice('서버 연결 확인 중입니다. 잠시 후 다시 시도하세요.');
  const key=slV484PendingKey(kind,action,batch||'',youth||'');
  let data=slV484Pending(kind,action,batch||'',youth||'');
  if(!data){
@@ -5494,6 +5494,7 @@ async function slV484Run(kind,action,count,batch=null,youth=null){
   const res=await slRequest('sl_v484_consumable',data);
   if(!res?.ok){sessionStorage.removeItem(key);throw Error(res?.error||'아이템 처리 실패');}
   sessionStorage.removeItem(key);
+  if(sl.snapshot){if(kind==='morale'&&res.quantity!=null)sl.snapshot.moraleBoosts=res.quantity;if(kind==='potential'&&res.quantity!=null)sl.snapshot.potentialTickets=res.quantity;if(res.wallet!=null)sl.snapshot.wallet=res.wallet;if(res.morale!=null){const club=sl.snapshot.clubs?.find(x=>x.id===s.selected);if(club)club.morale=res.morale;}}
   if(kind==='potential'&&action==='use'){
    if(sl.snapshot)sl.snapshot.potentialTickets=res.quantity;
    if(res.potential!=null&&!res.alreadyProcessed)window.alert(res.message+'\n\n확인을 누르면 잠재력이 다시 숨겨집니다. 재확인 시 탐색권 1장이 필요합니다.');
@@ -5502,12 +5503,12 @@ async function slV484Run(kind,action,count,batch=null,youth=null){
   await slLoad(false);
   window.parent.postMessage({type:'SUPERLEAGUE_WALLET_REFRESH'},location.origin);
   if(!(kind==='potential'&&action==='use'))notice(res.message||'처리 완료');
- }catch(e){notice('아이템 요청: '+String(e?.message||e));}
+ }catch(e){const msg=String(e?.message||e);if(!/시간 초과|network|fetch|failed|서버 오류 (?:5\d\d|429)|서버 복구|서버 연결|로그인 계정이 변경/i.test(msg)){try{sessionStorage.removeItem(key)}catch(_){}}notice('아이템 요청: '+msg);}
  finally{slV484Busy=false;render();}
 }
 document.addEventListener('click',e=>{
  const b=e.target.closest?.('[data-v484-item],[data-v484-scout]');if(!b||b.disabled||!slEmbedded||!slV460Mine())return;
- e.preventDefault();e.stopImmediatePropagation();if(slV484Busy||sl.busy)return;
+ e.preventDefault();e.stopImmediatePropagation();if(slV484Busy)return;if(sl.busy)return notice('서버 동기화 중입니다. 잠시 후 다시 눌러 주세요.');
  if(b.dataset.v484Scout){
   const batch=slV437Batch(),y=batch?.candidates?.find(x=>x.id===b.dataset.v484Scout);
   if(!batch||!y)return;
