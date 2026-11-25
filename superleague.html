@@ -5619,15 +5619,19 @@ var slV487Busy=false;
 function slV487ReturnPanel(){
  if(!slEmbedded||!sl.ready)return '';
  const ev=sl.snapshot?.returnLegend||{},season=Number(ev.releaseSeason||s.season),label=slV458SeasonLabel(season);
- const rules='전설의 선수는 3,000억 P로 영입할 수 있으며, 선수단 정원에 포함되지 않습니다. 단, 거래 및 재계약은 불가능하며, 해당 선수를 영입하고 다음 시즌에 우승하면 특별 보상이 지급됩니다.';
- const old=ev.activeMine?'<div class="note"><b>현재 보유: '+esc(ev.activeMine.name)+'</b> · 이번 시즌 우승 도전 중 · 하반기 토요일 계약 종료</div><div class="spacer"></div>':'';
+ const rules='유럽투어와 선수영입을 통틀어 구단당 전설의 귀환 선수 1명을 보유할 수 있습니다. 새로 영입하거나 교체할 때마다 3,000억 P가 차감됩니다. 일반 선수단 정원에서 제외되며 거래·재계약은 불가능합니다.';
+ const old=ev.activeMine?'<div class="note"><b>현재 보유: '+esc(ev.activeMine.name)+'</b> · '+esc(slV493ContractLabel(ev.activeMine.id))+'</div><div class="spacer"></div>':'';
  let content='<div class="note">'+rules+'</div><div class="spacer"></div>'+old;
  if(ev.status==='waiting'){content+='<div class="empty">'+esc(label)+' 하반기 토요일 시작 시 전설의 귀환 선수 1명이 등장합니다.</div>';}
  else if(ev.status==='available'||ev.status==='claimed'){
   const enough=BigInt(String(sl.snapshot?.wallet||0))>=300000000000n;
   const available=ev.status==='available';
   content+='<div class="line between" style="padding:8px 0"><div><span class="tag gold">전설의 귀환</span> <b>'+esc(ev.name)+'</b> · '+esc(ev.pos)+' · OVR <b>'+Number(ev.ovr)+'</b></div><strong>3,000억 P</strong></div>';
-  if(available)content+='<div class="line"><span class="tag">선착순 1명</span><button type="button" class="btn primary" data-v487-claim="'+season+'" '+(slV487Busy||!sl.verified||!slV460Mine()||!enough?'disabled':'')+'>선수 영입</button>'+(enough?'':'<span class="small muted">포인트 부족</span>')+'</div>';
+  if(available){
+   const samePlayer=ev.activeMine?.name===ev.name;
+   const hint=samePlayer?'현재 같은 선수를 보유 중입니다.':enough?'':'포인트 부족';
+   content+='<div class="line"><span class="tag">선착순 1명</span><button type="button" class="btn primary" data-v487-claim="'+season+'" '+(slV487Busy||!sl.verified||!slV460Mine()||!enough||samePlayer?'disabled':'')+'>'+(ev.activeMine?'3,000억 P로 교체':'선수 영입')+'</button>'+(hint?'<span class="small muted">'+hint+'</span>':'')+'</div>';
+  }
   else content+='<div class="note"><b>영입 완료</b> · '+esc(sl.snapshot?.clubs?.find(c=>c.id===ev.club)?.name||s.teams?.[ev.club]?.name||'구단')+(ev.mine?' (내 구단)':'')+'</div>';
  }else content+='<div class="empty">이번 시즌 전설의 귀환 영입이 종료되었습니다.</div>';
  return block('전설의 귀환',content);
@@ -5641,7 +5645,8 @@ document.addEventListener('click',async e=>{
  if(!ev||ev.status!=='available'||Number(ev.releaseSeason)!==season)return notice('영입 가능 상태를 다시 확인하세요.');
  const key='sl_v487_claim_'+String(sl.snapshot?.viewer?.id)+'_'+season;
  let request;try{request=sessionStorage.getItem(key)||'';}catch(_){}
- if(!request&&!confirm(ev.name+' 선수 영입 · 3,000억 P 차감\n\n계약 기간: 1년 (다음 시즌 하반기 토요일 종료)\n계약 종료 시 선수는 완전히 사라집니다.\n거래, 방출, 재계약 불가 / 일반 10명 정원 제외\n이 선수를 영입하고 다음 시즌 우승 시 선수영입권 1장과 유망주 뽑기권 100장이 지급됩니다.\n\n그래도 영입하시겠습니까?'))return;
+ const action=slV496ReturnAction(ev.name,ev.activeMine);
+ if(!request&&!confirm(action+'\n\n계약 기간: 다음 시즌 하반기 토요일까지\n거래·일반 방출·재계약 불가 / 일반 선수단 정원 제외\n다음 시즌 리그 우승 시 선수영입권 1장과 유망주 뽑기권 100장 지급\n\n진행할까요?'))return;
  try{if(!request){request=slV423Uuid();sessionStorage.setItem(key,request);}}catch(err){return notice(String(err?.message||err));}
  slV487Busy=true;b.disabled=true;
  try{
@@ -5659,16 +5664,25 @@ render();
 // V4.93: private, server-generated European tour legend offers.
 function slV493ContractLabel(id){
  const m=String(id).match(/^return-legend-tour-(\d+)-([01])-/);
- return m?'시즌 '+Number(m[1])+' '+(m[2]==='0'?'상반기':'하반기')+' 종료까지':'시즌 '+Number(String(id).split('-').pop())+' 하반기 토요일까지';
+ const release=Number(m?m[1]:String(id).split('-').pop());
+ if(!Number.isFinite(release))return '계약 기간 확인 중';
+ const season=slV458SeasonLabel(release+1);
+ return m?season+' '+(m[2]==='0'?'상반기':'하반기')+' 종료까지':season+' 하반기 토요일까지';
+}
+function slV496ReturnAction(candidate,active){
+ const action=active?active.name+' → '+candidate+' 교체':candidate+' 선수 영입';
+ return action+' · 3,000억 P 차감'+(active?'\n기존 선수는 선수단에서 빠지고, 기존 선수의 미지급 우승 보상 자격도 종료됩니다.':'');
 }
 var slV493Deciding=false;
 var slV493Shown=new Set();
 function slV493OfferText(o){
- return '유럽투어에서 '+o.name+' ('+o.pos+' · OVR '+o.ovr+') 영입 기회를 획득했습니다.\n\n영입 비용: 3,000억 P\n계약 기간: 다음 시즌 '+(Number(o.half)===0?'상반기':'하반기')+' 종료까지\n계약 종료 시 선수는 완전히 사라집니다.\n거래, 방출 및 재계약 불가 / 일반 선수단 정원 제외\n\n이 선수를 영입하고 다음 시즌 우승 시 선수영입권 1장과 유망주 뽑기권 100장이 지급됩니다.\n\n그래도 영입하시겠습니까?\n취소를 누르면 영입 제안이 사라집니다.';
+ const action=slV496ReturnAction(o.name,o.activeMine);
+ return '유럽투어 전설의 귀환 · '+o.name+' ('+o.pos+' · OVR '+o.ovr+')\n\n'+action+'\n계약 기간: '+slV458SeasonLabel(Number(o.expiresSeason||Number(o.season)+1))+' '+(Number(o.half)===0?'상반기':'하반기')+' 종료까지\n거래·일반 방출·재계약 불가 / 일반 선수단 정원 제외\n다음 시즌 리그 우승 시 선수영입권 1장과 유망주 뽑기권 100장 지급\n\n수락할까요? 취소하면 이번 제안을 거절합니다.';
 }
 function slV493TourOfferPanel(){
  const o=slV473.state?.legendOffer;if(!o)return '';
- return block('유럽투어 · 전설의 귀환', '<div class="note"><b>'+esc(o.name)+'</b> · '+esc(o.pos)+' · OVR '+Number(o.ovr)+' · 3,000억 P · 시즌 '+Number(o.season)+' '+(Number(o.half)===0?'상반기':'하반기')+' 종료까지</div><div class="line" style="margin:8px 0"><button class="btn primary" data-v493-offer="open" '+(slV493Deciding?'disabled':'')+'>영입 여부 선택</button></div>');
+ const current=o.activeMine?'현재 '+esc(o.activeMine.name)+' → ':'';
+ return block('유럽투어 · 전설의 귀환', '<div class="note">'+current+'<b>'+esc(o.name)+'</b> · '+esc(o.pos)+' · OVR '+Number(o.ovr)+' · 3,000억 P</div><div class="line" style="margin:8px 0"><button class="btn primary" data-v493-offer="open" '+(slV493Deciding?'disabled':'')+'>'+(o.activeMine?'교체 여부 선택':'영입 여부 선택')+'</button></div>');
 }
 function slV493ShowOffer(o,force=false){
  if(!o?.id||slV493Deciding||s.tab!=='tour'||!slEmbedded||document.hidden)return;
