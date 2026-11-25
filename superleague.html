@@ -4414,7 +4414,7 @@ marketPage=function(){
   content+=`<div class="note">이번 추첨 <b>${batch.count}명</b> · 발탁 가능한 인원 ${Math.max(0,limit)}명. 선택한 선수만 최초 계약금(1년치 연봉)을 지급하고, 나머지는 공용 추첨 풀로 돌아갑니다.</div><div class="spacer"></div>`;
   content+=`<div class="grid2" style="align-items:stretch">${candidates.map(y=>{
    const checked=slV437Selected.has(y.id),disabled=(!checked&&slV437Selected.size>=limit)||busy;
-   return `<div style="border:1px solid var(--line,#c8d6ce);border-radius:8px;padding:5px"><label style="display:block;border:2px solid ${checked?'#148a54':'var(--line,#c8d6ce)'};background:${checked?'rgba(26,153,90,.08)':'transparent'};border-radius:8px;padding:12px;cursor:pointer"><input type="checkbox" data-action="sl-v437-toggle" data-id="${esc(y.id)}" ${checked?'checked':''} ${disabled?'disabled':''} style="margin-right:8px"><b>${esc(y.name)}</b> <span class="tag">${esc(y.pos)}</span><div class="small muted">${y.age}세 · OVR ${y.ovr} · 최초 계약금 ${slV437Price(y)}</div></label><div style="padding:6px">${y.revealedPotential!=null?`<b class="tag gold">잠재력 ${Number(y.revealedPotential)}</b>`:`<button type="button" class="btn xs" data-v484-scout="${esc(y.id)}" ${busy||slV484Busy||Number(sl.snapshot?.potentialTickets||0)<1?'disabled':''}>잠재력 탐색권 1장 사용</button>`}</div></div>`;
+   return `<div style="border:1px solid var(--line,#c8d6ce);border-radius:8px;padding:5px"><label style="display:block;border:2px solid ${checked?'#148a54':'var(--line,#c8d6ce)'};background:${checked?'rgba(26,153,90,.08)':'transparent'};border-radius:8px;padding:12px;cursor:pointer"><input type="checkbox" data-action="sl-v437-toggle" data-id="${esc(y.id)}" ${checked?'checked':''} ${disabled?'disabled':''} style="margin-right:8px"><b>${esc(y.name)}</b> <span class="tag">${esc(y.pos)}</span><div class="small muted">${y.age}세 · OVR ${y.ovr} · 최초 계약금 ${slV437Price(y)}</div></label><div style="padding:6px"><button type="button" class="btn xs" data-v484-scout="${esc(y.id)}" ${busy||slV484Busy||Number(sl.snapshot?.potentialTickets||0)<1?'disabled':''}>잠재력 탐색권 1장 사용</button></div></div>`;
   }).join('')}</div><div class="spacer"></div>`;
   content+=`<div class="note">선택 <b>${slV437Selected.size}명</b> · 최초 계약금 합계 <b>${slV423Money(slV437SelectionFee().toString())}</b></div><div class="spacer"></div>
    <div class="line" style="gap:8px;flex-wrap:wrap"><button type="button" class="btn primary" data-action="sl-v437-appoint" ${busy||slV437Selected.size<1||slV437Selected.size>limit?'disabled':''}>선택 선수 ${slV437Selected.size}명 발탁</button>
@@ -4883,7 +4883,7 @@ function slV443YouthPanel(){
   content+=`<div class="note">이번 추첨 <b>${batch.count}명</b> · 발탁 가능한 인원 ${Math.max(0,limit)}명. 선택한 선수만 최초 계약금(1년치 연봉)을 지급하고, 나머지는 공용 추첨 풀로 돌아갑니다. <b>다른 탭 이동 또는 3분 동안 미결정 시 자동 반환</b> · 남은 시간 <b id="sl-v451-countdown">계산 중</b></div><div class="spacer"></div>`;
   content+=`<div class="grid2" style="align-items:stretch">${candidates.map(y=>{
    const checked=slV437Selected.has(y.id),disabled=(!checked&&slV437Selected.size>=limit)||busy;
-   return `<div style="border:1px solid var(--line,#c8d6ce);border-radius:8px;padding:5px"><label style="display:block;border:2px solid ${checked?'#148a54':'var(--line,#c8d6ce)'};background:${checked?'rgba(26,153,90,.08)':'transparent'};border-radius:8px;padding:12px;cursor:pointer"><input type="checkbox" data-action="sl-v437-toggle" data-id="${esc(y.id)}" ${checked?'checked':''} ${disabled?'disabled':''} style="margin-right:8px"><b>${esc(y.name)}</b> <span class="tag">${esc(y.pos)}</span><div class="small muted">${y.age}세 · OVR ${y.ovr} · 최초 계약금 ${slV437Price(y)}</div></label><div style="padding:6px">${y.revealedPotential!=null?`<b class="tag gold">잠재력 ${Number(y.revealedPotential)}</b>`:`<button type="button" class="btn xs" data-v484-scout="${esc(y.id)}" ${busy||slV484Busy||Number(sl.snapshot?.potentialTickets||0)<1?'disabled':''}>잠재력 탐색권 1장 사용</button>`}</div></div>`;
+   return `<div style="border:1px solid var(--line,#c8d6ce);border-radius:8px;padding:5px"><label style="display:block;border:2px solid ${checked?'#148a54':'var(--line,#c8d6ce)'};background:${checked?'rgba(26,153,90,.08)':'transparent'};border-radius:8px;padding:12px;cursor:pointer"><input type="checkbox" data-action="sl-v437-toggle" data-id="${esc(y.id)}" ${checked?'checked':''} ${disabled?'disabled':''} style="margin-right:8px"><b>${esc(y.name)}</b> <span class="tag">${esc(y.pos)}</span><div class="small muted">${y.age}세 · OVR ${y.ovr} · 최초 계약금 ${slV437Price(y)}</div></label><div style="padding:6px"><button type="button" class="btn xs" data-v484-scout="${esc(y.id)}" ${busy||slV484Busy||Number(sl.snapshot?.potentialTickets||0)<1?'disabled':''}>잠재력 탐색권 1장 사용</button></div></div>`;
   }).join('')}</div><div class="spacer"></div>`;
   content+=`<div class="note">선택 <b>${slV437Selected.size}명</b> · 최초 계약금 합계 <b>${slV423Money(slV437SelectionFee().toString())}</b></div><div class="spacer"></div>
    <div class="line" style="gap:8px;flex-wrap:wrap"><button type="button" class="btn primary" data-action="sl-v437-appoint" ${busy||slV437Selected.size<1||slV437Selected.size>limit?'disabled':''}>선택 선수 ${slV437Selected.size}명 발탁</button>
@@ -5475,7 +5475,7 @@ slV423ItemsPage=function(){
  const buyMax=(price)=>Math.min(100,Math.floor(wallet/price));
  const row=(kind,action,id,max,label,price)=>{const pending=slV484Pending(kind,action);return '<div class="line" style="gap:8px;flex-wrap:wrap;margin:8px 0"><label>수량 '+slV484Input(id,max,blocked||!!pending||max<1)+'</label><button type="button" class="btn '+(action==='buy'?'primary':'')+'" data-v484-item="'+kind+':'+action+'" '+(blocked||(!pending&&max<1)?'disabled':'')+'>'+(pending?'이전 요청 확인':label)+'</button>'+(price?'<span class="small muted" id="'+id+'-total">총 '+slV423Money(String(price))+'</span>':'<span class="small muted">최대 '+max+'개 사용 가능</span>')+'</div>';};
  return html+block('사기 상승권 · 500억 P','<div class="line between"><strong>현재 구단 사기: '+morale+' / 100</strong><span class="tag">보유 '+count+'개</span></div><div class="note">1개당 500억 P · 사용 시 사기 +1 · 1~100개 일괄 구매 및 사용 · 사기 100 초과 사용 불가.</div>'+row('morale','buy','sl-v484-morale-buy',buyMax(50000000000),'수량만큼 구매',50000000000)+row('morale','use','sl-v484-morale-use',useMax,'수량만큼 사용',0))
- +block('잠재력 탐색권 · 100억 P','<div class="line between"><strong>유망주 잠재력 탐색</strong><span class="tag">보유 '+scouts+'장</span></div><div class="note">1장당 100억 P · 선수 영입에서 유망주 뽑기 후 발탁 전에 후보 한 명의 잠재력을 확인할 수 있습니다. 확인한 선수는 같은 추첨에서 재확인 시 추가 소모되지 않습니다.</div>'+row('potential','buy','sl-v484-potential-buy',buyMax(10000000000),'수량만큼 구매',10000000000)+'<button class="btn xs" data-action="tab" data-value="market">선수 영입으로 이동</button>');
+ +block('잠재력 탐색권 · 100억 P','<div class="line between"><strong>유망주 잠재력 탐색</strong><span class="tag">보유 '+scouts+'장</span></div><div class="note">1장당 100억 P · 선수 영입에서 유망주 뽑기 후 발탁 전에 후보 한 명의 잠재력을 확인할 수 있습니다. 잠재력은 확인 팝업에서만 1회 표시됩니다. 팝업을 닫으면 다시 비공개되며, 동일 선수라도 재확인할 때마다 1장이 소모됩니다.</div>'+row('potential','buy','sl-v484-potential-buy',buyMax(10000000000),'수량만큼 구매',10000000000)+'<button class="btn xs" data-action="tab" data-value="market">선수 영입으로 이동</button>');
 };
 document.addEventListener('input',e=>{
  const id=e.target?.id,prices={'sl-v484-morale-buy':50000000000,'sl-v484-potential-buy':10000000000};
@@ -5495,13 +5495,13 @@ async function slV484Run(kind,action,count,batch=null,youth=null){
   if(!res?.ok){sessionStorage.removeItem(key);throw Error(res?.error||'아이템 처리 실패');}
   sessionStorage.removeItem(key);
   if(kind==='potential'&&action==='use'){
-   const candidate=sl.snapshot?.youthBatch?.id===batch?sl.snapshot.youthBatch.candidates.find(y=>y.id===youth):null;
-   if(candidate)candidate.revealedPotential=res.potential;
    if(sl.snapshot)sl.snapshot.potentialTickets=res.quantity;
+   if(res.potential!=null&&!res.alreadyProcessed)window.alert(res.message+'\n\n확인을 누르면 잠재력이 다시 숨겨집니다. 재확인 시 탐색권 1장이 필요합니다.');
+   else notice('이미 처리된 탐색 요청입니다. 다시 확인하려면 탐색권을 새로 사용하세요.');
   }
   await slLoad(false);
   window.parent.postMessage({type:'SUPERLEAGUE_WALLET_REFRESH'},location.origin);
-  notice(res.message||'처리 완료');
+  if(!(kind==='potential'&&action==='use'))notice(res.message||'처리 완료');
  }catch(e){notice('아이템 요청: '+String(e?.message||e));}
  finally{slV484Busy=false;render();}
 }
@@ -5510,8 +5510,8 @@ document.addEventListener('click',e=>{
  e.preventDefault();e.stopImmediatePropagation();if(slV484Busy||sl.busy)return;
  if(b.dataset.v484Scout){
   const batch=slV437Batch(),y=batch?.candidates?.find(x=>x.id===b.dataset.v484Scout);
-  if(!batch||!y||y.revealedPotential!=null)return;
-  if(!slV484Pending('potential','use',batch.id,y.id)&&!confirm(y.name+' 선수의 잠재력을 탐색권 1장으로 확인할까요?'))return;
+  if(!batch||!y)return;
+  if(!slV484Pending('potential','use',batch.id,y.id)&&!confirm(y.name+' 선수의 잠재력을 탐색권 1장으로 확인할까요? 팝업을 닫으면 다시 비공개됩니다.'))return;
   void slV484Run('potential','use',1,batch.id,y.id);return;
  }
  const [kind,action]=b.dataset.v484Item.split(':');const id='sl-v484-'+kind+'-'+action;
