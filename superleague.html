@@ -204,7 +204,44 @@ html.excel-embedded .app{min-height:100vh}
 .sl-user-story{background:#fbfefc;border-left:3px solid #32915e}
 .sl-user-author{color:#217346;font-weight:800;margin:7px 0 3px}
 @media(max-width:550px){.sl-compose-row{flex-wrap:wrap}.sl-compose-row button{width:100%}}
-</style><style>.sl-v459-observing .toolstrip [data-action="next-day"],.sl-v459-observing .toolstrip [data-action="fast-forward"],.sl-v459-observing #sl-offline-reset,.sl-v459-observing #sl-season-reset-btn{display:none!important}#sl-v459-resign{color:#9f2727;border-color:#cda6a6}</style></head><body><div class="app"><div class="titlebar"><div class="left"><span class="filename">풋살매니저_V4.18.xlsx</span><span class="ver">— V4.60 · 시즌 1 / 관전 모드</span></div><span id="title-meta" class="ver">관리본부 / 시뮬레이션</span></div><div class="ribbon"><div class="menus"><span class="menu-current">홈</span><span>삽입</span><span>데이터</span><span>검토</span><span>보기</span></div><div class="toolstrip"><div class="toolgroup"><span class="minor">구단</span><b id="r-club">미선택</b></div><div class="toolgroup"><span class="minor">시즌</span><b id="r-season">1</b><span class="minor">운영일</span><b id="r-day">토</b></div><div class="toolgroup"><span class="minor">보유 포인트</span><b id="r-points">12,500 P</b></div><div class="toolgroup"><button class="btn xs" id="excel-bridge-back" type="button" hidden>↩ Sheet1</button><button class="btn xs" data-action="next-day">1일 진행 · 즉시 / 휴식 해제</button><button class="btn xs" data-action="fast-forward" data-days="7">1주 진행</button><button class="btn xs" data-action="fast-forward" data-days="14">1시즌 진행</button><button class="btn xs" data-action="fast-forward" data-days="28">2시즌 진행</button><button class="btn xs" data-action="fast-forward" data-days="42">3시즌 진행</button></div><div class="toolgroup"><button class="btn xs" id="sl-v459-resign" type="button" data-action="sl-v459-resign" hidden>감독 즉시 사임</button><button class="btn xs primary" id="sl-v459-join" type="button" data-action="sl-v459-join" hidden>감독 부임하기</button><button class="btn xs gray" id="sl-offline-reset" data-action="reset">새 구단 선택 / 초기화</button><button class="btn xs" id="sl-season-reset-btn" type="button" hidden title="운영자 전용 · 공용 슈퍼리그를 프리시즌 첫날로 초기화">⟲ 프리시즌 초기화 (운영자)</button></div></div></div><div class="workspace"><aside class="side" aria-label="게임 메뉴"><div class="side-logo"><div><b>슈퍼리그</b><small>CLUB MANAGEMENT</small></div></div><nav class="side-links" id="side-navigation" aria-label="운영 메뉴"></nav><div class="side-bottom"><b>온라인 공용 리그</b><p>구단 소유·이적·뉴스는 서버 기준<br>전술·예산·친선은 서버에 저장됩니다.</p></div></aside><div class="workarea"><div class="formula"><div class="celladdr" id="cell-address">A1</div><div class="fx">ƒx</div><div class="formulaText" id="formula-text">=SUPERLEAGUE(20개 구단, 선수 편성, 주간 일정)</div></div><div class="columns"><span></span><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span></div><main class="worksheet"><div class="sheet-content" id="screen"></div></main></div></div><div class="statusbar"><span>준비 · 브라우저에서 자동 저장 · 한국시간 00:00 게임일 변경 · 공식경기 09:00/21:00</span><span>가상 슈퍼리그 / 데이터: 20개 구단 + 선수 200명</span></div><div id="chooser"></div><div id="toast" class="toast" role="status" aria-live="polite"></div></div>
+</style><style>.sl-v459-observing .toolstrip [data-action="next-day"],.sl-v459-observing .toolstrip [data-action="fast-forward"],.sl-v459-observing #sl-offline-reset,.sl-v459-observing #sl-season-reset-btn{display:none!important}#sl-v459-resign{color:#9f2727;border-color:#cda6a6}</style><style>
+/* Friendly broadcast pitch and motion cues */
+.v495-broadcast .v47-pitch{height:auto;aspect-ratio:2/1;min-height:218px;max-height:440px;margin:7px 0 10px;border:1px solid #1e4c42;border-radius:8px;background:repeating-linear-gradient(90deg,#285e48 0 10%,#2c644c 10% 20%);box-shadow:none}
+.v495-broadcast .v47-pitch::before,.v495-broadcast .v47-pitch::after{display:none}
+.v495-field{position:absolute;inset:5% 5%;border:1px solid #e2f3d1a0;pointer-events:none}
+.v495-field::before,.v495-field::after{content:'';position:absolute;top:0;bottom:0;left:50%;border-left:1px solid #e2f3d1a0}
+.v495-field::after{top:50%;bottom:auto;width:15%;aspect-ratio:1;border:1px solid #e2f3d1a0;border-radius:50%;transform:translate(-50%,-50%)}
+.v495-box{position:absolute;top:30%;width:14%;height:40%;border:1px solid #e2f3d1a0}
+.v495-box.left{left:0;border-left:0}.v495-box.right{right:0;border-right:0}
+.v495-broadcast .v47-goal{top:42%;height:16%;width:3.5%;border:1px solid #eaf4ddb0;background:repeating-linear-gradient(0deg,transparent 0 4px,#eff5e955 4px 5px),repeating-linear-gradient(90deg,#102f29 0 4px,#58917aaa 4px 5px)}
+.v495-broadcast .v47-goal.left{left:1.5%;border-right:0}.v495-broadcast .v47-goal.right{right:1.5%;border-left:0}
+.v495-broadcast .v47-goal.v495-scored{box-shadow:0 0 16px #ffd975;background-color:#ffdc73;border-color:#ffe794}
+.v495-broadcast .v47-dot{width:26px;height:26px;border:1px solid #f3fbfc;left:0;top:0;will-change:transform;transform:translate3d(0,0,0) translate(-50%,-50%)}
+.v495-broadcast .v47-dot.home,.v495-broadcast .v47-legend i.home{background:#152c48;color:#f4faff}
+.v495-broadcast .v47-dot.away,.v495-broadcast .v47-legend i.away{background:#fbce78;color:#302313}
+.v495-broadcast .v47-dot>b{transform:scaleX(var(--v495-dive,1))}
+.v495-broadcast .v410-player-name,.v495-broadcast .v47-dot.away .v410-player-name{top:25px;min-width:0;max-width:84px;padding:1px 3px;border:0;background:#0d291ecc;color:#fff;box-shadow:none}
+.v495-broadcast .v49-active-dot{z-index:5;box-shadow:0 0 0 2px #fff3b5,0 0 0 5px #fff3b53b!important}
+.v495-broadcast .v47-ball,.v495-ball-shadow{left:0;top:0;position:absolute;will-change:transform;transform:translate3d(0,0,0) translate(-50%,-50%);pointer-events:none}
+.v495-broadcast .v47-ball{width:10px;height:10px;border:1px solid #1b2d36;z-index:7;box-shadow:none}
+.v495-ball-shadow{width:12px;height:7px;background:#091c1c75;border-radius:50%;z-index:6}
+.v495-broadcast .v47-flash{margin:4px 0 0;min-height:0;display:flex;align-items:center}
+.v495-score{font-variant-numeric:tabular-nums;background:#183c36;color:#fff;border-radius:4px;padding:3px 7px;min-width:40px;text-align:center}
+@media(max-width:650px){
+ .workspace:has(.v495-broadcast){flex-direction:column}
+ .workspace:has(.v495-broadcast)>.side{width:100%;min-width:0;min-height:0;height:auto;padding:4px 8px}
+ .workspace:has(.v495-broadcast) .side-logo,.workspace:has(.v495-broadcast) .side-bottom{display:none}
+ .workspace:has(.v495-broadcast) .side-links{flex-direction:row;overflow-x:auto;gap:4px}
+ .workspace:has(.v495-broadcast) .side-btn{width:auto;flex:none;min-height:36px;padding:6px 9px}
+ .workspace:has(.v495-broadcast)>.workarea{width:100%}
+ .sheet-content:has(.v495-broadcast){min-width:0}
+ .v495-broadcast{padding:7px}
+ .v495-broadcast .v47-pitch{min-height:162px;aspect-ratio:1.5}
+ .v495-broadcast .v47-dot{width:21px;height:21px}
+ .v495-broadcast .v410-player-name,.v495-broadcast .v47-dot.away .v410-player-name{top:20px;max-width:55px;font-size:8px}
+}
+</style>
+</head><body><div class="app"><div class="titlebar"><div class="left"><span class="filename">풋살매니저_V4.18.xlsx</span><span class="ver">— V4.60 · 시즌 1 / 관전 모드</span></div><span id="title-meta" class="ver">관리본부 / 시뮬레이션</span></div><div class="ribbon"><div class="menus"><span class="menu-current">홈</span><span>삽입</span><span>데이터</span><span>검토</span><span>보기</span></div><div class="toolstrip"><div class="toolgroup"><span class="minor">구단</span><b id="r-club">미선택</b></div><div class="toolgroup"><span class="minor">시즌</span><b id="r-season">1</b><span class="minor">운영일</span><b id="r-day">토</b></div><div class="toolgroup"><span class="minor">보유 포인트</span><b id="r-points">12,500 P</b></div><div class="toolgroup"><button class="btn xs" id="excel-bridge-back" type="button" hidden>↩ Sheet1</button><button class="btn xs" data-action="next-day">1일 진행 · 즉시 / 휴식 해제</button><button class="btn xs" data-action="fast-forward" data-days="7">1주 진행</button><button class="btn xs" data-action="fast-forward" data-days="14">1시즌 진행</button><button class="btn xs" data-action="fast-forward" data-days="28">2시즌 진행</button><button class="btn xs" data-action="fast-forward" data-days="42">3시즌 진행</button></div><div class="toolgroup"><button class="btn xs" id="sl-v459-resign" type="button" data-action="sl-v459-resign" hidden>감독 즉시 사임</button><button class="btn xs primary" id="sl-v459-join" type="button" data-action="sl-v459-join" hidden>감독 부임하기</button><button class="btn xs gray" id="sl-offline-reset" data-action="reset">새 구단 선택 / 초기화</button><button class="btn xs" id="sl-season-reset-btn" type="button" hidden title="운영자 전용 · 공용 슈퍼리그를 프리시즌 첫날로 초기화">⟲ 프리시즌 초기화 (운영자)</button></div></div></div><div class="workspace"><aside class="side" aria-label="게임 메뉴"><div class="side-logo"><div><b>슈퍼리그</b><small>CLUB MANAGEMENT</small></div></div><nav class="side-links" id="side-navigation" aria-label="운영 메뉴"></nav><div class="side-bottom"><b>온라인 공용 리그</b><p>구단 소유·이적·뉴스는 서버 기준<br>전술·예산·친선은 서버에 저장됩니다.</p></div></aside><div class="workarea"><div class="formula"><div class="celladdr" id="cell-address">A1</div><div class="fx">ƒx</div><div class="formulaText" id="formula-text">=SUPERLEAGUE(20개 구단, 선수 편성, 주간 일정)</div></div><div class="columns"><span></span><span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span><span>G</span><span>H</span><span>I</span><span>J</span></div><main class="worksheet"><div class="sheet-content" id="screen"></div></main></div></div><div class="statusbar"><span>준비 · 브라우저에서 자동 저장 · 한국시간 00:00 게임일 변경 · 공식경기 09:00/21:00</span><span>가상 슈퍼리그 / 데이터: 20개 구단 + 선수 200명</span></div><div id="chooser"></div><div id="toast" class="toast" role="status" aria-live="polite"></div></div>
 <script>'use strict';
 const EXCEL_IDENTITY_KEY='excel-games-my-nickname-v1';
 function excelStoredNickname(){try{return String(localStorage.getItem(EXCEL_IDENTITY_KEY)||'').trim().slice(0,16)}catch(_){return ''}}
@@ -2427,41 +2464,63 @@ function v411Pose(m,scene,f){
  return {positions:p,ball,stage,label,scene};
 }
 function v411Board(){
- const original=v410Board();
- return original.replace('친선경기 · 주요 장면 전술 중계','친선경기 · 60초 하이라이트 모음').replace(
- '<div class="v410-direction">',
- '<div class="v411-reel-header"><span id="v411-scene">전반 하이라이트 준비 중</span><b id="v411-minute">0분</b></div><div class="v410-direction">'
- ).replace('<div class="v47-goal right"></div>','<div class="v47-goal right"></div><div id="v411-cut" class="v411-cut">하이라이트 재생</div>')
- .replace('골·결정적 슈팅 위주의 편집 중계 · 한 팀이 상대 골대로 전진 · 선수 이름 표시 · 전후반 각 60초. 모든 슈팅 수치는 경기 기록에 반영됩니다.',
- '전반 20분을 주요 장면 60초로 편집 · 후반도 60초로 재생 · 패스 교환·침투·수비 압박·슈팅을 연속 동선으로 재생 · 하프타임 전술 변경 가능.');
+ return v410Board()
+  .replace('v47-broadcast v410-broadcast','v47-broadcast v410-broadcast v495-broadcast')
+  .replace('친선경기 · 주요 장면 전술 중계','친선경기 중계')
+  .replace('<div class="v47-match-time">','<div class="v47-match-time"><b id="v495-score" class="v495-score" aria-label="홈 : 원정 점수"></b>')
+  .replace('id="v47-pitch">','id="v47-pitch"><div class="v495-field" aria-hidden="true"><i class="v495-box left"></i><i class="v495-box right"></i></div>')
+  .replace('<div class="v47-ball"','<div class="v495-ball-shadow" aria-hidden="true"></div><div class="v47-ball"')
+  .replace(/<div class="v47-boardnote">.*?<\/div>/,'');
 }
+let v411PitchView=null;
 function v411Draw(){
- const m=s.match;if(m?.kind!=='friendly-pvp'||s.tab!=='match')return;
- const reel=v411Reel(m);
- const running=['first','second'].includes(m.phase);
+ const m=s.match,pitch=$('v47-pitch');
+ if(m?.kind!=='friendly-pvp'||s.tab!=='match'||!pitch)return;
+ if(v411PitchView?.pitch!==pitch){
+  v411PitchView?.observer.disconnect();
+  const view={pitch,width:pitch.clientWidth,height:pitch.clientHeight};
+  view.observer=new ResizeObserver(([entry])=>{
+   view.width=entry.contentRect.width;
+   view.height=entry.contentRect.height;
+   if(m.phase==='halftime'||m.phase==='finished')v411Draw();
+  });
+  view.observer.observe(pitch);
+  v411PitchView=view;
+ }
+ const size=v411PitchView;
+ const reel=v411Reel(m),running=['first','second'].includes(m.phase);
  const sec=running?clamp((Date.now()-m.segmentStart)/1000,0,60):60;
  const idx=Math.min(reel.scenes.length-1,Math.floor(sec/(60/reel.scenes.length)));
  const sc=reel.scenes[idx];if(!sc)return;
- const p=clamp((sec-sc.start)/(sc.end-sc.start),0,1);
- const frame=v411Pose(m,sc,p);
+ const p=clamp((sec-sc.start)/(sc.end-sc.start),0,1),frame=v411Pose(m,sc,p);
+ const transform=(pt,lift=0,scale=1)=>`translate3d(${pt.x*size.width/100}px,${pt.y*size.height/100-lift}px,0) translate(-50%,-50%) scale(${scale})`;
  for(const side of ['home','away'])for(let i=0;i<5;i++){
   const el=$(`v47-${side}-${i}`);if(!el)continue;
-  const pt=frame.positions[side][i],id=(side==='home'?m.lineup:m.defendingLineup)[i];
-  el.style.left=clamp(pt.x,4,96)+'%';el.style.top=clamp(pt.y,8,92)+'%';
+  const id=(side==='home'?m.lineup:m.defendingLineup)[i];
+  const stretch=i===0&&frame.keeper===side?1+.28*frame.dive:1;
+  el.style.transform=transform(frame.positions[side][i])+ ` scaleX(${stretch})`;
+  el.style.setProperty('--v495-dive',1/stretch);
   el.classList.toggle('v49-injured',!!s.injuries?.[id]);
-  el.classList.toggle('v49-active-dot',side===sc.ev.side&&(i===sc.shooter||frame.stage==='pass'&&i===sc.support));
+  el.classList.toggle('v49-active-dot',frame.holder?.side===side&&frame.holder.i===i);
  }
- const ball=$('v47-ball');if(ball){ball.style.left=clamp(frame.ball.x,1,99)+'%';ball.style.top=clamp(frame.ball.y,3,97)+'%';}
- const cut=$('v411-cut');if(cut){const show=p<.065;cut.style.opacity=show?'1':'0';cut.textContent=`${m.phase==='second'?'후반':'전반'} 주요 장면 ${idx+1} / ${reel.n}`;}
- const sceneTitle=$('v411-scene');if(sceneTitle)sceneTitle.textContent=`${m.phase==='second'?'후반':'전반'} 하이라이트 ${idx+1} / ${reel.n}`;
- const minute=$('v411-minute');if(minute)minute.textContent=`${sc.ev.min}분`;
- const clock=$('v47-clock');if(clock)clock.textContent=m.phase==='halftime'?'하프타임 · 교체/전술 변경':m.phase==='finished'?'경기 종료':`${m.phase==='second'?'후반':'전반'} 하이라이트 · 남은 ${String(Math.ceil(60-sec)).padStart(2,'0')}초`;
+ const ball=$('v47-ball'),shadow=pitch.querySelector('.v495-ball-shadow');
+ const lift=frame.ball.lift||0;
+ if(ball)ball.style.transform=transform(frame.ball,lift*size.height/100,1+lift*.023);
+ if(shadow){shadow.style.transform=transform(frame.ball,0,1-lift*.022);shadow.style.opacity=1-lift*.065;}
+ pitch.querySelector('.v47-goal.left').classList.toggle('v495-scored',frame.goal&&sc.ev.side==='away');
+ pitch.querySelector('.v47-goal.right').classList.toggle('v495-scored',frame.goal&&sc.ev.side==='home');
+ const phase=m.phase==='second'?'후반':m.phase==='first'?'전반':m.phase==='halftime'?'하프타임':'종료';
+ const boardScore=$('v495-score');
+ if(boardScore)boardScore.textContent=`${m.hs} : ${m.as}`;
+ const clock=$('v47-clock');
+ if(clock)clock.textContent=running?`${sc.ev.min}′ · 남은 ${String(Math.ceil(60-sec)).padStart(2,'0')}초`:phase;
  const fill=$('v47-time-fill');if(fill)fill.style.width=Math.round(sec/60*100)+'%';
- const flash=$('v47-flash');if(flash){
-  flash.textContent=m.phase==='halftime'?'전반 하이라이트 종료 · 교체와 포메이션 조정 가능':m.phase==='finished'?m.lastFlash||'경기 종료':`${sc.ev.min}분 · ${frame.label}`;
-  flash.className='v47-flash v49-live-highlight'+(frame.stage==='result'&&sc.ev.kind==='goal'?' goal':'');
+ const flash=$('v47-flash');
+ if(flash){
+  flash.textContent=m.phase==='halftime'?'선수 교체 및 전술 변경 가능':m.phase==='finished'?'경기 종료':frame.label;
+  flash.classList.toggle('goal',running&&frame.goal);
  }
- const score=$('live-minute');if(score)score.textContent=`${m.phase==='second'?'후반':m.phase==='first'?'전반':m.phase==='halftime'?'하프타임':'종료'} · ${sc.ev.min}' · 주요 장면 ${idx+1}/${reel.n}`;
+ const score=$('live-minute');if(score)score.textContent=running?`${phase} · ${sc.ev.min}′`:phase;
 }
 // Only actual results are counted, at the exact point where the shot animation
 // reaches its outcome. Edited-out low-impact attacks are still included in stats.
@@ -2771,17 +2830,6 @@ dash=function(){
 };
 const v412Switch=switchTab;
 switchTab=function(tab){if(tab==='transfer'){s.tab='transfer';save();render();return;}v412Switch(tab);};
-// Replaced through a final small wrapper because the overlay's heading is text,
-// not a commentary entry. Scoring and scene choreography remain untouched.
-const v412DrawOld=v411Draw;
-v411Draw=function(){
- v412DrawOld();
- const cut=$('v411-cut');if(cut)cut.style.display='none';
- const sc=$('v411-scene');if(sc)sc.textContent='';
- const score=$('live-minute');if(score)score.textContent=score.textContent.replace(/ · 주요 장면 \d+\/\d+/g,'');
-};
-v49Draw=v411Draw;v47PaintPitch=v411Draw;
-
 // Explicit two-sided offer UI event bindings. No acceptance is claimed from actual people.
 document.addEventListener('change',e=>{
  const id=e.target.id;
@@ -4758,115 +4806,153 @@ squadPage=function(){
  '유망주는 20세에 1군 자리가 있으면 레전드로 승격합니다. 1군 10명이 가득 차면 유망주 등록이 자동 종료되고 잠재력 85 초과인 유망주는 20세에 성인 FA로 전환됩니다. 발탁 유망주는 23세까지 불만·파업이 없습니다.<div class="spacer"></div>포지션별 순서(GK → DF → MF → FW) ·');
 };
 
-// Variety in the visual match reel: tiki-taka, counter attacks, crosses, occasional solo dribbles.
-// This changes NO goals or results. An offside scene can only be a non-goal highlight.
-const v442BasePose=v411Pose;
-function v442Pattern(m,sc){
- const ids=sc.ev.side==='home'?m.lineup:m.defendingLineup;
- const scorer=ply(ids?.[sc.shooter]);
- if(sc.index%11===0&&scorer?.pos==='FW'&&Number(scorer.ovr)>=90)return 'solo';
- return ['tiki','through','cross','counter','tiki','through','cross','tiki','counter'][sc.index%9];
-}
-function v442PoseFor(m,scene,f,mode){
- const pose=v439ScenePose(m,scene,f),p=pose.positions;
- const side=pose.side,a=p[side],d=p[pose.other],dir=side==='home'?1:-1;
- const x=val=>side==='home'?val:100-val;
- const point=(xx,yy)=>({x:clamp(x(xx),4,96),y:clamp(yy,12,88)});
- const run=(start,end)=>v411Smooth(clamp((f-start)/(end-start),0,1));
- const link=pose.link,wing=pose.wing,sup=pose.support,shot=pose.shooter,lane=pose.lane;
-  // V4.45: Only through balls trigger high-line pressing. Other patterns retain a
-  // coherent back line and the defender tracks runners inside the final third.
-  if(mode!=='through'){
-   const r=v411Smooth(clamp((f-.30)/(.79-.30),0,1));
-   d[1]=point(83-4*r,lane-10);
-   d[2]=point(86-4*r,lane+11);
-   d[3]=point(86-2*r,lane-28);
-   d[4]=point(88-3*r,lane+29);
-  }
-  if(mode==='tiki'){
-  a[sup]=point(31+24*run(.12,.7),lane+10*Math.sin(Math.PI*f)+4);
-  a[link]=point(39+23*run(.14,.7),lane-12-4*Math.sin(Math.PI*f));
-  a[wing]=point(33+32*run(.32,.8),lane+25-8*run(.32,.8));
-  a[shot]=point(55+22*run(.44,.85),lane+2);
- }else if(mode==='cross'){
-  a[wing]=point(35+38*run(.14,.6),lane<50?13:84);
-  a[sup]=point(29+28*run(.16,.74),lane<50?27:71);
-  a[shot]=point(50+31*run(.43,.78),46+6*Math.sin(Math.PI*f));
-  a[link]=point(47+21*run(.38,.8),lane<50?67:33);
-  // Near-post and far-post defenders actively contest the cross.
-   const duel=run(.59,.78);
-   d[1]=point(86-7*duel,44+3*duel);
-   d[2]=point(88-8*duel,59-4*duel);
- }else if(mode==='counter'){
-  a[link]=point(25+46*run(.06,.62),lane-17);
-  a[wing]=point(37+39*run(.14,.66),lane+21);
-  a[shot]=point(43+43*run(.24,.73),lane-3);
-  d[1]=point(83-5*run(.2,.64),lane-7);d[3]=point(85-4*run(.3,.72),lane+22);
- }else if(mode==='solo'){
-  a[shot]=point(38+50*run(.26,.79),lane-9*Math.sin(Math.PI*f*2.2));
-  a[sup]=point(30+22*run(.06,.62),lane+25);
-  d[1]=point(82-4*run(.3,.5),lane-11*Math.sin(Math.PI*f*1.8));
-  d[2]=point(85-5*run(.43,.64),lane+11*Math.cos(Math.PI*f*1.6));
+// Friendly highlights reconstruct the recorded outcome on a shared animation clock.
+// Coordinates run left to right in the attacking team's frame of reference.
+const v495Patterns=[
+ {name:'삼각 패스',routes:{D:[25,-9,59,-10],L:[40,12,66,18],W:[49,-30,80,-24],S:[51,6,80,1]},passes:[[.11,.24,'L'],[.28,.40,'D'],[.44,.58,'W'],[.64,.78,'S']]},
+ {name:'뒷공간 침투',routes:{D:[25,10,49,16],L:[42,-10,61,-14],W:[54,28,79,25],S:[48,10,85,-5,.44,56,10]},passes:[[.14,.33,'L'],[.48,.68,'S']]},
+ {name:'측면 크로스',routes:{D:[28,12,52,9],L:[44,-18,75,20],W:[38,-29,85,-30],S:[52,5,83,-5,.52,66,1]},passes:[[.12,.35,'W'],[.59,.79,'S',9,-4]]},
+ {name:'빠른 역습',routes:{D:[25,-13,58,-16],L:[30,8,63,10],W:[41,-26,79,-27],S:[37,14,87,5,.33,55,10]},passes:[[.09,.31,'W'],[.38,.58,'S']],first:'L'},
+ {name:'오버래핑 컷백',routes:{D:[31,10,65,19],L:[46,-16,76,-10],W:[36,-22,91,-29,.36,60,-30],S:[52,8,78,0,.55,75,11]},passes:[[.12,.29,'L'],[.36,.56,'W'],[.69,.80,'S']]},
+ {name:'단독 돌파',routes:{D:[26,12,55,20],L:[44,5,75,19],W:[53,-29,77,-27],S:[39,-8,83,-1,.50,62,12]},passes:[[.12,.34,'S']]},
+ {name:'반대편 전환',routes:{D:[28,18,55,20],L:[44,24,68,15],W:[49,-30,76,-31],S:[53,10,81,0]},passes:[[.12,.29,'L'],[.38,.61,'W',8,5],[.66,.79,'S']]},
+ {name:'원투 패스',routes:{D:[27,12,57,17],L:[42,-14,75,-13],W:[56,29,81,26],S:[48,4,84,-4,.36,59,8]},passes:[[.10,.26,'S'],[.34,.46,'L'],[.52,.69,'S']]},
+ {name:'중거리 슈팅',routes:{D:[27,8,51,17],L:[44,-15,65,-14],W:[53,-27,85,-24],S:[45,10,66,2]},passes:[[.16,.36,'L'],[.50,.70,'S']]}
+];
+const v495Clips=new WeakMap();
+function v495Clip(m,scene){
+ if(v495Clips.has(scene))return v495Clips.get(scene);
+ const side=scene.ev.side,other=side==='home'?'away':'home';
+ const seed=(Number(m.segmentStart)||0)+(Number(m.opponent)||0)*31+scene.idx*13;
+ const pattern=v495Patterns[((seed%9+9)%9+scene.index*5)%9];
+ const kind=scene.ev.kind;
+ // Online halves carry confirmed goals only. Reconstructed attempts give the
+ // filler clips a range of endings without generating new match events.
+ const isShot=kind==='goal'||kind==='shot'||kind==='build'&&scene.index%3!==1;
+ const outcome=kind==='goal'?'goal':isShot?['save','post','wide','block','catch'][(Math.abs(Math.floor(seed/9))+scene.index)%5]:
+  kind==='injury'?'injury':scene.index%2?'tackle':'intercept';
+ const lineup=side==='home'?m.lineup:m.defendingLineup;
+ let shooter=scene.shooter;
+ // An injured goalkeeper is represented by the keeper's own token, not an outfield stand-in.
+ if(kind==='injury'&&scene.ev.playerId!=null&&String(lineup[0])===String(scene.ev.playerId))shooter=0;
+ const outfield=[1,2,3,4].filter(i=>i!==shooter);
+ const slots=shooter===0?{D:1,L:2,W:4,S:3}:{D:outfield[0],L:outfield[1],W:outfield[2],S:shooter};
+ const lane=(scene.lane-50)*.33,flip=scene.lane<50?1:-1;
+ const init=v410InitialPose(m);
+ const coords=(x,y)=>({x:clamp(x,5,94),y:clamp(y,10,87)});
+ const mix=v410PointBlend;
+ const ease=(t,a,b)=>v411Smooth((t-a)/(b-a));
+ const unit=t=>clamp(t,0,1);
+ const yAt=y=>clamp(50+lane+flip*y,11,85);
+ const world=pt=>({x:side==='home'?pt.x:100-pt.x,y:pt.y});
+ const name=key=>v410PlayerName(m,side,slots[key]);
+ function player(key,t){
+  const [x0,y0,x1,y1,mid,xm,ym]=pattern.routes[key];
+  const pos=init[side][slots[key]],formationY=(pos.y-50)*.16;
+  const start=coords(x0,yAt(y0)+formationY),end=coords(x1,yAt(y1));
+  const u=ease(t,.02,.87);
+  if(!mid)return mix(start,end,u);
+  // A continuous turn keeps a runner moving through the intermediate waypoint.
+  const turn=coords(xm,yAt(ym));
+  const weight=(1-mid)**2;
+  const control={x:(turn.x-start.x*weight-end.x*mid**2)/(2*mid*(1-mid)),
+   y:(turn.y-start.y*weight-end.y*mid**2)/(2*mid*(1-mid))};
+  return coords((1-u)**2*start.x+2*(1-u)*u*control.x+u*u*end.x,(1-u)**2*start.y+2*(1-u)*u*control.y+u*u*end.y);
  }
- return {p,pose,point};
-}
-v411Pose=function(m,scene,f){
- if(!m||!scene?.ev)return v442BasePose(m,scene,f);
- f=clamp(f,0,1);
- const mode=v442Pattern(m,scene),z=v442PoseFor(m,scene,f,mode),p=z.p;
- const side=scene.ev.side,attack=p[side],dir=side==='home'?1:-1;
- const sup=scene.support,link=z.pose.link,wing=z.pose.wing,shot=scene.shooter;
- const foot=(k,t)=>{
-  const q=v442PoseFor(m,scene,t,mode).p[side][k];
-  return {x:clamp(q.x+dir*1.5,4,96),y:clamp(q.y+1,7,93)};
+ const foot=(key,t,touch=0)=>{
+  const p=player(key,t),next=player(key,t+.016),dx=next.x-p.x,dy=next.y-p.y,len=Math.hypot(dx,dy);
+  return len>.015?{x:p.x+dx/len*(2+touch),y:p.y+dy/len*(2+touch)}:{x:p.x+2,y:p.y};
  };
- const arc=(i,j,a,b,bend)=>v439Curve(foot(i,a),foot(j,b),clamp((f-a)/(b-a),0,1),bend);
- let ball,stage='carry',label='';
- const shooterName=v410PlayerName(m,side,shot),supportName=v410PlayerName(m,side,sup);
- const shotStart=mode==='tiki'?.83:mode==='cross'?.83:mode==='solo'?.82:.82;
- const goal=scene.ev.kind==='goal',shotEvent=scene.ev.kind==='shot';
- const shotEnd=goal?{x:side==='home'?98:2,y:clamp(50+(scene.lane-50)*.35,40,60)}:
-  {x:side==='home'?92:8,y:scene.index%2?37:63};
- if(mode==='tiki'){
-  if(f<.12){ball=foot(sup,.08);label='티키타카 · 후방에서 점유율 확보';}
-  else if(f<.30){ball=arc(sup,link,.12,.30,3);stage='pass';label=`${supportName} 짧은 패스`;}
-  else if(f<.45){ball=arc(link,wing,.30,.45,-4);stage='pass';label='삼각 패스 · 압박 회피';}
-  else if(f<.61){ball=arc(wing,sup,.45,.61,3);stage='pass';label='세 번째 선수에게 연결';}
-  else if(f<.77){ball=arc(sup,shot,.61,.77,-3);stage='pass';label=`${shooterName}에게 마무리 패스`;}
-  else if(f<shotStart){ball=foot(shot,f);label=`${shooterName} 슈팅 준비`;}
- }else if(mode==='cross'){
-  if(f<.12){ball=foot(sup,.10);label='측면 전개 시작';}
-  else if(f<.36){ball=arc(sup,wing,.12,.36,5);stage='pass';label='측면 전환 패스';}
-  else if(f<.59){ball=foot(wing,f);label='윙어의 측면 돌파';}
-  else if(f<.78){ball=arc(wing,shot,.59,.78,12);stage='pass';label=`크로스! ${shooterName}과 수비수 공중 볼 경합`;}
-  else if(f<shotStart){ball=foot(shot,f);label='문전에서 몸싸움 · 경합 끝에 슈팅 준비';}
- }else if(mode==='counter'){
-  if(f<.12){ball=foot(link,.08);label='공 탈취 · 빠른 역습!';}
-  else if(f<.34){ball=arc(link,wing,.12,.34,4);stage='pass';label='역습 첫 패스';}
-  else if(f<.55){ball=arc(wing,shot,.34,.55,-7);stage='pass';label='속공 · 전진 공간 패스';}
-  else if(f<shotStart){ball=foot(shot,f);label=`${shooterName} 수비 뒷공간 질주`;}
- }else if(mode==='solo'){
-  if(f<.11){ball=foot(sup,.08);label='공격 전개';}
-  else if(f<.32){ball=arc(sup,shot,.11,.32,3);stage='pass';label=`${shooterName}에게 연결`;}
-  else if(f<shotStart){ball=foot(shot,f);stage='carry';label=`${shooterName} 단독 드리블 · 수비수 돌파!`;}
- }else{
-  if(f<.12){ball=foot(sup,.09);label='후방 패스 전개';}
-  else if(f<.36){ball=arc(sup,link,.12,.36,4);stage='pass';label='중원 연결';}
-  else if(f<.63){ball=arc(link,shot,.36,.63,-5);stage='pass';label='쓰루패스 · 오프사이드 라인 돌파 시도';}
-  else if(f<shotStart){ball=foot(shot,f);label='공격수 침투';}
+ const legs=[];
+ let owner=pattern.first||'D';
+ for(const [start,end,to,lift=0,bend=0] of pattern.passes){
+  legs.push({start,end,from:owner,to,a:foot(owner,start),b:foot(to,end),lift,bend:bend*flip});
+  owner=to;
  }
- const nonGoalOffside=!goal&&scene.index%7===4&&mode==='through';
- if(f>=shotStart&&f<.93){
-  ball=v439Curve(foot(shot,shotStart),shotEnd,(f-shotStart)/(.93-shotStart),goal?0:3);
-  stage='shot';label=nonGoalOffside?'오프사이드 위치 확인 중':`${shooterName} 슈팅!`;
- }else if(f>=.93){
-  ball=shotEnd;stage='result';
-  label=goal?'⚽ 골!':nonGoalOffside?'오프사이드 · 득점 인정 안 됨':
-   shotEvent?'골키퍼 선방 또는 아슬아슬한 슈팅!':scene.ev.kind==='injury'?'접촉 · 선수 부상': '수비가 막아냅니다!';
+ const strike=outcome==='goal'?.815:.81;
+ const impact=outcome==='block'?.86:.90;
+ const from=foot('S',strike);
+ const corner=50+flip*(5.5+(seed%3)*.45);
+ const stop={goal:{x:95,y:corner},save:{x:90,y:corner},catch:{x:90,y:55-5*flip},post:{x:95,y:50+flip*8},wide:{x:96,y:50+flip*14},block:{x:Math.min(91,from.x+6),y:from.y+(50-from.y)*.23}};
+ const keeperInjury=kind==='injury'&&shooter===0;
+ const contact=stop[outcome]||foot('S',impact);
+ const recover={x:Math.max(10,contact.x-(outcome==='post'?12:8)),y:clamp(contact.y-flip*(outcome==='save'?13:8),10,89)};
+ const commentary={goal:'골!',save:'골키퍼가 쳐냅니다!',catch:'골키퍼가 공을 잡습니다.',post:'골대를 맞고 나옵니다!',wide:'골문 옆으로 벗어납니다.',block:'수비가 슈팅을 막습니다.',tackle:'태클로 공을 빼앗습니다.',intercept:'수비가 패스를 끊습니다.',injury:`${scene.ev.player||name('S')} 부상`};
+ function flight(a,b,u,bend,lift,easeOut=0){
+  const t=u+easeOut*u*(1-u);
+  return {...v439Curve(a,b,t,bend),lift:Math.sin(Math.PI*t)*lift};
  }
- if(!ball||!Number.isFinite(ball.x)||!Number.isFinite(ball.y))return v442BasePose(m,scene,f);
- return {positions:p,ball,stage,label,scene};
-};
+ function ballAt(t){
+  let holder=pattern.first||'D';
+  for(const leg of legs){
+   if(t<leg.start)break;
+   if(t<leg.end){
+    const u=unit((t-leg.start)/(leg.end-leg.start));
+    const cut=outcome==='intercept'&&leg===legs.at(-1);
+    if(cut&&u>=.76){
+     return {...flight(leg.a,leg.b,.76,leg.bend,0,.24),stage:'result',label:commentary.intercept};
+    }
+    return {...flight(leg.a,leg.b,u,leg.bend,cut?0:leg.lift,.24),stage:'pass',label:leg.lift?`${name(leg.from)}의 ${pattern.name}`:`${name(leg.from)} → ${name(leg.to)}`};
+   }
+   holder=leg.to;
+  }
+  if(outcome==='intercept'&&t>=legs.at(-1).end){
+   const leg=legs.at(-1),p=flight(leg.a,leg.b,.76,leg.bend,leg.lift,.24),u=ease(t,leg.end,1);
+   return {x:p.x-u*3,y:p.y+flip*u*4,lift:0,stage:'result',label:commentary.intercept};
+  }
+  if(isShot&&t>=strike&&t<impact){
+   const u=unit((t-strike)/(impact-strike));
+   return {...flight(from,contact,u,flip*(outcome==='goal'?1.6:2.5),pattern.name==='중거리 슈팅'?5:2.8,.12),stage:'shot',label:`${name('S')} 슈팅!`};
+  }
+  if(t>=impact){
+   const u=ease(t,impact,1);
+   let point=contact;
+   if(['save','post','block','tackle'].includes(outcome))point=mix(contact,recover,u);
+   if(outcome==='goal')point={x:95+3*Math.sin(Math.PI*u*.78),y:corner+flip*u};
+   if(outcome==='wide')point={x:96+3*u,y:contact.y+flip*2*u};
+   return {...point,lift:0,stage:'result',label:commentary[outcome],holder:outcome==='catch'?{side:other,i:0}:null};
+  }
+  const previous=legs.findLast(leg=>leg.end<=t)?.end||0;
+  const next=legs.find(leg=>leg.start>t)?.start||(isShot?strike:impact);
+  const touch=.65*Math.sin(2*Math.PI*t*8)*ease(t,previous,previous+.025)*(1-ease(t,next-.025,next));
+  return {...foot(holder,t,touch),lift:0,stage:'carry',label:pattern.name,holder:{side,i:slots[holder]}};
+ }
+ const turnover=outcome==='intercept'?ballAt(legs.at(-1).end):contact;
+ const turnoverTime=outcome==='intercept'?legs.at(-1).start+(legs.at(-1).end-legs.at(-1).start)*.76:impact;
+ function frame(t){
+  const ball=ballAt(t),read=ballAt(Math.max(0,t-.052)),positions={home:[],away:[]};
+  for(const key of Object.keys(slots))positions[side][slots[key]]=world(player(key,t));
+  positions[side][0]=world(keeperInjury?mix({x:11,y:50},{x:21,y:48},ease(t,.18,.70)):{x:8+6*ease(t,0,.75),y:50+(read.y-50)*.11});
+  const line=clamp(63+Math.max(0,read.x-45)*.6,62,87);
+  const close=['block','intercept','tackle','injury'].includes(outcome)&&!keeperInjury;
+  const defenders=[1,2,3,4].sort((i,j)=>init[other][i].y-init[other][j].y||i-j);
+  const press=defenders[turnover.y<50?1:2];
+  defenders.forEach((slot,index)=>{
+   const layout=init[other][slot],formationX=(side==='home'?layout.x:100-layout.x);
+   const spread=[-29,-10,10,29][index],flank=50+spread+(read.y-50)*.27+(layout.y-50)*.14;
+   const engage=slot===press?ease(t,.15,.74):.15;
+   let point=coords(line+(formationX-71)*.22+(Math.abs(spread)>20?2:0)-engage*5,flank);
+   if(slot===press){
+    const mark=close?turnover:read,attackDepth=close?.84:.52;
+    point=mix(point,coords(mark.x+2,mark.y+(close?1:(spread<0?-6:6))),engage*attackDepth);
+    if(close)point=mix(point,coords(mark.x+1.6,mark.y),ease(t,turnoverTime-.10,turnoverTime));
+   }
+   positions[other][slot]=world(point);
+  });
+  const keeperSet={x:clamp(91-(94-read.x)*.11,84,92),y:clamp(50+(read.y-50)*.23,43,57)};
+  const diveTarget={x:outcome==='save'||outcome==='catch'?contact.x-1.1:92,y:clamp(contact.y-flip*(outcome==='post'||outcome==='wide'?5:1),42,58)};
+  const dive=isShot&&outcome!=='block'?ease(t,strike+.012,impact):0;
+  const keeper=mix(keeperSet,diveTarget,dive);
+  positions[other][0]=world(keeper);
+  if(outcome==='catch'&&t>=impact)Object.assign(ball,{x:keeper.x+1.1,y:keeper.y+1*flip});
+  return {positions,ball:{...ball,...world(ball)},stage:ball.stage,label:ball.label,holder:ball.holder,scene,
+   keeper:other,dive:outcome==='catch'?0:dive*Math.sin(Math.PI*unit((t-strike)/(.99-strike))),goal:outcome==='goal'&&t>=impact};
+ }
+ const clip={frame};
+ v495Clips.set(scene,clip);
+ return clip;
+}
+v411Pose=function(m,scene,f){return v495Clip(m,scene).frame(clamp(f,0,1));};
 
 render(); // Show the new daily-ranking navigation entry immediately.
 
