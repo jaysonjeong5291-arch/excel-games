@@ -5533,7 +5533,7 @@ var slV487Busy=false;
 function slV487ReturnPanel(){
  if(!slEmbedded||!sl.ready)return '';
  const ev=sl.snapshot?.returnLegend||{},season=Number(ev.releaseSeason||s.season),label=slV458SeasonLabel(season);
- const rules='3,000억 P · 계약 1년(다음 시즌 하반기 토요일까지) · 일반 10명 정원 및 FA 영입 횟수 제외 · 거래·방출·재계약 불가 · 계약 종료 시 완전 삭제. 다음 시즌 우승 시 선수영입권 1장 + 유망주 뽑기권 100장 지급.';
+ const rules='영입비 <b>3,000억 P</b> · 계약 <b>1년</b> · 별도 슬롯 · 거래·방출·재계약 불가 · 다음 시즌 우승 보상';
  const old=ev.activeMine?'<div class="note"><b>현재 보유: '+esc(ev.activeMine.name)+'</b> · 이번 시즌 우승 도전 중 · 하반기 토요일 계약 종료</div><div class="spacer"></div>':'';
  let content='<div class="note">'+rules+'</div><div class="spacer"></div>'+old;
  if(ev.status==='waiting'){content+='<div class="empty">'+esc(label)+' 하반기 토요일 시작 시 전설의 귀환 선수 1명이 등장합니다.</div>';}
@@ -5555,7 +5555,7 @@ document.addEventListener('click',async e=>{
  if(!ev||ev.status!=='available'||Number(ev.releaseSeason)!==season)return notice('영입 가능 상태를 다시 확인하세요.');
  const key='sl_v487_claim_'+String(sl.snapshot?.viewer?.id)+'_'+season;
  let request;try{request=sessionStorage.getItem(key)||'';}catch(_){}
- if(!request&&!confirm(ev.name+' 선수 영입 · 3,000억 P 차감\n\n계약 기간: 1년 (다음 시즌 하반기 토요일 종료)\n계약 종료 시 선수는 완전히 사라집니다.\n거래, 방출, 재계약 불가 / 일반 10명 정원 제외\n다음 시즌 우승 시 선수영입권 1장 + 유망주 뽑기권 100장 지급\n\n그래도 영입하시겠습니까?'))return;
+ if(!request&&!confirm(ev.name+' 선수 영입 · 3,000억 P 차감\n\n계약 기간: 1년 (다음 시즌 하반기 토요일 종료)\n계약 종료 시 선수는 완전히 사라집니다.\n거래, 방출, 재계약 불가 / 일반 10명 정원 제외\n이 선수를 영입하고 다음 시즌 우승 시 선수영입권 1장과 유망주 뽑기권 100장이 지급됩니다.\n\n그래도 영입하시겠습니까?'))return;
  try{if(!request){request=slV423Uuid();sessionStorage.setItem(key,request);}}catch(err){return notice(String(err?.message||err));}
  slV487Busy=true;b.disabled=true;
  try{
