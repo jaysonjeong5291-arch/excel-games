@@ -5533,7 +5533,7 @@ var slV487Busy=false;
 function slV487ReturnPanel(){
  if(!slEmbedded||!sl.ready)return '';
  const ev=sl.snapshot?.returnLegend||{},season=Number(ev.releaseSeason||s.season),label=slV458SeasonLabel(season);
- const rules='전설의 선수를 3000억 P를 사용해 영입가능하며, 선수단 슬롯에 포함되지 않습니다. 단, 거래 및 재계약은 불가능하며 선수를 영입 후 우승 시 특별보상이 있습니다.';
+ const rules='전설의 선수는 3,000억 P로 영입할 수 있으며, 선수단 정원에 포함되지 않습니다. 단, 거래 및 재계약은 불가능하며, 해당 선수를 영입하고 다음 시즌에 우승하면 특별 보상이 지급됩니다.';
  const old=ev.activeMine?'<div class="note"><b>현재 보유: '+esc(ev.activeMine.name)+'</b> · 이번 시즌 우승 도전 중 · 하반기 토요일 계약 종료</div><div class="spacer"></div>':'';
  let content='<div class="note">'+rules+'</div><div class="spacer"></div>'+old;
  if(ev.status==='waiting'){content+='<div class="empty">'+esc(label)+' 하반기 토요일 시작 시 전설의 귀환 선수 1명이 등장합니다.</div>';}
