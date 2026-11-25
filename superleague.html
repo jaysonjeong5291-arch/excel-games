@@ -3388,7 +3388,7 @@ window.addEventListener('message',e=>{
    if(offlineReset)offlineReset.hidden=true;
   const nick=String(e.data.nickname||'').trim().slice(0,16);
   if(nick)window.__excelManagerNickname=nick;
-  if(!sl.poll){slLoad();sl.poll=setInterval(()=>{if(document.visibilityState==='visible')slLoad(true);},15000);}
+  if(!sl.poll){slLoad();sl.poll=setInterval(()=>{if(document.visibilityState==='visible'&&(!slEmbedded||window.frameElement?.closest('section')?.hidden!==true))slLoad(true);},30000);}
  }
 });
 if(slEmbedded)render();
@@ -5438,7 +5438,7 @@ async function slV473Fetch(action='sync'){
   for(const type of ['asia','europe'])if(r[type]&&r[type].id!==old?.[type]?.id&&!r[type].finished){slV473.picks[type]=r[type].choices?.slice()||[null,null,null];slV473.stakes[type]=String(Number(r[type].stake)/100000000);}
   if(mutation||['asia','europe'].some(k=>r[k]?.finished&&(r[k].id!==old?.[k]?.id||!old?.[k]?.finished)))window.parent.postMessage({type:'SUPERLEAGUE_WALLET_REFRESH'},location.origin);
  }catch(e){if(viewer===slV473.viewer)slV473.error=String(e?.message||e);}
- finally{slV473.busy=false;slV473.nextPoll=Date.now()+((['asia','europe'].some(k=>slV473.state?.[k]&&!slV473.state[k].finished)||slV473.state?.lobby?.some(x=>x.mine))?1700:4500);slV473Paint();}
+ finally{slV473.busy=false;slV473.nextPoll=Date.now()+((['asia','europe'].some(k=>slV473.state?.[k]&&!slV473.state[k].finished)||slV473.state?.lobby?.some(x=>x.mine))?5000:15000);slV473Paint();}
 }
 const slV473PreviousSwitch=switchTab;
 switchTab=function(tab){if(tab==='tour'){if(!slEmbedded||!slV460Mine()||slV459IsSpectator())return notice('구단 감독만 해외투어에 참가할 수 있습니다.');s.tab='tour';render();void slV473Fetch();return;}return slV473PreviousSwitch(tab);};
