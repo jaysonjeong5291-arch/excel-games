@@ -549,7 +549,7 @@ function playerAge(p){return p.ageBaseline+(s.season-1)}
 function v4Progress(p,season){
  const age=p.ageBaseline+season-1;
  if(p.id==='fw-02'&&age>=19)return age===19?75:age===20?89:age===21?93:age===22?97:Math.max(40,99-3*Math.max(0,age-35));
- if(p.id==='fw-03'&&age>=21)return age<23?83+8*(age-21):Math.max(40,98-3*Math.max(0,age-35));
+ if(p.id==='fw-03'&&age>=21)return age===21?83:age===22?92:age===23?95:Math.max(40,98-3*Math.max(0,age-35));
  if(p.legend){
   if(age>=25)return Math.max(40,Math.min(99,p.potential-3*Math.max(0,age-31)));
   const cap=y=>y<=17?60:y===18?70:y===19?75:y===20?80:99;
@@ -4000,7 +4000,7 @@ marketPage=function(){
  const candidateHtml=candidate?`<div class="note"><b>추첨 결과 · ${esc(candidate.name)}</b><div>포지션 ${esc(candidate.pos)} · 나이 ${candidate.age}세 · OVR ${candidate.ovr}</div><div>발탁 시 최초 계약금 <b>${price(candidate)}</b></div></div><div class="spacer"></div><div class="line" style="gap:8px;flex-wrap:wrap"><button type="button" class="btn primary" data-action="sl-v431-appoint" data-id="${esc(candidate.id)}" ${academy.length>=2||slV431ActionBusy||BigInt(String(sl.snapshot?.wallet||0))<BigInt(String(candidate.signingFee||0))?'disabled':''}>이 선수 발탁 · ${price(candidate)}</button><button type="button" class="btn" data-action="sl-v431-reroll" data-id="${esc(candidate.id)}" ${slV431ActionBusy?'disabled':''}>다시 뽑기 · 1장 사용</button></div>`
  :`<div class="note">발탁 대기 중인 선수가 없습니다. 뽑기권으로 유망주를 추첨하세요. 발탁하지 않은 선수는 다른 회원도 다시 뽑을 수 있습니다.</div><div class="spacer"></div><button type="button" class="btn primary" data-action="sl-v431-draw" ${cards<1||slV431ActionBusy||academy.length>=2?'disabled':''}>유망주 뽑기 · 뽑기권 1장</button>`;
  
- return old+block('유망주 뽑기 · 17~19세',
+ return old+block('유망주 뽑기 · 16~19세',
  `<div class="line between"><span>보유 뽑기권 <b>${cards}장</b> · 추첨 가능 선수 ${free}명</span><button class="btn xs" type="button" data-action="tab" data-value="items">아이템 상점에서 뽑기권 구매</button></div><div class="spacer"></div>${candidateHtml}<div class="small muted" style="margin-top:10px">잠재력 80+ 최대 10% · 85+ 최대 5% · 90+ 최대 0.8% · 98+ 최대 0.01%. 발탁에 성공할 때만 최초 계약금이 차감됩니다. 다시 뽑기는 기존 후보를 즉시 공용 풀에 반환하고 뽑기권 1장으로 다른 후보를 바로 보여줍니다. 미선택 후보는 10분 후 다음 추첨 시 자동 반환됩니다.</div>`);
 };
 let slV431ActionBusy=false;
@@ -4403,7 +4403,7 @@ marketPage=function(){
  const busy=slV437Busy||slV431ActionBusy;
  let content=`<div class="line between"><span>보유 뽑기권 <b>${cards}장</b> · 유망주 슬롯 <b>${academy.length}/2</b></span><button type="button" class="btn xs" data-action="tab" data-value="items">아이템 탭에서 뽑기권 구매</button></div><div class="spacer"></div>`;
  if(!batch){
-  content+=`<div class="note">유망주 17~19세 · 뽑기권 1장당 10억 P. 10명 뽑기는 서로 다른 선수 10명을 뽑고 그중 1~2명을 발탁할 수 있습니다. 잠재력은 공개하지 않습니다.</div><div class="spacer"></div><div class="line" style="gap:8px;flex-wrap:wrap"><button class="btn primary" type="button" data-action="sl-v437-draw" data-count="1" ${busy||cards<1||limit<=0?'disabled':''}>1명 뽑기 · 1장</button><button class="btn primary" type="button" data-action="sl-v437-draw" data-count="10" ${busy||cards<10||limit<=0?'disabled':''}>10명 뽑기 · 10장</button></div>`;
+  content+=`<div class="note">유망주 16~19세 · 뽑기권 1장당 10억 P. 10명 뽑기는 서로 다른 선수 10명을 뽑고 그중 1~2명을 발탁할 수 있습니다. 잠재력은 공개하지 않습니다.</div><div class="spacer"></div><div class="line" style="gap:8px;flex-wrap:wrap"><button class="btn primary" type="button" data-action="sl-v437-draw" data-count="1" ${busy||cards<1||limit<=0?'disabled':''}>1명 뽑기 · 1장</button><button class="btn primary" type="button" data-action="sl-v437-draw" data-count="10" ${busy||cards<10||limit<=0?'disabled':''}>10명 뽑기 · 10장</button></div>`;
  }else{
   content+=`<div class="note">이번 추첨 <b>${batch.count}명</b> · 발탁 가능한 인원 ${Math.max(0,limit)}명. 선택한 선수만 최초 계약금(1년치 연봉)을 지급하고, 나머지는 공용 추첨 풀로 돌아갑니다.</div><div class="spacer"></div>`;
   content+=`<div class="grid2" style="align-items:stretch">${candidates.map(y=>{
@@ -4872,7 +4872,7 @@ function slV443YouthPanel(){
  const busy=slV437Busy||slV431ActionBusy;
  let content=`<div class="line between"><span>보유 뽑기권 <b>${cards}장</b> · 유망주 슬롯 <b>${academy.length}/2</b></span><button type="button" class="btn xs" data-action="tab" data-value="items">아이템 탭에서 뽑기권 구매</button></div><div class="spacer"></div>`;
  if(!batch){
-  content+=`<div class="note">유망주 17~19세 · 뽑기권 1장당 10억 P. 10명 뽑기는 서로 다른 선수 10명을 뽑고 그중 1~2명을 발탁할 수 있습니다. 잠재력은 공개하지 않습니다.</div><div class="spacer"></div><div class="line" style="gap:8px;flex-wrap:wrap"><button class="btn primary" type="button" data-action="sl-v437-draw" data-count="1" ${busy||cards<1||limit<=0?'disabled':''}>1명 뽑기 · 1장</button><button class="btn primary" type="button" data-action="sl-v437-draw" data-count="10" ${busy||cards<10||limit<=0?'disabled':''}>10명 뽑기 · 10장</button></div>`;
+  content+=`<div class="note">유망주 16~19세 · 뽑기권 1장당 10억 P. 10명 뽑기는 서로 다른 선수 10명을 뽑고 그중 1~2명을 발탁할 수 있습니다. 잠재력은 공개하지 않습니다.</div><div class="spacer"></div><div class="line" style="gap:8px;flex-wrap:wrap"><button class="btn primary" type="button" data-action="sl-v437-draw" data-count="1" ${busy||cards<1||limit<=0?'disabled':''}>1명 뽑기 · 1장</button><button class="btn primary" type="button" data-action="sl-v437-draw" data-count="10" ${busy||cards<10||limit<=0?'disabled':''}>10명 뽑기 · 10장</button></div>`;
  }else{
   content+=`<div class="note">이번 추첨 <b>${batch.count}명</b> · 발탁 가능한 인원 ${Math.max(0,limit)}명. 선택한 선수만 최초 계약금(1년치 연봉)을 지급하고, 나머지는 공용 추첨 풀로 돌아갑니다. <b>다른 탭 이동 또는 3분 동안 미결정 시 자동 반환</b> · 남은 시간 <b id="sl-v451-countdown">계산 중</b></div><div class="spacer"></div>`;
   content+=`<div class="grid2" style="align-items:stretch">${candidates.map(y=>{
