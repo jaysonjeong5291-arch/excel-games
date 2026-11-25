@@ -3012,7 +3012,7 @@ function slVerifySnapshot(data){
 // for the Supabase RPC. Mutations can have committed even when the reply is lost.
 function slRpcReplyTimeout(method){
  const longOps=new Set(['sl_v425_admin_reset','sl_v427_admin_reset','sl_v443_admin_reset','sl_v429_test_advance']);
- const writeOps=new Set(['sl_command','sl_offer_submit','sl_v453_legend_offer','sl_v482_legend_offer','sl_v423_item_action','sl_v484_consumable','sl_v487_return_claim','sl_v424_save_tactics',
+ const writeOps=new Set(['sl_command','sl_offer_submit','sl_v453_legend_offer','sl_v482_legend_offer','sl_v423_item_action','sl_v484_consumable','sl_v487_return_claim','sl_v493_tour_legend_decide','sl_v424_save_tactics',
   'sl_v427_budget_repay','sl_v427_friendly_play','sl_v428_facility_upgrade',
   'sl_v431_youth_action','sl_v434_renew_contract','sl_v435_youth_reroll',
   'sl_v436_friendly_begin','sl_v464_friendly_begin','sl_v436_friendly_end','sl_v437_youth_draw',
@@ -4652,7 +4652,7 @@ squadPage=function(){
   const shownAge=Number.isInteger(numericAge)&&numericAge>0&&numericAge<100?`${numericAge}세`:'-';
   const wage=String(y?.annualWage??cp?.annualWage??(p.legend?live?.salary:0)??0);
   const status=slEmbedded?slV434MoraleStatus(id):(p.legend?({strike:'파업',unhappy:'불만'}[legendMood(p,s.selected)]||'정상'):'정상');
-  const remaining=slV487IsEvent(id)?'시즌 '+(Number(String(id).split('-').pop()))+' 하반기 토요일까지':contractYears(y?{contractEnd:y.contractEnd}:cp||live||s.contracts?.[id]);
+  const remaining=slV487IsEvent(id)?slV493ContractLabel(id):contractYears(y?{contractEnd:y.contractEnd}:cp||live||s.contracts?.[id]);
   const renewState=slEmbedded?(slV487IsEvent(id)?{allowed:false,reason:'재계약 불가'}:slV434RenewEligibility(id)):null;
   const renewal=slEmbedded?`<button class="btn xs ${renewState.allowed?'primary':''}" data-action="sl-v434-renew" data-id="${esc(id)}" title="${esc(renewState.reason||'1시즌 연장 가능')}" ${renewState.allowed?'':'disabled'}>+1시즌</button>`:p.legend?`<button class="btn xs" data-action="legend-renew" data-id="${esc(id)}">+1시즌</button>`:'<span class="muted">-</span>';
   const releaseAction=y?'sl-v431-release':'release';
@@ -4671,7 +4671,7 @@ squadPage=function(){
   return `<tr><td><span class="tag">${role}</span></td><td class="strong">${esc(p.name)}</td><td class="num">${p.ovr}</td><td>${fit}%</td><td><select class="field" data-change="lineup" data-slot="${i}" ${busy?'disabled':''}>${eligible.map(({id:opt,p:op})=>`<option value="${esc(opt)}" ${id===opt?'selected':''}>${esc(op.name)} (${op.pos} · ${op.ovr})</option>`).join('')}</select></td></tr>`;
  });
  const canEdit=busy?'disabled':'';
- return page('선수단 및 전술 관리',`${esc(club.name)} · 1군 ${slV487RosterCount(club)}/10명${club.roster.some(slV487IsEvent)?' + 전설의 귀환 1명':''} + 유망주 ${academy.filter(x=>x.status==='academy').length}/2명 · 포지션별 선수 현황`)
+ return page('선수단 및 전술 관리',`${esc(club.name)} · 1군 ${slV487RosterCount(club)}/10명${club.roster.some(slV487IsEvent)?' + 전설의 귀환 '+club.roster.filter(slV487IsEvent).length+'명':''} + 유망주 ${academy.filter(x=>x.status==='academy').length}/2명 · 포지션별 선수 현황`)
   +(fixed&&!fixed.ok?`<div class="note warn">선발 가능한 선수가 ${fixed.available}명입니다. 전술 저장 전 선수 등록 상태를 확인하세요.</div>`:'')
   +(slEmbedded&&slV4341NeedsSave?'<div class="note warn" style="margin-bottom:10px"><b>자동 복구된 선발 명단은 아직 서버에 저장되지 않았습니다.</b> 전술 저장 버튼을 눌러야 공식 경기에도 적용됩니다.</div>':'')
   +`<div class="v48-formation-row"><label>포메이션 <select class="field" data-change="formation" ${canEdit}>${v48FormOptions(s.formation)}</select></label><button class="btn" data-action="v48-auto-lineup" ${canEdit}>최적 배치</button></div>`
@@ -5386,7 +5386,7 @@ function slV473RunHtml(type,r){
  if(!r)return '';
  const no=r.matches?.find(x=>x.actual==='N'),rows=[];
  for(let i=0;i<3;i++){
-  const match=r.matches?.[i],club=type==='europe'?(r.teams?.[i]?.name||'참가 구단'):['싱가포르 XI','방콕 유나이티드','하노이 FC'][i];
+  const match=type==='europe'?r.matches?.find(x=>Number(x.slot)===i+1):r.matches?.[i],club=type==='europe'?(r.teams?.[i]?.name||'참가 구단'):['싱가포르 XI','방콕 유나이티드','하노이 FC'][i];
   const label=(i+1)+'경기 · '+esc(club);
   if(match?.actual==='N'){rows.push('<div class="sl-tour-row sl-tour-bad"><b>'+label+'</b><span>노쇼</span></div><div class="note warn">'+esc(match.club)+' '+esc(match.player)+' 선수가 노쇼했습니다.</div>');continue;}
   if(!match){rows.push('<div class="sl-tour-row"><span>'+label+'</span><span class="muted">'+(no?'취소':r.finished?'취소':'게임 진행 중')+'</span></div>');continue;}
@@ -5399,7 +5399,7 @@ function slV473RunHtml(type,r){
   total='<div class="sl-tour-row"><b>'+status+'</b><b class="'+(Number(r.net)<0?'sl-tour-bad':'sl-tour-good')+'">'+slV473Sign(r.net)+'</b></div><div class="sl-tour-row"><span>총수령액</span><b>'+slV473Money(r.payout)+'</b></div>';
   if(no){
    total+=(r.teams||[]).map(t=>'<div class="sl-tour-row"><span>'+esc(t.name)+(Number(t.penalty)>0?' · 사기 감소':' · 참가비 반환')+'</span><b class="'+(Number(t.net)<0?'sl-tour-bad':'')+'">'+slV473Sign(t.net)+'</b></div>').join('');
-   if(Number(r.penalty)>0)total+='<div class="note warn">위약금 '+slV473Money(r.penalty)+' · 실제 차감 '+slV473Money(r.charged)+' (잔액 부족 시 0원)</div>';
+   if(Number(r.penalty)>0)total+='<div class="note warn">위약금 '+slV473Money(r.penalty)+' · 실제 차감 '+slV473Money(r.charged)+' (보유 잔액 한도 내 차감)</div>';
   }
  }
  return '<div style="margin-top:12px"><b>투어 결과</b>'+rows.join('')+total+'</div>';
@@ -5411,9 +5411,9 @@ function slV473Panel(type){
  const inputs=choices.map((c,i)=>'<div class="sl-tour-row"><b>'+(i+1)+'경기</b><div class="sl-tour-picks">'+['W','L'].map(x=>'<button class="btn xs '+(c===x?'chosen':'')+'" data-tour-pick="'+type+':'+i+':'+x+'"'+dis(locked)+'>'+slV473Choice(x)+' ×'+(x==='W'?2:10)+'</button>').join('')+'</div></div>').join('');
  const participants=euro?'<div class="note"><b>참가팀 '+(busy?3:lobby.length)+'/3</b></div>'+(busy?run.teams.map(t=>'<div class="sl-tour-row"><span>'+esc(t.name)+(t.mine?' (나)':'')+'</span><span class="sl-tour-good">경기 진행 중</span></div>').join(''):lobby.map(t=>'<div class="sl-tour-row"><span>'+esc(t.club)+(t.mine?' (나)':'')+'</span><span class="'+(t.ready?'sl-tour-good':'muted')+'">'+(t.ready?'준비 완료':'대기')+'</span></div>').join('')):'';
  const actions=euro?'<div class="line" style="margin-top:12px;gap:6px;flex-wrap:wrap"><button class="btn primary" data-tour-act="ready"'+dis(locked||!valid||!complete||(!me&&lobby.length>=3))+'>준비 완료</button><button class="btn" data-tour-act="cancel"'+dis(!data||slV473.busy||!me||busy)+'>참가 취소</button><button class="btn" data-tour-act="join"'+dis(!data||slV473.busy||busy||!!me||!valid||lobby.length>=3)+'>참가하기</button></div>':'<div style="margin-top:12px"><button class="btn primary" data-tour-act="asia"'+dis(locked||!valid||!complete||cool)+'>투어 시작</button></div>';
- return block(euro?'유럽 슈퍼투어':'동남아 투어','<div class="note">'+(euro?'3팀 준비 완료 시 즉시 시작':'전체 서버 5분마다 1명 출발 가능')+' · 노쇼 시 사기 -5</div><div class="sl-tour-row"><label for="sl-tour-stake-'+type+'">총참가비 (최대 '+cap+'억)</label><div><input id="sl-tour-stake-'+type+'" data-tour-stake="'+type+'" type="text" inputmode="numeric" maxlength="3" value="'+esc(raw)+'" style="width:72px;text-align:right"'+dis(locked)+' aria-label="총참가비 억 단위"> 억 P</div></div><div class="sl-tour-row"><span>경기당 참가비</span><b id="sl-tour-unit-'+type+'">'+(valid?slV473Money(Math.round(stake*100000000/3)):'—')+'</b></div>'+participants+inputs+'<div class="note" style="margin-top:10px">선택: '+choices.map(slV473Choice).join(' / ')+'<br>전부 적중 시 순수익 <b class="sl-tour-profit" id="sl-tour-profit-'+type+'">'+(complete&&valid?slV473Sign(profit):'—')+'</b></div>'+actions+'<div class="note">'+(busy?'게임 진행 중':euro?'준비된 3팀이 모이면 출발':'다음 출발까지 <b id="sl-v473-clock">'+slV473Clock()+'</b>')+'</div>'+slV473RunHtml(type,run));
+ return block(euro?'유럽 슈퍼투어':'동남아 투어','<div class="note">'+(euro?'3팀 준비 완료 시 즉시 시작 · 팀당 노쇼 4% · 위약금 600억 P · 사기 -10 · 전설의 귀환 영입 기회 0.5%':'전체 서버 5분마다 1명 출발 가능 · 노쇼 시 사기 -5')+'</div><div class="sl-tour-row"><label for="sl-tour-stake-'+type+'">총참가비 (최대 '+cap+'억)</label><div><input id="sl-tour-stake-'+type+'" data-tour-stake="'+type+'" type="text" inputmode="numeric" maxlength="3" value="'+esc(raw)+'" style="width:72px;text-align:right"'+dis(locked)+' aria-label="총참가비 억 단위"> 억 P</div></div><div class="sl-tour-row"><span>경기당 참가비</span><b id="sl-tour-unit-'+type+'">'+(valid?slV473Money(Math.round(stake*100000000/3)):'—')+'</b></div>'+participants+inputs+'<div class="note" style="margin-top:10px">선택: '+choices.map(slV473Choice).join(' / ')+'<br>전부 적중 시 순수익 <b class="sl-tour-profit" id="sl-tour-profit-'+type+'">'+(complete&&valid?slV473Sign(profit):'—')+'</b></div>'+actions+'<div class="note">'+(busy?'게임 진행 중':euro?'준비된 3팀이 모이면 출발':'다음 출발까지 <b id="sl-v473-clock">'+slV473Clock()+'</b>')+'</div>'+slV473RunHtml(type,run));
 }
-function slV473TourBody(){return '<div class="sl-tour-wrap"><div class="sl-tour-grid">'+slV473Panel('asia')+slV473Panel('europe')+'</div></div>'+(slV473.error?'<div class="sl-tour-error">'+esc(slV473.error)+'</div>':'')+(slV473.pending?'<button class="btn xs" data-tour-act="retry"'+(slV473.busy?' disabled':'')+'>이전 요청 다시 확인</button>':'');}
+function slV473TourBody(){return slV493TourOfferPanel()+'<div class="sl-tour-wrap"><div class="sl-tour-grid">'+slV473Panel('asia')+slV473Panel('europe')+'</div></div>'+(slV473.error?'<div class="sl-tour-error">'+esc(slV473.error)+'</div>':'')+(slV473.pending?'<button class="btn xs" data-tour-act="retry"'+(slV473.busy?' disabled':'')+'>이전 요청 다시 확인</button>':'');}
 function slV473TourPage(){slV473ResetViewer();return page('해외투어','3경기 승패 예측 · 전부 적중 시 참가비 반환 및 순수익 지급')+'<div id="sl-v473-tour-body">'+(slEmbedded&&slV460Mine()?slV473TourBody():'<div class="note">로그인 후 구단 감독으로 참가하세요.</div>')+'</div>';}
 function slV473Paint(){if(s.tab==='tour'&&$('sl-v473-tour-body')&&slEmbedded&&slV460Mine()&&!document.activeElement?.matches('[data-tour-stake]'))$('sl-v473-tour-body').innerHTML=slV473TourBody();}
 async function slV473Fetch(action='sync'){
@@ -5433,7 +5433,7 @@ async function slV473Fetch(action='sync'){
   if(mutation)slV473.pending=null;
   if(!r?.ok)throw new Error(r?.error||'투어 요청 실패');
   const old=slV473.state;
-  slV473.state=r;slV473.offset=Date.parse(r.serverNow)-Date.now();if(!Number.isFinite(slV473.offset))slV473.offset=0;
+  slV473.state=r;if(r.legendOffer)slV493ShowOffer(r.legendOffer);slV473.offset=Date.parse(r.serverNow)-Date.now();if(!Number.isFinite(slV473.offset))slV473.offset=0;
   slV473.error='';
   for(const type of ['asia','europe'])if(r[type]&&r[type].id!==old?.[type]?.id&&!r[type].finished){slV473.picks[type]=r[type].choices?.slice()||[null,null,null];slV473.stakes[type]=String(Number(r[type].stake)/100000000);}
   if(mutation||['asia','europe'].some(k=>r[k]?.finished&&(r[k].id!==old?.[k]?.id||!old?.[k]?.finished)))window.parent.postMessage({type:'SUPERLEAGUE_WALLET_REFRESH'},location.origin);
@@ -5569,4 +5569,63 @@ document.addEventListener('click',async e=>{
  finally{slV487Busy=false;render();}
 },true);
 render();
+
+// V4.93: private, server-generated European tour legend offers.
+function slV493ContractLabel(id){
+ const m=String(id).match(/^return-legend-tour-(\d+)-([01])-/);
+ return m?'시즌 '+Number(m[1])+' '+(m[2]==='0'?'상반기':'하반기')+' 종료까지':'시즌 '+Number(String(id).split('-').pop())+' 하반기 토요일까지';
+}
+var slV493Deciding=false;
+var slV493Shown=new Set();
+function slV493OfferText(o){
+ return '유럽투어에서 '+o.name+' ('+o.pos+' · OVR '+o.ovr+') 영입 기회를 획득했습니다.\n\n영입 비용: 3,000억 P\n계약 기간: 다음 시즌 '+(Number(o.half)===0?'상반기':'하반기')+' 종료까지\n계약 종료 시 선수는 완전히 사라집니다.\n거래, 방출 및 재계약 불가 / 일반 선수단 정원 제외\n\n이 선수를 영입하고 다음 시즌 우승 시 선수영입권 1장과 유망주 뽑기권 100장이 지급됩니다.\n\n그래도 영입하시겠습니까?\n취소를 누르면 영입 제안이 사라집니다.';
+}
+function slV493TourOfferPanel(){
+ const o=slV473.state?.legendOffer;if(!o)return '';
+ return block('유럽투어 · 전설의 귀환', '<div class="note"><b>'+esc(o.name)+'</b> · '+esc(o.pos)+' · OVR '+Number(o.ovr)+' · 3,000억 P · 시즌 '+Number(o.season)+' '+(Number(o.half)===0?'상반기':'하반기')+' 종료까지</div><div class="line" style="margin:8px 0"><button class="btn primary" data-v493-offer="open" '+(slV493Deciding?'disabled':'')+'>영입 여부 선택</button></div>');
+}
+function slV493ShowOffer(o,force=false){
+ if(!o?.id||slV493Deciding||s.tab!=='tour'||!slEmbedded||document.hidden)return;
+ const k='sl-v493-offer-'+String(slV473.viewer)+'-'+o.id;
+ if(!force&&slV493Shown.has(k))return;
+ slV493Shown.add(k);
+ setTimeout(()=>{
+  if(slV493Deciding||s.tab!=='tour'||slV473.state?.legendOffer?.id!==o.id||document.hidden){slV493Shown.delete(k);return;}
+  void slV493Decide(o);
+ },0);
+}
+async function slV493Decide(o){
+ if(slV493Deciding||!sl.verified||!slV460Mine())return;
+ const viewer=String(slV473.viewer),key='sl_v493_decision_'+viewer+'_'+o.id;
+ let attempt;try{attempt=JSON.parse(sessionStorage.getItem(key)||'null');}catch(_){}
+ if(!attempt){
+  const accept=window.confirm(slV493OfferText(o));
+  attempt={accept,request:slV423Uuid()};
+  try{sessionStorage.setItem(key,JSON.stringify(attempt));}catch(_){}
+ }
+ slV493Deciding=true;slV473Paint();
+ try{
+  const res=await slRequest('sl_v493_tour_legend_decide',{p_offer:o.id,p_accept:attempt.accept,p_request:attempt.request});
+  if(!res?.ok)throw Error(res?.error||'영입 처리 실패');
+  try{sessionStorage.removeItem(key);}catch(_){}
+  if(String(slV473.viewer)===viewer&&slV473.state?.legendOffer?.id===o.id)slV473.state.legendOffer=null;
+  if(attempt.accept){
+   window.parent.postMessage({type:'SUPERLEAGUE_WALLET_REFRESH'},location.origin);
+   await slLoad(false);
+  }
+  notice(res.message||'영입 여부 처리 완료');
+ }catch(e){
+  const msg=String(e?.message||e);
+  if(/포인트.*부족|같은 선수|만료되었거나|찾지 못했습니다/.test(msg)){try{sessionStorage.removeItem(key);}catch(_){}}
+  notice(msg);slV473.error=msg;
+ }finally{
+  slV493Deciding=false;slV473Paint();
+  if(!slV473.busy&&s.tab==='tour')void slV473Fetch();
+ }
+}
+document.addEventListener('click',e=>{
+ const b=e.target.closest?.('[data-v493-offer]');if(!b||b.disabled)return;
+ e.preventDefault();e.stopImmediatePropagation();
+ slV493ShowOffer(slV473.state?.legendOffer,true);
+},true);
 </script></body></html>
