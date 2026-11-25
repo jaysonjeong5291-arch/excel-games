@@ -3461,7 +3461,7 @@ squadPage=function(){
  const old=slV423PrevSquad();
  if(!slEmbedded)return old;
  const payRows=[...new Set([...mine().roster,...(window.__slOnline?.ready?slV434AcademyIds():[])])].map(ply).filter(Boolean).map(p=>{const info=(sl.snapshot?.players||[]).find(x=>x.id===p.id);const academy=(sl.snapshot?.youth||[]).find(y=>y.id===p.id);return `<tr><td class="strong">${esc(p.name)}</td><td>${p.youth?'유망주':p.legend?'레전드':'현역'}</td><td class="num">${slV423Money(p.youth?academy?.annualWage:p.legend?info?.salary:0)}</td><td class="num">${p.age}세</td><td class="num">${p.ovr}</td></tr>`});
- return old+block('선수별 연봉 기준 · 최초 계약금',table(['이름','구분','연봉 기준 계약금','나이','OVR'],payRows)+`<div class="note">30세 미만: 잠재력 70% + OVR 30% / 30세는 기존 공식 / 31세부터 첫 계약은 OVR만 반영하고 기존 연봉은 시즌마다 10% 감액. 발탁하지 않은 유망주는 20세에 잠재력 85 초과인 경우 성인 FA로 승격 · FA 영입 시 최초 계약금 1회 차감 · 현역 0P. 현역은 시즌이 지나도 나이/능력치가 고정됩니다. 레전드는 시즌 전환 때 나이/OVR이 바뀌고 37~42세에 계약과 무관하게 은퇴합니다.</div>`);
+ return old+block('선수별 연봉 기준 · 최초 계약금',table(['이름','구분','연봉 기준 계약금','나이','OVR'],payRows)+`<div class="note">30세 미만: 잠재력 70% + OVR 30% / 30세는 기존 공식 / 31세부터 첫 계약은 OVR만 반영하고 기존 연봉은 시즌마다 10% 감액. 발탁하지 않은 유망주는 20세에 잠재력 85 초과인 경우 성인 FA로 승격 · FA 영입 시 최초 계약금 1회 차감 · 현역 0P. 현역은 시즌이 지나도 나이/능력치가 고정됩니다. 레전드는 시즌 전환 때 나이/OVR이 바뀝니다. 무소속 FA는 35세부터 즉시 은퇴하며, 소속 레전드는 무작위로 지정된 35~42세에 은퇴합니다. 35세 이상 레전드는 방출 또는 계약 만료로 FA가 되는 즉시 은퇴합니다.</div>`);
 };
 let slV423ActionBusy=false;
 async function slV423Action(action,player){
